@@ -115,7 +115,7 @@ subroutine ZPFSFI(COMPZ,N,STR,STP,Q,D,C,B,BCCNT,Z,ITCNT,INFO)
   if(mod(ITCNT+1,11) == 0)then
     call random_number(s1)
     call random_number(s2)
-    shift = complex(s1,s2)
+    shift = cmplx(s1,s2,kind=8)
           
   ! wilkinson shift
   else
@@ -160,7 +160,7 @@ subroutine ZPFSFI(COMPZ,N,STR,STP,Q,D,C,B,BCCNT,Z,ITCNT,INFO)
 !    write(*,*) ""
 !    return
 !  end if
-	
+  
   ! bulge inverse
   binv(1) = bulge(1)
   binv(2) = -bulge(2)
@@ -180,18 +180,18 @@ subroutine ZPFSFI(COMPZ,N,STR,STP,Q,D,C,B,BCCNT,Z,ITCNT,INFO)
   ! main chasing loop
   do ii=STR,(STP-1)
   
-  	! update eigenvectors
-  	if (COMPZ .NE. 'N')then
-  	  temp(1,1) = complex(bulge(1),bulge(2))
-  	  temp(2,1) = complex(bulge(3),0d0)
-  	  temp(1,2) = -temp(2,1)
-  	  temp(2,2) = conjg(temp(1,1))
-  	  Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),temp)
-  	end if
-  	
-  	! check BCCNT
-  	if (ii >= BCCNT) then
-  	
+    ! update eigenvectors
+    if (COMPZ .NE. 'N')then
+      temp(1,1) = cmplx(bulge(1),bulge(2),kind=8)
+      temp(2,1) = cmplx(bulge(3),0d0,kind=8)
+      temp(1,2) = -temp(2,1)
+      temp(2,2) = conjg(temp(1,1))
+      Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),temp)
+    end if
+    
+    ! check BCCNT
+    if (ii >= BCCNT) then
+    
       ! pass through B
       ind1 = 3*(ii-1) + 1
       ind2 = ind1+2
@@ -255,11 +255,11 @@ subroutine ZPFSFI(COMPZ,N,STR,STP,Q,D,C,B,BCCNT,Z,ITCNT,INFO)
   
   ! update eigenvectors
   if (COMPZ .NE. 'N')then
-    temp(1,1) = complex(bulge(1),bulge(2))
-  	temp(2,1) = complex(bulge(3),0d0)
-  	temp(1,2) = -temp(2,1)
-  	temp(2,2) = conjg(temp(1,1))
-  	Z(:,STP:(STP+1)) = matmul(Z(:,STP:(STP+1)),temp)
+    temp(1,1) = cmplx(bulge(1),bulge(2),kind=8)
+    temp(2,1) = cmplx(bulge(3),0d0,kind=8)
+    temp(1,2) = -temp(2,1)
+    temp(2,2) = conjg(temp(1,1))
+    Z(:,STP:(STP+1)) = matmul(Z(:,STP:(STP+1)),temp)
   end if
   
   ! pass through B

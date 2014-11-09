@@ -136,7 +136,7 @@ subroutine ZPFGRD(N,STR,STP,ZERO,Q,D,C,B,ITCNT,ITS,INFO)
       Q(ind1+1) = 1d0
       Q(ind1+2) = 0d0
         
-      ind1 = 2*(STP-ii)	
+      ind1 = 2*(STP-ii)  
       d1r = D(ind1+1)
       d1i = D(ind1+2)
         
@@ -159,7 +159,7 @@ subroutine ZPFGRD(N,STR,STP,ZERO,Q,D,C,B,ITCNT,ITS,INFO)
       if(ii == 1)then
         
         ! update second diagonal
-        ind1 = 2*(STP-ii)	
+        ind1 = 2*(STP-ii)  
         d1r = D(ind1+3)
         d1i = D(ind1+4)
            
@@ -171,7 +171,7 @@ subroutine ZPFGRD(N,STR,STP,ZERO,Q,D,C,B,ITCNT,ITS,INFO)
         d1i = d1i/nrm
            
         D(ind1+3) = d1r
-        D(ind1+4) = d1i			
+        D(ind1+4) = d1i      
            
         ! 2x2 or bigger
         else
@@ -197,7 +197,7 @@ subroutine ZPFGRD(N,STR,STP,ZERO,Q,D,C,B,ITCNT,ITS,INFO)
           end do
            
           ! update second diagonal
-          ind1 = 2*(STP)	
+          ind1 = 2*(STP)  
           d1r = D(ind1+1)
           d1i = D(ind1+2)
            
@@ -211,7 +211,7 @@ subroutine ZPFGRD(N,STR,STP,ZERO,Q,D,C,B,ITCNT,ITS,INFO)
           D(ind1+1) = d1r
           D(ind1+2) = d1i
         end if
-	
+  
         ! update indices
         ZERO = STP+1-ii
         STR = ZERO + 1
