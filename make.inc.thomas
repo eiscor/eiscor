@@ -1,0 +1,14 @@
+HOMEDIR := /home/thomasm/work/paper/130801_Watkins_Companion/svn/AMVW/fortran/trunk/amvw
+
+INSTALLDIR := /home/thomasm
+
+FC := gfortran
+FFLAGS := -O3 
+
+LAPACK := -llapack 
+BLAS := -lblas 
+
+
+
+
+

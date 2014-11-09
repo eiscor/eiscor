@@ -1,0 +1,33 @@
+############################################################
+#
+# ECORE (Eigensolvers based on unitary CORE transformations)
+#
+# Date:
+#
+#  October 2014
+#
+# Authors:
+#
+#  Jared L. Aurentz
+#  Thomas Mach
+#
+# Related articles:
+#
+# 
+#
+############################################################
+LIBNAME := ecore
+MAJOR := 0
+MINOR := 0
+VERSION := $(MAJOR).$(MINOR)
+
+INSTALLDIR := $(HOME)
+
+FC := gfortran
+FFLAGS := -O3 -std=f95
+
+LIBS := 
+
+
+
+
