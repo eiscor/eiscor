@@ -1,6 +1,6 @@
 ############################################################
 #
-# ECORE (Eigensolvers based on unitary CORE transformations)
+# EISCOR (EIgenSolvers based on unitary CORe transformations)
 #
 # Date:
 #
@@ -16,7 +16,7 @@
 # 
 #
 ############################################################
-LIBNAME := ecore
+LIBNAME := eiscor
 MAJOR := 0
 MINOR := 0
 VERSION := $(MAJOR).$(MINOR)
