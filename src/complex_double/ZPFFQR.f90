@@ -112,9 +112,9 @@ subroutine ZPFFQR(COMPZ,N,Q,D,C,B,Z,ITS,INFO)
   ITS = 0
   
   if (COMPZ.EQ.'I') then
-    Z = complex(0d0,0d0)
+    Z = cmplx(0d0,0d0,kind=8)
     do ii=1,n
-      Z(ii,ii) = complex(1d0,0d0)
+      Z(ii,ii) = cmplx(1d0,0d0,kind=8)
     end do
   end if
   

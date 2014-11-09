@@ -83,8 +83,8 @@ subroutine ZPFCFT(N,K,Q,D,C,B,SHFT,B1,INFO)
   block(1,1) = block(1,1) - SHFT
   
   ! bulge
-  call ZARCG43(dble(block(1,1)),dimag(block(1,1)),dble(block(2,1)), &
-    dimag(block(2,1)),B1(1),B1(2),B1(3),nrm,INFO)
+  call ZARCG43(dble(block(1,1)),aimag(block(1,1)),dble(block(2,1)), &
+    aimag(block(2,1)),B1(1),B1(2),B1(3),nrm,INFO)
       
   ! check INFO
   if (INFO .NE. 0) then

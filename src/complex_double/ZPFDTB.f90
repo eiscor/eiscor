@@ -122,7 +122,7 @@ subroutine ZPFDTB(COMPZ,N,K,Q,D,C,B,Z,INFO)
   end if
       
   ! adjust eigenvectors to be a Givens' rotation
-  call ZARCG43(dble(temp(1,1)),dimag(temp(1,1)),dble(temp(2,1)),dimag(temp(2,1)), &
+  call ZARCG43(dble(temp(1,1)),aimag(temp(1,1)),dble(temp(2,1)),aimag(temp(2,1)), &
         b1(1),b1(2),b1(3),nrm,INFO)    
       
   ! check INFO
@@ -134,8 +134,8 @@ subroutine ZPFDTB(COMPZ,N,K,Q,D,C,B,Z,INFO)
   end if  
       
   ! update eigenvectors
-  temp(1,1) = complex(b1(1),b1(2))
-  temp(2,1) = complex(b1(3),0d0)
+  temp(1,1) = cmplx(b1(1),b1(2),kind=8)
+  temp(2,1) = cmplx(b1(3),0d0,kind=8)
   temp(1,2) = -temp(2,1)
   temp(2,2) = conjg(temp(1,1))
   if ((COMPZ.EQ.'I').OR.(COMPZ.EQ.'V')) then
