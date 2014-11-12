@@ -37,7 +37,11 @@ make examples
 This will automatically build and run all the examples. _Note: This requires the same_ __make.inc__ _file that was used to build the library._ 
 
 ## Removing eiscor ##
-If you decide to uninstall __eiscor__
+If the source directory has not been removed simply move into the __eiscor__ root directory and type:
+```
+make uninstall
+```
+If the source directory has been removed the install directory will have to be removed explicitly by the user.
 
-## Reporting issues ##
-If you encounter any issues while using __eiscor__ please file an issue on the [eiscor issues](https://github.com/jaurentz/eiscor/issues) page of Github.
+## Questions and issues ##
+If you have any questions or encounter any issues while using __eiscor__ please file an issue on the [__eiscor__ issues](https://github.com/jaurentz/eiscor/issues) page of Github.
