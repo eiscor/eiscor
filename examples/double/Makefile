@@ -6,7 +6,7 @@ DEXS := $(patsubst ./%.f90,./%,$(wildcard ./*.f90))
 all: $(DEXS)
 
 %:: %.f90
-	$(FC) $(FFLAGS) -cpp $< -o $@ $(INSTALLDIR)/$(LIBNAME)/lib/lib$(LIBNAME).so $(LIBS)
+	$(FC) $(FFLAGS) -cpp $< -o $@ $(INSTALLDIR)/$(LIBNAME)/lib/lib$(LIBNAME).so.$(VERSION) $(LIBS)
 
 
 clean:

@@ -65,10 +65,7 @@ $(ZEXSRCS):
 
 install: lib$(LIBNAME).so.$(VERSION)
 	mkdir -p $(INSTALLDIR)/$(LIBNAME)/lib &&\
-	cp ./lib$(LIBNAME).so.$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib &&\
-	ln -sf $(INSTALLDIR)/$(LIBNAME)/lib/lib$(LIBNAME).so.$(VERSION) lib$(LIBNAME).so &&\
-	cp ./lib$(LIBNAME).so $(INSTALLDIR)/$(LIBNAME)/lib &&\
-	echo lib$(LIBNAME).so.$(VERSION) has been installed in: $(INSTALLDIR)/$(LIBNAME)/lib
+	cp ./lib$(LIBNAME).so.$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib 
 
 uninstall: clean
 	rm -rf $(INSTALLDIR)/$(LIBNAME)
@@ -80,6 +77,6 @@ clean:
 	make clean -C $(ZSRCDIR) &&\
 	make clean -C $(DEXDIR) &&\
 	make clean -C $(ZEXDIR) &&\
-	rm -f lib$(LIBNAME).so.$(VERSION) lib$(LIBNAME).so
+	rm -f lib$(LIBNAME).so.$(VERSION)
 	
 	
