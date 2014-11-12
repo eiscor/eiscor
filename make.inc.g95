@@ -2,19 +2,6 @@
 #
 # EISCOR (EIgenSolvers based on unitary CORe transformations)
 #
-# Date:
-#
-#  October 2014
-#
-# Authors:
-#
-#  Jared L. Aurentz
-#  Thomas Mach
-#
-# Related articles:
-#
-# 
-#
 ############################################################
 LIBNAME := eiscor
 MAJOR := 0
