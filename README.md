@@ -1,13 +1,16 @@
-# eiscor - EIgenSolvers based on unitary CORe transformations
+# eiscor - EIgenSolvers based on unitary CORe transformations #
 This package is a collection of Fortran 90 subroutines for accurately and efficiently solving structured matrix eigenvalue problems using essentially 2x2 unitary matrices.
 
-# Authors
+## Authors ##
 - Jared L. Aurentz, University of Oxford, United Kingdom
 - Thomas Mach, KU Leuven, Belgium
 - Raf Vandebril, KU Leuven, Belgium
 - David S. Watkins, Washington State University, United States
 
-# Related articles
+## The eiscor guide ##
+To get started with __eiscor__ please checkout the [guide](https://github.com/jaurentz/eiscor/blob/master/GUIDE.md).
+
+## Related articles ##
 This software is based on the following articles:
 - Jared L. Aurentz, Thomas Mach, Raf Vandebril, and David S. Watkins. _Fast and stable unitary QR algorithm._ (In Progress)
 - Jared L. Aurentz, Thomas Mach, Raf Vandebril, and David S. Watkins. [_Fast and backward stable computation of roots of polynomials._](http://www.cs.kuleuven.be/publicaties/rapporten/tw/TW654.abs.html) (Submitted)
