@@ -3,6 +3,23 @@
 This routine computes the eigenvalues and optionally eigenvectors of a 
 real orthogonal upper-Hessenberg matrix that is stored as the product of N-1 Givens' rotations and a complex diagonal matrix with entries +/- 1 using a fast QR algorithm. On output the eigenvalues are stored in the diagonal matrix.
 
+Each Givens' rotation is stored as 2 real numbers _c_ and _s_ which correspond to the _cosine_ and _sine_ respectively. These pairs of numbers are stored sequentially in __Q__:
+```fortran
+Q(1) = c1
+Q(2) = s1
+Q(3) = c2
+Q(4) = s2
+Q(5) = ...
+```
+The complex diagonal matrix has its real and imaginary entries stored sequentially in __D__. On input __D__ must have entries +/- 1 and be strictly real:
+```fortran
+D(1) = -1d0
+D(2) = 0d0
+D(3) = 1d0
+D(4) = 0d0
+D(5) = ...
+```
+
 ## DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO) ##
 
 ### INPUT VARIABLES: ###
@@ -36,7 +53,7 @@ __INFO__ - INTEGER
  - INFO = 1 implies failure to converge
  - INFO = 0 implies successful computation
  - INFO = -1 implies COMPZ is invalid
- - INFO = -2 -2 implies N, Q, or D is invalid
+ - INFO = -2 implies N, Q, or D is invalid
  - INFO = -3 implies Z is invalid
 
 ## Example call ##
