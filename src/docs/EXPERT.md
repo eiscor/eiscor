@@ -8,11 +8,11 @@ For example, __DOHFQR__ is a double precision (__D__) subroutine for solving ort
 
 ## Unitary eigensolvers ##
 Eigensolvers for unitary matrices can be interacted with at different levels in __eiscor__. At the highest level there are the routines:
-- [__DOHFQR__]()
-- [__ZUHFQR__]()
+- [__DOHFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/DOHFQR.md)
+- [__ZUHFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/ZUHFQR.md)
 
 These routines except unitary upper-Hessenberg matrices as input and solve for the eigenvalues and optionally the eigenvectors. The next level of interaction involves inputting the unitary upper-Hessenberg matrix in factored form:
-- [__DOFFQR__]()
-- [__ZUFFQR__]()
+- [__DOFFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/DOFFQR.md)
+- [__ZUFFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/ZUFFQR.md)
 
 These routines need less memory but require the user to have a good understanding of the underlying factorizations.
