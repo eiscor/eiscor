@@ -1,4 +1,4 @@
-#include "ECORE_DEBUG.h"
+#include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! ZARACH1 (Zomplex Auxiliary Routine Array CHeck 1)

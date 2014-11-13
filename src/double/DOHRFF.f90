@@ -1,4 +1,4 @@
-#include "ECORE_DEBUG.h"
+#include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! DOHRFF (Double Orthogonal Hessenberg matrix Reduction to Factored Form)

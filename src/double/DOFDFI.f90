@@ -1,4 +1,4 @@
-#include "ECORE_DEBUG.h"
+#include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! DOFDFI (Double Orthogonal hessenberg Factored Doubleshift Francis Iteration)

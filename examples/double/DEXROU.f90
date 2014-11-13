@@ -1,3 +1,4 @@
+#include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! DEXROU (Double EXample Roots Of Unity)

@@ -1,4 +1,4 @@
-#include "ECORE_DEBUG.h"
+#include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! ZARGTD (Zomplex Auxiliary Routine Givens Through Diagonal)

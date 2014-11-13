@@ -1,4 +1,4 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#include "eiscor.h"
 !
 ! DARACH2 (Double Auxiliary Routine Array CHeck 2)
 !

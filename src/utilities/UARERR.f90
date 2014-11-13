@@ -1,4 +1,4 @@
-#include "ECORE_DEBUG.h"
+#include "eiscor.h"
 subroutine UARERR(FILENAME,LINENUM,MESSAGE,INFO,NEWINFO) 
 
   implicit none

@@ -1,4 +1,4 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#include "eiscor.h"
 !
 ! IARNAN (Integer Auxiliary Routine NAN check)
 !
