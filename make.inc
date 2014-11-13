@@ -12,13 +12,11 @@ VERSION := $(MAJOR).$(MINOR)
 INSTALLDIR := $(HOME)
 
 # fortran compiler and flags
-FC := ifort 
-FFLAGS := -std90 -heap-arrays
+FC := gfortran
+FFLAGS := -O3 -std=f95
 
 # libs required by compiler
-LIBS := -lifport
-
-
+LIBS := 
 
 
 

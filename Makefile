@@ -21,14 +21,15 @@ DEXDIR := ./examples/double
 ZEXDIR := ./examples/complex_double
 
 DEXSRCS := $(wildcard $(DEXDIR)/*.f90)
-DEXS := $(patsubst $(DEXDIR)/%.f90,$(DEXDIR)/%.o,$(wildcard $(DEXDIR)/*.f90))
+DEXS := $(patsubst $(DEXDIR)/%.f90,$(DEXDIR)/%,$(wildcard $(DEXDIR)/*.f90))
 
 ZEXSRCS := $(wildcard $(ZEXDIR)/*.f90)
-ZEXS := $(patsubst $(ZEXDIR)/%.f90,$(ZEXDIR)/%.o,$(wildcard $(ZEXDIR)/*.f90))
+ZEXS := $(patsubst $(ZEXDIR)/%.f90,$(ZEXDIR)/%,$(wildcard $(ZEXDIR)/*.f90))
 
 all: lib$(LIBNAME).so.$(VERSION)
 
 examples: $(DEXS) $(ZEXS)
+	$(DEXS) && $(ZEXS)
 
 lib$(LIBNAME).so.$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).so.$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
