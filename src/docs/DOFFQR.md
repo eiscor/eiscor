@@ -1,9 +1,9 @@
-# DOHFQR - Double Orthogonal Hessenberg Fast QR eigensolver #
+# DOFFQR - Double Orthogonal hessenberg Factored Fast QR eigensolver #
 
 This routine computes the eigenvalues and optionally eigenvectors of a 
-real orthogonal upper-Hessenberg matrix using a fast QR algorithm. The output is the Winter-Murnaghan or real Schur factorization where the block triangular part is stored in the same array as the input matrix.
+real orthogonal upper-Hessenberg matrix that is stored as the product of N-1 Givens' rotations and a complex diagonal matrix with entries +/- 1 using a fast QR algorithm. On output the eigenvalues are stored in the diagonal matrix.
 
-## DOHFQR(COMPZ,N,H,Z,ITS,WORK,INFO) ##
+## DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO) ##
 
 ### INPUT VARIABLES: ###
 
@@ -15,12 +15,12 @@ __COMPZ__ - CHARACTER
 __N__ - INTEGER
  - dimension of matrix
 
-__H__ - REAL(8) array of dimension (N,N)
- -  orthogonal hessenberg matrix, assumed that H(ii,jj) = 0 for |ii-jj| > 0
- - on exit contains a block diagonal matrix with blocks no greater than 2x2. 
+__Q__ - REAL(8) array of dimension (2*(N-1))
+ -  array of generators for givens rotations
 
-__WORK__ - REAL(8) array of dimension (4*N)
- - work space for eigensolver
+__D__ - REAL(8) array of dimension (2*N)
+ - array of generators for complex diagonal matrix
+ - on output contains the eigenvalues
 
 ### OUTPUT VARIABLES: ###
 
@@ -33,20 +33,21 @@ __ITS__ - INTEGER array of dimension (N-1)
  - Contains the number of iterations per deflation
 
 __INFO__ - INTEGER
- - INFO = 2 implies DOFFQR failed
- - INFO = 1 implies DOHRFF failed
+ - INFO = 1 implies failure to converge
  - INFO = 0 implies successful computation
  - INFO = -1 implies COMPZ is invalid
- - INFO = -2 implies N is invalid
- - INFO = -3 implies H is invalid
- - INFO = -4 implies Z is invalid
+ - INFO = -2 -2 implies N, Q, or D is invalid
+ - INFO = -3 implies Z is invalid
 
 ## Example call ##
 ```fortran
-H(1,1) = 0d0
-H(2,1) = 1d0
-H(1,2) = 1d0
-H(2,2) = 0d0
+Q(1) = 0d0
+Q(2) = 1d0
 
-call DOHFQR('N',2,H,Z,ITS,WORK,INFO)
+D(1) = 1d0
+D(2) = 0d0
+D(3) = -1d0
+D(4) = 0d0
+
+call DOFFQR('N',2,Q,D,Z,ITS,INFO)
 ```
