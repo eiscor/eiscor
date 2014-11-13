@@ -12,11 +12,13 @@ VERSION := $(MAJOR).$(MINOR)
 INSTALLDIR := $(HOME)
 
 # fortran compiler and flags
-FC := gfortran
-FFLAGS := -O3 -std=f95
+FC := ifort 
+FFLAGS := -std90 -heap-arrays
 
 # libs required by compiler
-LIBS := 
+LIBS := /opt/icc/composer_xe_2011_sp1.10.319/compiler/lib/intel64/libifport.so #-lifport
+
+
 
 
 

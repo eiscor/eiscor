@@ -26,10 +26,22 @@ DEXS := $(patsubst $(DEXDIR)/%.f90,$(DEXDIR)/%,$(wildcard $(DEXDIR)/*.f90))
 ZEXSRCS := $(wildcard $(ZEXDIR)/*.f90)
 ZEXS := $(patsubst $(ZEXDIR)/%.f90,$(ZEXDIR)/%,$(wildcard $(ZEXDIR)/*.f90))
 
+DTESTDIR := ./tests/double
+ZTESTDIR := ./tests/complex_double
+
+DTESTSRCS := $(wildcard $(DTESTDIR)/*.f90)
+DTESTS := $(patsubst $(DTESTDIR)/%.f90,$(DTESTDIR)/%,$(wildcard $(DTESTDIR)/*.f90))
+
+ZTESTSRCS := $(wildcard $(ZTESTDIR)/*.f90)
+ZTESTS := $(patsubst $(ZTESTDIR)/%.f90,$(ZTESTDIR)/%,$(wildcard $(ZTESTDIR)/*.f90))
+
 all: lib$(LIBNAME).so.$(VERSION)
 
 examples: $(DEXS) $(ZEXS)
 	$(DEXS) && $(ZEXS)
+	
+tests: $(DTESTS) $(ZTESTS)
+	$(DTESTS) && $(ZTESTS)
 
 lib$(LIBNAME).so.$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).so.$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
@@ -64,6 +76,16 @@ $(ZEXS): $(ZEXSRCS) install
 	
 $(ZEXSRCS):
 
+$(DTESTS): $(DTESTSRCS) install
+	make -C $(DTESTDIR)
+	
+$(DTESTSRCS):
+
+$(ZTESTS): $(ZTESTSRCS) install
+	make -C $(ZTESTDIR)
+	
+$(ZTESTSRCS):
+
 install: lib$(LIBNAME).so.$(VERSION)
 	mkdir -p $(INSTALLDIR)/$(LIBNAME)/lib &&\
 	cp ./lib$(LIBNAME).so.$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib 
@@ -78,6 +100,8 @@ clean:
 	make clean -C $(ZSRCDIR) &&\
 	make clean -C $(DEXDIR) &&\
 	make clean -C $(ZEXDIR) &&\
+	make clean -C $(DTESTDIR) &&\
+	make clean -C $(ZTESTDIR) &&\
 	rm -f lib$(LIBNAME).so.$(VERSION)
 	
 	

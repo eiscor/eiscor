@@ -1,3 +1,4 @@
+#include "ECORE_DEBUG.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! DARSUE (Double Auxiliary Routine Sort Unimodular Eigenpairs)
@@ -36,9 +37,11 @@
 ! OUTPUT VARIABLES:
 !
 !  INFO           INTEGER
-!                   INFO equal to 0 implies successful computation.
-!                   INFO negative implies that an input variable has
-!                   an improper value, i.e. INFO=-2 => N is invalid
+!                    INFO = 0 implies successful computation
+!                    INFO = -1 implies JOB is invalid
+!                    INFO = -2 implies N is invalid
+!                    INFO = -3 implies E is invalid
+!                    INFO = -4 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine DARSUE(JOB,N,E,Z,INFO)
@@ -64,37 +67,42 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
   ! check COMPZ
   if ((JOB.NE.'E').AND.(JOB.NE.'V')) then
     INFO = -1
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "JOB must be 'E' or 'V'"
-    write(*,*) ""
+    ! print error in debug mode
+    if (DEBUG) then
+      call UARERR(__FILE__,__LINE__,"JOB must be 'E' or 'V'",INFO,INFO)
+    end if   
     return
   end if
   
   ! check N
   if (N < 2) then
     INFO = -2
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "N must >= 2."
-    write(*,*) ""
+    ! print error in debug mode
+    if (DEBUG) then
+      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+    end if   
     return
   end if  
   
   ! check E
   call DARACH1(2*N,E,INFO)
   if (INFO.NE.0) then
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "E is invalid."
-    write(*,*) ""
+    ! print error in debug mode
+    if (DEBUG) then
+      call UARERR(__FILE__,__LINE__,"E is invalid",INFO,INFO)
+    end if
+    INFO = -3   
     return
   end if
   do ii=1,N
     nrm = sqrt(E(2*ii-1)**2 + E(2*ii)**2)
     if (abs(nrm-1d0) > tol) then
       INFO = -3
-      write(*,*) "Error in "//__FILE__//" line:",__LINE__
-      write(*,*) "E is not unimodular to machine precision."
-      write(*,*) ""
-      return    
+      ! print error in debug mode
+      if (DEBUG) then
+        call UARERR(__FILE__,__LINE__,"E is not unimodular to machine precision",INFO,INFO)
+      end if   
+      return   
     end if
   end do
   
@@ -102,10 +110,12 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
   if (JOB.EQ.'V') then
     call DARACH2(N,N,Z,INFO)
     if (INFO.NE.0) then
-      write(*,*) "Error in "//__FILE__//" line:",__LINE__
-      write(*,*) "Z is invalid."
-      write(*,*) ""
-      return
+      ! print error in debug mode
+      if (DEBUG) then
+        call UARERR(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
+      end if
+      INFO = -4   
+      return 
     end if
   end if 
   

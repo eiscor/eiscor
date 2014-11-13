@@ -16,7 +16,7 @@ FC := ifort
 FFLAGS := -std90 -heap-arrays
 
 # libs required by compiler
-LIBS := -lifport
+LIBS := /opt/icc/composer_xe_2011_sp1.10.319/compiler/lib/intel64/libifport.so #-lifport
 
 
 
