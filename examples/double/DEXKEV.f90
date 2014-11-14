@@ -11,7 +11,7 @@
 ! a corresponding unitary eigenvalue problem two different 
 ! ways.
 !
-! 1) Form upper hessenberg permutation matrix and compute its 
+! 1) Form upper Hessenberg permutation matrix and compute its 
 !    eigenvalues using DOHFQR
 !
 ! 2) Construct the factorization directly and compute its 
@@ -110,7 +110,7 @@ program DEXKEV
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! initialize H to be an upper hessenberg permutation matrix
+  ! initialize H to be an upper Hessenberg permutation matrix
   H = 0d0
   do ii=1,N
      H(ii,ii)=1d0
