@@ -5,7 +5,7 @@ Jared L. Aurentz, November 2014
 __eiscor__ is a collection of Fortran 90 subroutines for accurately and efficiently solving structured matrix eigenvalue problems using unitary core transformations. These algorithms are the result of an ongoing series of papers written by Jared L. Aurentz, Thomas Mach, Raf Vandebril and David S. Watkins. (See the [__README.md__](https://github.com/jaurentz/eiscor/blob/master/README.md) for a list of related publications.) 
 
 ### Current features ###
-__eiscor-0.1.0__ has the following features:
+__eiscor-v0.1.0__ has the following features:
  - double precision eigensolvers for real orthogonal upper-Hessenberg matrices
  - complex double precision eigensolvers for unitary upper-Hessenberg matrices
 
