@@ -4,6 +4,10 @@ Jared L. Aurentz, November 2014
 ## Introduction ##
 __eiscor__ is a collection of Fortran 90 subroutines for accurately and efficiently solving structured matrix eigenvalue problems using unitary core transformations. These algorithms are the product of an ongoing series of papers written by Jared L. Aurentz, Thomas Mach, Raf Vandebril and David S. Watkins. (See the [__README.md__](https://github.com/jaurentz/eiscor/blob/master/README.md) for a list of related publications.) Many of these methods are motivated by polynomial root finding using companion matrices. It is important to note that __eiscor__ is not explictly about polynomial root finding but about supplying users with basic subroutines for more general classes of problems. There is no doubt that users of this package will be interested in root finding and we caution them to see __eiscor__ as only a first step for solving these problems and not as an all-encompassing solution.
 
+### Roadmap ###
+__v0.1 eigensolver for unitary and orthogonal matrices__
+v0.2 eigensolver for unitary plus rank 1 matrices and routines for polynomial rootfinding
+
 ### Note about this guide ###
 This guide as well as all the documents in this library are formatted using the language [__Markdown__](http://daringfireball.net/projects/markdown/). __Markdown__ is a language that uses simple formatting commands to convert basic text to __HTML__. We suggest that the user view these documents using a __Markdown__ compatible document viewer for the best experience.
 
