@@ -5,7 +5,7 @@ Jared L. Aurentz, November 2014
 __eiscor__ is a collection of Fortran 90 subroutines for accurately and efficiently solving structured matrix eigenvalue problems using unitary core transformations. These algorithms are the result of an ongoing series of papers written by Jared L. Aurentz, Thomas Mach, Raf Vandebril and David S. Watkins. (See the [__README.md__](https://github.com/jaurentz/eiscor/blob/master/README.md) for a list of related publications.) 
 
 ### Current features ###
-__eiscor-0.1.0__ has the following features:
+__eiscor-v0.1.0__ has the following features:
  - double precision eigensolvers for real orthogonal upper-Hessenberg matrices
  - complex double precision eigensolvers for unitary upper-Hessenberg matrices
 
@@ -13,7 +13,7 @@ __eiscor-0.1.0__ has the following features:
 This guide as well as all the documents in this library are formatted using the language [__Markdown__](http://daringfireball.net/projects/markdown/). __Markdown__ is a language that uses simple formatting commands to convert basic text to __HTML__. We suggest that the user view these documents using a __Markdown__ compatible document viewer for the best experience.
 
 ## Expert routines ##
-Every subroutine in __eiscor__ contains a comment block that describes what the subroutine does and the basic interface. Most users will only need to interact with a handful of subroutines which we refer to as _Expert_. For more detailed descriptions of these _Expert_ routines please see [__EXPERT__](https://github.com/jaurentz/eiscor/blob/master/src/docs/EXPERT.md) for links to guides written in __Markdown__.  
+Every subroutine in __eiscor__ contains a comment block that describes what the subroutine does and the basic interface. Most users will only need to interact with a handful of subroutines which we refer to as _Expert_. For more detailed descriptions of these _Expert_ routines please see [__EXPERT.md__](https://github.com/jaurentz/eiscor/blob/master/src/docs/EXPERT.md) for links to guides written in __Markdown__.  
 
 ## Installation ##
 __eiscor__ is entirely self contained which makes installation incredibly simple.
