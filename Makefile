@@ -38,10 +38,8 @@ ZTESTS := $(patsubst $(ZTESTDIR)/%.f90,$(ZTESTDIR)/%,$(wildcard $(ZTESTDIR)/*.f9
 all: lib$(LIBNAME).so.$(VERSION)
 
 examples: $(DEXS) $(ZEXS)
-	$(DEXS) && $(ZEXS)
 	
 tests: $(DTESTS) $(ZTESTS)
-	$(DTESTS) && $(ZTESTS)
 
 lib$(LIBNAME).so.$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).so.$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
@@ -67,22 +65,22 @@ $(ZOBJS): $(ZSRCS)
 $(ZSRCS):
 
 $(DEXS): $(DEXSRCS) install
-	make -C $(DEXDIR)
+	make -C $(DEXDIR) && ./$@
 	
 $(DEXSRCS):
 
 $(ZEXS): $(ZEXSRCS) install
-	make -C $(ZEXDIR)
+	make -C $(ZEXDIR) && ./$@
 	
 $(ZEXSRCS):
 
 $(DTESTS): $(DTESTSRCS) install
-	make -C $(DTESTDIR)
+	make -C $(DTESTDIR) && ./$@
 	
 $(DTESTSRCS):
 
 $(ZTESTS): $(ZTESTSRCS) install
-	make -C $(ZTESTDIR)
+	make -C $(ZTESTDIR) && ./$@
 	
 $(ZTESTSRCS):
 
