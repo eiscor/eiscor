@@ -48,7 +48,7 @@ To build the examples on a Linux machine type:
 ```
 make examples
 ```
-This will automatically build and run all the examples. (_Note: This requires the same_ __make.inc__ _file that was used to build the library._)
+This will automatically build and run all the examples. (_Note: This requires the same_ __make.inc__ _file that was used to build the library._) For more detailed descriptions of the examples please see [__EXAMPLES.md__](https://github.com/jaurentz/eiscor/blob/master/examples/docs/EXAMPLES.md) for links to guides written in __Markdown__. 
 
 ## Removing eiscor ##
 If the source directory has not been removed simply move into the __eiscor__ root directory and type:
