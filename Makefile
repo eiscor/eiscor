@@ -65,22 +65,22 @@ $(ZOBJS): $(ZSRCS)
 $(ZSRCS):
 
 $(DEXS): $(DEXSRCS) install
-	make -C $(DEXDIR) && ./$@
+	make -C $(DEXDIR)
 	
 $(DEXSRCS):
 
 $(ZEXS): $(ZEXSRCS) install
-	make -C $(ZEXDIR) && ./$@
+	make -C $(ZEXDIR)
 	
 $(ZEXSRCS):
 
 $(DTESTS): $(DTESTSRCS) install
-	make -C $(DTESTDIR) && ./$@
+	make -C $(DTESTDIR)
 	
 $(DTESTSRCS):
 
 $(ZTESTS): $(ZTESTSRCS) install
-	make -C $(ZTESTDIR) && ./$@
+	make -C $(ZTESTDIR)
 	
 $(ZTESTSRCS):
 
