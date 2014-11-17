@@ -114,11 +114,7 @@ subroutine ZMBFRF(N,COEFFS,ROOTS,WORK,ITS,INFO)
     if (abs(COEFFS(N+2-ii)).NE.0d0) then
       exit
     end if
-<<<<<<< HEAD
     ROOTS(N+1-ii) = cmplx(0d0,0d0,kind=8)
-=======
-    ROOTS(N+1-ii) = complex(0d0,0d0)
->>>>>>> added files for complex unitary plus rank one from svn repo
     ntmp = ntmp-1
   end do
 
@@ -205,11 +201,7 @@ print*,"time to extract (sec):",t_stp-t_str
     
     ! update ROOTS
     do ii=1,ntmp
-<<<<<<< HEAD
       ROOTS(ii) = cmplx(WORK(2*(ii-1)+1,2),WORK(2*(ii-1)+2,2),kind=8)
-=======
-      ROOTS(ii) = complex(WORK(2*(ii-1)+1,2),WORK(2*(ii-1)+2,2))
->>>>>>> added files for complex unitary plus rank one from svn repo
     end do
     
     ! adjust for balancing

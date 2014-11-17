@@ -37,11 +37,7 @@
 !
 ! OUTPUT VARIABLES:
 !
-<<<<<<< HEAD
 !  H              complex(8) array of dimension (2,2)
-=======
-!  H              COMPLEX(8) array of dimension (2,2)
->>>>>>> added files for complex unitary plus rank one from svn repo
 !                   on exit contains the desired 2x2 block
 !
 !  INFO           INTEGER
@@ -111,7 +107,6 @@ subroutine ZPFTDB(N,K,Q,D,C,B,H,INFO)
   end if
   
   ! initialize 
-<<<<<<< HEAD
   R = cmplx(0d0,0d0,kind=8)
 
   ! first column of R
@@ -136,37 +131,10 @@ subroutine ZPFTDB(N,K,Q,D,C,B,H,INFO)
       cmplx(C(ind-5),C(ind-4),kind=8)/cmplx(C(ind),0d0,kind=8)* &
       (cmplx(C(ind-2),-C(ind-1),kind=8)*cmplx(B(ind-2),-B(ind-1),kind=8)*cmplx(B(ind+1),B(ind+2),kind=8) - &
       cmplx(C(ind+1),-C(ind+2),kind=8)*R(3,2)))/cmplx(C(ind-3),0d0,kind=8)
-=======
-  R = complex(0d0,0d0)
-	
-  ! first column of R
-  ind = 3*(K-1)
-  R(2,1) = complex(-B(ind+3)/C(ind+3),0d0)
-	
-	! if not at top	
-  if (K > 1) then
-	  R(1,1) = (complex(-B(ind-2),B(ind-1))*complex(B(ind+1),B(ind+2)) &
-			+ R(2,1)*complex(C(ind-2),C(ind-1))*complex(C(ind+1),-C(ind+2)))/complex(C(ind),0d0)
-  end if
-			
-  ! second column of R
-  ind = 3*K
-  R(3,2) = complex(-B(ind+3)/C(ind+3),0d0)
-  R(2,2) = (complex(-B(ind-2),B(ind-1))*complex(B(ind+1),B(ind+2)) &
-			+ R(3,2)*complex(C(ind-2),C(ind-1))*complex(C(ind+1),-C(ind+2)))/complex(C(ind),0d0)
-	
-	! if not at top
-	if (K > 1) then		
-		R(1,2) = (complex(B(ind-5),-B(ind-4))*complex(B(ind),0d0)*complex(B(ind+1),B(ind+2)) - &
-			complex(C(ind-5),C(ind-4))/complex(C(ind),0d0)* &
-			(complex(C(ind-2),-C(ind-1))*complex(B(ind-2),-B(ind-1))*complex(B(ind+1),B(ind+2)) - &
-			complex(C(ind+1),-C(ind+2))*R(3,2)))/complex(C(ind-3),0d0)
->>>>>>> added files for complex unitary plus rank one from svn repo
   end if
   
   ! apply diagonal
   ind = 2*(K-1)
-<<<<<<< HEAD
   R(2,:) = cmplx(D(ind+1),D(ind+2),kind=8)*R(2,:)
   R(3,:) = cmplx(D(ind+3),D(ind+4),kind=8)*R(3,:)
   
@@ -184,30 +152,10 @@ subroutine ZPFTDB(N,K,Q,D,C,B,H,INFO)
   H(1,2) = cmplx(-Q(ind+3),0d0,kind=8)
   H(2,2) = cmplx(Q(ind+1),-Q(ind+2),kind=8)
   
-=======
-  R(2,:) = complex(D(ind+1),D(ind+2))*R(2,:)
-  R(3,:) = complex(D(ind+3),D(ind+4))*R(3,:)
-  
-  ! if not at top
-  if (K > 1) then
-    R(1,:) = complex(D(ind-1),D(ind))*R(1,:)
-  end if
-
-  ! apply Q
-  ind = 3*(K-1)	
-  R(3,2) = complex(Q(ind+4),Q(ind+5))*R(3,2)
-
-  H(1,1) = complex(Q(ind+1),Q(ind+2))
-  H(2,1) = complex(Q(ind+3),0d0)
-  H(1,2) = complex(-Q(ind+3),0d0)
-  H(2,2) = complex(Q(ind+1),-Q(ind+2))
-	
->>>>>>> added files for complex unitary plus rank one from svn repo
   R(2:3,1:2) = matmul(H,R(2:3,1:2))
 
   ! if not at top
   if (K > 1) then
-<<<<<<< HEAD
     H(1,1) = cmplx(Q(ind-2),Q(ind-1),kind=8)
     H(2,1) = cmplx(Q(ind),0d0,kind=8)
     H(1,2) = cmplx(-Q(ind),0d0,kind=8)
@@ -218,17 +166,5 @@ subroutine ZPFTDB(N,K,Q,D,C,B,H,INFO)
   
   ! set output
   H = R(2:3,1:2)
-=======
-    H(1,1) = complex(Q(ind-2),Q(ind-1))
-		H(2,1) = complex(Q(ind),0d0)
-		H(1,2) = complex(-Q(ind),0d0)
-		H(2,2) = complex(Q(ind-2),-Q(ind-1))
-			
-		R(1:2,1:2) = matmul(H,R(1:2,1:2))
-	end if
-	
-	! set output
-	H = R(2:3,1:2)
->>>>>>> added files for complex unitary plus rank one from svn repo
 
 end subroutine ZPFTDB
