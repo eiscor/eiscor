@@ -59,6 +59,7 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
   real(8), intent(inout) :: Q(3*N), D(2*(N+1)), C(3*N), B(3*N)
   complex(8), intent(inout) :: Z(N,N)
   integer, intent(inout) :: INFO
+<<<<<<< HEAD
   
   ! compute variables
   integer :: ii, ind
@@ -69,6 +70,18 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
   INFO = 0
   
   ! check COMPZ
+=======
+	
+	! compute variables
+	integer :: ii, ind
+	real(8) :: nrm
+	complex(8) :: t1, t2, phase
+	
+	! initialize INFO
+	INFO = 0
+	
+	! check COMPZ
+>>>>>>> added files for complex unitary plus rank one from svn repo
   if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
     INFO = -1
     write(*,*) "Error in "//__FILE__//" line:",__LINE__
@@ -76,7 +89,11 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
     write(*,*) ""
     return
   end if
+<<<<<<< HEAD
   
+=======
+	
+>>>>>>> added files for complex unitary plus rank one from svn repo
   ! check N
   call IARNAN(N,INFO)
   if (INFO.NE.0) then
@@ -101,8 +118,13 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
     write(*,*) ""
     return
   end if
+<<<<<<< HEAD
   
   ! check COEFFS
+=======
+	
+	! check COEFFS
+>>>>>>> added files for complex unitary plus rank one from svn repo
   call ZARACH1(N,COEFFS,INFO)
   if (INFO.NE.0) then
     INFO = -3
@@ -129,6 +151,7 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
       write(*,*) ""
       return
     end if
+<<<<<<< HEAD
   end if      
   
   ! compute the phase of COEFFS(N)
@@ -141,6 +164,20 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
     Z = cmplx(0d0,0d0,kind=8)
     do ii=1,N
       Z(ii,ii) = cmplx(1d0,0d0,kind=8)
+=======
+  end if    	
+	
+	! compute the phase of COEFFS(N)
+	phase = COEFFS(N)
+	nrm = abs(phase)
+	phase = phase/nrm
+
+  ! initialize Z
+  if (COMPZ.EQ.'I') then
+    Z = complex(0d0,0d0)
+    do ii=1,N
+      Z(ii,ii) = complex(1d0,0d0)
+>>>>>>> added files for complex unitary plus rank one from svn repo
     end do
   end if
   
@@ -148,6 +185,7 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
   if (COMPZ.NE.'N') then
     Z(:,N) = conjg(phase)*Z(:,N)
   end if
+<<<<<<< HEAD
   
   ! set Q
   do ii=1,(N-1)
@@ -191,5 +229,50 @@ subroutine ZMBCQR(COMPZ,N,COEFFS,Q,D,C,B,Z,INFO)
     B(ind+2) = -C(ind+2)
     B(ind+3) = -C(ind+3)
   end do
+=======
+	
+	! set Q
+	do ii=1,(N-1)
+	  ind = 3*(ii-1)
+		Q(ind+1) = 0d0
+		Q(ind+2) = 0d0
+		Q(ind+3) = 1d0
+	end do
+	ind = 3*(N-1)
+  Q(ind+1) = 1d0
+	Q(ind+2) = 0d0
+	Q(ind+3) = 0d0
+	
+	! set D
+	do ii=1,N+1
+	  ind = 2*(ii-1)
+		D(ind+1) = 1d0
+		D(ind+2) = 0d0
+	end do
+	ind = 2*(N-2)
+	D(ind+1) = dble(phase)
+	D(ind+2) = dimag(phase)
+	
+	! initialize B and C
+	t1 = complex(nrm*(-1d0)**(N),0d0)
+	t2 = complex((-1d0)**(N-1),0d0)
+	ind = 3*(N-1)
+	call DARCG22(nrm*(-1d0)**(N),(-1d0)**(N-1),C(ind+1),C(ind+3),nrm,INFO)
+	C(ind+2) = 0d0
+	B(ind+1) = C(ind+3)*(-1d0)**(N)
+	B(ind+2) = 0d0
+	B(ind+3) = C(ind+1)*(-1d0)**(N)
+	
+	do ii=2,N
+	  ind = 3*(N-ii+1)
+		t2 = complex(C(ind+1),-C(ind+2))*t1 + complex(C(ind+3),0d0)*t2
+		t1 = -COEFFS(ii-1)*conjg(phase)
+		ind = 3*(N-ii)
+		call ZARCG43(dble(t1),dimag(t1),dble(t2),dimag(t2),C(ind+1),C(ind+2),C(ind+3),nrm,INFO)
+	  B(ind+1) = C(ind+1)
+	  B(ind+2) = -C(ind+2)
+	  B(ind+3) = -C(ind+3)
+	end do
+>>>>>>> added files for complex unitary plus rank one from svn repo
 
 end subroutine ZMBCQR

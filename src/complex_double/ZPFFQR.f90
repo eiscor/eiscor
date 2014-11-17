@@ -112,9 +112,15 @@ subroutine ZPFFQR(COMPZ,N,Q,D,C,B,Z,ITS,INFO)
   ITS = 0
   
   if (COMPZ.EQ.'I') then
+<<<<<<< HEAD
     Z = cmplx(0d0,0d0,kind=8)
     do ii=1,n
       Z(ii,ii) = cmplx(1d0,0d0,kind=8)
+=======
+    Z = complex(0d0,0d0)
+    do ii=1,n
+      Z(ii,ii) = complex(1d0,0d0)
+>>>>>>> added files for complex unitary plus rank one from svn repo
     end do
   end if
   
