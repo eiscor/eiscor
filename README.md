@@ -12,7 +12,7 @@ To get started with __eiscor__ please checkout the [guide](https://github.com/ja
 
 ## Related articles ##
 This software is based on the following articles:
-- Jared L. Aurentz, Thomas Mach, Raf Vandebril, and David S. Watkins. _Fast and stable unitary QR algorithm._ (In Progress)
+- Jared L. Aurentz, Thomas Mach, Raf Vandebril, and David S. Watkins. _Fast and stable unitary QR algorithm._ (Submitted)
 - Jared L. Aurentz, Thomas Mach, Raf Vandebril, and David S. Watkins. [_Fast and backward stable computation of roots of polynomials._](http://www.cs.kuleuven.be/publicaties/rapporten/tw/TW654.abs.html) (Submitted)
 - Thomas Mach and Raf Vandebril. [_On deﬂations in extended QR Algorithms._](http://epubs.siam.org/doi/abs/10.1137/130935665) SIAM Journal on Matrix Analysis and Applications. Vol. 35, No. 2, pp. 559–579. SIAM. 2014. 
 - Raf Vandebril and David S. Watkins. [_An extension of the QZ algorithm beyond the Hessenberg-upper triangular pencil._](http://etna.mcs.kent.edu/volumes/2011-2020/vol40/abstract.php?vol=40&pages=17-35) Electronic Transactions on Numerical Analysis. Vol. 40, pp. 17-35. 2013.
