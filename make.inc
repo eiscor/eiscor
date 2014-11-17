@@ -13,11 +13,13 @@ VERSION := $(MAJOR).$(MINOR).$(PATCH)
 INSTALLDIR := $(HOME)
 
 # fortran compiler and flags
-FC := gfortran
-FFLAGS := -O3 -std=f95
+FC := /opt/icc/bin/ifort 
+FFLAGS := -std90 -heap-arrays
 
 # libs required by compiler
-LIBS := 
+LIBS := -lifport
+
+
 
 
 
