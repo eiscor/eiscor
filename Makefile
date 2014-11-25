@@ -1,5 +1,16 @@
 include make.inc
 
+ifeq ($(OS), Windows_NT)
+	SLIB = dll
+else
+	UNAME := $(shell uname)
+	ifeq ($(UNAME), Darwin)
+		SLIB = dylib
+	else
+		SLIB = so
+	endif
+endif
+
 UTILDIR := ./src/utilities
 ISRCDIR := ./src/integer
 DSRCDIR := ./src/double
@@ -35,58 +46,58 @@ DTESTS := $(patsubst $(DTESTDIR)/%.f90,$(DTESTDIR)/%,$(wildcard $(DTESTDIR)/*.f9
 ZTESTSRCS := $(wildcard $(ZTESTDIR)/*.f90)
 ZTESTS := $(patsubst $(ZTESTDIR)/%.f90,$(ZTESTDIR)/%,$(wildcard $(ZTESTDIR)/*.f90))
 
-all: lib$(LIBNAME).so.$(VERSION)
+all: lib$(LIBNAME).$(SLIB).$(VERSION)
 
 examples: $(DEXS) $(ZEXS)
-	
+
 tests: $(DTESTS) $(ZTESTS)
 
-lib$(LIBNAME).so.$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
-	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).so.$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
-	
+lib$(LIBNAME).$(SLIB).$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
+	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
+
 $(UOBJS): $(USRCS)
 	make -C $(UTILDIR)
-	
+
 $(USRCS):
 
 $(IOBJS): $(ISRCS)
 	make -C $(ISRCDIR)
-	
+
 $(ISRCS):
 
 $(DOBJS): $(DSRCS)
 	make -C $(DSRCDIR)
-	
+
 $(DSRCS):
 
 $(ZOBJS): $(ZSRCS)
 	make -C $(ZSRCDIR)
-	
+
 $(ZSRCS):
 
 $(DEXS): $(DEXSRCS) install
 	make -C $(DEXDIR)
-	
+
 $(DEXSRCS):
 
 $(ZEXS): $(ZEXSRCS) install
 	make -C $(ZEXDIR)
-	
+
 $(ZEXSRCS):
 
 $(DTESTS): $(DTESTSRCS) install
 	make -C $(DTESTDIR)
-	
+
 $(DTESTSRCS):
 
 $(ZTESTS): $(ZTESTSRCS) install
 	make -C $(ZTESTDIR)
-	
+
 $(ZTESTSRCS):
 
-install: lib$(LIBNAME).so.$(VERSION)
+install: lib$(LIBNAME).$(SLIB).$(VERSION)
 	mkdir -p $(INSTALLDIR)/$(LIBNAME)/lib &&\
-	cp ./lib$(LIBNAME).so.$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib 
+	cp ./lib$(LIBNAME).$(SLIB).$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib
 
 uninstall: clean
 	rm -rf $(INSTALLDIR)/$(LIBNAME)
@@ -101,5 +112,5 @@ clean:
 	make clean -C $(DTESTDIR) &&\
 	make clean -C $(ZTESTDIR) &&\
 	rm -f lib$(LIBNAME).so.$(VERSION)
-	
-	
+
+
