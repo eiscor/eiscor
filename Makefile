@@ -48,56 +48,42 @@ ZTESTS := $(patsubst $(ZTESTDIR)/%.f90,$(ZTESTDIR)/%,$(wildcard $(ZTESTDIR)/*.f9
 
 all: lib$(LIBNAME).$(SLIB).$(VERSION)
 
-examples: $(DEXS) $(ZEXS)
-
-tests: $(DTESTS) $(ZTESTS)
-
-lib$(LIBNAME).$(SLIB).$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
-	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
-
-$(UOBJS): $(USRCS)
-	make -C $(UTILDIR)
-
-$(USRCS):
-
-$(IOBJS): $(ISRCS)
-	make -C $(ISRCDIR)
-
-$(ISRCS):
-
-$(DOBJS): $(DSRCS)
-	make -C $(DSRCDIR)
-
-$(DSRCS):
-
-$(ZOBJS): $(ZSRCS)
-	make -C $(ZSRCDIR)
-
-$(ZSRCS):
-
-$(DEXS): $(DEXSRCS) install
-	make -C $(DEXDIR)
-
-$(DEXSRCS):
-
-$(ZEXS): $(ZEXSRCS) install
-	make -C $(ZEXDIR)
-
-$(ZEXSRCS):
-
-$(DTESTS): $(DTESTSRCS) install
-	make -C $(DTESTDIR)
-
-$(DTESTSRCS):
-
-$(ZTESTS): $(ZTESTSRCS) install
-	make -C $(ZTESTDIR)
-
-$(ZTESTSRCS):
-
 install: lib$(LIBNAME).$(SLIB).$(VERSION)
 	mkdir -p $(INSTALLDIR)/$(LIBNAME)/lib &&\
 	cp ./lib$(LIBNAME).$(SLIB).$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib
+
+examples: $(DEXS) $(ZEXS)
+	$(foreach ex,$(DEXS),$(ex) &&) \
+	$(foreach ex,$(ZEXS),$(ex) &&) \
+	echo 'End of examples!'
+
+tests: $(DTESTS) $(ZTESTS)
+	$(foreach test,$(DTESTS),$(test) &&) \
+	$(foreach test,$(ZTESTS),$(test) &&) \
+	echo 'End of tests!'
+
+lib$(LIBNAME).$(SLIB).$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
+	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS) 
+
+$(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS): $(USRCS) $(ISRCS) $(DSRCS) $(ZSRCS)
+	make -C $(UTILDIR) &&\
+	make -C $(ISRCDIR) &&\
+	make -C $(DSRCDIR) &&\
+	make -C $(ZSRCDIR)
+
+$(USRCS) $(ISRCS) $(DSRCS) $(ZSRCS):
+
+$(DEXS) $(ZEXS): $(DEXSRCS) $(ZEXSRCS) lib$(LIBNAME).$(SLIB).$(VERSION)
+	make -C $(DEXDIR) &&\
+	make -C $(ZEXDIR)
+
+$(DEXSRCS) $(ZEXSRCS):
+
+$(DTESTS) $(ZTESTS): $(DTESTSRCS) $(ZTESTSRCS) lib$(LIBNAME).$(SLIB).$(VERSION)
+	make -C $(DTESTDIR) &&\
+	make -C $(ZTESTDIR)
+	
+$(DTESTSRCS) $(ZTESTSRCS):
 
 uninstall: clean
 	rm -rf $(INSTALLDIR)/$(LIBNAME)

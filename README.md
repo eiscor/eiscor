@@ -8,7 +8,7 @@ This package is a collection of Fortran 90 subroutines for accurately and effici
 - [David S. Watkins](http://www.math.wsu.edu/faculty/watkins/), Washington State University, United States
 
 ## The eiscor guide ##
-To get started with __eiscor__ please checkout the [guide](https://github.com/jaurentz/eiscor/blob/master/GUIDE.md).
+To get started with __eiscor__ please checkout the [guide](https://github.com/jaurentz/eiscor/blob/master/docs/GUIDE.md).
 
 ## Related articles ##
 This software is based on the following articles:
