@@ -33,9 +33,9 @@ program ZEXRUC
   call UARIRS()
   
   ! fill COEFFS
-  COEFFS = complex(0d0,0d0)
-  COEFFS(1) = complex(1d0,0d0)
-  COEFFS(N+1) = complex(-1d0,0d0)
+  COEFFS = cmplx(0d0,0d0,kind=8)
+  COEFFS(1) = cmplx(1d0,0d0,kind=8)
+  COEFFS(N+1) = cmplx(-1d0,0d0,kind=8)
   
   ! start timer
   call cpu_time(t_str)
@@ -48,7 +48,6 @@ program ZEXRUC
     write(*,*) "ZMBFRF failed."
     write(*,*) "INFO:",INFO
     write(*,*) ""
-    return
   end if
   
   ! stop timer

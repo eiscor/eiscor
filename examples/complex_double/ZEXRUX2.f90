@@ -119,7 +119,6 @@ program ZEXRUX2
     write(*,*) "ZPFFQR failed."
     write(*,*) "INFO:",INFO
     write(*,*) ""
-    return
   end if
   
   ! stop timer
@@ -172,7 +171,6 @@ program ZEXRUX2
     write(*,*) "ZPFFET failed."
     write(*,*) "INFO:",INFO
     write(*,*) ""
-    return
   end if
   
   ! print T

@@ -33,13 +33,13 @@ program ZEXRUC
   call UARIRS()
   
   ! fill COEFFS
-  COEFFS = complex(0d0,0d0)
-  COEFFS(N) = complex(-1d0,0d0)
+  COEFFS = cmplx(0d0,0d0,kind=8)
+  COEFFS(N) = cmplx(-1d0,0d0,kind=8)
   
   ! build companion matrix
-  H = complex(0d0,0d0)
+  H = cmplx(0d0,0d0,kind=8)
   do ii=1,(N-1)
-    H(ii+1,ii) = complex(1d0,0d0)
+    H(ii+1,ii) = cmplx(1d0,0d0,kind=8)
   end do
   do ii=1,N
     H(ii,N) = -COEFFS(N+1-ii)
@@ -53,7 +53,6 @@ program ZEXRUC
     write(*,*) "ZMBCQR failed."
     write(*,*) "INFO:",INFO
     write(*,*) ""
-    return
   end if
   
   ! print Q
@@ -118,7 +117,6 @@ program ZEXRUC
     write(*,*) "ZPFFQR failed."
     write(*,*) "INFO:",INFO
     write(*,*) ""
-    return
   end if
   
   ! stop timer
@@ -164,7 +162,6 @@ program ZEXRUC
     write(*,*) "ZPFFET failed."
     write(*,*) "INFO:",INFO
     write(*,*) ""
-    return
   end if
   
   ! compute residual
