@@ -23,8 +23,7 @@ program testDOHFQR
   real(8) :: tol
   
   ! print banner
-  print*,""
-  print*,"Test for DOHFQR:"
+  write(*,'(a)',advance='no') "Test for DOHFQR ... "
   
   ! loop through powers of 2
   do jj=1,MPOW
@@ -64,6 +63,6 @@ program testDOHFQR
   end do
   
   ! print success
-  print*,'PASSED'
+  write(*,'(a)') 'PASSED'
      
 end program testDOHFQR

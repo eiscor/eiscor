@@ -24,8 +24,7 @@ program testZUHFQR
   real(8) :: tol
   
   ! print banner
-  print*,""
-  print*,"Test for ZUHFQR:"
+  write(*,'(a)',advance='no') "Test for ZUHFQR ... "
   
   ! loop through powers of 2
   do jj=1,MPOW
@@ -65,6 +64,6 @@ program testZUHFQR
   end do
   
   ! print success
-  print*,'PASSED'
+  write(*,'(a)') 'PASSED'
      
 end program testZUHFQR
