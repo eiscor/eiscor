@@ -49,7 +49,7 @@ subroutine ZARNAR(A,B,ARG,INFO)
       call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
       return
     end if
-    call DARINF(A,INFO)
+    call d_scalar_infcheck(A,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
       return
@@ -61,7 +61,7 @@ subroutine ZARNAR(A,B,ARG,INFO)
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
       return
     end if
-    call DARINF(B,INFO)
+    call d_scalar_infcheck(B,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
       return

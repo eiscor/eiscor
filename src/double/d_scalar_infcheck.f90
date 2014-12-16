@@ -1,6 +1,6 @@
 #include "eiscor.h"
 !
-! DARINF (Double Auxiliary Routine INF check)
+! d_scalar_infcheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -19,7 +19,7 @@
 !                    INFO equal to 1 implies NUM is an INF.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARINF(NUM,INFO)
+subroutine d_scalar_infcheck(NUM,INFO)
 
   implicit none
   
@@ -39,4 +39,4 @@ subroutine DARINF(NUM,INFO)
     INFO = 1
   end if
 
-end subroutine DARINF
+end subroutine d_scalar_infcheck

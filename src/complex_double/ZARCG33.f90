@@ -68,7 +68,7 @@ subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
       call u_infocode_check(__FILE__,__LINE__,"AR is invalid",INFO,-1)
       return
     end if
-    call DARINF(AR,INFO)
+    call d_scalar_infcheck(AR,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"AR is invalid",INFO,-1)
       return
@@ -80,7 +80,7 @@ subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
       call u_infocode_check(__FILE__,__LINE__,"AI is invalid",INFO,-2)
       return
     end if
-    call DARINF(AI,INFO)
+    call d_scalar_infcheck(AI,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"AI is invalid",INFO,-2)
       return
@@ -92,7 +92,7 @@ subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return
     end if
-    call DARINF(B,INFO)
+    call d_scalar_infcheck(B,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return
