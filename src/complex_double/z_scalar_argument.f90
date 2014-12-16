@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARNAR (Zomplex Auxiliary Routine Normalized ARgument)
+! z_scalar_argument
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -27,7 +27,7 @@
 !                    INFO = -2 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARNAR(A,B,ARG,INFO)
+subroutine z_scalar_argument(A,B,ARG,INFO)
 
   ! input variables
   real(8), intent(in) :: A, B
@@ -102,4 +102,4 @@ subroutine ZARNAR(A,B,ARG,INFO)
     ARG = 2d0*PI-ARG
   end if
       
-end subroutine ZARNAR
+end subroutine z_scalar_argument

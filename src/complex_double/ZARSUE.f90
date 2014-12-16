@@ -120,11 +120,11 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     ind = ii
     
     ! compute theta1
-    call ZARNAR(E(2*ind-1),E(2*ind),theta1,INFO)
+    call z_scalar_argument(E(2*ind-1),E(2*ind),theta1,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZARNAR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_scalar_argument failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -133,11 +133,11 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     ! check rest of E
     do jj=(ii+1),N
       ! compute theta2
-      call ZARNAR(E(2*jj-1),E(2*jj),theta2,INFO)
+      call z_scalar_argument(E(2*jj-1),E(2*jj),theta2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"ZARNAR failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"z_scalar_argument failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
