@@ -130,11 +130,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
         
     ! compute eigenvalues and eigenvectors
-    call DTTEEV(block,eigs,h,INFO)
+    call d_2x2array_eig(block,eigs,h,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DTTEEV failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_2x2array_eig failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

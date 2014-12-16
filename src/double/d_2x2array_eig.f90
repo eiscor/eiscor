@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DTTEEV (Double Two by Two Eigenvalues and EigenVectors)
+! d_2x2array_eig 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -29,7 +29,7 @@
 !                    INFO = -1 implies H is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DTTEEV(H,E,Z,INFO)
+subroutine d_2x2array_eig(H,E,Z,INFO)
   
   implicit none
   
@@ -147,4 +147,4 @@ subroutine DTTEEV(H,E,Z,INFO)
   Z(1,2) = -conjg(Z(2,1))
   Z(2,2) = conjg(Z(1,1))
   
-end subroutine DTTEEV
+end subroutine d_2x2array_eig
