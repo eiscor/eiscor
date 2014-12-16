@@ -51,7 +51,7 @@ subroutine DTTEEV(H,E,Z,INFO)
   if (DEBUG) then
   
     ! check H
-    call DARACH2(2,2,H,INFO)
+    call d_2Darray_check(2,2,H,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-1)
     if (INFO.NE.0) then
       return

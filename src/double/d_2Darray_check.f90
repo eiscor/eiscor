@@ -1,6 +1,6 @@
 #include "eiscor.h"
 !
-! DARACH2 (Double Auxiliary Routine Array CHeck 2)
+! d_2Darray_check
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -22,7 +22,7 @@
 !                    INFO equal to -1 implies A contains an INF or NAN.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARACH2(M,N,A,INFO)
+subroutine d_2Darray_check(M,N,A,INFO)
 
   implicit none
   
@@ -56,4 +56,4 @@ subroutine DARACH2(M,N,A,INFO)
     end do
   end do
 
-end subroutine DARACH2
+end subroutine d_2Darray_check

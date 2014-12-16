@@ -108,7 +108,7 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
   
   ! check Z
   if (JOB.EQ.'V') then
-    call DARACH2(N,N,Z,INFO)
+    call d_2Darray_check(N,N,Z,INFO)
     if (INFO.NE.0) then
       ! print error in debug mode
       if (DEBUG) then

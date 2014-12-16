@@ -79,7 +79,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
   end if
   
   ! check H
-  call DARACH2(N,N,H,INFO)
+  call d_2Darray_check(N,N,H,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
