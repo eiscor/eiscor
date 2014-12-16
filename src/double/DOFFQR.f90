@@ -133,11 +133,11 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     end if
         
     ! check for deflation
-    call DOFGRD(N,start_index,stop_index,zero_index,Q,D,it_count,ITS,INFO)
+    call d_orthfact_deflationcheck(N,start_index,stop_index,zero_index,Q,D,it_count,ITS,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFGRD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_deflationcheck failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

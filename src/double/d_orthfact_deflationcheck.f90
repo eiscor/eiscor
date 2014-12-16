@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOFGRD (Double Orthogonal hessenberg Factored Givens Rotation Deflation)
+! d_orthfact_deflationcheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -53,7 +53,7 @@
 !                    INFO = -7 implies ITCNT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
+subroutine d_orthfact_deflationcheck(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
 
   implicit none
   
@@ -153,4 +153,4 @@ subroutine DOFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
   
 
   
-end subroutine DOFGRD
+end subroutine d_orthfact_deflationcheck
