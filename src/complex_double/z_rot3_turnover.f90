@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARGTO (Double Auxiliary Routine Givens TurnOver)
+! z_rot3_turnover
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -25,7 +25,7 @@
 !                    INFO = -3 implies G3 is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARGTO(G1,G2,G3,INFO)
+subroutine z_rot3_turnover(G1,G2,G3,INFO)
 
   implicit none
 
@@ -146,4 +146,4 @@ subroutine ZARGTO(G1,G2,G3,INFO)
   G3(2) = c4i
   G3(3) = s4
   
-end subroutine ZARGTO
+end subroutine z_rot3_turnover

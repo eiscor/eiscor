@@ -92,7 +92,7 @@ program ZEXKEV
      b3(2) = -b1(2)
      b3(3) = -b1(3)
      ind = 3*(ii-1)
-     call ZARGTO(tb,b3,Q((ind+1):(ind+3)),INFO)
+     call z_rot3_turnover(tb,b3,Q((ind+1):(ind+3)),INFO)
      Q((ind+4):(ind+6)) = b3
      b3 = Q((ind+1):(ind+3))
      Q((ind+1):(ind+3)) = tb
@@ -102,10 +102,10 @@ program ZEXKEV
         ind = 3*(jj-1)
         ! through diag
         call z_rot3_swapdiag('R',D(2*jj+1:2*jj+4),b1,INFO)
-        call ZARGTO(Q((ind+4):(ind+6)),Q((ind+7):(ind+9)),b1,INFO)
+        call z_rot3_turnover(Q((ind+4):(ind+6)),Q((ind+7):(ind+9)),b1,INFO)
         call z_rot3_swapdiag('R',D(2*jj-1:2*jj+2),b2,INFO)
-        call ZARGTO(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
-        call ZARGTO(b3,b1,b2,INFO)
+        call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
+        call z_rot3_turnover(b3,b1,b2,INFO)
         ! update bulges
         tb = b2
         b2 = b3
@@ -116,7 +116,7 @@ program ZEXKEV
      ! fusion at bottom
      call ZUFFGR('B',N,ii,N-1,Q,D,b1,INFO)
      call z_rot3_swapdiag('R',D(2*n-5:2*n-2),b2,INFO)
-     call ZARGTO(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
+     call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
      call ZUFFGR('B',N,ii,N-1,Q,D,b3,INFO)
      call ZUFFGR('B',N,ii,N-1,Q,D,b2,INFO)
   end do

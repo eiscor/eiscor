@@ -250,11 +250,11 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ind2 = ind1+2
      
     ! through Q
-    call ZARGTO(Q(ind1:ind2),Q((ind1+3):(ind2+3)),bulge,INFO)
+    call z_rot3_turnover(Q(ind1:ind2),Q((ind1+3):(ind2+3)),bulge,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
