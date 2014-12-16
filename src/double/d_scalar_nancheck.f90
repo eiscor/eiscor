@@ -1,6 +1,6 @@
 #include "eiscor.h"
 !
-! DARNAN (Double Auxiliary Routine NAN check)
+! d_scalar_nancheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -19,7 +19,7 @@
 !                    INFO equal to 1 implies NUM is a NAN.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARNAN(NUM,INFO)
+subroutine d_scalar_nancheck(NUM,INFO)
 
   implicit none
   
@@ -35,4 +35,4 @@ subroutine DARNAN(NUM,INFO)
     INFO = 1
   end if
 
-end subroutine DARNAN
+end subroutine d_scalar_nancheck

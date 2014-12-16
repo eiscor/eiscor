@@ -41,7 +41,7 @@ subroutine d_1Darray_check(N,A,INFO)
   do ii = 1,N
   
     ! check for NAN
-    call DARNAN(A(ii),INFO)
+    call d_scalar_nancheck(A(ii),INFO)
     if (INFO.NE.0) then
       return
     end if

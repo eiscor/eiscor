@@ -63,7 +63,7 @@ subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
   if (DEBUG) then
   
     ! check AR
-    call DARNAN(AR,INFO)
+    call d_scalar_nancheck(AR,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"AR is invalid",INFO,-1)
       return
@@ -75,7 +75,7 @@ subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
     end if   
 
     ! check AI
-    call DARNAN(AI,INFO)
+    call d_scalar_nancheck(AI,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"AI is invalid",INFO,-2)
       return
@@ -87,7 +87,7 @@ subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
     end if  
 
     ! check B
-    call DARNAN(B,INFO)
+    call d_scalar_nancheck(B,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return
