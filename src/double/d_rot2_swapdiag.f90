@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DARGTD (Double Auxiliary Routine Givens Through Diagonal)
+! d_rot2_swapdiag
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -33,7 +33,7 @@
 !                    INFO = -3 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARGTD(JOB,D,B,INFO)
+subroutine d_rot2_swapdiag(JOB,D,B,INFO)
 
   implicit none
   
@@ -95,4 +95,4 @@ subroutine DARGTD(JOB,D,B,INFO)
      
   end if
   
-end subroutine DARGTD
+end subroutine d_rot2_swapdiag

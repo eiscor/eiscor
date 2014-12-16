@@ -185,11 +185,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if 
     
     ! first bulge through D
-    call DARGTD('R',D((ind+1):(ind+4)),b1,INFO)
+    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b1,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -251,11 +251,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if 
         
       ! first bulge through D
-      call DARGTD('R',D((ind+3):(ind+6)),b1,INFO)
+      call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -282,11 +282,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if 
         
       ! second bulge through D
-      call DARGTD('R',D((ind+1):(ind+4)),b2,INFO)
+      call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -318,11 +318,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if 
        
     ! first bulge through D
-    call DARGTD('R',D((ind+3):(ind+6)),b1,INFO)
+    call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -349,11 +349,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
         
     ! second bulge through D
-    call DARGTD('R',D((ind+1):(ind+4)),b2,INFO)
+    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -383,11 +383,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if 
   
     ! last bulge through D
-    call DARGTD('R',D((ind+1):(ind+4)),b2,INFO)
+    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -478,11 +478,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if 
         
       ! first bulge through D
-      call DARGTD('R',D((ind+3):(ind+6)),b1,INFO)
+      call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -509,11 +509,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if 
         
       ! second bulge through D
-      call DARGTD('R',D((ind+1):(ind+4)),b2,INFO)
+      call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -562,11 +562,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if 
        
     ! first bulge through D
-    call DARGTD('R',D((ind+3):(ind+6)),b1,INFO)
+    call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -593,11 +593,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
         
     ! second bulge through D
-    call DARGTD('R',D((ind+1):(ind+4)),b2,INFO)
+    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -638,11 +638,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if 
   
     ! last bulge through D
-    call DARGTD('R',D((ind+1):(ind+4)),b3,INFO)
+    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b3,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
