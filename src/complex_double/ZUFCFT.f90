@@ -70,7 +70,7 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return
     end if
-    call IARINF(N,INFO)
+    call i_scalar_infcheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return

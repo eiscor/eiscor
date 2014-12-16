@@ -75,7 +75,7 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
-    call IARINF(N,INFO)
+    call i_scalar_infcheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return

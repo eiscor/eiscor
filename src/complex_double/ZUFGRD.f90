@@ -81,7 +81,7 @@ subroutine ZUFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return
     end if
-    call IARINF(N,INFO)
+    call i_scalar_infcheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return
@@ -119,7 +119,7 @@ subroutine ZUFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
       call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-7)
       return
     end if
-    call IARINF(ITCNT,INFO)
+    call i_scalar_infcheck(ITCNT,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-7)
       return

@@ -85,7 +85,7 @@ subroutine DOHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
     INFO = -2
     return
   end if
-  call IARINF(N,INFO)
+  call i_scalar_infcheck(N,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then

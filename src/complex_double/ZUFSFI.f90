@@ -92,7 +92,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
-    call IARINF(N,INFO)
+    call i_scalar_infcheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
@@ -132,7 +132,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-8)
       return
     end if
-    call IARINF(ITCNT,INFO)
+    call i_scalar_infcheck(ITCNT,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-8)
       return

@@ -1,25 +1,25 @@
 #include "eiscor.h"
 !
-! IARNAN (Integer Auxiliary Routine NAN check)
+! i_scalar_infcheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks an integer number to see if it is a NAN.
+! This routine checks an integer number to see if it is a INF.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
-!  NUM             INTEGER 
+!  NUM             INTEGER
 !                    integer number to be checked
 !
 ! OUTPUT VARIABLES:
 !
 !  INFO            INTEGER
-!                    INFO equal to 1 implies NUM is a NAN.
+!                    INFO equal to 1 implies NUM is an INF.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine IARNAN(NUM,INFO)
+subroutine i_scalar_infcheck(NUM,INFO)
 
   implicit none
   
@@ -27,12 +27,16 @@ subroutine IARNAN(NUM,INFO)
   integer, intent(in) :: NUM
   integer, intent(inout) :: INFO
   
+  ! parameter
+  integer :: temp
+  integer, parameter :: infdef = huge(temp)
+  
   ! initialize INFO
   INFO = 0
   
-  ! check self equality
-  if (NUM.NE.NUM) then
+  ! check magnitude of real and imaginary parts
+  if (abs(NUM)>infdef) then
     INFO = 1
   end if
 
-end subroutine IARNAN
+end subroutine i_scalar_infcheck

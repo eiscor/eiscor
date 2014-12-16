@@ -60,7 +60,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
     INFO = -1
     return
   end if
-  call IARINF(N,INFO)
+  call i_scalar_infcheck(N,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
