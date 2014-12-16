@@ -194,11 +194,11 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     else
        
       ! chase bulge
-      call ZUFSFI(COMPZ,N,start_index,stop_index,Q,D,Z,it_count,INFO)
+      call z_unifact_singlestep(COMPZ,N,start_index,stop_index,Q,D,Z,it_count,INFO)
  
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"ZUFSFI failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"z_unifact_singlestep failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
