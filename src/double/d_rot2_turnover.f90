@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DARGTO (Double Auxiliary Routine Givens TurnOver)
+! d_rot2_turnover
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -25,7 +25,7 @@
 !                    INFO = -3 implies Q3 is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARGTO(Q1,Q2,Q3,INFO)
+subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
 
   implicit none
   
@@ -134,4 +134,4 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
   Q3(1) = c4
   Q3(2) = s4
        
-end subroutine DARGTO
+end subroutine d_rot2_turnover

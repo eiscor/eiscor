@@ -84,7 +84,7 @@ program DEXKEV
      b3(1) = b1(1)
      b3(2) = -b1(2)
      ind = 2*(ii-1)
-     call DARGTO(tb,b3,Q((ind+1):(ind+2)),INFO)
+     call d_rot2_turnover(tb,b3,Q((ind+1):(ind+2)),INFO)
      call d_rot2_fuse('R',b3,Q((ind+3):(ind+4)),INFO)
      b3 = Q((ind+1):(ind+2))
      Q((ind+1):(ind+2)) = tb
@@ -92,9 +92,9 @@ program DEXKEV
      do jj=ii,(n-3)
         ind = 2*(jj-1)
         ! set indices
-        call DARGTO(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1,INFO)
-        call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
-        call DARGTO(b3,b1,b2,INFO)
+        call d_rot2_turnover(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1,INFO)
+        call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
+        call d_rot2_turnover(b3,b1,b2,INFO)
         ! update bulges
         tb = b2
         b2 = b3
@@ -104,7 +104,7 @@ program DEXKEV
      ind = 2*(n-3)
      ! fusion at bottom
      call d_rot2_fuse('L',Q((ind+3):(ind+4)),b1,INFO)
-     call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
+     call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
      call d_rot2_fuse('L',b3,b2,INFO)
      call d_rot2_fuse('L',Q((ind+3):(ind+4)),b3,INFO)
   end do

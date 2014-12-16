@@ -196,11 +196,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
     
     ! first bulge through Q
-    call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b1,INFO)
+    call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b1,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -262,11 +262,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if
     
       ! first bulge through Q
-      call DARGTO(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1,INFO)
+      call d_rot2_turnover(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -293,11 +293,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if
     
       ! second bulge through Q
-      call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
+      call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -360,11 +360,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
     
     ! second bulge through Q  
-    call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
+    call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -435,11 +435,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     temp(2) = -b2(2)
     b3(1) = b1(1)
     b3(2) = -b1(2)
-    call DARGTO(temp,b3,Q((ind+1):(ind+2)),INFO)
+    call d_rot2_turnover(temp,b3,Q((ind+1):(ind+2)),INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -489,11 +489,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if
     
       ! first bulge through Q
-      call DARGTO(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1,INFO)
+      call d_rot2_turnover(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -520,22 +520,22 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       end if
     
       ! second bulge through Q
-      call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
+      call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
       end if
       
       ! push b3 down
-      call DARGTO(b3,b1,b2,INFO)
+      call d_rot2_turnover(b3,b1,b2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -604,11 +604,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
     
     ! second bulge through Q  
-    call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
+    call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
