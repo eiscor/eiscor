@@ -85,7 +85,7 @@ program DEXKEV
      b3(2) = -b1(2)
      ind = 2*(ii-1)
      call DARGTO(tb,b3,Q((ind+1):(ind+2)),INFO)
-     call DARFGR('R',b3,Q((ind+3):(ind+4)),INFO)
+     call d_rot2_fuse('R',b3,Q((ind+3):(ind+4)),INFO)
      b3 = Q((ind+1):(ind+2))
      Q((ind+1):(ind+2)) = tb
      ! main chasing loop
@@ -103,10 +103,10 @@ program DEXKEV
      end do
      ind = 2*(n-3)
      ! fusion at bottom
-     call DARFGR('L',Q((ind+3):(ind+4)),b1,INFO)
+     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b1,INFO)
      call DARGTO(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
-     call DARFGR('L',b3,b2,INFO)
-     call DARFGR('L',Q((ind+3):(ind+4)),b3,INFO)
+     call d_rot2_fuse('L',b3,b2,INFO)
+     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b3,INFO)
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

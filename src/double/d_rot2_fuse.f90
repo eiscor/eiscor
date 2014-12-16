@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DARFGR (Double Auxiliary Routine Fuse Givens Rotations)
+! d_rot2_fuse
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -28,7 +28,7 @@
 !                    INFO = -3 implies Q2 is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARFGR(JOB,Q1,Q2,INFO)
+subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
 
   implicit none
 
@@ -107,4 +107,4 @@ subroutine DARFGR(JOB,Q1,Q2,INFO)
     
   end if
 
-end subroutine DARFGR
+end subroutine d_rot2_fuse

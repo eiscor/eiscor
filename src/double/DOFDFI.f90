@@ -165,11 +165,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ind = 2*(STR-1)
     b3(1) = b1(1)
     b3(2) = -b1(2)
-    call DARFGR('R',b3,Q((ind+1):(ind+2)),INFO)
+    call d_rot2_fuse('R',b3,Q((ind+1):(ind+2)),INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -225,11 +225,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ! fusion to initialize second bulge
     b3(1) = b2(1)
     b3(2) = -b2(2)
-    call DARFGR('R',b3,Q((ind+1):(ind+2)),INFO)
+    call d_rot2_fuse('R',b3,Q((ind+1):(ind+2)),INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -329,11 +329,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
     
     ! first bulge fuse with Q
-    call DARFGR('L',Q((ind+3):(ind+4)),b1,INFO)
+    call d_rot2_fuse('L',Q((ind+3):(ind+4)),b1,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -394,11 +394,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
   
     ! last bulge fuse with Q
-    call DARFGR('L',Q((ind+1):(ind+2)),b2,INFO)
+    call d_rot2_fuse('L',Q((ind+1):(ind+2)),b2,INFO)
   
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -446,11 +446,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
 
     ! fusion to finish initialization
-    call DARFGR('R',b3,Q((ind+3):(ind+4)),INFO)
+    call d_rot2_fuse('R',b3,Q((ind+3):(ind+4)),INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -573,11 +573,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
     
     ! first bulge fuse with Q
-    call DARFGR('L',Q((ind+3):(ind+4)),b1,INFO)
+    call d_rot2_fuse('L',Q((ind+3):(ind+4)),b1,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -615,11 +615,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
         
     ! fuse b2 and b3
-    call DARFGR('L',b3,b2,INFO)
+    call d_rot2_fuse('L',b3,b2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -649,11 +649,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
   
     ! last bulge fuse with Q
-    call DARFGR('L',Q((ind+1):(ind+2)),b3,INFO)
+    call d_rot2_fuse('L',Q((ind+1):(ind+2)),b3,INFO)
   
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
