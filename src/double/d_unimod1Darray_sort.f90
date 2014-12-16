@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DARSUE (Double Auxiliary Routine Sort Unimodular Eigenpairs)
+! d_unimod1Darray_sort
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -44,7 +44,7 @@
 !                    INFO = -4 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARSUE(JOB,N,E,Z,INFO)
+subroutine d_unimod1Darray_sort(JOB,N,E,Z,INFO)
 
   ! input variables
   character, intent(in) :: JOB
@@ -158,4 +158,4 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
     end if
   end do
 
-end subroutine DARSUE
+end subroutine d_unimod1Darray_sort
