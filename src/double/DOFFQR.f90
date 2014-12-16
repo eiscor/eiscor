@@ -220,11 +220,11 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     else
      
       ! chase bulge
-      call DOFDFI(COMPZ,N,start_index,stop_index,Q,D,Z,it_count,INFO)
+      call d_orthfact_doublestep(COMPZ,N,start_index,stop_index,Q,D,Z,it_count,INFO)
 
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"DOFDFI failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_orthfact_doublestep failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 

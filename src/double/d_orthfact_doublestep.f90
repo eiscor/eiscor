@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOFDFI (Double Orthogonal hessenberg Factored Doubleshift Francis Iteration)
+! d_orthfact_doublestep
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -52,7 +52,7 @@
 !                    INFO = -4 implies STP is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
+subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
 
   implicit none
   
@@ -664,4 +664,4 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
   end if ! end of doubleshift step
 
-end subroutine DOFDFI
+end subroutine d_orthfact_doublestep
