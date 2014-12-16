@@ -77,7 +77,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
   end if
   
   ! check factorization
-  call ZUFCHF(N,Q,D,INFO)
+  call z_unifact_factorcheck(N,Q,D,INFO)
   if (INFO.NE.0) then
     ! check input in debug mode
     if (DEBUG) then

@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUFCHF (Zomplex Unitary hessenberg Factored CHeck Factorization)
+! z_unifact_factorcheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -31,7 +31,7 @@
 !                   INFO = -3 implies D is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUFCHF(N,Q,D,INFO)
+subroutine z_unifact_factorcheck(N,Q,D,INFO)
 
   implicit none
   
@@ -124,4 +124,4 @@ subroutine ZUFCHF(N,Q,D,INFO)
    end if
   end do
   
-end subroutine ZUFCHF
+end subroutine z_unifact_factorcheck
