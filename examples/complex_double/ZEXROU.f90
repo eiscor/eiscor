@@ -9,7 +9,7 @@
 ! corresponding unitary eigenvalue problem two different ways.
 !
 ! 1) Form upper hessenberg permutation matrix and compute its 
-!    eigenvalues using ZUHFQR
+!    eigenvalues using z_unihess_qr
 !
 ! 2) Construct the factorization directly and compute its 
 !    eigenvalues using z_unifact_qr
@@ -39,16 +39,16 @@ program ZEXROU
   H(1,N) = cmplx(1d0,0d0,kind=8)
   
   ! call zuhfqr
-  call ZUHFQR('N',N,H,Z,ITS,WORK,INFO)
+  call z_unihess_qr('N',N,H,Z,ITS,WORK,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"ZUHFQR failed."
+    print*,"z_unihess_qr failed."
     print*,"INFO:",INFO
   end if
   
   ! print diag of H
-  print*,"Roots computed using ZUHFQR:"
+  print*,"Roots computed using z_unihess_qr:"
   do ii=1,N
     print*,dble(H(ii,ii)),aimag(H(ii,ii))
   end do

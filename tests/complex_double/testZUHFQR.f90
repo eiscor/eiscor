@@ -5,7 +5,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine ZUHFQR. The following tests are run:
+! This program tests the subroutine z_unihess_qr. The following tests are run:
 !
 ! 1) Compute roots of unity and checks the residuals for various powers of 2
 !
@@ -24,7 +24,7 @@ program testZUHFQR
   real(8) :: tol
   
   ! print banner
-  write(*,'(a)',advance='no') "Test for ZUHFQR ... "
+  write(*,'(a)',advance='no') "Test for z_unihess_qr ... "
   
   ! loop through powers of 2
   do jj=1,MPOW
@@ -41,7 +41,7 @@ program testZUHFQR
     Hold = H
     
     ! call dohfqr
-    call ZUHFQR('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
+    call z_unihess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
     
     ! check INFO
     if (INFO.NE.0) then

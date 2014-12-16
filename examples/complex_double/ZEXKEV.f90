@@ -12,7 +12,7 @@
 ! ways.
 !
 ! 1) Form upper Hessenberg permutation matrix and compute its 
-!    eigenvalues using ZUHFQR
+!    eigenvalues using z_unihess_qr
 !
 ! 2) Construct the factorization directly and compute its 
 !    eigenvalues using z_unifact_qr
@@ -155,17 +155,17 @@ program ZEXKEV
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! call dohfqr
-  call ZUHFQR('N',N,H,Z,ITS,WORK,INFO)
+  call z_unihess_qr('N',N,H,Z,ITS,WORK,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"ZUHFQR failed."
+    print*,"z_unihess_qr failed."
     print*,"INFO:",INFO
   end if
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print diag of H
-  print*,"Eigenvalues computed using ZUHFQR: (real part, imag part, distance to closest exact eigenvalue)"
+  print*,"Eigenvalues computed using z_unihess_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
      diff = sqrt(abs(dble(H(ii,ii))-rev(1))**2+abs(aimag(H(ii,ii))-iev(1))**2)
      do jj=2,N

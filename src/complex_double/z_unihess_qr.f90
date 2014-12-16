@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUHFQR (Zomplex Unitary Hessenberg Fast QR eigensolver)
+! z_unihess_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -48,7 +48,7 @@
 !                   INFO = -4 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
+subroutine z_unihess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
 
   implicit none
   
@@ -159,4 +159,4 @@ subroutine ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
     H(ii,ii) = cmplx(WORK((3*N)+2*(ii-1)+1),WORK((3*N)+2*(ii-1)+2),kind=8)
   end do
   
-end subroutine ZUHFQR
+end subroutine z_unihess_qr

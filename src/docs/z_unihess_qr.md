@@ -1,9 +1,9 @@
-# ZUHFQR - Zomplex Unitary Hessenberg Fast QR eigensolver #
+# z_unihess_qr #
 
 This routine computes the eigenvalues and optionally eigenvectors of a 
 complex unitary upper-Hessenberg matrix using a fast QR algorithm. The output is the complex Schur factorization where the triangular part is stored in the same array as the input matrix.
 
-## ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO) ##
+## z_unihess_qr(COMPZ,N,H,Z,ITS,WORK,INFO) ##
 
 ### INPUT VARIABLES: ###
 
@@ -48,5 +48,5 @@ H(2,1) = cmplx(1d0,0d0,kind=8)
 H(1,2) = cmplx(1d0,0d0,kind=8)
 H(2,2) = cmplx(0d0,0d0,kind=8)
 
-call ZUHFQR('N',2,H,Z,ITS,WORK,INFO)
+call z_unihess_qr('N',2,H,Z,ITS,WORK,INFO)
 ```
