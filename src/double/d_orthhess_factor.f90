@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOHRFF (Double Orthogonal Hessenberg matrix Reduction to Factored Form)
+! d_orthhess_factor
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -33,7 +33,7 @@
 !                    INFO = -3 implies H is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOHRFF(N,H,Q,D,INFO)
+subroutine d_orthhess_factor(N,H,Q,D,INFO)
 
   implicit none
   
@@ -145,4 +145,4 @@ subroutine DOHRFF(N,H,Q,D,INFO)
   D(2*(N-1)+1) = sign(1d0,H(N,N))
   D(2*(N-1)+2) = 0d0
 
-end subroutine DOHRFF
+end subroutine d_orthhess_factor

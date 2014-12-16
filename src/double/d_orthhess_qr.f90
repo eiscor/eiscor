@@ -39,7 +39,7 @@
 !
 !  INFO           INTEGER
 !                    INFO = 2 implies d_orthfact_qr failed
-!                    INFO = 1 implies DOHRFF failed
+!                    INFO = 1 implies d_orthhess_factor failed
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies COMPZ is invalid
 !                    INFO = -2 implies N is invalid
@@ -128,11 +128,11 @@ subroutine d_orthhess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if
   
   ! compress H
-  call DOHRFF(N,H,WORK(1:(2*N)),WORK((2*N+1):(4*N)),INFO)
+  call d_orthhess_factor(N,H,WORK(1:(2*N)),WORK((2*N+1):(4*N)),INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOHRFF",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthhess_factor",INFO,INFO)
     end if  
     INFO = 1
     return
