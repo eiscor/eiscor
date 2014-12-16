@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARCG33 (Zomplex Auxiliary Routine Compute Givens generators 3->3)
+! z_rot3_vec3gen
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -42,7 +42,7 @@
 !                    INFO = -3 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
+subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM,INFO)
 
   implicit none
   
@@ -186,4 +186,4 @@ subroutine ZARCG33(AR,AI,B,CR,CI,S,NRM,INFO)
     end if
   end if
 
-end subroutine ZARCG33
+end subroutine z_rot3_vec3gen

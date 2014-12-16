@@ -91,11 +91,11 @@ subroutine ZARGTO(G1,G2,G3,INFO)
   T(3) = s2*s3
   
   ! compute first rotation
-  call ZARCG33(T(1),T(2),T(3),c4r,c4i,s4,nrm,INFO)
+  call z_rot3_vec3gen(T(1),T(2),T(3),c4r,c4i,s4,nrm,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -107,12 +107,12 @@ subroutine ZARGTO(G1,G2,G3,INFO)
   T(3) = nrm
 
   ! compute second rotation
-  call ZARCG33(T(1),T(2),T(3),c5r,c5i,s5,nrm,INFO)
+  call z_rot3_vec3gen(T(1),T(2),T(3),c5r,c5i,s5,nrm,INFO)
 
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -124,12 +124,12 @@ subroutine ZARGTO(G1,G2,G3,INFO)
   T(3) = s1*s2*s5 - (c5r*c2r + c5i*c2i)*s4 + s2*(c1r*(c4r*c5r + c4i*c5i) + c1i*(c4r*c5i - c4i*c5r))
 
   ! compute third rotation
-  call ZARCG33(T(1),T(2),T(3),c6r,c6i,s6,nrm,INFO)
+  call z_rot3_vec3gen(T(1),T(2),T(3),c6r,c6i,s6,nrm,INFO)
 
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 

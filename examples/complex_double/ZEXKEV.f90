@@ -79,11 +79,11 @@ program ZEXKEV
      call random_number(rp)     
      call random_number(ro)     
      call random_number(rm)     
-     call ZARCG33(rm,ro,rp,b1(1),b1(2),b1(3),NRM,INFO)
+     call z_rot3_vec3gen(rm,ro,rp,b1(1),b1(2),b1(3),NRM,INFO)
      call random_number(rp)     
      call random_number(ro)     
      call random_number(rm)     
-     call ZARCG33(rm,ro,rp,b2(1),b2(2),b2(3),NRM,INFO)
+     call z_rot3_vec3gen(rm,ro,rp,b2(1),b2(2),b2(3),NRM,INFO)
      ! fuse on the top of the current Q sequence
      tb(1) = b2(1)
      tb(2) = -b2(2)
