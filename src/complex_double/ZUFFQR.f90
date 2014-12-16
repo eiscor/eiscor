@@ -148,11 +148,11 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     else if(stop_index-1 == zero_index)then
      
       ! get 2x2 block
-      call ZUFTDB(N,stop_index,Q,D,block,INFO) 
+      call z_unifact_2x2diagblock(N,stop_index,Q,D,block,INFO) 
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"z_unifact_2x2diagblock failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 

@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUFTDB (Zomplex Unitary hessenberg Factored Two by two Diagonal Block)
+! z_unifact_2x2diagblock
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -38,7 +38,7 @@
 !                   INFO = -2 implies K is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUFTDB(N,K,Q,D,H,INFO)
+subroutine z_unifact_2x2diagblock(N,K,Q,D,H,INFO)
   
   implicit none
   
@@ -107,4 +107,4 @@ subroutine ZUFTDB(N,K,Q,D,H,INFO)
   H(:,1) = H(:,1)*cmplx(D(strt+1),D(strt+2),kind=8)
   H(:,2) = H(:,2)*cmplx(D(strt+3),D(strt+4),kind=8)
 
-end subroutine ZUFTDB
+end subroutine z_unifact_2x2diagblock

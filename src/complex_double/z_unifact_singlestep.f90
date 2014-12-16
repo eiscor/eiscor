@@ -155,11 +155,11 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   ! wilkinson shift
   else
     ! get 2x2 block
-    call ZUFTDB(N,STP,Q,D,block,INFO) 
+    call z_unifact_2x2diagblock(N,STP,Q,D,block,INFO) 
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_unifact_2x2diagblock failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

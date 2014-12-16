@@ -103,11 +103,11 @@ subroutine z_unifact_buildbulge(N,K,Q,D,SHFT,B,INFO)
   end if
   
   ! get top block
-  call ZUFTDB(N,K,Q,D,block,INFO) 
+  call z_unifact_2x2diagblock(N,K,Q,D,block,INFO) 
       
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_unifact_2x2diagblock failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
