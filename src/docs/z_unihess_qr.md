@@ -34,7 +34,7 @@ __ITS__ - INTEGER array of dimension (N-1)
 
 __INFO__ - INTEGER
  - INFO = 2 implies z_unifact_qr failed
- - INFO = 1 implies ZUHRFF failed
+ - INFO = 1 implies z_unihess_factor failed
  - INFO = 0 implies successful computation
  - INFO = -1 implies COMPZ is invalid
  - INFO = -2 implies N is invalid
