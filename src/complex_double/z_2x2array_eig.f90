@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZTTEEV (Zomplex Two by Two Eigenvalues and EigenVectors)
+! z_2x2array_eig
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -29,7 +29,7 @@
 !                   INFO = -1 implies H is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZTTEEV(H,E,Z,INFO)
+subroutine z_2x2array_eig(H,E,Z,INFO)
   
   implicit none
   
@@ -140,4 +140,4 @@ subroutine ZTTEEV(H,E,Z,INFO)
   Z(1,2) = -conjg(Z(2,1))
   Z(2,2) = conjg(Z(1,1))
   
-end subroutine ZTTEEV
+end subroutine z_2x2array_eig

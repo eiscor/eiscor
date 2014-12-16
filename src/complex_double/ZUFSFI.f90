@@ -166,11 +166,11 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
         
     ! compute eigenvalues and eigenvectors
-    call ZTTEEV(block,eigs,temp,INFO)
+    call z_2x2array_eig(block,eigs,temp,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZTTEEV failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_eig failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
