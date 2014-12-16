@@ -126,11 +126,11 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     end if
 
     ! check for deflation
-    call ZUFGRD(N,start_index,stop_index,zero_index,Q,D,it_count,ITS,INFO)
+    call z_unifact_deflationcheck(N,start_index,stop_index,zero_index,Q,D,it_count,ITS,INFO)
    
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZUFGRD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_unifact_deflationcheck failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

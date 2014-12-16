@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUFGRD (Zomplex Unitary hessenberg Factored Givens Rotation Deflation)
+! z_unifact_deflationcheck 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -54,7 +54,7 @@
 !                   INFO = -7 implies ITCNT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
+subroutine z_unifact_deflationcheck(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
 
   implicit none
   
@@ -239,4 +239,4 @@ subroutine ZUFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
      end if
   end do
   
-end subroutine ZUFGRD
+end subroutine z_unifact_deflationcheck
