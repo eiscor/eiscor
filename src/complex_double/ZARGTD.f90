@@ -63,14 +63,14 @@ subroutine ZARGTD(JOB,D,B,INFO)
     end if
   
     ! check D
-    call DARACH1(4,D,INFO)
+    call d_1Darray_check(4,D,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-2)
       return
     end if
   
     ! check B
-    call DARACH1(3,B,INFO)
+    call d_1Darray_check(3,B,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return

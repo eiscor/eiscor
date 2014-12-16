@@ -51,21 +51,21 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
   if (DEBUG) then
   
     ! check Q1
-    call DARACH1(2,Q1,INFO)
+    call d_1Darray_check(2,Q1,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Q1 is invalid",INFO,-1)
     if (INFO.NE.0) then 
       return 
     end if 
     
     ! check Q2
-    call DARACH1(2,Q2,INFO)
+    call d_1Darray_check(2,Q2,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Q2 is invalid",INFO,-2)
     if (INFO.NE.0) then 
       return 
     end if   
     
     ! check Q3
-    call DARACH1(2,Q3,INFO)
+    call d_1Darray_check(2,Q3,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Q3 is invalid",INFO,-3)
     if (INFO.NE.0) then 
       return 

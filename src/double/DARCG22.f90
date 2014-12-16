@@ -59,14 +59,14 @@ subroutine DARCG22(A,B,C,S,NRM,INFO)
   if (DEBUG) then   
   
     ! Check A
-    call DARACH1(1,A,INFO)
+    call d_1Darray_check(1,A,INFO)
     call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
     if (INFO.NE.0) then 
       return 
     end if   
     
     ! Check B
-    call DARACH1(1,B,INFO)
+    call d_1Darray_check(1,B,INFO)
     call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
     if (INFO.NE.0) then 
       return 

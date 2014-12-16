@@ -77,7 +77,7 @@ subroutine ZUFCHF(N,Q,D,INFO)
   end if
   
   ! check Q for NANs and INFs
-  call DARACH1(3*(N-1),Q,INFO)
+  call d_1Darray_check(3*(N-1),Q,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
@@ -101,7 +101,7 @@ subroutine ZUFCHF(N,Q,D,INFO)
   end do
   
   ! check D
-  call DARACH1(2*N,D,INFO)
+  call d_1Darray_check(2*N,D,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then

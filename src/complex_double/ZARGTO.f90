@@ -52,21 +52,21 @@ subroutine ZARGTO(G1,G2,G3,INFO)
   if (DEBUG) then
   
     ! check G1
-    call DARACH1(3,G1,INFO)
+    call d_1Darray_check(3,G1,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"G2 is invalid",INFO,-1)
       return
     end if
   
     ! check G2
-    call DARACH1(3,G2,INFO)
+    call d_1Darray_check(3,G2,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"G2 is invalid",INFO,-2)
       return
     end if
   
     ! check G3
-    call DARACH1(3,G3,INFO)
+    call d_1Darray_check(3,G3,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"G3 is invalid",INFO,-3)
       return

@@ -54,14 +54,14 @@ subroutine DARFGR(JOB,Q1,Q2,INFO)
     end if
     
     ! check Q1
-    call DARACH1(2,Q1,INFO)
+    call d_1Darray_check(2,Q1,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Q1 is invalid",INFO,-2)
     if (INFO.NE.0) then 
       return 
     end if 
     
     ! check Q2
-    call DARACH1(2,Q2,INFO)
+    call d_1Darray_check(2,Q2,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Q2 is invalid",INFO,-3)
     if (INFO.NE.0) then 
       return 

@@ -115,7 +115,7 @@ subroutine ZUFFGR(JOB,N,STR,STP,Q,D,B,INFO)
     end if  
     
     ! check B
-    call DARACH1(3,B,INFO)
+    call d_1Darray_check(3,B,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-7)
       return

@@ -87,7 +87,7 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     end if 
   
     ! check E
-    call DARACH1(2*N,E,INFO)
+    call d_1Darray_check(2*N,E,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,-3)
       return

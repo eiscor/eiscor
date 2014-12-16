@@ -83,7 +83,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     end if  
   
     ! check E
-    call DARACH1(2,E,INFO)
+    call d_1Darray_check(2,E,INFO)
     call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,INFO)
     if (INFO.NE.0) then 
       return 
