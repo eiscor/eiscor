@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOHFQR (Double Orthogonal Hessenberg Fast QR eigensolver)
+! d_orthhess_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -47,7 +47,7 @@
 !                    INFO = -4 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
+subroutine d_orthhess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
 
   implicit none
   
@@ -168,4 +168,4 @@ subroutine DOHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
     end if
   end do
   
-end subroutine DOHFQR
+end subroutine d_orthhess_qr

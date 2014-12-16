@@ -12,7 +12,7 @@
 ! ways.
 !
 ! 1) Form upper Hessenberg permutation matrix and compute its 
-!    eigenvalues using DOHFQR
+!    eigenvalues using d_orthhess_qr
 !
 ! 2) Construct the factorization directly and compute its 
 !    eigenvalues using d_orthfact_qr
@@ -134,11 +134,11 @@ program DEXKEV
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! call dohfqr
-  call DOHFQR('N',N,H,Z,ITS,WORK,INFO)
+  call d_orthhess_qr('N',N,H,Z,ITS,WORK,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"DOHFQR failed."
+    print*,"d_orthhess_qr failed."
     print*,"INFO:",INFO
   end if
   
@@ -152,7 +152,7 @@ program DEXKEV
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print diag of H
   cpair = 0
-  print*,"Eigenvalues computed using DOHFQR: (real part, imag part, distance to closest exact eigenvalue)"
+  print*,"Eigenvalues computed using d_orthhess_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
     if (cpair.EQ.0) then
       if (H(ii,ii+1).EQ.0) then

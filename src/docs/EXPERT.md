@@ -4,11 +4,11 @@ This is a complete list of our currently supported _Expert_ routines sorted acco
 - __YY__ corresponds to problem type
 - __ZZZ__ corresponds to solver type
 
-For example, __DOHFQR__ is a double precision (__D__) subroutine for solving orthogonal upper-Hessenberg (__OH__) eigenvalue problems using a fast QR (__FQR__) algorithm. 
+For example, __d_orthhess_qr__ is a double precision (__D__) subroutine for solving orthogonal upper-Hessenberg (__OH__) eigenvalue problems using a fast QR (__FQR__) algorithm. 
 
 ## Unitary eigensolvers ##
 Eigensolvers for unitary matrices can be interacted with at different levels in __eiscor__. At the highest level there are the routines:
-- [__DOHFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/DOHFQR.md)
+- [__d_orthhess_qr__](https://github.com/jaurentz/eiscor/blob/master/src/docs/d_orthhess_qr.md)
 - [__ZUHFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/ZUHFQR.md)
 
 These routines except unitary upper-Hessenberg matrices as input and solve for the eigenvalues and optionally the eigenvectors. The next level of interaction involves inputting the unitary upper-Hessenberg matrix in factored form:

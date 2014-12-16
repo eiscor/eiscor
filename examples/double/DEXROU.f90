@@ -9,7 +9,7 @@
 ! corresponding unitary eigenvalue problem two different ways.
 !
 ! 1) Form upper hessenberg permutation matrix and compute its 
-!    eigenvalues using DOHFQR
+!    eigenvalues using d_orthhess_qr
 !
 ! 2) Construct the factorization directly and compute its 
 !    eigenvalues using d_orthfact_qr
@@ -39,17 +39,17 @@ program DEXROU
   H(1,N) = 1d0
   
   ! call dohfqr
-  call DOHFQR('N',N,H,Z,ITS,WORK,INFO)
+  call d_orthhess_qr('N',N,H,Z,ITS,WORK,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"DOHFQR failed."
+    print*,"d_orthhess_qr failed."
     print*,"INFO:",INFO
   end if
   
   ! print diag of H
   cpair = 0
-  print*,"Roots computed using DOHFQR:"
+  print*,"Roots computed using d_orthhess_qr:"
   do ii=1,N
     if (cpair.EQ.0) then
       if (H(ii,ii+1).EQ.0) then
