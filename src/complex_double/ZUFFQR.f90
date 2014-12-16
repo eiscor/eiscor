@@ -89,7 +89,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
   
   ! check Z
   if (COMPZ.EQ.'V') then
-    call ZARACH2(N,N,Z,INFO)
+    call z_2Darray_check(N,N,Z,INFO)
     if (INFO.NE.0) then
       INFO = -5
       ! check input in debug mode

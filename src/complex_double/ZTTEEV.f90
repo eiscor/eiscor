@@ -51,7 +51,7 @@ subroutine ZTTEEV(H,E,Z,INFO)
   if (DEBUG) then
   
     ! check H
-    call ZARACH2(2,2,H,INFO)
+    call z_2Darray_check(2,2,H,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,-1)
       return

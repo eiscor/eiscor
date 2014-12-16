@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARACH2 (Zomplex Auxiliary Routine Array CHeck 2)
+! z_2Darray_check
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -23,7 +23,7 @@
 !                    INFO equal to 1 implies A contains an INF or NAN.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARACH2(M,N,A,INFO)
+subroutine z_2Darray_check(M,N,A,INFO)
 
   implicit none
   
@@ -57,4 +57,4 @@ subroutine ZARACH2(M,N,A,INFO)
     end do
   end do
 
-end subroutine ZARACH2
+end subroutine z_2Darray_check

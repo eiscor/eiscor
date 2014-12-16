@@ -79,7 +79,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
   end if
   
   ! check H
-  call ZARACH2(N,N,H,INFO)
+  call z_2Darray_check(N,N,H,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then

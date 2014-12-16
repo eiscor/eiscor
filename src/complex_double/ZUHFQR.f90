@@ -104,7 +104,7 @@ subroutine ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if
   
   ! check H
-  call ZARACH2(N,N,H,INFO)
+  call z_2Darray_check(N,N,H,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
@@ -116,7 +116,7 @@ subroutine ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
   
   ! check Z
   if (COMPZ.EQ.'V') then
-    call ZARACH2(N,N,Z,INFO)
+    call z_2Darray_check(N,N,Z,INFO)
     if (INFO.NE.0) then
       ! print error in debug mode
       if (DEBUG) then

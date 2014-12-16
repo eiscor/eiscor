@@ -103,7 +103,7 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
   
     ! check Z
     if (JOB.EQ.'V') then
-      call ZARACH2(N,N,Z,INFO)
+      call z_2Darray_check(N,N,Z,INFO)
       if (INFO.NE.0) then
         call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-4)
         return
