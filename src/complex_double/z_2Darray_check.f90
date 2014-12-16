@@ -49,7 +49,7 @@ subroutine z_2Darray_check(M,N,A,INFO)
       end if
     
       ! check for INF
-      call ZARINF(A(ii,jj),INFO)
+      call z_scalar_infcheck(A(ii,jj),INFO)
       if (INFO.NE.0) then
         return
       end if

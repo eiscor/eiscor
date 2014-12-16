@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARINF (Zomplex Auxiliary Routine INF check)
+! z_scalar_infcheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -20,7 +20,7 @@
 !                    INFO equal to 1 implies NUM is an INF.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARINF(NUM,INFO)
+subroutine z_scalar_infcheck(NUM,INFO)
 
   implicit none
   
@@ -40,4 +40,4 @@ subroutine ZARINF(NUM,INFO)
     INFO = 1
   end if
 
-end subroutine ZARINF
+end subroutine z_scalar_infcheck

@@ -94,7 +94,7 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
       call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-5)
       return
     end if
-    call ZARINF(SHFT,INFO)
+    call z_scalar_infcheck(SHFT,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-5)
       return
