@@ -115,11 +115,11 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     end if
     
     ! compute first Givens' rotation
-    call DARCG22(T(1,1)-E(1),T(2,1),B1(1),B1(2),nrm1,INFO)
+    call d_rot2_vec2gen(T(1,1)-E(1),T(2,1),B1(1),B1(2),nrm1,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -164,22 +164,22 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     COL(3) = T(2,1)*T(3,2)
     
     ! compute first givens rotations
-    call DARCG22(COL(2),COL(3),B1(1),B1(2),nrm1,INFO)
+    call d_rot2_vec2gen(COL(2),COL(3),B1(1),B1(2),nrm1,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
     end if
 
     ! compute second givens rotations
-    call DARCG22(COL(1),nrm1,B2(1),B2(2),nrm2,INFO)
+    call d_rot2_vec2gen(COL(1),nrm1,B2(1),B2(2),nrm2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

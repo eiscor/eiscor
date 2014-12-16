@@ -97,11 +97,11 @@ subroutine DOHRFF(N,H,Q,D,INFO)
   do ii=1,(N-1)
             
     ! reduce to block diagonal
-    call DARCG22(H(ii,ii),H(ii+1,ii),c,s,nrm,INFO)
+    call d_rot2_vec2gen(H(ii,ii),H(ii+1,ii),c,s,nrm,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

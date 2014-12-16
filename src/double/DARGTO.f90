@@ -86,11 +86,11 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
   b = s2*s3
   
   ! compute first rotation
-  call DARCG22(a,b,c4,s4,nrm,INFO)
+  call d_rot2_vec2gen(a,b,c4,s4,nrm,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -101,11 +101,11 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
   b = nrm
 
   ! compute second rotation
-  call DARCG22(a,b,c5,s5,nrm,INFO)
+  call d_rot2_vec2gen(a,b,c5,s5,nrm,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -116,11 +116,11 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
   b = -(-s1*s3+c1*c2*c3)*s4 + s2*c3*c4
   
   ! compute first rotation
-  call DARCG22(a,b,c6,s6,nrm,INFO)
+  call d_rot2_vec2gen(a,b,c6,s6,nrm,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 

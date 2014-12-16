@@ -76,8 +76,8 @@ program DEXKEV
      ! generate random bulge
      call random_number(rp)     
      call random_number(rm)     
-     call DARCG22(sqrt(1-rp**2),rp,b1(1),b1(2),NRM,INFO)
-     call DARCG22(sqrt(1-rm**2),rm,b2(1),b2(2),NRM,INFO)
+     call d_rot2_vec2gen(sqrt(1-rp**2),rp,b1(1),b1(2),NRM,INFO)
+     call d_rot2_vec2gen(sqrt(1-rm**2),rm,b2(1),b2(2),NRM,INFO)
      ! fuse on the top of the current Q sequence
      tb(1) = b2(1)
      tb(2) = -b2(2)

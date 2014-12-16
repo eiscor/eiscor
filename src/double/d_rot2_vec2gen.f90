@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DARCG22 (Double Auxiliary Routine Compute Givens generators 2->2)
+! d_rot2_vec2gen
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -40,7 +40,7 @@
 !                    INFO = -2 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DARCG22(A,B,C,S,NRM,INFO)
+subroutine d_rot2_vec2gen(A,B,C,S,NRM,INFO)
 
   implicit none
   
@@ -112,4 +112,4 @@ subroutine DARCG22(A,B,C,S,NRM,INFO)
      end if
   end if
            
-end subroutine DARCG22
+end subroutine d_rot2_vec2gen

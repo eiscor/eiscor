@@ -77,11 +77,11 @@ subroutine DARFGR(JOB,Q1,Q2,INFO)
     Q1(1) = nrm
     
     ! compute new generators
-    call DARCG22(Q1(1),Q1(2),Q2(1),Q2(2),nrm,INFO)
+    call d_rot2_vec2gen(Q1(1),Q1(2),Q2(1),Q2(2),nrm,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -95,11 +95,11 @@ subroutine DARFGR(JOB,Q1,Q2,INFO)
     Q2(1) = nrm
     
     ! compute new generators
-    call DARCG22(Q2(1),Q2(2),Q1(1),Q1(2),nrm,INFO)
+    call d_rot2_vec2gen(Q2(1),Q2(2),Q1(1),Q1(2),nrm,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
