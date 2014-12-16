@@ -1,10 +1,10 @@
 # Expert routines #
-This is a complete list of our currently supported _Expert_ routines sorted according to the types of problems they are associated with and their precision. Currently the supported precisions in __eiscor__ are double precision (__D__) and complex double precision (__Z__). Routines follow an [__LAPACK__](http://www.netlib.org/lapack/lug/node24.html)-style naming scheme where every subroutine consists of three blocks of letters __XYYZZZ__. 
-- __X__ corresponds to the precision
-- __YY__ corresponds to problem type
-- __ZZZ__ corresponds to solver type
+This is a complete list of our currently supported _Expert_ routines sorted according to the types of problems they are associated with and their precision. Currently the supported precisions in __eiscor__ are double precision (__d__) and complex double precision (__z__). Routines names follow the scheme __prec_object_function__ 
+- __prec__ corresponds to the precision 
+- __object__ corresponds to problem type
+- __function__ corresponds to solver type
 
-For example, __d_orthhess_qr__ is a double precision (__D__) subroutine for solving orthogonal upper-Hessenberg (__OH__) eigenvalue problems using a fast QR (__FQR__) algorithm. 
+For example, __d_orthhess_qr__ is a double precision (__d__) subroutine for solving orthogonal upper-Hessenberg (__orthhess__) eigenvalue problems using a QR (__qr__) algorithm. 
 
 ## Unitary eigensolvers ##
 Eigensolvers for unitary matrices can be interacted with at different levels in __eiscor__. At the highest level there are the routines:
