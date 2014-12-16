@@ -89,7 +89,7 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
     end if 
   
     ! check SHFT
-    call ZARNAN(SHFT,INFO)
+    call z_scalar_nancheck(SHFT,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-5)
       return

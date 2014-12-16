@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARNAN (Zomplex Auxiliary Routine NAN check)
+! z_scalar_nancheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -20,7 +20,7 @@
 !                    INFO equal to 1 implies NUM is a NAN.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARNAN(NUM,INFO)
+subroutine z_scalar_nancheck(NUM,INFO)
 
   implicit none
   
@@ -36,4 +36,4 @@ subroutine ZARNAN(NUM,INFO)
     INFO = 1
   end if
 
-end subroutine ZARNAN
+end subroutine z_scalar_nancheck

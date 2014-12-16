@@ -43,7 +43,7 @@ subroutine z_2Darray_check(M,N,A,INFO)
     do jj = 1,N
   
       ! check for NAN
-      call ZARNAN(A(ii,jj),INFO)
+      call z_scalar_nancheck(A(ii,jj),INFO)
       if (INFO.NE.0) then
         return
       end if
