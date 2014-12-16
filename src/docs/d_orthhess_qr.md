@@ -1,9 +1,9 @@
-# DOHFQR - Double Orthogonal Hessenberg Fast QR eigensolver #
+# d_orthhess_qr #
 
 This routine computes the eigenvalues and optionally eigenvectors of a 
 real orthogonal upper-Hessenberg matrix using a fast QR algorithm. The output is the Winter-Murnaghan or real Schur factorization where the block triangular part is stored in the same array as the input matrix.
 
-## DOHFQR(COMPZ,N,H,Z,ITS,WORK,INFO) ##
+## d_orthhess_qr(COMPZ,N,H,Z,ITS,WORK,INFO) ##
 
 ### INPUT VARIABLES: ###
 
@@ -34,7 +34,7 @@ __ITS__ - INTEGER array of dimension (N-1)
 
 __INFO__ - INTEGER
  - INFO = 2 implies d_orthfact_qr failed
- - INFO = 1 implies DOHRFF failed
+ - INFO = 1 implies d_orthhess_factor failed
  - INFO = 0 implies successful computation
  - INFO = -1 implies COMPZ is invalid
  - INFO = -2 implies N is invalid
@@ -48,5 +48,5 @@ H(2,1) = 1d0
 H(1,2) = 1d0
 H(2,2) = 0d0
 
-call DOHFQR('N',2,H,Z,ITS,WORK,INFO)
+call d_orthhess_qr('N',2,H,Z,ITS,WORK,INFO)
 ```
