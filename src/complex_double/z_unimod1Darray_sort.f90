@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARSUE (Zomplex Auxiliary Routine Sort Unimodular Eigenpairs)
+! z_unimod1Darray_sort
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -37,7 +37,7 @@
 !                   INFO = -4 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARSUE(JOB,N,E,Z,INFO)
+subroutine z_unimod1Darray_sort(JOB,N,E,Z,INFO)
 
   ! input variables
   character, intent(in) :: JOB
@@ -171,4 +171,4 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     end if
   end do
 
-end subroutine ZARSUE
+end subroutine z_unimod1Darray_sort
