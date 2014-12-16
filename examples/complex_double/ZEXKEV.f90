@@ -114,11 +114,11 @@ program ZEXKEV
      end do
      ind = 3*(n-3)
      ! fusion at bottom
-     call ZUFFGR('B',N,ii,N-1,Q,D,b1,INFO)
+     call z_unifact_mergebulge('B',N,ii,N-1,Q,D,b1,INFO)
      call z_rot3_swapdiag('R',D(2*n-5:2*n-2),b2,INFO)
      call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
-     call ZUFFGR('B',N,ii,N-1,Q,D,b3,INFO)
-     call ZUFFGR('B',N,ii,N-1,Q,D,b2,INFO)
+     call z_unifact_mergebulge('B',N,ii,N-1,Q,D,b3,INFO)
+     call z_unifact_mergebulge('B',N,ii,N-1,Q,D,b2,INFO)
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

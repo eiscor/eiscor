@@ -208,11 +208,11 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   binv(3) = -bulge(3)
   
   ! fusion at top
-  call ZUFFGR('T',N,STR,STP,Q,D,binv,INFO)
+  call z_unifact_mergebulge('T',N,STR,STP,Q,D,binv,INFO)
   
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZUFFGR failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_unifact_mergebulge failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -272,11 +272,11 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   end if
   
   ! fusion at bottom
-  call ZUFFGR('B',N,STR,STP,Q,D,bulge,INFO)
+  call z_unifact_mergebulge('B',N,STR,STP,Q,D,bulge,INFO)
   
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZUFFGR failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_unifact_mergebulge failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 

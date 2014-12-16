@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUFFGR (Zouble Unitary hessenberg Factored Fuse Givens Rotation)
+! z_unifact_mergebulge 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -49,7 +49,7 @@
 !                   INFO = -7 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUFFGR(JOB,N,STR,STP,Q,D,B,INFO)
+subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
 
   implicit none
   
@@ -290,4 +290,4 @@ subroutine ZUFFGR(JOB,N,STR,STP,Q,D,B,INFO)
      
   end if
 
-end subroutine ZUFFGR
+end subroutine z_unifact_mergebulge
