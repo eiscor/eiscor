@@ -33,6 +33,8 @@
 !  FUN             INTEGER PURE FUNCTION FUN(N,P)
 !                    takes integer N and binary integer array P of 
 !                    dimension N-1 and outputs a binary integer 
+!                    if RULE = 'user' FUN is called on every iteration
+!                    if RULE /= 'user' FUN is not used
 !
 !  N               INTEGER
 !                    dimension of matrix
