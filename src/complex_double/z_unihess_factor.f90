@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUHRFF (Zomplex Unitary Hessenberg Reduction to Factored Form)
+! z_unihess_factor
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -32,7 +32,7 @@
 !                   INFO = -2 implies H is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUHRFF(N,H,Q,D,INFO)
+subroutine z_unihess_factor(N,H,Q,D,INFO)
 
   implicit none
   
@@ -147,4 +147,4 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
   D(2*(N-1)+1) = dble(H(N,N))/abs(H(N,N))
   D(2*(N-1)+2) = aimag(H(N,N))/abs(H(N,N))
 
-end subroutine ZUHRFF
+end subroutine z_unihess_factor

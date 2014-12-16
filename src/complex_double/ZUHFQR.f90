@@ -40,7 +40,7 @@
 !
 !  INFO           INTEGER
 !                   INFO = 2 implies z_unifact_qr failed
-!                   INFO = 1 implies ZUHRFF failed
+!                   INFO = 1 implies z_unihess_factor failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies COMPZ is invalid
 !                   INFO = -2 implies N is invalid
@@ -128,13 +128,13 @@ subroutine ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if
   
   ! compress H
-  call ZUHRFF(N,H,WORK(1:(3*N)),WORK((3*N+1):(5*N)),INFO)
+  call z_unihess_factor(N,H,WORK(1:(3*N)),WORK((3*N+1):(5*N)),INFO)
 
   ! check info
   if (INFO.NE.0) then 
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZUHRFF failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_unihess_factor failed",INFO,INFO)
     end if 
     INFO = 1
     return
