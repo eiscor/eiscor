@@ -101,9 +101,9 @@ program ZEXKEV
         ! set indices
         ind = 3*(jj-1)
         ! through diag
-        call ZARGTD('R',D(2*jj+1:2*jj+4),b1,INFO)
+        call z_rot3_swapdiag('R',D(2*jj+1:2*jj+4),b1,INFO)
         call ZARGTO(Q((ind+4):(ind+6)),Q((ind+7):(ind+9)),b1,INFO)
-        call ZARGTD('R',D(2*jj-1:2*jj+2),b2,INFO)
+        call z_rot3_swapdiag('R',D(2*jj-1:2*jj+2),b2,INFO)
         call ZARGTO(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
         call ZARGTO(b3,b1,b2,INFO)
         ! update bulges
@@ -115,7 +115,7 @@ program ZEXKEV
      ind = 3*(n-3)
      ! fusion at bottom
      call ZUFFGR('B',N,ii,N-1,Q,D,b1,INFO)
-     call ZARGTD('R',D(2*n-5:2*n-2),b2,INFO)
+     call z_rot3_swapdiag('R',D(2*n-5:2*n-2),b2,INFO)
      call ZARGTO(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
      call ZUFFGR('B',N,ii,N-1,Q,D,b3,INFO)
      call ZUFFGR('B',N,ii,N-1,Q,D,b2,INFO)

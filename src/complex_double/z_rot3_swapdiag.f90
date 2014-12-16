@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARGTD (Zomplex Auxiliary Routine Givens Through Diagonal)
+! z_rot3_swapdiag
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -33,7 +33,7 @@
 !                    INFO = -3 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARGTD(JOB,D,B,INFO)
+subroutine z_rot3_swapdiag(JOB,D,B,INFO)
 
   implicit none
   
@@ -127,4 +127,4 @@ subroutine ZARGTD(JOB,D,B,INFO)
   D(4) = d1i
   
   
-end subroutine ZARGTD
+end subroutine z_rot3_swapdiag

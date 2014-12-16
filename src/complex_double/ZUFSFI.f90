@@ -235,11 +235,11 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ind2 = ind1+3
      
     ! through diag
-    call ZARGTD('R',D(ind1:ind2),bulge,INFO)
+    call z_rot3_swapdiag('R',D(ind1:ind2),bulge,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

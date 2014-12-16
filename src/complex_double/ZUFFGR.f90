@@ -127,11 +127,11 @@ subroutine ZUFFGR(JOB,N,STR,STP,Q,D,B,INFO)
   if(JOB.EQ.'B')then
   
     ! pass through diag
-    call ZARGTD('R',D((2*(STP-1)+1):(2*(STP-1)+4)),B,INFO)
+    call z_rot3_swapdiag('R',D((2*(STP-1)+1):(2*(STP-1)+4)),B,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_swapdiag failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
