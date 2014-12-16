@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOFCFT (Double Orthogonal hessenberg Factored Compute First Transformations)
+! d_orthfact_buildbulge
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -47,7 +47,7 @@
 !                    INFO = -6 implies E is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
+subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
   
   implicit none
   
@@ -187,5 +187,5 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
   
   end if
 
-end subroutine DOFCFT
+end subroutine d_orthfact_buildbulge
 

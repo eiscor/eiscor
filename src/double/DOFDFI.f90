@@ -151,11 +151,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ! build first bulge
     temp(1) = dble(eigs(1))
     temp(2) = aimag(eigs(1))
-    call DOFCFT('S',N,STR,Q,D,temp,b1,b2,INFO)
+    call d_orthfact_buildbulge('S',N,STR,Q,D,temp,b1,b2,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -212,11 +212,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ! build bulge
     temp(1) = dble(eigs(2))
     temp(2) = aimag(eigs(2))
-    call DOFCFT('S',N,STR,Q,D,temp,b2,b3,INFO)
+    call d_orthfact_buildbulge('S',N,STR,Q,D,temp,b2,b3,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -419,11 +419,11 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ! build bulge
     temp(1) = dble(eigs(1))
     temp(2) = aimag(eigs(1))
-    call DOFCFT('D',N,STR,Q,D,temp,b1,b2,INFO)
+    call d_orthfact_buildbulge('D',N,STR,Q,D,temp,b1,b2,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
