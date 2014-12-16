@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOFCHF (Double Orthogonal hessenberg Factored CHeck Factorization)
+! d_orthfact_factorcheck
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -31,7 +31,7 @@
 !                    INFO = -3 implies D is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOFCHF(N,Q,D,INFO)
+subroutine d_orthfact_factorcheck(N,Q,D,INFO)
 
   implicit none
   
@@ -115,4 +115,4 @@ subroutine DOFCHF(N,Q,D,INFO)
    end if
   end do
   
-end subroutine DOFCHF
+end subroutine d_orthfact_factorcheck

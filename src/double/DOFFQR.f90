@@ -78,7 +78,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
   end if
   
   ! check factorization
-  call DOFCHF(N,Q,D,INFO)
+  call d_orthfact_factorcheck(N,Q,D,INFO)
     
   ! print error in debug mode
   if (DEBUG) then
