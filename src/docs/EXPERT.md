@@ -1,8 +1,8 @@
 # Expert routines #
 This is a complete list of our currently supported _Expert_ routines sorted according to the types of problems they are associated with and their precision. Currently the supported precisions in __eiscor__ are double precision (__d__) and complex double precision (__z__). Routines names follow the scheme __prec_object_function__ 
-- __prec__ corresponds to the precision 
-- __object__ corresponds to problem type
-- __function__ corresponds to solver type
+- __prec__ corresponds to the precision (i.e. double or complex double)
+- __object__ corresponds to the type of data it can act on (i.e. scalar or matrix)
+- __function__ corresponds to the action performed (i.e. sort entries or compute eigenvalues)
 
 For example, __d_orthhess_qr__ is a double precision (__d__) subroutine for solving orthogonal upper-Hessenberg (__orthhess__) eigenvalue problems using a QR (__qr__) algorithm. 
 
