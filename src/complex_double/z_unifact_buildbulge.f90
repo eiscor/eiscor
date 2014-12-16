@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUFCFT (Zomplex Unitary hessenberg Factored Compute First Transformation)
+! z_unifact_buildbulge
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -43,7 +43,7 @@
 !                   INFO = -5 implies SHFT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
+subroutine z_unifact_buildbulge(N,K,Q,D,SHFT,B,INFO)
   
   implicit none
   
@@ -128,4 +128,4 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
     end if 
   end if
 
-end subroutine ZUFCFT
+end subroutine z_unifact_buildbulge

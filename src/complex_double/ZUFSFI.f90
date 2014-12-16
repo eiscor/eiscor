@@ -192,11 +192,11 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   shift = shift/abs(shift)
 
   ! build bulge
-  call ZUFCFT(N,STR,Q,D,shift,bulge,INFO)
+  call z_unifact_buildbulge(N,STR,Q,D,shift,bulge,INFO)
         
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZUFCFT failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_unifact_buildbulge failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
