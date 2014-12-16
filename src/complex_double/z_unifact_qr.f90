@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZUFFQR (Zomplex Unitary hessenberg Factored Fast QR)
+! z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -46,7 +46,7 @@
 !                   INFO = -5 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
+subroutine z_unifact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
 
   implicit none
   
@@ -214,4 +214,4 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     
   end do
 
-end subroutine ZUFFQR
+end subroutine z_unifact_qr

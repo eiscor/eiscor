@@ -39,7 +39,7 @@
 !                   Contains the number of iterations per deflation
 !
 !  INFO           INTEGER
-!                   INFO = 2 implies ZUFFQR failed
+!                   INFO = 2 implies z_unifact_qr failed
 !                   INFO = 1 implies ZUHRFF failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies COMPZ is invalid
@@ -141,13 +141,13 @@ subroutine ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if
   
   ! compute eigenvalues
-  call ZUFFQR(COMPZ,N,WORK(1:(3*N)),WORK((3*N+1):(5*N)),Z,ITS,INFO) 
+  call z_unifact_qr(COMPZ,N,WORK(1:(3*N)),WORK((3*N+1):(5*N)),Z,ITS,INFO) 
 
   ! check info
   if (INFO.NE.0) then 
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"ZUFFQR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"z_unifact_qr failed",INFO,INFO)
     end if
     INFO = 2 
     return

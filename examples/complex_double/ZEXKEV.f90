@@ -15,7 +15,7 @@
 !    eigenvalues using ZUHFQR
 !
 ! 2) Construct the factorization directly and compute its 
-!    eigenvalues using ZUFFQR
+!    eigenvalues using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program ZEXKEV
@@ -180,16 +180,16 @@ program ZEXKEV
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! call doffqr
-  call ZUFFQR('N',N,Q,D,Z,ITS,INFO)
+  call z_unifact_qr('N',N,Q,D,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"ZUFFQR failed."
+    print*,"z_unifact_qr failed."
     print*,"INFO:",INFO
   end if
   
   ! print D
-  print*,"Eigenvalues computed using ZUFFQR: (real part, imag part, distance to closest exact eigenvalue)"
+  print*,"Eigenvalues computed using z_unifact_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
      diff = sqrt(abs(D(2*ii-1)-rev(1))**2+abs(D(2*ii)-iev(1))**2)
      do jj=2,N

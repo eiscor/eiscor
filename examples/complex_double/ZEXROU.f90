@@ -12,7 +12,7 @@
 !    eigenvalues using ZUHFQR
 !
 ! 2) Construct the factorization directly and compute its 
-!    eigenvalues using ZUFFQR
+!    eigenvalues using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program ZEXROU
@@ -68,16 +68,16 @@ program ZEXROU
   D(2*N) = 0d0
   
   ! call zuffqr
-  call ZUFFQR('N',N,Q,D,Z,ITS,INFO)
+  call z_unifact_qr('N',N,Q,D,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"ZUFFQR failed."
+    print*,"z_unifact_qr failed."
     print*,"INFO:",INFO
   end if
   
   ! print D
-  print*,"Roots computed using ZUFFQR:"
+  print*,"Roots computed using z_unifact_qr:"
   do ii=1,N
     print*,D(2*ii-1),D(2*ii)
   end do

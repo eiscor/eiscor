@@ -1,4 +1,4 @@
-# ZUFFQR - Zomplex Unitary hessenberg Factored Fast QR eigensolver #
+# z_unifact_qr #
 
 This routine computes the eigenvalues and optionally eigenvectors of a 
 complex unitary upper-Hessenberg matrix that is stored as the product of N-1 Givens' rotations 
@@ -22,7 +22,7 @@ D(4) = di2
 D(5) = ...
 ```
 
-## ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO) ##
+## z_unifact_qr(COMPZ,N,Q,D,Z,ITS,INFO) ##
 
 ### INPUT VARIABLES: ###
 
@@ -69,5 +69,5 @@ D(2) = 1d0
 D(3) = 1d0
 D(4) = 0d0
 
-call ZUFFQR('N',2,Q,D,Z,ITS,INFO)
+call z_unifact_qr('N',2,Q,D,Z,ITS,INFO)
 ```
