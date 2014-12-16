@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOFTDB (Double Orthogonal hessenberg Factored Two by two Diagonal Block)
+! d_orthfact_2x2diagblock 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -38,7 +38,7 @@
 !                    INFO = -2 implies K is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOFTDB(N,K,Q,D,H,INFO)
+subroutine d_orthfact_2x2diagblock(N,K,Q,D,H,INFO)
   
   implicit none
   
@@ -96,4 +96,4 @@ subroutine DOFTDB(N,K,Q,D,H,INFO)
   H(:,1) = H(:,1)*D(strt+1)
   H(:,2) = H(:,2)*D(strt+3)
 
-end subroutine DOFTDB
+end subroutine d_orthfact_2x2diagblock

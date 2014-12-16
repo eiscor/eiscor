@@ -104,11 +104,11 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
     end if 
   
     ! compute first block of A
-    call DOFTDB(N,STR,Q,D,T(1:2,1:2),INFO)  
+    call d_orthfact_2x2diagblock(N,STR,Q,D,T(1:2,1:2),INFO)  
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -135,11 +135,11 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
     irho2 = -E(2) 
     
     ! compute first two columns of A
-    call DOFTDB(N,STR+1,Q,D,T(1:2,1:2),INFO)  
+    call d_orthfact_2x2diagblock(N,STR+1,Q,D,T(1:2,1:2),INFO)  
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -148,11 +148,11 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
     T(3,1) = 0d0
     T(3,2) = T(2,1) 
     
-    call DOFTDB(N,STR,Q,D,T(1:2,1:2),INFO)  
+    call d_orthfact_2x2diagblock(N,STR,Q,D,T(1:2,1:2),INFO)  
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

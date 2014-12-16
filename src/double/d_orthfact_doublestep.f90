@@ -119,11 +119,11 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   ! wilkinson shifts
   else
     ! get 2x2 block
-    call DOFTDB(N,STP,Q,D,block,INFO)
+    call d_orthfact_2x2diagblock(N,STP,Q,D,block,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
