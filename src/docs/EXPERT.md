@@ -12,7 +12,7 @@ Eigensolvers for unitary matrices can be interacted with at different levels in 
 - [__ZUHFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/ZUHFQR.md)
 
 These routines except unitary upper-Hessenberg matrices as input and solve for the eigenvalues and optionally the eigenvectors. The next level of interaction involves inputting the unitary upper-Hessenberg matrix in factored form:
-- [__DOFFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/DOFFQR.md)
+- [__d_orthfact_qr__](https://github.com/jaurentz/eiscor/blob/master/src/docs/d_orthfact_qr.md)
 - [__ZUFFQR__](https://github.com/jaurentz/eiscor/blob/master/src/docs/ZUFFQR.md)
 
 These routines need less memory but require the user to have a good understanding of the underlying factorizations.

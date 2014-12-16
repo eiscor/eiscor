@@ -5,7 +5,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks the factorization input into DOFFQR to make sure
+! This routine checks the factorization input into d_orthfact_qr to make sure
 ! is represents a unitary hessenberg matrix to machine precision. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

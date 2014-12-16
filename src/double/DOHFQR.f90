@@ -38,7 +38,7 @@
 !                    Contains the number of iterations per deflation
 !
 !  INFO           INTEGER
-!                    INFO = 2 implies DOFFQR failed
+!                    INFO = 2 implies d_orthfact_qr failed
 !                    INFO = 1 implies DOHRFF failed
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies COMPZ is invalid
@@ -139,11 +139,11 @@ subroutine DOHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if  
   
   ! compute eigenvalues
-  call DOFFQR(COMPZ,N,WORK(1:(2*N)),WORK((2*N+1):(4*N)),Z,ITS,INFO)
+  call d_orthfact_qr(COMPZ,N,WORK(1:(2*N)),WORK((2*N+1):(4*N)),Z,ITS,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"DOFFQR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_qr failed",INFO,INFO)
     end if  
     INFO = 2
     return

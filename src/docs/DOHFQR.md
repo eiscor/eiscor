@@ -33,7 +33,7 @@ __ITS__ - INTEGER array of dimension (N-1)
  - Contains the number of iterations per deflation
 
 __INFO__ - INTEGER
- - INFO = 2 implies DOFFQR failed
+ - INFO = 2 implies d_orthfact_qr failed
  - INFO = 1 implies DOHRFF failed
  - INFO = 0 implies successful computation
  - INFO = -1 implies COMPZ is invalid

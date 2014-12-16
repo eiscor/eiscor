@@ -15,7 +15,7 @@
 !    eigenvalues using DOHFQR
 !
 ! 2) Construct the factorization directly and compute its 
-!    eigenvalues using DOFFQR
+!    eigenvalues using d_orthfact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program DEXKEV
@@ -191,16 +191,16 @@ program DEXKEV
   
   
   ! call doffqr
-  call DOFFQR('N',N,Q,D,Z,ITS,INFO)
+  call d_orthfact_qr('N',N,Q,D,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"DOFFQR failed."
+    print*,"d_orthfact_qr failed."
     print*,"INFO:",INFO
   end if
   
   ! print D
-  print*,"Eigenvalues computed using DOFFQR: (real part, imag part, distance to closest exact eigenvalue)"
+  print*,"Eigenvalues computed using d_orthfact_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
      diff = sqrt(abs(D(2*ii-1)-rev(1))**2+abs(D(2*ii)-iev(1))**2)
      do jj=2,N

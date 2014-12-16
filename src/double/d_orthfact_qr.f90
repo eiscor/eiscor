@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DOFFQR (Double Orthogonal hessenberg Factored Fast QR)
+! d_orthfact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -46,7 +46,7 @@
 !                    INFO = -3 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
+subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
   
   implicit none
   
@@ -241,4 +241,4 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
      
   end do 
   
-end subroutine DOFFQR
+end subroutine d_orthfact_qr

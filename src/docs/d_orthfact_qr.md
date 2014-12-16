@@ -1,4 +1,4 @@
-# DOFFQR - Double Orthogonal hessenberg Factored Fast QR eigensolver #
+# d_orthfact_qr #
 
 This routine computes the eigenvalues and optionally eigenvectors of a 
 real orthogonal upper-Hessenberg matrix that is stored as the product of N-1 Givens' rotations and a complex diagonal matrix with entries +/- 1 using a fast QR algorithm. On output the eigenvalues are stored in the diagonal matrix.
@@ -20,7 +20,7 @@ D(4) = 0d0
 D(5) = ...
 ```
 
-## DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO) ##
+## d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO) ##
 
 ### INPUT VARIABLES: ###
 
@@ -66,5 +66,5 @@ D(2) = 0d0
 D(3) = -1d0
 D(4) = 0d0
 
-call DOFFQR('N',2,Q,D,Z,ITS,INFO)
+call d_orthfact_qr('N',2,Q,D,Z,ITS,INFO)
 ```

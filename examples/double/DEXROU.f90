@@ -12,7 +12,7 @@
 !    eigenvalues using DOHFQR
 !
 ! 2) Construct the factorization directly and compute its 
-!    eigenvalues using DOFFQR
+!    eigenvalues using d_orthfact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program DEXROU
@@ -78,16 +78,16 @@ program DEXROU
   D(2*N) = 0d0
   
   ! call doffqr
-  call DOFFQR('N',N,Q,D,Z,ITS,INFO)
+  call d_orthfact_qr('N',N,Q,D,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
-    print*,"DOFFQR failed."
+    print*,"d_orthfact_qr failed."
     print*,"INFO:",INFO
   end if
   
   ! print D
-  print*,"Roots computed using DOFFQR:"
+  print*,"Roots computed using d_orthfact_qr:"
   do ii=1,N
     print*,D(2*ii-1),D(2*ii)
   end do
