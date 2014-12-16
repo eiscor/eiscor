@@ -76,7 +76,7 @@ subroutine ZUHFQR(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if
   
   ! check N
-  call IARNAN(N,INFO)
+  call i_scalar_nancheck(N,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then

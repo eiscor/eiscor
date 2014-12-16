@@ -65,7 +65,7 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
   if (DEBUG) then
     
     ! check N
-    call IARNAN(N,INFO)
+    call i_scalar_nancheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return

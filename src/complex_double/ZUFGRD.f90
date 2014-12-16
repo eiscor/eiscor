@@ -76,7 +76,7 @@ subroutine ZUFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
   if (DEBUG) then
     
     ! check N
-    call IARNAN(N,INFO)
+    call i_scalar_nancheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return
@@ -114,7 +114,7 @@ subroutine ZUFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
     end if  
     
     ! check ITCNT
-    call IARNAN(ITCNT,INFO)
+    call i_scalar_nancheck(ITCNT,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-7)
       return

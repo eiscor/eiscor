@@ -87,7 +87,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
     
     ! check N
-    call IARNAN(N,INFO)
+    call i_scalar_nancheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
@@ -127,7 +127,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if 
     
     ! check ITCNT
-    call IARNAN(ITCNT,INFO)
+    call i_scalar_nancheck(ITCNT,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-8)
       return

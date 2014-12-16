@@ -51,7 +51,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
   INFO = 0
   
   ! check N
-  call IARNAN(N,INFO)
+  call i_scalar_nancheck(N,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then

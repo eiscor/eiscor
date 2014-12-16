@@ -70,7 +70,7 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     end if
     
     ! check N
-    call IARNAN(N,INFO)
+    call i_scalar_nancheck(N,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
