@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZARCG43 (Zomplex Auxiliary Routine Compute Givens generators 4->3)
+! z_rot3_vec4gen
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -44,7 +44,7 @@
 !                    INFO = -4 implies BI is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZARCG43(AR,AI,BR,BI,CR,CI,S,NRM,INFO)
+subroutine z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM,INFO)
 
   implicit none
   
@@ -174,4 +174,4 @@ subroutine ZARCG43(AR,AI,BR,BI,CR,CI,S,NRM,INFO)
   CI = -CR*si + CI*sr
   CR = temp  
 
-end subroutine ZARCG43
+end subroutine z_rot3_vec4gen

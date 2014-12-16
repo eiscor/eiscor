@@ -97,13 +97,13 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
   do ii=1,(N-1)
             
     ! reduce to block diagonal
-    call ZARCG43(dble(H(ii,ii)),aimag(H(ii,ii)),dble(H(ii+1,ii)),aimag(H(ii+1,ii)),cr,ci,s,nrm,INFO)
+    call z_rot3_vec4gen(dble(H(ii,ii)),aimag(H(ii,ii)),dble(H(ii+1,ii)),aimag(H(ii+1,ii)),cr,ci,s,nrm,INFO)
     
     ! check info
     if (INFO.NE.0) then 
       ! print error in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"ZARCG43 failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen failed",INFO,INFO)
       end if 
       return
     end if 

@@ -117,12 +117,12 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
   block(1,1) = block(1,1) - SHFT
   
   ! bulge
-  call ZARCG43(dble(block(1,1)),aimag(block(1,1)),dble(block(2,1)), &
+  call z_rot3_vec4gen(dble(block(1,1)),aimag(block(1,1)),dble(block(2,1)), &
     aimag(block(2,1)),B(1),B(2),B(3),nrm,INFO)
       
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"ZARCG43 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
