@@ -55,7 +55,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
     end if
     INFO = -1
     return
@@ -64,7 +64,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
     end if
     INFO = -1
     return
@@ -73,7 +73,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
     INFO = -1
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
     end if
     return
   end if
@@ -83,7 +83,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"H is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,INFO)
     end if
     INFO = -2 
     return
@@ -103,7 +103,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
     if (INFO.NE.0) then 
       ! print error in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"ZARCG43 failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"ZARCG43 failed",INFO,INFO)
       end if 
       return
     end if 
@@ -113,7 +113,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
       INFO = -2
       ! print error in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"H is not unitary",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"H is not unitary",INFO,INFO)
       end if 
       return          
     end if
@@ -138,7 +138,7 @@ subroutine ZUHRFF(N,H,Q,D,INFO)
     INFO = -2
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"H is not unitary",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"H is not unitary",INFO,INFO)
     end if 
     return          
   end if

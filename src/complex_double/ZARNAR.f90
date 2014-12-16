@@ -46,24 +46,24 @@ subroutine ZARNAR(A,B,ARG,INFO)
     ! check A
     call DARNAN(A,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"A is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
       return
     end if
     call DARINF(A,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"A is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
       return
     end if   
 
     ! check B
     call DARNAN(B,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"B is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
       return
     end if
     call DARINF(B,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"B is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
       return
     end if
 

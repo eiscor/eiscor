@@ -65,48 +65,48 @@ subroutine ZARCG43(AR,AI,BR,BI,CR,CI,S,NRM,INFO)
     ! check AR
     call DARNAN(AR,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"AR is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"AR is invalid",INFO,-1)
       return
     end if
     call DARINF(AR,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"AR is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"AR is invalid",INFO,-1)
       return
     end if   
 
     ! check AI
     call DARNAN(AI,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"AI is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"AI is invalid",INFO,-2)
       return
     end if
     call DARINF(AI,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"AI is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"AI is invalid",INFO,-2)
       return
     end if  
 
     ! check BR
     call DARNAN(BR,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"BR is invalid",INFO,-3)
+      call u_infocode_check(__FILE__,__LINE__,"BR is invalid",INFO,-3)
       return
     end if
     call DARINF(BR,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"BR is invalid",INFO,-3)
+      call u_infocode_check(__FILE__,__LINE__,"BR is invalid",INFO,-3)
       return
     end if
     
     ! check BI
     call DARNAN(BI,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"BI is invalid",INFO,-4)
+      call u_infocode_check(__FILE__,__LINE__,"BI is invalid",INFO,-4)
       return
     end if
     call DARINF(BI,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"BI is invalid",INFO,-4)
+      call u_infocode_check(__FILE__,__LINE__,"BI is invalid",INFO,-4)
       return
     end if
 

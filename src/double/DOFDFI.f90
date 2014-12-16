@@ -78,21 +78,21 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ! check COMPZ
     if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
       return
     end if
     
     ! check STR
     if ((STR < 1).OR.(STR > N-1)) then
       INFO = -3
-      call UARERR(__FILE__,__LINE__,"STR must be 1 <= STR <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STR must be 1 <= STR <= N-1",INFO,INFO)
       return
     end if
     
     ! check STP
     if ((STP < STR).OR.(STP > N-1)) then
       INFO = -4
-      call UARERR(__FILE__,__LINE__,"STP must be STR <= STP <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STP must be STR <= STP <= N-1",INFO,INFO)
       return
     end if
   
@@ -123,7 +123,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -134,7 +134,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DTTEEV failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DTTEEV failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -155,7 +155,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -169,7 +169,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -189,7 +189,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -200,7 +200,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -216,7 +216,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -229,7 +229,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -255,7 +255,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -266,7 +266,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -286,7 +286,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -297,7 +297,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -322,7 +322,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -333,7 +333,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -353,7 +353,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -364,7 +364,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -387,7 +387,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -398,7 +398,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -423,7 +423,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFCFT failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -439,7 +439,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -450,7 +450,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -482,7 +482,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -493,7 +493,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -513,7 +513,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -524,7 +524,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -535,7 +535,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -566,7 +566,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -577,7 +577,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -597,7 +597,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -608,7 +608,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTO failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -619,7 +619,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -642,7 +642,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -653,7 +653,7 @@ subroutine DOFDFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARFGR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

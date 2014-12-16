@@ -71,7 +71,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
       
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
     end if  
       
     return
@@ -82,7 +82,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     
   ! print error in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"Invalid factorization",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"Invalid factorization",INFO,INFO)
   end if
   
   if (INFO.NE.0) then 
@@ -97,7 +97,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
       
       ! print error in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
       end if
       
       if (INFO.NE.0) then 
@@ -137,7 +137,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFGRD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFGRD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -159,7 +159,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
         
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -182,7 +182,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
           
         ! check INFO in debug mode
         if (DEBUG) then
-          call UARERR(__FILE__,__LINE__,"DTTEEV failed",INFO,INFO)
+          call u_infocode_check(__FILE__,__LINE__,"DTTEEV failed",INFO,INFO)
           if (INFO.NE.0) then 
             return 
           end if 
@@ -224,7 +224,7 @@ subroutine DOFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
 
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"DOFDFI failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"DOFDFI failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 

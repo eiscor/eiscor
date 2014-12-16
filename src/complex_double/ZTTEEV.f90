@@ -53,7 +53,7 @@ subroutine ZTTEEV(H,E,Z,INFO)
     ! check H
     call ZARACH2(2,2,H,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"H is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,-1)
       return
     end if
   

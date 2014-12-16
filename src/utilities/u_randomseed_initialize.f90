@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! UARIRS (Utility Auxiliary Routine Initialize Random Seed)
+! u_randomseed_initialize
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -19,7 +19,7 @@
 !                    INFO = 0 implies successful computation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine UARIRS(INFO)
+subroutine u_randomseed_initialize(INFO)
 
   implicit none
   
@@ -45,7 +45,7 @@ subroutine UARIRS(INFO)
   
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"Array allocation failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"Array allocation failed",INFO,INFO)
     end if 
     
     return
@@ -63,4 +63,4 @@ subroutine UARIRS(INFO)
   ! free memory        
   deallocate(seed)
 
-end subroutine UARIRS
+end subroutine u_randomseed_initialize

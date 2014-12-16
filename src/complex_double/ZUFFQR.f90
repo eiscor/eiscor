@@ -71,7 +71,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
     INFO = -1
     ! check input in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
     end if
     return
   end if
@@ -81,7 +81,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
   if (INFO.NE.0) then
     ! check input in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N, Q, or D is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N, Q, or D is invalid",INFO,INFO)
     end if
     INFO = -2
     return
@@ -94,7 +94,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
       INFO = -5
       ! check input in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
       end if
       return
     end if
@@ -130,7 +130,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
    
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"ZUFGRD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ZUFGRD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -152,7 +152,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -163,7 +163,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"ZTTEEV failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"ZTTEEV failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -198,7 +198,7 @@ subroutine ZUFFQR(COMPZ,N,Q,D,Z,ITS,INFO)
  
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"ZUFSFI failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"ZUFSFI failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 

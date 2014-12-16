@@ -79,45 +79,45 @@ subroutine ZUFFGR(JOB,N,STR,STP,Q,D,B,INFO)
     ! check JOB
     if ((JOB.NE.'T').AND.(JOB.NE.'B')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"JOB must be 'T' or 'B'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"JOB must be 'T' or 'B'",INFO,INFO)
       return
     end if
     
     ! check N
     call IARNAN(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
     call IARINF(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
     if (N < 2) then
       INFO = -2
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
     end if
     
     ! check STR
     if ((STR < 1).OR.(STR > N-1)) then
       INFO = -3
-      call UARERR(__FILE__,__LINE__,"STR must 1 <= STR <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STR must 1 <= STR <= N-1",INFO,INFO)
       return
     end if 
     
     ! check STP
     if ((STP < STR).OR.(STP > N-1)) then
       INFO = -4
-      call UARERR(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
       return
     end if  
     
     ! check B
     call DARACH1(3,B,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"B is invalid",INFO,-7)
+      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-7)
       return
     end if   
 
@@ -131,7 +131,7 @@ subroutine ZUFFGR(JOB,N,STR,STP,Q,D,B,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"ZARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ZARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

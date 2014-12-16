@@ -55,7 +55,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
     end if  
     INFO = -1
     return
@@ -64,7 +64,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
     end if  
     INFO = -1
     return
@@ -73,7 +73,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
     INFO = -1
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
     end if  
     return
   end if
@@ -83,7 +83,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"H is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,INFO)
     end if  
     INFO = -2
     return
@@ -101,7 +101,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -112,7 +112,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
       INFO = -3
       ! print error in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"H is not orthogonal",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"H is not orthogonal",INFO,INFO)
       end if  
       return          
     end if
@@ -136,7 +136,7 @@ subroutine DOHRFF(N,H,Q,D,INFO)
     INFO = -3
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"H is not orthogonal",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"H is not orthogonal",INFO,INFO)
     end if  
     return        
   end if

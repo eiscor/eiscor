@@ -58,21 +58,21 @@ subroutine ZARGTD(JOB,D,B,INFO)
     ! check JOB
     if ((JOB.NE.'L').AND.(JOB.NE.'R')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"JOB must be 'L' or 'R'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"JOB must be 'L' or 'R'",INFO,INFO)
       return
     end if
   
     ! check D
     call DARACH1(4,D,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"D is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-2)
       return
     end if
   
     ! check B
     call DARACH1(3,B,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"B is invalid",INFO,-3)
+      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return
     end if
 

@@ -49,20 +49,20 @@ subroutine DARFGR(JOB,Q1,Q2,INFO)
     ! check JOB
     if ((JOB.NE.'L').AND.(JOB.NE.'R')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"JOB is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,-1)
       return
     end if
     
     ! check Q1
     call DARACH1(2,Q1,INFO)
-    call UARERR(__FILE__,__LINE__,"Q1 is invalid",INFO,-2)
+    call u_infocode_check(__FILE__,__LINE__,"Q1 is invalid",INFO,-2)
     if (INFO.NE.0) then 
       return 
     end if 
     
     ! check Q2
     call DARACH1(2,Q2,INFO)
-    call UARERR(__FILE__,__LINE__,"Q2 is invalid",INFO,-3)
+    call u_infocode_check(__FILE__,__LINE__,"Q2 is invalid",INFO,-3)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -81,7 +81,7 @@ subroutine DARFGR(JOB,Q1,Q2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -99,7 +99,7 @@ subroutine DARFGR(JOB,Q1,Q2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

@@ -71,20 +71,20 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     ! check JOB
     if ((JOB.NE.'S').AND.(JOB.NE.'D')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"JOB is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,INFO)
       return
     end if  
   
     ! check STR
     if ((STR >= N).OR.(STR < 1)) then
       INFO = -3
-      call UARERR(__FILE__,__LINE__,"STR is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STR is invalid",INFO,INFO)
       return
     end if  
   
     ! check E
     call DARACH1(2,E,INFO)
-    call UARERR(__FILE__,__LINE__,"E is invalid",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -98,7 +98,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     if (DEBUG) then
       if (abs(E(2)).NE.0d0) then
         INFO = -6
-        call UARERR(__FILE__,__LINE__,"E should be strictly real",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"E should be strictly real",INFO,INFO)
         return
       end if
     end if 
@@ -108,7 +108,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -119,7 +119,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -139,7 +139,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -152,7 +152,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DOFTDB failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -168,7 +168,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -179,7 +179,7 @@ subroutine DOFCFT(JOB,N,STR,Q,D,E,B1,B2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 

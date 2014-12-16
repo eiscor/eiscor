@@ -52,7 +52,7 @@ subroutine DTTEEV(H,E,Z,INFO)
   
     ! check H
     call DARACH2(2,2,H,INFO)
-    call UARERR(__FILE__,__LINE__,"Z is invalid",INFO,-1)
+    call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-1)
     if (INFO.NE.0) then
       return
     end if 

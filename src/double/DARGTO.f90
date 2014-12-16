@@ -52,21 +52,21 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
   
     ! check Q1
     call DARACH1(2,Q1,INFO)
-    call UARERR(__FILE__,__LINE__,"Q1 is invalid",INFO,-1)
+    call u_infocode_check(__FILE__,__LINE__,"Q1 is invalid",INFO,-1)
     if (INFO.NE.0) then 
       return 
     end if 
     
     ! check Q2
     call DARACH1(2,Q2,INFO)
-    call UARERR(__FILE__,__LINE__,"Q2 is invalid",INFO,-2)
+    call u_infocode_check(__FILE__,__LINE__,"Q2 is invalid",INFO,-2)
     if (INFO.NE.0) then 
       return 
     end if   
     
     ! check Q3
     call DARACH1(2,Q3,INFO)
-    call UARERR(__FILE__,__LINE__,"Q3 is invalid",INFO,-3)
+    call u_infocode_check(__FILE__,__LINE__,"Q3 is invalid",INFO,-3)
     if (INFO.NE.0) then 
       return 
     end if  
@@ -90,7 +90,7 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -105,7 +105,7 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -120,7 +120,7 @@ subroutine DARGTO(Q1,Q2,Q3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"DARCG22 failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 

@@ -1,5 +1,5 @@
 #include "eiscor.h"
-subroutine UARERR(FILENAME,LINENUM,MESSAGE,INFO,NEWINFO) 
+subroutine u_infocode_check(FILENAME,LINENUM,MESSAGE,INFO,NEWINFO) 
 
   implicit none
 
@@ -18,4 +18,4 @@ subroutine UARERR(FILENAME,LINENUM,MESSAGE,INFO,NEWINFO)
     return
   end if
   
-end subroutine UARERR 
+end subroutine u_infocode_check 

@@ -65,38 +65,38 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     ! check JOB
     if ((JOB.NE.'E').AND.(JOB.NE.'V')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"JOB must be 'E' or 'V'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"JOB must be 'E' or 'V'",INFO,INFO)
       return
     end if
     
     ! check N
     call IARNAN(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
     call IARINF(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
     if (N < 2) then
       INFO = -2
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
     end if 
   
     ! check E
     call DARACH1(2*N,E,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"E is invalid",INFO,-3)
+      call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,-3)
       return
     end if
     do ii=1,N
       nrm = sqrt(E(2*ii-1)**2 + E(2*ii)**2)
       if (abs(nrm-1d0) > tol) then
         INFO = -3
-        call UARERR(__FILE__,__LINE__,"E is not unimodular",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"E is not unimodular",INFO,INFO)
         return    
       end if
     end do
@@ -105,7 +105,7 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     if (JOB.EQ.'V') then
       call ZARACH2(N,N,Z,INFO)
       if (INFO.NE.0) then
-        call UARERR(__FILE__,__LINE__,"Z is invalid",INFO,-4)
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-4)
         return
       end if
     end if 
@@ -124,7 +124,7 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"ZARNAR failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ZARNAR failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -137,7 +137,7 @@ subroutine ZARSUE(JOB,N,E,Z,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"ZARNAR failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"ZARNAR failed",INFO,INFO)
         if (INFO.NE.0) then 
           return 
         end if 

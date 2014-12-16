@@ -56,7 +56,7 @@ subroutine DOFCHF(N,Q,D,INFO)
       
     ! print warning in debug mode
     if (DEBUG) then 
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
     end if
       
     return
@@ -68,7 +68,7 @@ subroutine DOFCHF(N,Q,D,INFO)
     
     ! print warning in debug mode
     if (DEBUG) then 
-      call UARERR(__FILE__,__LINE__,"Q is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-2)
     end if
     
     return
@@ -82,7 +82,7 @@ subroutine DOFCHF(N,Q,D,INFO)
       
       ! print warning in debug mode
       if (DEBUG) then 
-        call UARERR(__FILE__,__LINE__,"Q is not orthogonal to working precision",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"Q is not orthogonal to working precision",INFO,INFO)
       end if
     
       return
@@ -95,7 +95,7 @@ subroutine DOFCHF(N,Q,D,INFO)
 
     ! print warning in debug mode
     if (DEBUG) then 
-      call UARERR(__FILE__,__LINE__,"D is invalid",INFO,-3)
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-3)
     end if
     
     return
@@ -108,7 +108,7 @@ subroutine DOFCHF(N,Q,D,INFO)
       
       ! print warning in debug mode
       if (DEBUG) then 
-        call UARERR(__FILE__,__LINE__,"D is not real orthogonal",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"D is not real orthogonal",INFO,INFO)
       end if
     
       return

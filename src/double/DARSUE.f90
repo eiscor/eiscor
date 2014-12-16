@@ -69,7 +69,7 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
     INFO = -1
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"JOB must be 'E' or 'V'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"JOB must be 'E' or 'V'",INFO,INFO)
     end if   
     return
   end if
@@ -79,7 +79,7 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
     INFO = -2
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
     end if   
     return
   end if  
@@ -89,7 +89,7 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"E is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,INFO)
     end if
     INFO = -3   
     return
@@ -100,7 +100,7 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
       INFO = -3
       ! print error in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"E is not unimodular to machine precision",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"E is not unimodular to machine precision",INFO,INFO)
       end if   
       return   
     end if
@@ -112,7 +112,7 @@ subroutine DARSUE(JOB,N,E,Z,INFO)
     if (INFO.NE.0) then
       ! print error in debug mode
       if (DEBUG) then
-        call UARERR(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
       end if
       INFO = -4   
       return 

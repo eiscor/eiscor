@@ -82,38 +82,38 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ! check COMPZ
     if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
       return
     end if
     
     ! check N
     call IARNAN(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
     call IARINF(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
     end if
     if (N < 2) then
       INFO = -2
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
     end if
     
     ! check STR
     if ((STR < 1).OR.(STR > N-1)) then
       INFO = -3
-      call UARERR(__FILE__,__LINE__,"STR must 1 <= STR <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STR must 1 <= STR <= N-1",INFO,INFO)
       return
     end if 
     
     ! check STP
     if ((STP < STR).OR.(STP > N-1)) then
       INFO = -4
-      call UARERR(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
       return
     end if  
     
@@ -121,7 +121,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     if (COMPZ.EQ.'V') then
       call ZARACH2(N,N,Z,INFO)
       if (INFO.NE.0) then
-        call UARERR(__FILE__,__LINE__,"Z is invalid",INFO,-7)
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-7)
         return
       end if 
     end if 
@@ -129,17 +129,17 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ! check ITCNT
     call IARNAN(ITCNT,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"ITCNT is invalid",INFO,-8)
+      call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-8)
       return
     end if
     call IARINF(ITCNT,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"ITCNT is invalid",INFO,-8)
+      call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-8)
       return
     end if
     if (ITCNT < 0) then
       INFO = -8
-      call UARERR(__FILE__,__LINE__,"ITCNT must be non-negative",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ITCNT must be non-negative",INFO,INFO)
       return
     end if 
 
@@ -159,7 +159,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -170,7 +170,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"ZTTEEV failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ZTTEEV failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -196,7 +196,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
         
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZUFCFT failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZUFCFT failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -212,7 +212,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZUFFGR failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZUFFGR failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -239,7 +239,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"ZARGTD failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ZARGTD failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -254,7 +254,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call UARERR(__FILE__,__LINE__,"ZARGTO failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ZARGTO failed",INFO,INFO)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -276,7 +276,7 @@ subroutine ZUFSFI(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZUFFGR failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZUFFGR failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 

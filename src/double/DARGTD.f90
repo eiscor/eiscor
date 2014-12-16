@@ -51,25 +51,25 @@ subroutine DARGTD(JOB,D,B,INFO)
     ! check JOB
     if ((JOB.NE.'L').AND.(JOB.NE.'R')) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"JOB is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,-1)
       return
     end if
   
     ! check D
     if ((abs(D(1)).NE.1d0).AND.(abs(D(2)).NE.0d0)) then
       INFO = -2
-      call UARERR(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
       return
     end if
     if ((abs(D(3)).NE.1d0).AND.(abs(D(4)).NE.0d0)) then
       INFO = -2
-      call UARERR(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
       return
     end if
       
     ! check B
     call DARACH1(2,B,INFO)
-    call UARERR(__FILE__,__LINE__,"B is invalid",INFO,-3)
+    call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
     if (INFO.NE.0) then 
       return 
     end if 

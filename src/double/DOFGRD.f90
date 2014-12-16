@@ -77,28 +77,28 @@ subroutine DOFGRD(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
     ! check N
     if (N < 2) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
     end if
     
     ! check STR
     if ((STR < 1).OR.(STR > N-1)) then
       INFO = -2
-      call UARERR(__FILE__,__LINE__,"STR must be 1 <= STR <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STR must be 1 <= STR <= N-1",INFO,INFO)
       return
     end if
     
     ! check STP
     if ((STP < STR).OR.(STP > N-1)) then
       INFO = -3
-      call UARERR(__FILE__,__LINE__,"STP must be STR <= STP <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"STP must be STR <= STP <= N-1",INFO,INFO)
       return
     end if
     
     ! check ITCNT
     if (ITCNT < 0) then
       INFO = -7
-      call UARERR(__FILE__,__LINE__,"ITCNT must be positive",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"ITCNT must be positive",INFO,INFO)
       return
     end if
   

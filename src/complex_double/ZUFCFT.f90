@@ -67,36 +67,36 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
     ! check N
     call IARNAN(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return
     end if
     call IARINF(N,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"N is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
       return
     end if
     if (N < 2) then
       INFO = -1
-      call UARERR(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
     end if 
     
     ! check K
     if ((K < 1).OR.(K > N-1)) then
       INFO = -2
-      call UARERR(__FILE__,__LINE__,"K must be 1 <= K <= N-1",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"K must be 1 <= K <= N-1",INFO,INFO)
       return
     end if 
   
     ! check SHFT
     call ZARNAN(SHFT,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"SHFT is invalid",INFO,-5)
+      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-5)
       return
     end if
     call ZARINF(SHFT,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"SHFT is invalid",INFO,-5)
+      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-5)
       return
     end if
   
@@ -107,7 +107,7 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
       
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZUFTDB failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -122,7 +122,7 @@ subroutine ZUFCFT(N,K,Q,D,SHFT,B,INFO)
       
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZARCG43 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZARCG43 failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 

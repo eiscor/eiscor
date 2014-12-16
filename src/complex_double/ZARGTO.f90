@@ -54,21 +54,21 @@ subroutine ZARGTO(G1,G2,G3,INFO)
     ! check G1
     call DARACH1(3,G1,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"G2 is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"G2 is invalid",INFO,-1)
       return
     end if
   
     ! check G2
     call DARACH1(3,G2,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"G2 is invalid",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"G2 is invalid",INFO,-2)
       return
     end if
   
     ! check G3
     call DARACH1(3,G3,INFO)
     if (INFO.NE.0) then
-      call UARERR(__FILE__,__LINE__,"G3 is invalid",INFO,-3)
+      call u_infocode_check(__FILE__,__LINE__,"G3 is invalid",INFO,-3)
       return
     end if
 
@@ -95,7 +95,7 @@ subroutine ZARGTO(G1,G2,G3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -112,7 +112,7 @@ subroutine ZARGTO(G1,G2,G3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -129,7 +129,7 @@ subroutine ZARGTO(G1,G2,G3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call UARERR(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"ZARCG33 failed",INFO,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
