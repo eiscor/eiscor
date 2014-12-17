@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZEXROU (Zomplex EXample Roots Of Unity)
+! example_z_unihess_rootsofunity
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -15,7 +15,7 @@
 !    eigenvalues using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program ZEXROU
+program example_z_unihess_rootsofunity
 
   implicit none
   
@@ -28,7 +28,7 @@ program ZEXROU
   
   ! print banner
   print*,""
-  print*,"ZEXROU: Zomplex EXample Roots Of Unity"
+  print*,"example_z_unihess_rootsofunity:"
   print*,""
   
   ! initialize H to be an upper hessenberg permutation matrix
@@ -84,4 +84,4 @@ program ZEXROU
   print*,""
 
     
-end program ZEXROU
+end program example_z_unihess_rootsofunity

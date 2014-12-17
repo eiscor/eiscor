@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZEXROU (Zomplex EXample Known EigenValues)
+! example_z_unihess_rootsofunity
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -18,7 +18,7 @@
 !    eigenvalues using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program ZEXKEV
+program example_z_unihess_rootsofunity
 
   implicit none
   
@@ -40,7 +40,7 @@ program ZEXKEV
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
   print*,""
-  print*,"ZEXKEV: Zomple EXample Known EigenValues"
+  print*,"example_z_unihess_rootsofunity:"
   print*,""
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -203,4 +203,4 @@ program ZEXKEV
   print*,""
 
     
-end program ZEXKEV
+end program example_z_unihess_rootsofunity

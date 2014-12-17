@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DEXROU (Double EXample Roots Of Unity)
+! example_d_orthhess_rootsofunity
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -15,7 +15,7 @@
 !    eigenvalues using d_orthfact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program DEXROU
+program example_d_orthhess_rootsofunity
 
   implicit none
   
@@ -28,7 +28,7 @@ program DEXROU
   
   ! print banner
   print*,""
-  print*,"DEXROU: Double EXample Roots Of Unity"
+  print*,"example_d_orthhess_rootsofunity:"
   print*,""
   
   ! initialize H to be an upper hessenberg permutation matrix
@@ -94,4 +94,4 @@ program DEXROU
   print*,""
 
     
-end program DEXROU
+end program example_d_orthhess_rootsofunity

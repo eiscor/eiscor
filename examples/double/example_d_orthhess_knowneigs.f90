@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! DEXROU (Double EXample Known EigenValues)
+! example_d_orthhess_knowneigs
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -18,7 +18,7 @@
 !    eigenvalues using d_orthfact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program DEXKEV
+program example_d_orthhess_knowneigs
 
   implicit none
   
@@ -38,7 +38,7 @@ program DEXKEV
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
   print*,""
-  print*,"DEXKEV: Double EXample Known EigenValues"
+  print*,"example_d_orthhess_knowneigs:"
   print*,""
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -214,4 +214,4 @@ program DEXKEV
   print*,""
 
     
-end program DEXKEV
+end program example_d_orthhess_knowneigs
