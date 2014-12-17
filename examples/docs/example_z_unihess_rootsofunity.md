@@ -1,5 +1,4 @@
-# ZEXROU #
-_Zomplex EXample Roots Of Unity_
+# example_z_unihess_rootsofunity #
 
 In this example the roots of unity are computed by solving the eigenvalue problem for a corresponding permuation matrix. This example solves it two ways:
  1. Form the permutation matrix explicitly and then call [__z_unihess_qr__]().
