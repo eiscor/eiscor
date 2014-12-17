@@ -82,7 +82,7 @@ $(DEXSRCS) $(ZEXSRCS):
 $(DTESTS) $(ZTESTS): $(DTESTSRCS) $(ZTESTSRCS) lib$(LIBNAME).$(SLIB).$(VERSION)
 	make -C $(DTESTDIR) &&\
 	make -C $(ZTESTDIR)
-	
+
 $(DTESTSRCS) $(ZTESTSRCS):
 
 uninstall: clean
