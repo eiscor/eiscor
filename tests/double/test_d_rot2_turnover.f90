@@ -5,8 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine d_rot2_turnover (turnover). The following tests are
-! run:
+! This program tests the subroutine d_rot2_turnover (turnover). The following 
+! tests are run:
 !
 ! 1) three random rotations
 ! 2) one almost diagonal rotation
@@ -16,6 +16,12 @@
 ! 6) two almost anti-diagonal rotations
 ! 7) three almost anti-diagonal rotations
 ! 8) repeating 2), 3), 5), and 6) with one/two exact (anti-)diagonal rotations
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! If DEBUG mode is activated a histogram of the accuracy of the turnover is 
+! printed. The program compares the histogram to a reference histogram. If the
+! histogram is equal or better than the reference, then the test is passed.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_rot2_turnover
@@ -60,18 +66,22 @@ program test_d_rot2_turnover
   end if   
   ! store seeds        
   seed(1) = 377679
-  if (n>1) then
+  if (n>=12) then
      seed(2) = 154653 
-     if (n>2) then
-        seed(3) = 331669 
-        if (n>3) then
-           seed(4) = 194341
-           if (n>4) then
-              do ii=5,n
-                 seed(ii)=0
-              end do
-           end if
-        end if
+     seed(3) = 331669 
+     seed(4) = 194341
+     seed(5) = 1451740
+     seed(6) = 3974222
+     seed(7) = 1274552
+     seed(8) = 4130946
+     seed(9) = 3816048
+     seed(10) = 4989015
+     seed(11) = 933389
+     seed(12) = 4989015
+     if (n>12) then
+        do ii=13,n
+           seed(ii)=0
+        end do
      end if
   end if
   ! set the generator
@@ -579,16 +589,28 @@ program test_d_rot2_turnover
      end if
   end if
 
+  if (DEBUG) then
+     ! print histogram
+     write(*,*) ""
+     write(*,*) "<1e-17",histo2(1,:)
+     write(*,*) "<1e-16",histo2(2,:)
+     write(*,*) "<1e-15",histo2(3,:)
+     write(*,*) "<1e-14",histo2(4,:)
+     write(*,*) "<1e-13",histo2(5,:)
+     write(*,*) "<1e-12",histo2(6,:)
+     write(*,*) ">1e-12",histo2(7,:)
+  end if
 
-  histot(1,:) = (/     9,       16424,       68552,      120000,          90,      118333,      120000,       66021/)!
-  histot(2,:) = (/   144,        9494,        2233,           0,         559,           0,           0,        2162/)!
-  histot(3,:) = (/ 67999,       73506,       44986,           0,       81134,        1667,           0,       37999/)!
-  histot(4,:) = (/ 50963,       20217,        4228,           0,       37337,           0,           0,       13519/)!
-  histot(5,:) = (/   885,         359,           1,           0,         880,           0,           0,         299/)!
-  histot(6,:) = (/     0,           0,           0,           0,           0,           0,           0,           0/)!
-  histot(7,:) = (/     0,           0,           0,           0,           0,           0,           0,           0/)!
+  ! reference histogram, turnover passes test if histogram is better than this one
+  histot(1,:) = (/          15,       16389,       68649,      120000,         103,      118387,      120000,       66152/)!
+  histot(2,:) = (/         135,        9388,        2274,           0,         555,           0,           0,        2222/)!
+  histot(3,:) = (/       67830,       73499,       44915,           0,       81487,        1613,           0,       37740/)!
+  histot(4,:) = (/       51146,       20372,        4162,           0,       36978,           0,           0,       13595/)!
+  histot(5,:) = (/         874,         352,           0,           0,         877,           0,           0,         291/)!
+  histot(6,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
+  histot(7,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
 
-
+  ! compare histogram
   do jj=1,8
      h2 = histo2(7,jj)
      ht = histot(7,jj)
@@ -596,9 +618,10 @@ program test_d_rot2_turnover
         if (ht>h2) then
            if (DEBUG) then
               pass_all = .FALSE.
+              print*, ii, jj
+           else
+              call u_test_failed(__LINE__)           
            end if
-        else
-           call u_test_failed(__LINE__)           
         end if
         if (ii>1) then
            ht = ht + histot(ii-1,jj)
@@ -607,17 +630,8 @@ program test_d_rot2_turnover
      end do
   end do
  
-  ! print histogramm
   if (DEBUG) then
      if (.NOT. pass_all) then
-        write(*,*) ""
-        write(*,*) "<1e-17",histo2(1,:)
-        write(*,*) "<1e-16",histo2(2,:)
-        write(*,*) "<1e-15",histo2(3,:)
-        write(*,*) "<1e-14",histo2(4,:)
-        write(*,*) "<1e-13",histo2(5,:)
-        write(*,*) "<1e-12",histo2(6,:)
-        write(*,*) ">1e-12",histo2(7,:)
         write(*,*) "At least one turnover test FAILED."
      end if
   end if
