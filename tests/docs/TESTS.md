@@ -5,6 +5,7 @@ Every test in __eiscor__ should adhere to the following template:
 - at every test for failure a call to the function __u_test_failed__ with a line number as an argument (i.e. __call u_test_failed(21)__)
 - a single call at the end of the test to the function __u_test_passed__ with a total compute time as an argument (i.e. __call u_test_passed(0.0132)__)
 - the last requirement implies that every test must also be timed
+- if random numbers are used the seed should be fixed
 
 Below is a simple example of such a test that adhears to these requirements:
 ```fortran
