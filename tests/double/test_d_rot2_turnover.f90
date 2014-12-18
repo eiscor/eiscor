@@ -22,6 +22,7 @@
 ! If DEBUG mode is activated a histogram of the accuracy of the turnover is 
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
+! 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_rot2_turnover
@@ -64,7 +65,8 @@ program test_d_rot2_turnover
     end if    
     stop
   end if   
-  ! store seeds        
+  ! store seeds    
+  seed = 0
   seed(1) = 377679
   if (n>=12) then
      seed(2) = 154653 
@@ -78,11 +80,6 @@ program test_d_rot2_turnover
      seed(10) = 4989015
      seed(11) = 933389
      seed(12) = 4989015
-     if (n>12) then
-        do ii=13,n
-           seed(ii)=0
-        end do
-     end if
   end if
   ! set the generator
   call random_seed(put = seed) 
@@ -91,8 +88,7 @@ program test_d_rot2_turnover
   
   ! start timer
   call system_clock(count_rate=c_rate)
-  call system_clock(count=c_start)
- 
+  call system_clock(count=c_start) 
   ! print banner
   call u_test_banner(__FILE__)
 
@@ -615,11 +611,17 @@ program test_d_rot2_turnover
      h2 = histo2(7,jj)
      ht = histot(7,jj)
      do ii=7,1,-1
-        if (ht>h2) then
+        if (ht>h2)then !*1.001) then
            if (DEBUG) then
               pass_all = .FALSE.
-              print*, ii, jj
            else
+     write(*,*) "<1e-17",histo2(1,:)
+     write(*,*) "<1e-16",histo2(2,:)
+     write(*,*) "<1e-15",histo2(3,:)
+     write(*,*) "<1e-14",histo2(4,:)
+     write(*,*) "<1e-13",histo2(5,:)
+     write(*,*) "<1e-12",histo2(6,:)
+     write(*,*) ">1e-12",histo2(7,:)
               call u_test_failed(__LINE__)           
            end if
         end if
