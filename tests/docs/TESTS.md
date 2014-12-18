@@ -7,7 +7,7 @@ Every test in __eiscor__ should adhere to the following template:
 - the last requirement implies that every test must also be timed
 - if random tests are used, the seed must be explicitly set
 
-Below is a simple example of such a test that adhears to these requirements:
+Below is a simple example of such a test that adheres to these requirements:
 ```fortran
 !!!!!!!!!!!!!!!!!!!!!!!!!!
 !
