@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! testDOHFQR
+! test_d_orthhess_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -10,7 +10,7 @@
 ! 1) Compute roots of unity and checks the residuals for various powers of 2
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program testDOHFQR
+program test_d_orthhess_qr
 
   implicit none
   
@@ -22,8 +22,15 @@ program testDOHFQR
   integer :: ITS(N-1)
   real(8) :: tol
   
+  ! timing variables
+  integer:: c_start, c_stop, c_rate
+  
+  ! start timer
+  call system_clock(count_rate=c_rate)
+  call system_clock(count=c_start)
+  
   ! print banner
-  write(*,'(a)',advance='no') "Test for d_orthhess_qr ... "
+  call u_test_banner(__FILE__)
   
   ! loop through powers of 2
   do jj=1,MPOW
@@ -44,8 +51,7 @@ program testDOHFQR
     
     ! check INFO
     if (INFO.NE.0) then
-      print*,"FAILED"
-      stop
+      call u_test_failed(__LINE__)
     end if
     
     ! compute residual matrix
@@ -56,13 +62,15 @@ program testDOHFQR
     
     ! check maximum entry
     if (maxval(abs(Hold(1:M,1:M))) >= tol) then
-      print*,"FAILED"
-      stop
+      call u_test_failed(__LINE__)
     end if  
  
   end do
   
+  ! stop timer
+  call system_clock(count=c_stop)
+  
   ! print success
-  write(*,'(a)') 'PASSED'
+  call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
      
-end program testDOHFQR
+end program test_d_orthhess_qr
