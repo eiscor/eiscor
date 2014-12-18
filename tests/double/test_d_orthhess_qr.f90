@@ -15,7 +15,7 @@ program test_d_orthhess_qr
   implicit none
   
   ! compute variables
-  integer, parameter :: MPOW = 9
+  integer, parameter :: MPOW = 4
   integer, parameter :: N = 2**MPOW
   integer :: ii, INFO, jj, M
   real(8) :: WORK(4*N), Hold(N,N), H(N,N), Z(N,N)

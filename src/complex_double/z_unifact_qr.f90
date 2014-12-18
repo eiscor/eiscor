@@ -69,7 +69,7 @@ subroutine z_unifact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
   ! check COMPZ
   if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
     INFO = -1
-    ! check input in debug mode
+    ! print error message in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
     end if
@@ -79,7 +79,7 @@ subroutine z_unifact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
   ! check factorization
   call z_unifact_factorcheck(N,Q,D,INFO)
   if (INFO.NE.0) then
-    ! check input in debug mode
+    ! print error message in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"N, Q, or D is invalid",INFO,INFO)
     end if
@@ -92,7 +92,7 @@ subroutine z_unifact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
     call z_2Darray_check(N,N,Z,INFO)
     if (INFO.NE.0) then
       INFO = -5
-      ! check input in debug mode
+      ! print error message in debug mode
       if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
       end if

@@ -16,13 +16,11 @@ EISCORDIR := $(PWD)
 INSTALLDIR := $(HOME)
 
 # fortran compiler and flags
-FC := /opt/icc/bin/ifort 
-FFLAGS := -std90 -heap-arrays
+FC := gfortran
+FFLAGS := -O3 -std=f95
 
 # libs required by compiler
-LIBS := -lifport
-
-
+LIBS := 
 
 
 

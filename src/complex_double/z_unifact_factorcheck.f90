@@ -5,8 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks the factorization input into ZUFFQR to make sure
-! is represents a unitary hessenberg matrix to machine precision. 
+! This routine checks the factorization input into z_unifact_qr to make 
+! sure it represents a unitary hessenberg matrix to machine precision. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -37,7 +37,7 @@ subroutine z_unifact_factorcheck(N,Q,D,INFO)
   
   ! input variables
   integer, intent(in) :: N
-  real(8), intent(inout) :: Q(3*N-3), D(2*N)
+  real(8), intent(in) :: Q(3*N-3), D(2*N)
   integer, intent(inout) :: INFO
   
   ! compute variables
