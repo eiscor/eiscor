@@ -18,7 +18,7 @@
 !
 ! INPUT VARIABLES:
 !
-!  ALG             CHARACTER
+!  ALG             CHARACTER(2)
 !                    'QR': second triangular factor is assumed to be identity
 !                    'QZ': second triangular factor is assumed nonzero
 !
@@ -70,7 +70,6 @@
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies COMPZ is invalid
 !                   INFO = -2 implies ALG, N, Q, D or R is invalid
-!                   INFO = -3 implies FUN is invalid
 !                   INFO = -7 implies V is invalid
 !                   INFO = -8 implies W is invalid
 !
@@ -80,7 +79,8 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   implicit none
   
   ! input variables
-  character, intent(in) :: ALG, COMPZ
+  character(2), intent(in) :: ALG
+  character, intent(in) :: COMPZ
   integer, intent(in) :: N
   logical, intent(inout) :: P(N-1)
   real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
@@ -94,7 +94,8 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   end interface
   
   ! compute variables
-  integer :: ii
+  integer :: ii, jj, kk
+  integer :: start_index, stop_index, zero_index, it_max, it_count
   
   ! initialize info
   INFO = 0
@@ -110,7 +111,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   end if
   
   ! check factorization
-  call z_upr1fact_factorcheck(N,P,Q,D,R,INFO)
+  call z_upr1fact_factorcheck(ALG,N,P,Q,D,R,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
@@ -163,8 +164,40 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     end do
   end if   
  
-  ! initialize local variables
+  ! initialize indices
+  start_index = 1
+  stop_index = N-1
+  zero_index = 0
+  it_max = 20*N
+  it_count = 0
   
-  ! interation loop
+  ! iteration loop
+  do kk=1,it_max
+  
+    ! check for completion
+    if(stop_index <= 0)then
+      exit
+    end if
+    
+    ! check for deflation
+    
+    ! if 1x1 block remove and check again 
+    if(stop_index == zero_index)then
+    
+    ! if 2x2 block remove and check again
+    else if(stop_index-1 == zero_index)then
+    
+    ! if greater than 2x2 chase a bulge and check again
+    else
+    
+    end if
+    
+    ! if it_max hit
+!    if (kk == it_max) then
+!      INFO = 1
+!      its(stop_index) = it_count
+!    end if
+    
+  end do
 
 end subroutine z_upr1fact_twistedqz

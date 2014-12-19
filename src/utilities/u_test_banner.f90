@@ -14,6 +14,6 @@ subroutine u_test_banner(FILENAME)
   length = length-4
 
   ! print banner
-  write(STDERR,'(a,a)',advance='no') FILENAME(1:length),' ... '
+  write(STDERR,'(a,a,a)',advance='no') FILENAME(1:length),REPEAT(' ',36-length),' ... '
   
 end subroutine u_test_banner

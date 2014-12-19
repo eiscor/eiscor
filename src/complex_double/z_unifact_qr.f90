@@ -117,7 +117,7 @@ subroutine z_unifact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
   it_max = 20*N
   it_count = 0
   
-  ! loop for bulgechasing
+  ! iteration loop
   do kk=1,it_max
   
     ! check for completion
