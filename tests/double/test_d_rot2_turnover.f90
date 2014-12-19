@@ -34,7 +34,7 @@ program test_d_rot2_turnover
   integer, parameter :: nt = 120000 ! number of testcases
   integer :: accum = 100 ! number of successive turnovers
                          ! (deterioration)
-  real(8) :: tol = 200d0*epsilon(1d0) ! accuracy of turnover
+  real(8) :: tol
 
   ! compute variables
   logical :: pass_all = .TRUE.
@@ -43,13 +43,16 @@ program test_d_rot2_turnover
   integer, allocatable :: seed(:)
   real(8) :: Q1(2),Q2(2),Q3(2)
   real(8) :: time
-  double precision :: rp,nrm,pi = 3.141592653589793239d0
+  real(8) :: rp,nrm,pi = 3.141592653589793239d0
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
 
   ! debug
   integer :: histo(7),histo2(7,8), histot(7,8), h2,ht
+
+  ! tol depending on accum
+  tol = 2d0*accum*epsilon(1d0) ! accuracy of turnover
 
   ! fix seed
   INFO = 0
@@ -60,10 +63,7 @@ program test_d_rot2_turnover
   ! check allocation
   if (allocated(seed).EQV..FALSE.) then
     INFO = 1  
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"Array allocation failed",INFO,INFO)
-    end if    
+    call u_infocode_check(__FILE__,__LINE__,"Array allocation failed",INFO,INFO)
     stop
   end if   
   ! store seeds    
@@ -640,6 +640,44 @@ program test_d_rot2_turnover
 
 end program test_d_rot2_turnover
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! subroutine tt
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! tt computes the 3x3 matrix Hs defined by Q1, Q2,
+! Q3. After a turnover the new rotations define H.
+! accum-1 more turnovers are performed using the 
+! output of the last turnover. The result is the
+! matrix H'. The error is
+!   nrm = ||H'-Hs||_2 + ||H-Hs||_2.
+! If nrm<tol, then the turnover is okay.
+! Depending on nrm histo(i) is increased by one.
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! INPUT VARIABLES
+!
+!  Q1, Q2, Q3      REAL(8) arrays of dimension (2)
+!                    generators for givens rotations
+! 
+!  accum           INTEGER
+!                    number of turnovers
+!
+!  tol             REAL(8)
+!                    tolerance
+!
+!  histo           REAL(8) array of dimension (7)
+!                    stores histogram of nrm
+!
+! OUTPUT VARIABLES
+!
+!  pass_cur        LOGICAL
+!                    .FALSE. if nrm>tol
+!                    .TRUE. if nrm<=tol
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
 
   implicit none
@@ -655,9 +693,11 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   real(8) :: Q1s(2),Q2s(2),Q3s(2)
   real(8) :: tol, nrm
   
+  ! store Q1, Q2, Q3
   Q1s = Q1
   Q2s = Q2
   Q3s = Q3
+  ! compute Hs
   A1=0d0
   A2=0d0
   A3=0d0
@@ -678,12 +718,15 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   A3(3,3)=1d0
   Hs = matmul(A1,matmul(A2,A3))
 
+  ! first turnover
   call d_rot2_turnover(Q1,Q2,Q3,INFO)
-
+  ! switch position of rotations
   B = Q1
   Q1 = Q3
   Q3 = Q2
   Q2 = B
+
+  ! compute H
   A1=0d0
   A2=0d0
   A3=0d0
@@ -704,12 +747,14 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   A3(1,1)=1d0
   H = matmul(A1,matmul(A2,A3))
   H = H-Hs
+  
+  ! first part of nrm
   nrm = sqrt(H(1,1)*H(1,1) + H(1,2)*H(1,2) + H(1,3)*H(1,3) +&
        &H(2,1)*H(2,1) + H(2,2)*H(2,2) + H(2,3)*H(2,3) +&
        H(3,1)*H(3,1) + H(3,2)*H(3,2) + H(3,3)*H(3,3))
   
+  ! accum-1 turnovers
   do jj=2,accum
-
      call d_rot2_turnover(Q1,Q2,Q3,INFO)
      
      B = Q1
@@ -718,6 +763,7 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
      Q2 = B
   end do
   
+  ! compute H'
   A1=0d0
   A2=0d0
   A3=0d0
@@ -738,10 +784,13 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   A3(3,3)=1d0
   H = matmul(A1,matmul(A2,A3))
   H = H-Hs
+
+  ! second part of nrm
   nrm = nrm + sqrt(H(1,1)*H(1,1) + H(1,2)*H(1,2) + H(1,3)*H(1,3) +&
        &H(2,1)*H(2,1) + H(2,2)*H(2,2) + H(2,3)*H(2,3) +&
        H(3,1)*H(3,1) + H(3,2)*H(3,2) + H(3,3)*H(3,3))
 
+  ! check nrm
   if (nrm>tol) then
      pass_cur = .FALSE.
   end if
