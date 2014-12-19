@@ -9,6 +9,9 @@
 ! extended upper-hessenberg, upper-triangular pencil. Both the hessenberg
 ! and triangular matrices are the sum of a unitary matrix and a rank 
 ! one matrix. These matrices are stored in 5 sequences of rotations.
+!
+! The hessenberg part is stored as H = Q*D1*C1*B1
+! The triangular part is stored as S = D2*C2*B2
 ! 
 ! This factorization is described in:
 !
@@ -43,10 +46,16 @@
 !  D               REAL(8) array of dimension (2,2*(N+1))
 !                    array of generators for complex diagonal matrices
 !                    in the upper-triangular factors
+!                    D1 = D(1,:)
+!                    D2 = D(2,:)
 !
 !  R               REAL(8) array of dimension (4,3*N)
 !                    array of generators for upper-triangular parts
 !                    of the pencil
+!                    C1 = R(1,:)
+!                    B1 = R(2,:)
+!                    C2 = R(3,:)
+!                    B2 = R(4,:)
 !
 ! OUTPUT VARIABLES:
 !

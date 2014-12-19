@@ -222,13 +222,13 @@ subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
     end do  
   end if
   
-  ! check R is upper-triangular
+  ! check R for zero diagonal elements
   do ii=1,N
     if (abs(R(2,3*ii)) <= tol) then
       INFO = -5
       ! print error message in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"R is not upper-triangular",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"R has a zero diagonal element",INFO,INFO)
       end if
       return
    end if
@@ -239,7 +239,31 @@ subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
         INFO = -5
         ! print error message in debug mode
         if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"R is not upper-triangular",INFO,INFO)
+          call u_infocode_check(__FILE__,__LINE__,"R has a zero diagonal element",INFO,INFO)
+        end if
+        return
+     end if
+    end do
+  end if
+  
+  ! check R for inf diagonal elements
+  do ii=1,N
+    if (abs(R(1,3*ii)) <= tol) then
+      INFO = -5
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"R has an infinite diagonal element",INFO,INFO)
+      end if
+      return
+   end if
+  end do
+  if (ALG.EQ.'QZ') then  
+    do ii=1,N
+      if (abs(R(3,3*ii)) <= tol) then
+        INFO = -5
+        ! print error message in debug mode
+        if (DEBUG) then
+          call u_infocode_check(__FILE__,__LINE__,"R has an infinite diagonal element",INFO,INFO)
         end if
         return
      end if

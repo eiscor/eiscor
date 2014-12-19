@@ -20,7 +20,8 @@
 ! 10) check R is NAN
 ! 11) check R is INF
 ! 12) check R is not orthogonal
-! 13) check R is not upper-triangular
+! 13) check R for zero diagonal
+! 13) check R for infinite diagonal
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_upr1fact_factorcheck
@@ -290,6 +291,26 @@ program test_z_upr1fact_factorcheck
     ! reset R
     R(4,1) = 0d0
     R(4,3) = 1d0
+  
+  ! check 14)
+    ! set INFO
+    INFO = 0
+    
+    ! insert 1
+    R(3,1) = 1d0
+    R(3,3) = 0d0
+    
+    ! call z_upr1fact_factorcheck
+    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    
+    ! check INFO
+    if (INFO.NE.-5) then
+      call u_test_failed(__LINE__)
+    end if 
+    
+    ! reset R
+    R(3,1) = 0d0
+    R(3,3) = 1d0
   
   ! stop timer
   call system_clock(count=c_stop)
