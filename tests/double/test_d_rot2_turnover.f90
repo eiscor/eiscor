@@ -63,7 +63,7 @@ program test_d_rot2_turnover
   ! check allocation
   if (allocated(seed).EQV..FALSE.) then
     INFO = 1  
-    call u_infocode_check(__FILE__,__LINE__,"Array allocation failed",INFO,INFO)
+    call u_test_failed(__LINE__)
     stop
   end if   
   ! store seeds    
