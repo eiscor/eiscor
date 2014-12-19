@@ -15,7 +15,7 @@ program test_z_unihess_qr
   implicit none
   
   ! compute variables
-  integer, parameter :: MPOW = 9
+  integer, parameter :: MPOW = 4
   integer, parameter :: N = 2**MPOW
   integer :: ii, INFO, jj, M
   real(8) :: WORK(5*N)

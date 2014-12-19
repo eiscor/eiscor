@@ -10,6 +10,7 @@ subroutine u_infocode_check(FILENAME,LINENUM,MESSAGE,INFO,NEWINFO)
 
   ! check INFO
   if (INFO.NE.0) then
+    write(STDERR,*) ""
     write(STDERR,*) "Error in "//FILENAME//" line:",LINENUM
     write(STDERR,*) MESSAGE
     write(STDERR,*) "INFO:",INFO

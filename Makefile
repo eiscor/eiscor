@@ -11,13 +11,13 @@ else
 	endif
 endif
 
-UTILDIR := ./src/utilities
+USRCDIR := ./src/utilities
 ISRCDIR := ./src/integer
 DSRCDIR := ./src/double
 ZSRCDIR := ./src/complex_double
 
-USRCS := $(wildcard $(UTILDIR)/*.f90)
-UOBJS := $(patsubst $(UTILDIR)/%.f90,$(UTILDIR)/%.o,$(wildcard $(UTILDIR)/*.f90))
+USRCS := $(wildcard $(USRCDIR)/*.f90)
+UOBJS := $(patsubst $(USRCDIR)/%.f90,$(USRCDIR)/%.o,$(wildcard $(USRCDIR)/*.f90))
 
 ISRCS := $(wildcard $(ISRCDIR)/*.f90)
 IOBJS := $(patsubst $(ISRCDIR)/%.f90,$(ISRCDIR)/%.o,$(wildcard $(ISRCDIR)/*.f90))
@@ -66,7 +66,7 @@ lib$(LIBNAME).$(SLIB).$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS) 
 
 $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS): $(USRCS) $(ISRCS) $(DSRCS) $(ZSRCS)
-	make -C $(UTILDIR) &&\
+	make -C $(USRCDIR) &&\
 	make -C $(ISRCDIR) &&\
 	make -C $(DSRCDIR) &&\
 	make -C $(ZSRCDIR)
@@ -89,7 +89,7 @@ uninstall: clean
 	rm -rf $(INSTALLDIR)/$(LIBNAME)
 
 clean:
-	make clean -C $(UTILDIR) &&\
+	make clean -C $(USRCDIR) &&\
 	make clean -C $(ISRCDIR) &&\
 	make clean -C $(DSRCDIR) &&\
 	make clean -C $(ZSRCDIR) &&\
