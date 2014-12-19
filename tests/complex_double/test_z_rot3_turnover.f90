@@ -30,7 +30,7 @@
 ! Note: This test currently fails. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program test_d_rot2_turnover
+program test_z_rot3_turnover
   
   implicit none
   
@@ -45,15 +45,15 @@ program test_d_rot2_turnover
   logical :: pass_cur
   integer :: ii, n, jj, INFO
   integer, allocatable :: seed(:)
-  real(8) :: Q1(3),Q2(3),Q3(3)
+  real(8) :: Q1(3), Q2(3), Q3(3)
   real(8) :: time
-  real(8) :: rp,rm,nrm,pi = 3.141592653589793239d0
+  real(8) :: rp, rm, nrm, pi = 3.141592653589793239d0
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
 
   ! debug
-  integer :: histo(7),histo2(7,8), histot(7,8), h2,ht
+  integer :: histo(7), histo2(7,8), histot(7,8), h2, ht
 
   ! tol depending on accum
   tol = 2d0*accum*epsilon(1d0) ! accuracy of turnover
@@ -66,9 +66,7 @@ program test_d_rot2_turnover
   allocate(seed(n))  
   ! check allocation
   if (allocated(seed).EQV..FALSE.) then
-    INFO = 1  
     call u_test_failed(__LINE__)
-    stop
   end if   
   ! store seeds    
   seed = 0
@@ -122,7 +120,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,1)=histo(1:7)
   if (DEBUG) then
@@ -165,7 +163,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -183,7 +181,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -201,7 +199,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,2)=histo(1:7)
   if (DEBUG) then
@@ -244,7 +242,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -262,7 +260,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -280,7 +278,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,3)=histo(1:7)
   if (DEBUG) then
@@ -323,7 +321,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do 
   histo2(1:7,4)=histo(1:7)
   if (DEBUG) then
@@ -366,7 +364,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -384,7 +382,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -402,7 +400,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,5)=histo(1:7)
   if (DEBUG) then
@@ -445,7 +443,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -463,7 +461,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -481,7 +479,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,6)=histo(1:7)
   if (DEBUG) then
@@ -524,7 +522,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,7)=histo(1:7)
   if (DEBUG) then
@@ -567,7 +565,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -590,7 +588,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -613,7 +611,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -636,7 +634,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -659,7 +657,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -682,7 +680,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -705,7 +703,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -728,7 +726,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -751,7 +749,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -774,7 +772,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -797,7 +795,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   if (.NOT. DEBUG) then
      if (.NOT. pass_cur) then
@@ -820,7 +818,7 @@ program test_d_rot2_turnover
      call random_number(rm)
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,8)=histo(1:7)
   if (DEBUG) then
@@ -896,19 +894,20 @@ program test_d_rot2_turnover
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
 
-end program test_d_rot2_turnover
+end program test_z_rot3_turnover
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! subroutine tt
+! subroutine z_rot3_accum_to_err
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! tt computes the 3x3 matrix Hs defined by Q1, Q2,
-! Q3. After a turnover the new rotations define H.
+! z_rot3_accum_to_err computes the 3x3  matrix Hs 
+! defined by Q1, Q2, Q3. After a turnover the new 
+! rotations define H.
 ! accum-1 more turnovers are performed using the 
-! output of the last turnover. The result is the
-! matrix H'. The error is
+! output of the last turnover. The result is  H'.
+! The error is
 !   nrm = ||H'-Hs|| + ||H-Hs||.
 ! If nrm<tol, then the turnover is okay.
 ! Depending on nrm histo(i) is increased by one.
@@ -936,11 +935,11 @@ end program test_d_rot2_turnover
 !                    .TRUE. if nrm<=tol
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
 
   implicit none
 
-  real(8), intent(inout) :: Q1(3),Q2(3),Q3(3)
+  real(8), intent(inout) :: Q1(3), Q2(3), Q3(3)
   integer,intent(inout) :: histo(7)
   integer, intent(in) :: accum
   logical, intent(inout) :: pass_cur
@@ -949,8 +948,8 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   ! compute variables
   integer :: jj, INFO
   real(8) :: B(3)
-  complex(8) :: H(3,3),Hs(3,3),A1(3,3),A2(3,3),A3(3,3)
-  real(8) :: Q1s(3),Q2s(3),Q3s(3)
+  complex(8) :: H(3,3), Hs(3,3), A1(3,3), A2(3,3), A3(3,3)
+  real(8) :: Q1s(3), Q2s(3), Q3s(3)
   real(8) :: nrm  
 
   ! store Q1, Q2, Q3
@@ -1071,4 +1070,4 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
      histo(7) = histo(7) + 1
   end if
 
-end subroutine tt
+end subroutine z_rot3_accum_to_err

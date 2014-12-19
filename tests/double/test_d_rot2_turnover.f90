@@ -41,15 +41,15 @@ program test_d_rot2_turnover
   logical :: pass_cur
   integer :: ii, n, jj, INFO
   integer, allocatable :: seed(:)
-  real(8) :: Q1(2),Q2(2),Q3(2)
+  real(8) :: Q1(2), Q2(2), Q3(2)
   real(8) :: time
-  real(8) :: rp,nrm,pi = 3.141592653589793239d0
+  real(8) :: rp, nrm, pi = 3.141592653589793239d0
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
 
   ! debug
-  integer :: histo(7),histo2(7,8), histot(7,8), h2,ht
+  integer :: histo(7), histo2(7,8), histot(7,8), h2, ht
 
   ! tol depending on accum
   tol = 2d0*accum*epsilon(1d0) ! accuracy of turnover
@@ -62,9 +62,7 @@ program test_d_rot2_turnover
   allocate(seed(n))  
   ! check allocation
   if (allocated(seed).EQV..FALSE.) then
-    INFO = 1  
     call u_test_failed(__LINE__)
-    stop
   end if   
   ! store seeds    
   seed = 0
@@ -111,7 +109,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,1)=histo(1:7)
   if (DEBUG) then
@@ -148,7 +146,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -160,7 +158,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -172,7 +170,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp)*1e-18,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,2)=histo(1:7)
   if (DEBUG) then
@@ -209,7 +207,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp)*1e-18,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -221,7 +219,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp)*1e-18,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -233,7 +231,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,3)=histo(1:7)
   if (DEBUG) then
@@ -270,7 +268,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp)*1e-18,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do 
   histo2(1:7,4)=histo(1:7)
   if (DEBUG) then
@@ -307,7 +305,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -319,7 +317,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -331,7 +329,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp)*1e-18,sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,5)=histo(1:7)
   if (DEBUG) then
@@ -368,7 +366,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp)*1e-18,sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -380,7 +378,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp)*1e-18,sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
      call random_number(rp)
@@ -392,7 +390,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,6)=histo(1:7)
   if (DEBUG) then
@@ -429,7 +427,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp)*1e-18,sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,7)=histo(1:7)
   if (DEBUG) then
@@ -464,7 +462,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call random_number(rp)
@@ -474,7 +472,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call random_number(rp)
@@ -484,7 +482,7 @@ program test_d_rot2_turnover
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q2(1),Q2(2),nrm,INFO)
      call d_rot2_vec2gen(1d0,0d0,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call d_rot2_vec2gen(1d0,0d0,Q1(1),Q1(2),nrm,INFO)
@@ -492,7 +490,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call random_number(rp)
@@ -500,7 +498,7 @@ program test_d_rot2_turnover
      call d_rot2_vec2gen(cos(rp),sin(rp),Q1(1),Q1(2),nrm,INFO)
      call d_rot2_vec2gen(1d0,0d0,Q2(1),Q2(2),nrm,INFO)
      call d_rot2_vec2gen(1d0,0d0,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call d_rot2_vec2gen(1d0,0d0,Q1(1),Q1(2),nrm,INFO)
@@ -508,7 +506,7 @@ program test_d_rot2_turnover
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q2(1),Q2(2),nrm,INFO)
      call d_rot2_vec2gen(1d0,0d0,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call d_rot2_vec2gen(0d0,1d0,Q1(1),Q1(2),nrm,INFO)
@@ -518,7 +516,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call random_number(rp)
@@ -528,7 +526,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call random_number(rp)
@@ -538,7 +536,7 @@ program test_d_rot2_turnover
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q2(1),Q2(2),nrm,INFO)
      call d_rot2_vec2gen(0d0,1d0,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call d_rot2_vec2gen(0d0,1d0,Q1(1),Q1(2),nrm,INFO)
@@ -546,7 +544,7 @@ program test_d_rot2_turnover
      call random_number(rp)
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call random_number(rp)
@@ -554,7 +552,7 @@ program test_d_rot2_turnover
      call d_rot2_vec2gen(cos(rp),sin(rp),Q1(1),Q1(2),nrm,INFO)
      call d_rot2_vec2gen(0d0,1d0,Q2(1),Q2(2),nrm,INFO)
      call d_rot2_vec2gen(0d0,1d0,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/12
      call d_rot2_vec2gen(0d0,1d0,Q1(1),Q1(2),nrm,INFO)
@@ -562,7 +560,7 @@ program test_d_rot2_turnover
      rp = 2d0*pi*rp
      call d_rot2_vec2gen(cos(rp),sin(rp),Q2(1),Q2(2),nrm,INFO)
      call d_rot2_vec2gen(0d0,1d0,Q3(1),Q3(2),nrm,INFO)
-     call tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+     call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,8)=histo(1:7)
   if (DEBUG) then
@@ -642,12 +640,13 @@ end program test_d_rot2_turnover
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! subroutine tt
+! subroutine d_rot2_accum_to_err
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! tt computes the 3x3 matrix Hs defined by Q1, Q2,
-! Q3. After a turnover the new rotations define H.
+! d_rot2_accum_to_err computes the 3x3 matrix Hs 
+! defined by Q1, Q2, Q3. After a turnover the new 
+! rotations define H.
 ! accum-1 more turnovers are performed using the 
 ! output of the last turnover. The result is the
 ! matrix H'. The error is
@@ -678,19 +677,19 @@ end program test_d_rot2_turnover
 !                    .TRUE. if nrm<=tol
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+subroutine d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
 
   implicit none
 
-  real(8), intent(inout) :: Q1(2),Q2(2),Q3(2)
+  real(8), intent(inout) :: Q1(2), Q2(2), Q3(2)
   integer,intent(inout) :: histo(7)
   integer, intent(in) :: accum
   logical, intent(inout) :: pass_cur
 
   ! compute variables
   integer :: jj, INFO
-  real(8) ::B(2),H(3,3),Hs(3,3),A1(3,3),A2(3,3),A3(3,3)
-  real(8) :: Q1s(2),Q2s(2),Q3s(2)
+  real(8) :: B(2), H(3,3), Hs(3,3), A1(3,3), A2(3,3), A3(3,3)
+  real(8) :: Q1s(2), Q2s(2), Q3s(2)
   real(8) :: tol, nrm
   
   ! store Q1, Q2, Q3
@@ -810,4 +809,4 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
      histo(7) = histo(7) + 1
   end if
 
-end subroutine tt
+end subroutine d_rot2_accum_to_err
