@@ -909,7 +909,7 @@ end program test_d_rot2_turnover
 ! accum-1 more turnovers are performed using the 
 ! output of the last turnover. The result is the
 ! matrix H'. The error is
-!   nrm = ||H'-Hs||_2 + ||H-Hs||_2.
+!   nrm = ||H'-Hs|| + ||H-Hs||.
 ! If nrm<tol, then the turnover is okay.
 ! Depending on nrm histo(i) is increased by one.
 !
