@@ -759,8 +759,6 @@ subroutine tt(Q1,Q2,Q3,accum,tol,histo,pass_cur)
      histo(6) = histo(6) + 1
   else
      histo(7) = histo(7) + 1
-     write(*,*) Q1(2), Q1s(2), Q2(2), Q2s(2), Q3(2), Q3s(2)
-     write(*,*) ((Q1(2)>0).AND.(Q2(2)>0).AND.(Q3(2)>0)), ((Q1s(2)>0).AND.(Q2s(2)>0).AND.(Q3s(2)>0))
   end if
 
 end subroutine tt
