@@ -8,14 +8,11 @@
 ! This routine computes the generalized schur decomposition of an 
 ! extended upper-hessenberg, upper-triangular pencil. Both the hessenberg
 ! and triangular matrices are the sum of a unitary matrix and a rank 
-! one matrix. These matrices are stored in 5 sequences of rotations.
+! one matrix. These matrices are stored in 5 sequences of rotations 
+! and 2 unimodular diagonal matrices.
 !
 ! The hessenberg part is stored as H = Q*D1*C1*B1
 ! The triangular part is stored as S = D2*C2*B2
-! 
-! This factorization is described in:
-!
-!
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
