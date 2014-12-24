@@ -66,9 +66,9 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
   integer, intent(inout) :: ITS(N-1)
 
   ! compute variables
-  integer :: ii, ind1, ll, jj
+  integer :: ii, jj, ind, up, down
   real(8), parameter :: tol = epsilon(1d0)
-  real(8) :: qr, qi, d1r, d1i, c1r, c1i, s, nrm
+  real(8) :: qr, qi, dr, di, cr, ci, s, nrm
   
   ! initialize info
   INFO = 0
@@ -112,7 +112,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
     
     ! check ITCNT
     if (ITCNT < 0) then
-      INFO = -7
+      INFO = -8
       call u_infocode_check(__FILE__,__LINE__,"ITCNT must be non-negative",INFO,INFO)
       return
     end if 
@@ -122,121 +122,117 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
   ! check for deflation
   do ii=1,(STP-STR+1)
   
-    ! one less than the index of the rotaion being checked
-    ind1 = 3*(STP-ii)
+    ! index of the rotaion being checked
+    ind = (STP-ii+1)
      
     ! deflate if subdiagonal is small enough
-    nrm = abs(Q(ind1+3))
+    nrm = abs(Q(3*ind))
     if(nrm < tol)then
       
       ! extract diagonal
-      qr = Q(ind1+1)
-      qi = Q(ind1+2)
+      qr = Q(3*ind-2)
+      qi = Q(3*ind-1)
                 
       ! set rotation to identity
-      Q(ind1+1) = 1d0
-      Q(ind1+2) = 0d0
-      Q(ind1+3) = 0d0
+      Q(3*ind-2) = 1d0
+      Q(3*ind-1) = 0d0
+      Q(3*ind) = 0d0
       
+      ! initialize up
+      up = ind
         
       ! deflate upward
-      do ll = 
+      do jj = 1,(ind-STR)
         
-                  
-        ! update first diagonal
-        ind1 = 2*(STP-ii)
-        d1r = D(ind1+1)
-        d1i = D(ind1+2)
-          
-        nrm = c1r*d1r - c1i*d1i
-        d1i = c1r*d1i + c1i*d1r
-        d1r = nrm
-        nrm = sqrt(d1r*d1r + d1i*d1i)
-        if (nrm.NE.0) then
-          d1r = d1r/nrm
-          d1i = d1i/nrm
-        else
-          d1r = 0d0
-          d1i = 0d0
+        ! set upward index
+        up = ind-jj
+        
+        ! exit loop if P == .TRUE.
+        if (P(up).EQV..TRUE.) then
+          up = up + 1
+          exit    
         end if
-          
-        D(ind1+1) = d1r
-        D(ind1+2) = d1i
    
-        
-        ! exit loop if P == .FALSE.
-        if ( .EQ..FALSE.)
-         
-        end if
+        ! update Q
+        cr = Q(3*up-2)
+        ci = Q(3*up-1)
+        s = Q(3*up)
+                
+        nrm = qr*cr + qi*ci
+        ci = qr*ci - qi*cr
+        cr = nrm
+        nrm = sqrt(cr*cr + ci*ci + s*s)
+        cr = cr/nrm
+        ci = ci/nrm
+        s = s/nrm
+                
+        Q(3*up-2) = cr
+        Q(3*up-1) = ci
+        Q(3*up) = s
         
       end do
+      
+      ! update upward diagonal
+      dr = D(1,2*up-1)
+      di = D(1,2*up)
+            
+      nrm = qr*dr - qi*di
+      di = qr*di + qi*dr
+      dr = nrm
+      nrm = sqrt(dr*dr + di*di)
+      dr = dr/nrm
+      di = di/nrm
+            
+      D(1,2*up-1) = dr
+      D(1,2*up) = di     
+      
+      ! initialize downward index
+      down = ind + 1
         
       ! deflate downward
-      do ll = 
+      do jj = 1,(STP-ind)
         
-                ! 1x1 deflation
-        if(ii == 1)then
-          
-          ! update second diagonal
-          ind1 = 2*(STP-ii)
-          d1r = D(ind1+3)
-          d1i = D(ind1+4)
-             
-          nrm = c1r*d1r + c1i*d1i
-          d1i = c1r*d1i - c1i*d1r
-          d1r = nrm
-          nrm = sqrt(d1r*d1r + d1i*d1i)
-          d1r = d1r/nrm
-          d1i = d1i/nrm
-             
-          D(ind1+3) = d1r
-          D(ind1+4) = d1i
-             
-          ! 2x2 or bigger
-          else
-
-            ! update Q
-            do ll=(STP+1-ii),(STP-1)
-              ind1 = 3*(ll)
-              d1r = Q(ind1+1)
-              d1i = Q(ind1+2)
-              s = Q(ind1+3)
-                
-              nrm = c1r*d1r + c1i*d1i
-              d1i = c1r*d1i - c1i*d1r
-              d1r = nrm
-              nrm = sqrt(d1r*d1r + d1i*d1i + s*s)
-              d1r = d1r/nrm
-              d1i = d1i/nrm
-              s = s/nrm
-                
-              Q(ind1+1) = d1r
-              Q(ind1+2) = d1i
-              Q(ind1+3) = s
-            end do
-             
-            ! update second diagonal
-            ind1 = 2*(STP)
-            d1r = D(ind1+1)
-            d1i = D(ind1+2)
-             
-            nrm = c1r*d1r + c1i*d1i
-            d1i = c1r*d1i - c1i*d1r
-            d1r = nrm
-            nrm = sqrt(d1r*d1r + d1i*d1i)
-            d1r = d1r/nrm
-            d1i = d1i/nrm
-             
-            D(ind1+1) = d1r
-            D(ind1+2) = d1i
-          end if
-   
-        ! exit loop if P == .TRUE.
-        if ( .EQ..TRUE.)
-          
+        ! set downward index
+        down = ind + jj
+        
+        ! exit if P == .TRUE.
+        if (P(down-1).EQV..TRUE.) then
+          down = down + 1
+          exit
         end if
         
+        ! update Q
+        cr = Q(3*down-2)
+        ci = Q(3*down-1)
+        s = Q(3*down)
+                
+        nrm = qr*cr + qi*ci
+        ci = qr*ci - qi*cr
+        cr = nrm
+        nrm = sqrt(cr*cr + ci*ci + s*s)
+        cr = cr/nrm
+        ci = ci/nrm
+        s = s/nrm
+                
+        Q(3*down-2) = cr
+        Q(3*down-1) = ci
+        Q(3*down) = s
+                    
       end do
+      
+      ! update downward diagonal
+      dr = D(1,2*down-1)
+      di = D(1,2*down)
+            
+      nrm = qr*dr + qi*di
+      di = qr*di - qi*dr
+      dr = nrm
+      nrm = sqrt(dr*dr + di*di)
+      dr = dr/nrm
+      di = di/nrm
+            
+      D(1,2*down-1) = dr
+      D(1,2*down) = di 
        
       ! update indices
       ZERO = STP+1-ii
@@ -250,6 +246,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       exit
         
     end if
+    
   end do
   
 end subroutine z_upr1fact_deflationcheck
