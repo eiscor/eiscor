@@ -58,8 +58,8 @@ examples: $(DEXS) $(ZEXS)
 	echo 'End of examples!'
 
 tests: $(DTESTS) $(ZTESTS)
-	$(foreach test,$(DTESTS),$(test) &&) \
-	$(foreach test,$(ZTESTS),$(test) &&) \
+	$(foreach test,$(DTESTS),./tests/double/$(test) &&) \
+	$(foreach test,$(ZTESTS),./tests/complex_double/$(test) &&) \
 	echo 'End of tests!'
 
 lib$(LIBNAME).$(SLIB).$(VERSION): $(UOBJS) $(IOBJS) $(DOBJS) $(ZOBJS)

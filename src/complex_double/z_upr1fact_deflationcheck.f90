@@ -29,7 +29,7 @@
 !                    array of generators for givens rotations
 !                    generators must be orthogonal to working precision
 !
-!  D               REAL(8) array of dimension (2*N)
+!  D               REAL(8) array of dimension (2,2*(N+1))
 !                    array of generators for complex diagonal matrix
 !                    generators must be orthogonal to working precision
 !
@@ -51,6 +51,8 @@
 !                   INFO = -2 implies STR is invalid
 !                   INFO = -3 implies STP is invalid
 !                   INFO = -4 implies ZERO is invalid
+!                   INFO = -6 implies Q is invalid
+!                   INFO = -7 implies D is invalid
 !                   INFO = -8 implies ITCNT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -59,11 +61,10 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
   implicit none
   
   ! input variables
-  integer, intent(in) :: N
-  integer, intent(inout) :: STR, STP, ZERO, ITCNT, INFO
+  integer, intent(in) :: N, STP
+  integer, intent(inout) :: STR, ZERO, ITCNT, INFO, ITS(N-1)
   logical, intent(in) :: P(N-1)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2,2*N)
-  integer, intent(inout) :: ITS(N-1)
+  real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1))
 
   ! compute variables
   integer :: ii, jj, ind, up, down
@@ -104,11 +105,19 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       return
     end if  
     
-! check P
-    
-! check Q
+    ! check Q
+    call d_1Darray_check(3*(N-1),Q,INFO)
+    if (INFO.NE.0) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-6)
+      return
+    end if
 
-! check D
+    ! check D
+    call d_2Darray_check(2,2*(N+1),D,INFO)
+    if (INFO.NE.0) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
+      return
+    end if
     
     ! check ITCNT
     if (ITCNT < 0) then
@@ -124,7 +133,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
   
     ! index of the rotaion being checked
     ind = (STP-ii+1)
-     
+   
     ! deflate if subdiagonal is small enough
     nrm = abs(Q(3*ind))
     if(nrm < tol)then
@@ -171,7 +180,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         Q(3*up) = s
         
       end do
-      
+       
       ! update upward diagonal
       dr = D(1,2*up-1)
       di = D(1,2*up)
@@ -185,7 +194,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
             
       D(1,2*up-1) = dr
       D(1,2*up) = di     
-      
+    
       ! initialize downward index
       down = ind + 1
         
@@ -233,15 +242,15 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
             
       D(1,2*down-1) = dr
       D(1,2*down) = di 
-       
+      
       ! update indices
       ZERO = STP+1-ii
       STR = ZERO + 1
-        
+    
       ! store it_count
       ITS(ZERO) = ITCNT
       ITCNT = 0
-        
+          
       ! exit loop 
       exit
         
