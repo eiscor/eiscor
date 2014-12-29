@@ -1,5 +1,16 @@
+# user defined make include file
 include make.inc
 
+# current version of eiscor
+LIBNAME := eiscor
+MAJOR := 0
+MINOR := 1
+PATCH := 0
+VERSION := $(MAJOR).$(MINOR).$(PATCH)
+export LIBNAME
+export VERSION
+
+# change library extension based on OS
 ifeq ($(OS), Windows_NT)
 	SLIB = dll
 else

@@ -9,4 +9,4 @@ all: $(DOBJS)
 	$(FC) $(FFLAGS) -cpp -fPIC -c $< -I../../include
 
 clean:
-	rm -f $(DOBJS)	
+	@rm -f $(DOBJS)	

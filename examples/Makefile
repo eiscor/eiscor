@@ -6,6 +6,12 @@ examples:
 	@$(MAKE) examples -C ./double
 	@$(MAKE) examples -C ./complex_double
 	
+examples_d:
+	@$(MAKE) examples -C ./double
+	
+examples_z:
+	@$(MAKE) examples -C ./complex_double
+	
 examples_d_%:
 	@$(MAKE) $@ -C ./double
 	
