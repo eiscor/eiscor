@@ -15,10 +15,10 @@ tests_d_%:
 	@$(MAKE) run DTESTS="$(DTESTS)"
 	
 run: $(DTESTS)
-	$(foreach test,$(DTESTS),./$(test) &&) echo 'End of double tests!'
+	@$(foreach test,$(DTESTS),./$(test) &&) echo 'End of double tests!'
 
 %:: %.f90
 	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).so.$(VERSION)  $(LIBS)
 	
 clean:
-	rm -f $(DTESTS)	
+	@rm -f $(DTESTS)	

@@ -21,4 +21,4 @@ run: $(ZTESTS)
 	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).so.$(VERSION) $(LIBS)
 	
 clean:
-	rm -f $(ZTESTS)	
+	@rm -f $(ZTESTS)	
