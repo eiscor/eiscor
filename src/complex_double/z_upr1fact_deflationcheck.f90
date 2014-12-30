@@ -25,6 +25,9 @@
 !                    index of the bottom most givens rotation where 
 !                    deflation should be checked
 !
+!  P               LOGICAL array of dimension (N-2)
+!                    array of position flags for Q
+!
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
 !                    generators must be orthogonal to working precision
@@ -63,7 +66,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
   ! input variables
   integer, intent(in) :: N, STP
   integer, intent(inout) :: STR, ZERO, ITCNT, INFO, ITS(N-1)
-  logical, intent(in) :: P(N-1)
+  logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1))
 
   ! compute variables

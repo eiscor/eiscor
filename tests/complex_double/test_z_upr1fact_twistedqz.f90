@@ -18,7 +18,7 @@ program test_z_upr1fact_twistedqz
   ! compute variables
   integer, parameter :: N = 3
   integer :: ii, INFO, ITS(N-1)
-  logical :: P(N-1), HESS
+  logical :: P(N-2), HESS
   real(8) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
   complex(8) :: V(N,N), W(N,N)
   
