@@ -7,6 +7,8 @@ all: tests
 
 tests:
 	@$(MAKE) run
+	
+tests_d: tests
 
 tests_d_%: 
 	$(eval DTESTSRCS := $(patsubst tests_%,test_%,$@))
