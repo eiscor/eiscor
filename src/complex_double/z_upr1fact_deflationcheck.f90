@@ -156,8 +156,8 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         ! set upward index
         up = ind-jj
         
-        ! exit loop if P == .TRUE.
-        if (P(up).EQV..TRUE.) then
+        ! exit loop if P == .FALSE.
+        if (P(up).EQV..FALSE.) then
           up = up + 1
           exit    
         end if
@@ -196,7 +196,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       D(1,2*up) = di     
     
       ! initialize downward index
-      down = ind + 1
+      down = ind
         
       ! deflate downward
       do jj = 1,(STP-ind)
@@ -206,7 +206,6 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         
         ! exit if P == .TRUE.
         if (P(down-1).EQV..TRUE.) then
-          down = down + 1
           exit
         end if
         
@@ -228,6 +227,9 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         Q(3*down) = s
                     
       end do
+      
+      ! update downward index
+      down = down + 1
       
       ! update downward diagonal
       dr = D(1,2*down-1)

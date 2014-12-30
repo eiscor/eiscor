@@ -16,10 +16,11 @@ program test_z_upr1fact_deflationcheck
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 3
-  integer :: ii, INFO, ITCNT, STR, STP, ZERO, ITS(N-1)
+  integer, parameter :: N = 6
+  integer :: ii, ind, INFO, ITCNT, STR, STP, ZERO, ITS(N-1)
   logical :: P(N-1)
   real(8) :: Q(3*(N-1)), D(2,2*(N+1))
+  complex(8) :: vec1(N+1), vec2(N+1)
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -44,14 +45,34 @@ program test_z_upr1fact_deflationcheck
     ! initialize Q
     Q = 0d0
     do ii=1,(N-1)
-      Q(3*ii-1) = 1d0
+      Q(3*ii-2) = 1d0/sqrt(2d0)
+      Q(3*ii) = 1d0/sqrt(2d0)
     end do
+    ind = N/2
+    Q(3*ind-2) = 0d0
+    Q(3*ind-1) = 1d0
+    Q(3*ind) = 0d0
     
     ! initialize D
     D = 0d0
     do ii=1,(N+1)
       D(1,2*ii-1) = 1d0
     end do
+    
+! print
+print*,""
+print*,"Q"
+do ii=1,(N-1)
+print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+end do
+print*,""
+
+! print
+print*,"D"
+do ii=1,(N+1)
+print*,D(1,2*ii-1),D(1,2*ii)
+end do
+print*,""
     
     ! set ITCNT
     ITCNT = 10
@@ -68,7 +89,22 @@ program test_z_upr1fact_deflationcheck
     if (INFO.NE.0) then
       call u_test_failed(__LINE__)
     end if
-    
+
+! print
+print*,""
+print*,"Q"
+do ii=1,(N-1)
+print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+end do
+print*,""
+
+! print
+print*,"D"
+do ii=1,(N+1)
+print*,D(1,2*ii-1),D(1,2*ii)
+end do
+print*,""
+
   ! stop timer
   call system_clock(count=c_stop)
   
