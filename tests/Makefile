@@ -3,14 +3,14 @@ include ../make.inc
 all: tests
 
 tests:
-	@$(MAKE) tests -C ./double
-	@$(MAKE) tests -C ./complex_double
+	@$(MAKE) $@ -C ./double
+	@$(MAKE) $@ -C ./complex_double
 	
 tests_d:
-	@$(MAKE) tests -C ./double
+	@$(MAKE) $@ -C ./double
 	
 tests_z:
-	@$(MAKE) tests -C ./complex_double
+	@$(MAKE) $@ -C ./complex_double
 	
 tests_d_%:
 	@$(MAKE) $@ -C ./double

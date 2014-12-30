@@ -9,7 +9,7 @@ tests:
 	@$(MAKE) run
 	
 tests_z: tests
-	
+
 tests_z_%: 
 	$(eval ZTESTSRCS := $(patsubst tests_%,test_%,$@))
 	$(eval ZTESTSRCS := $(wildcard $(ZTESTSRCS)*.f90))

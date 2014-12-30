@@ -7,6 +7,8 @@ all: examples
 
 examples:
 	@$(MAKE) run
+	
+examples_d: examples
 
 examples_d_%: 
 	$(eval DEXSRCS := $(patsubst examples_%,example_%,$@))

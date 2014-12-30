@@ -3,14 +3,14 @@ include ../make.inc
 all: examples
 
 examples:
-	@$(MAKE) examples -C ./double
-	@$(MAKE) examples -C ./complex_double
+	@$(MAKE) $@ -C ./double
+	@$(MAKE) $@ -C ./complex_double
 	
 examples_d:
-	@$(MAKE) examples -C ./double
+	@$(MAKE) $@ -C ./double
 	
 examples_z:
-	@$(MAKE) examples -C ./complex_double
+	@$(MAKE) $@ -C ./complex_double
 	
 examples_d_%:
 	@$(MAKE) $@ -C ./double
