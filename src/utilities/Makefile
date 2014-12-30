@@ -9,4 +9,4 @@ all: $(UOBJS)
 	$(FC) $(FFLAGS) -cpp -fPIC -c $< -I../../include
 
 clean:
-	rm -f $(UOBJS)	
+	@rm -f $(UOBJS)	
