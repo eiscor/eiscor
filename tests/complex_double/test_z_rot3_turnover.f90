@@ -23,7 +23,7 @@
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
 ! 
-! A deviation of 0.1% is still acceptable.
+! A deviation of 0.2% is still acceptable.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -854,15 +854,6 @@ program test_z_rot3_turnover
      write(*,*) ">1e-12",histo2(7,:)
   end if
 
-  print*, ""
-  write(*,*) "<1e-17",histo2(1,:)
-  write(*,*) "<1e-16",histo2(2,:)
-  write(*,*) "<1e-15",histo2(3,:)
-  write(*,*) "<1e-14",histo2(4,:)
-  write(*,*) "<1e-13",histo2(5,:)
-  write(*,*) "<1e-12",histo2(6,:)
-  write(*,*) ">1e-12",histo2(7,:)
-
   ! reference histogram, turnover passes test if histogram is better than this one
   histot(1,:) = (/           0,          14,           7,          21,           4,      117772,      120000,       29449/)!
   histot(2,:) = (/           6,         299,         150,          44,         108,           0,           0,         246/)!
@@ -877,11 +868,10 @@ program test_z_rot3_turnover
      h2 = histo2(7,jj)
      ht = histot(7,jj)
      do ii=7,1,-1
-        if (h2>ht*1.001) then
+        if (h2>ht*1.002) then
            if (DEBUG) then
               pass_all = .FALSE.
            else
-              print*, "jj", jj, "ii", ii
               call u_test_failed(__LINE__)           
            end if
         end if
@@ -1021,7 +1011,6 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   nrm = sqrt(H(1,1)*conjg(H(1,1)) + H(1,2)*conjg(H(1,2)) + H(1,3)*conjg(H(1,3)) +&
        &H(2,1)*conjg(H(2,1)) + H(2,2)*conjg(H(2,2)) + H(2,3)*conjg(H(2,3)) +&
        H(3,1)*conjg(H(3,1)) + H(3,2)*conjg(H(3,2)) + H(3,3)*conjg(H(3,3)))
-  !print*, nrm
   
   ! accum-1 turnovers
   do jj=2,accum
@@ -1079,10 +1068,6 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
      histo(6) = histo(6) + 1
   else
      histo(7) = histo(7) + 1
-     print*, nrm
-     print*, Q1s, Q2s, Q3s
-     print*, Q1, Q2, Q3
-     print*, ""
   end if
 
 end subroutine z_rot3_accum_to_err
