@@ -614,7 +614,6 @@ program test_d_rot2_turnover
            if (DEBUG) then
               pass_all = .FALSE.
            else
-              print*, ii, jj
               call u_test_failed(__LINE__)           
            end if
         end if
