@@ -7,7 +7,7 @@ all: tests
 
 tests:
 	@$(MAKE) run
-	
+
 tests_d: tests
 
 tests_d_%: 
@@ -15,12 +15,12 @@ tests_d_%:
 	$(eval DTESTSRCS := $(wildcard $(DTESTSRCS)*.f90))
 	$(eval DTESTS := $(DTESTSRCS:.f90=))
 	@$(MAKE) run DTESTS="$(DTESTS)"
-	
+
 run: $(DTESTS)
 	@$(foreach test,$(DTESTS),./$(test) &&) echo 'End of double tests!'
 
 %:: %.f90
 	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).so.$(VERSION)  $(LIBS)
-	
+
 clean:
 	@rm -f $(DTESTS)	
