@@ -610,7 +610,7 @@ program test_d_rot2_turnover
      h2 = histo2(7,jj)
      ht = histot(7,jj)
      do ii=7,1,-1
-        if (ht>h2*1.001) then
+        if (h2>ht*1.001) then
            if (DEBUG) then
               pass_all = .FALSE.
            else
