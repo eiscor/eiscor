@@ -719,6 +719,10 @@ subroutine d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
 
   ! first turnover
   call d_rot2_turnover(Q1,Q2,Q3,INFO)
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
   ! switch position of rotations
   B = Q1
   Q1 = Q3
@@ -755,6 +759,10 @@ subroutine d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   ! accum-1 turnovers
   do jj=2,accum
      call d_rot2_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.0) then
+        call u_test_failed(__LINE__)
+     end if
      
      B = Q1
      Q1 = Q3

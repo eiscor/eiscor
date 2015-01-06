@@ -979,6 +979,10 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
 
   ! first turnover
   call z_rot3_turnover(Q1,Q2,Q3,INFO)
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
   ! switch position of rotations
   B = Q1
   Q1 = Q3
@@ -1016,6 +1020,10 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   do jj=2,accum
 
      call z_rot3_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.0) then
+        call u_test_failed(__LINE__)
+     end if
      
      B = Q1
      Q1 = Q3

@@ -84,6 +84,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
    
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (Q1(1).NE.1d0) then
     call u_test_failed(__LINE__)
   end if
@@ -113,6 +118,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -141,6 +151,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -170,6 +185,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -201,6 +221,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -230,6 +255,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
     
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -258,6 +288,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -289,6 +324,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -318,6 +358,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
     
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -346,6 +391,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -377,6 +427,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1)-1d0/sqrt(3d0))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -410,6 +465,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (Q1(1).NE.0d0) then
     call u_test_failed(__LINE__)
   end if
@@ -439,6 +499,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
     
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -467,6 +532,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -526,6 +596,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -554,6 +629,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -583,6 +663,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -643,6 +728,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -671,6 +761,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -700,6 +795,11 @@ program test_z_rot3_vec3gen
 
   call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
   
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
   end if
