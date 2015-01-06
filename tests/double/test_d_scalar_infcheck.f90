@@ -5,7 +5,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine d_rot2_vec2gen (generating rotations). 
+! This program tests the subroutine d_scalar_infcheck (infcheck). 
 ! The following tests are run:
 !
 ! 1) test 0d0      
