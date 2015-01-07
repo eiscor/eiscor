@@ -35,7 +35,7 @@ subroutine d_scalar_infcheck(NUM,INFO)
   INFO = 0
   
   ! check magnitude 
-  if (abs(NUM)>=infdef) then
+  if (abs(NUM)>infdef) then
     INFO = 1
   end if
 

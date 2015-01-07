@@ -20,6 +20,10 @@
 !
 ! 6) test NAN
 !
+! 7) test huge(1d0)
+!
+! 8) test -huge(1d0)
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_scalar_infcheck
 
@@ -102,6 +106,40 @@ program test_d_scalar_infcheck
   ! set variables
   nul = 0d0
   num = nul/nul
+  call d_scalar_infcheck(NUM,INFO)
+  ! check info
+  if (info.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 7)
+
+  ! set variables
+  num = huge(1d0)
+  call d_scalar_infcheck(NUM,INFO)
+  ! check info
+  if (info.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 7b)
+
+  ! set variables
+  num = huge(1d0)
+  num = num+1d294
+  call d_scalar_infcheck(NUM,INFO)
+  ! check info
+  if (info.NE.1) then
+     call u_test_failed(__LINE__)
+  end if
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 8)
+
+  ! set variables
+  num = -huge(1d0)
   call d_scalar_infcheck(NUM,INFO)
   ! check info
   if (info.NE.0) then
