@@ -20,9 +20,23 @@
 !    D = diag([1, -1, -1, 1, 1])
 !    double shift 0.5 +- i*sqrt(3)/2
 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! 
+! Notes:
+!
+! A = [ 0.8   0.3     ... ]
+!     [ 0.6  -0.4     ... ]
+!     [  0  sqrt(3)/2 ... ]
+!     [ ...    0      ... ]
+!
+! mu = alpha + i beta
+! A^2e_1 - 2alpha Ae_1 + (alpha^2 + beta^2)e_1 = 
+! = [  1.02        ]
+!   [ -0.36        ]
+!   [  0.3*sqrt(3) ]
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program test_d_orthfact_factorcheck
+program test_d_orthfact_buildbulge
 
   implicit none
   
@@ -125,4 +139,4 @@ program test_d_orthfact_factorcheck
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
      
-end program test_d_orthfact_factorcheck
+end program test_d_orthfact_buildbulge
