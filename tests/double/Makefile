@@ -1,4 +1,4 @@
-include ../../make.inc
+include ../../make.inc ../../.master.inc
 
 DTESTSRCS := $(wildcard *.f90)
 DTESTS := $(DTESTSRCS:.f90=)

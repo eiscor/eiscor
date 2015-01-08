@@ -1,14 +1,5 @@
 # user defined make include file
-include make.inc
-
-# current version of eiscor
-LIBNAME := eiscor
-MAJOR := 0
-MINOR := 1
-PATCH := 0
-VERSION := $(MAJOR).$(MINOR).$(PATCH)
-export LIBNAME
-export VERSION
+include make.inc .master.inc
 
 # change library extension based on OS
 ifeq ($(OS), Windows_NT)
@@ -31,10 +22,10 @@ install: lib$(LIBNAME).$(SLIB).$(VERSION)
 	@mkdir -p $(INSTALLDIR)/$(LIBNAME)/lib
 	@cp ./lib$(LIBNAME).$(SLIB).$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib
 
-example%: install
+example%:
 	@$(MAKE) $@ -C ./examples
 
-test%: install
+test%:
 	@$(MAKE) $@ -C ./tests
 
 lib$(LIBNAME).$(SLIB).$(VERSION): $(OBJS)

@@ -1,4 +1,4 @@
-include ../../make.inc
+include ../../make.inc ../../.master.inc
 
 ZTESTSRCS := $(wildcard *.f90)
 ZTESTS := $(ZTESTSRCS:.f90=)
