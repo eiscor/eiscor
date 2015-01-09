@@ -23,7 +23,7 @@
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
 ! 
-! A deviation of 0.1% is still acceptable.
+! A deviation of 0.2% is still acceptable.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_rot2_turnover
@@ -610,7 +610,7 @@ program test_d_rot2_turnover
      h2 = histo2(7,jj)
      ht = histot(7,jj)
      do ii=7,1,-1
-        if (ht>h2*1.001) then
+        if (h2>ht*1.002) then
            if (DEBUG) then
               pass_all = .FALSE.
            else
@@ -719,6 +719,10 @@ subroutine d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
 
   ! first turnover
   call d_rot2_turnover(Q1,Q2,Q3,INFO)
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
   ! switch position of rotations
   B = Q1
   Q1 = Q3
@@ -755,6 +759,10 @@ subroutine d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   ! accum-1 turnovers
   do jj=2,accum
      call d_rot2_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.0) then
+        call u_test_failed(__LINE__)
+     end if
      
      B = Q1
      Q1 = Q3
