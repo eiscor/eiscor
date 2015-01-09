@@ -1,5 +1,6 @@
 # Tests #
 Every test in __eiscor__ should adhere to the following template:
+- a test may only directly test __one__ subroutine
 - a name formatted as __test_prec_object_function__ (i.e. test_d_unifact_qr)
 - a single call to the function __u_test_banner__ with the file name as an argument (i.e. __call u_test_banner('test_d_unifact_qr.f90')__)
 - at every test for failure a call to the function __u_test_failed__ with a line number as an argument (i.e. __call u_test_failed(21)__)
@@ -48,3 +49,11 @@ program test_d_scalar_addition
      
 end program test_d_scalar_addition
 ```
+
+## Executing tests ##
+There are several convenient targets for building and running tests. The following targets require the installation of the __eiscor library__ and can be run from the __eiscor/__, __eiscor/test/__ and __eiscor/test/prec__ directories:
+- __make tests__, compiles and executes all tests
+- __make tests_d__, compiles and executes all double precision tests (does not work in __eiscor/test/complex_double/__)
+- __make tests_z__, compiles and executes all complex double precision tests (does not work in __eiscor/test/double/__)
+- __make tests_d_*__, compiles and executes all double precision tests containing __*__ (does not work in __eiscor/test/complex_double/__)
+- __make tests_z_*__, compiles and executes all complex double precision tests __*__ (does not work in __eiscor/test/double/__)
