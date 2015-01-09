@@ -1,26 +1,5 @@
 # user defined make include file
-include make.inc
-
-# current version of eiscor
-LIBNAME := eiscor
-MAJOR := 0
-MINOR := 1
-PATCH := 0
-VERSION := $(MAJOR).$(MINOR).$(PATCH)
-export LIBNAME
-export VERSION
-
-# change library extension based on OS
-ifeq ($(OS), Windows_NT)
-	SLIB = dll
-else
-	UNAME := $(shell uname)
-	ifeq ($(UNAME), Darwin)
-		SLIB = dylib
-	else
-		SLIB = so
-	endif
-endif
+include make.inc .master.inc
 
 SRCS := $(wildcard ./src/*/*.f90)
 OBJS := $(SRCS:.f90=.o)
@@ -31,11 +10,11 @@ install: lib$(LIBNAME).$(SLIB).$(VERSION)
 	@mkdir -p $(INSTALLDIR)/$(LIBNAME)/lib
 	@cp ./lib$(LIBNAME).$(SLIB).$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib
 
-example%: install
-	@$(MAKE) $@ -C ./examples
+example%:
+	@$(MAKE) $@ -C ./example
 
-test%: install
-	@$(MAKE) $@ -C ./tests
+test%:
+	@$(MAKE) $@ -C ./test
 
 lib$(LIBNAME).$(SLIB).$(VERSION): $(OBJS)
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(OBJS) 
@@ -50,8 +29,8 @@ uninstall: clean
 
 clean:
 	@$(MAKE) clean -C ./src
-	@$(MAKE) clean -C ./examples
-	@$(MAKE) clean -C ./tests
+	@$(MAKE) clean -C ./example
+	@$(MAKE) clean -C ./test
 	@rm -f lib$(LIBNAME).so.$(VERSION)
 
 

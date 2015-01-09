@@ -1,25 +1,24 @@
-include ../make.inc
+include ../make.inc ../.master.inc
 
-all: tests
+all: examples
 
-tests:
+examples:
 	@$(MAKE) $@ -C ./double
 	@$(MAKE) $@ -C ./complex_double
-	
-tests_d:
+
+examples_d:
 	@$(MAKE) $@ -C ./double
-	
-tests_z:
+
+examples_z:
 	@$(MAKE) $@ -C ./complex_double
-	
-tests_d_%:
+
+examples_d_%:
 	@$(MAKE) $@ -C ./double
-	
-tests_z_%:
+
+examples_z_%:
 	@$(MAKE) $@ -C ./complex_double
-	
+
 clean:
 	@$(MAKE) clean -C ./double
 	@$(MAKE) clean -C ./complex_double
-	
-	
+
