@@ -1,18 +1,6 @@
 # user defined make include file
 include make.inc .master.inc
 
-# change library extension based on OS
-ifeq ($(OS), Windows_NT)
-	SLIB = dll
-else
-	UNAME := $(shell uname)
-	ifeq ($(UNAME), Darwin)
-		SLIB = dylib
-	else
-		SLIB = so
-	endif
-endif
-
 SRCS := $(wildcard ./src/*/*.f90)
 OBJS := $(SRCS:.f90=.o)
 
@@ -23,10 +11,10 @@ install: lib$(LIBNAME).$(SLIB).$(VERSION)
 	@cp ./lib$(LIBNAME).$(SLIB).$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib
 
 example%:
-	@$(MAKE) $@ -C ./examples
+	@$(MAKE) $@ -C ./example
 
 test%:
-	@$(MAKE) $@ -C ./tests
+	@$(MAKE) $@ -C ./test
 
 lib$(LIBNAME).$(SLIB).$(VERSION): $(OBJS)
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(OBJS) 
@@ -41,8 +29,8 @@ uninstall: clean
 
 clean:
 	@$(MAKE) clean -C ./src
-	@$(MAKE) clean -C ./examples
-	@$(MAKE) clean -C ./tests
+	@$(MAKE) clean -C ./example
+	@$(MAKE) clean -C ./test
 	@rm -f lib$(LIBNAME).so.$(VERSION)
 
 

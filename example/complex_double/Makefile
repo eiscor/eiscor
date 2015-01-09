@@ -1,4 +1,4 @@
-include ../../make.inc
+include ../../make.inc ../../.master.inc
 
 ZEXSRCS := $(wildcard *.f90)
 ZEXS := $(ZEXSRCS:.f90=)

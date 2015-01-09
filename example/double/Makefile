@@ -1,4 +1,4 @@
-include ../../make.inc
+include ../../make.inc ../../.master.inc
 
 DEXSRCS := $(wildcard *.f90)
 DEXS := $(DEXSRCS:.f90=)
