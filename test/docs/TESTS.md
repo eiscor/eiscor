@@ -51,9 +51,9 @@ end program test_d_scalar_addition
 ```
 
 ## Executing tests ##
-There are several convenient targets for building and running tests. The following targets require the installation of the __eiscor library__ and can be run from the __eiscor/__, __eiscor/tests/__ and __eiscor/tests/prec__ directories:
+There are several convenient targets for building and running tests. The following targets require the installation of the __eiscor library__ and can be run from the __eiscor/__, __eiscor/test/__ and __eiscor/test/prec__ directories:
 - __make tests__, compiles and executes all tests
-- __make tests_d__, compiles and executes all double precision tests (does not work in __eiscor/tests/complex_double/__)
-- __make tests_z__, compiles and executes all complex double precision tests (does not work in __eiscor/tests/double/__)
-- __make tests_d_*__, compiles and executes all double precision tests containing __*__ (does not work in __eiscor/tests/complex_double/__)
-- __make tests_z_*__, compiles and executes all complex double precision tests __*__ (does not work in __eiscor/tests/double/__)
+- __make tests_d__, compiles and executes all double precision tests (does not work in __eiscor/test/complex_double/__)
+- __make tests_z__, compiles and executes all complex double precision tests (does not work in __eiscor/test/double/__)
+- __make tests_d_*__, compiles and executes all double precision tests containing __*__ (does not work in __eiscor/test/complex_double/__)
+- __make tests_z_*__, compiles and executes all complex double precision tests __*__ (does not work in __eiscor/test/double/__)
