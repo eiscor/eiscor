@@ -9,4 +9,4 @@ all: $(ZOBJS)
 	$(FC) $(FFLAGS) -cpp -fPIC -c $< -I../../include
 
 clean:
-	rm -f $(ZOBJS)	
+	@rm -f $(ZOBJS)	

@@ -9,4 +9,4 @@ all: $(IOBJS)
 	$(FC) $(FFLAGS) -cpp -fPIC -c $< -I ../../include
 
 clean:
-	rm -f $(IOBJS)	
+	@rm -f $(IOBJS)	
