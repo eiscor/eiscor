@@ -5,9 +5,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine sorts the eigenvalues and optionally eigenvectors of a
-! unitary matrix. The eigenpairs are sorted in ascending order of the
-! argument of the eigenvalue. 
+! This routine computes the argument of a complex number A + BI.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !

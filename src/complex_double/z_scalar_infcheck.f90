@@ -36,7 +36,7 @@ subroutine z_scalar_infcheck(NUM,INFO)
   INFO = 0
   
   ! check magnitude of real and imaginary parts
-  if ((abs(dble(NUM))>=infdef).OR.(abs(aimag(NUM))>=infdef)) then
+  if ((abs(dble(NUM))>infdef).OR.(abs(aimag(NUM))>infdef)) then
     INFO = 1
   end if
 

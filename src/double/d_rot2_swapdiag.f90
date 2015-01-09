@@ -56,12 +56,12 @@ subroutine d_rot2_swapdiag(JOB,D,B,INFO)
     end if
   
     ! check D
-    if ((abs(D(1)).NE.1d0).AND.(abs(D(2)).NE.0d0)) then
+    if ((abs(D(1)).NE.1d0).OR.(abs(D(2)).NE.0d0)) then
       INFO = -2
       call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
       return
     end if
-    if ((abs(D(3)).NE.1d0).AND.(abs(D(4)).NE.0d0)) then
+    if ((abs(D(3)).NE.1d0).OR.(abs(D(4)).NE.0d0)) then
       INFO = -2
       call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
       return
