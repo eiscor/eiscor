@@ -8,14 +8,11 @@
 ! This routine computes the generalized schur decomposition of an 
 ! extended upper-hessenberg, upper-triangular pencil. Both the hessenberg
 ! and triangular matrices are the sum of a unitary matrix and a rank 
-! one matrix. These matrices are stored in 5 sequences of rotations.
+! one matrix. These matrices are stored in 5 sequences of rotations 
+! and 2 unimodular diagonal matrices.
 !
 ! The hessenberg part is stored as H = Q*D1*C1*B1
 ! The triangular part is stored as S = D2*C2*B2
-! 
-! This factorization is described in:
-!
-!
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -33,7 +30,7 @@
 !  N               INTEGER
 !                    dimension of matrix
 !
-!  P               LOGICAL array of dimension (N-1)
+!  P               LOGICAL array of dimension (N-2)
 !                    array of position flags for Q
 !
 !  FUN             LOGICAL FUNCTION FUN(N,P)
@@ -91,7 +88,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   character(2), intent(in) :: ALG
   character, intent(in) :: COMPZ
   integer, intent(in) :: N
-  logical, intent(inout) :: P(N-1)
+  logical, intent(inout) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO, ITS(N-1)
@@ -189,6 +186,15 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     end if
     
     ! check for deflation
+    call z_upr1fact_deflationcheck(N,start_index,stop_index,zero_index,P,Q,D,it_count,ITS,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_deflationcheck failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! if 1x1 block remove and check again 
     if(stop_index == zero_index)then
