@@ -75,8 +75,6 @@ program test_z_rot3_vec4gen
   ! print banner
   call u_test_banner(__FILE__)
 
-  print*, ""
-
   !!!!!!!!!!!!!!!!!!!!
   ! check 1)
 
