@@ -186,6 +186,15 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     end if
     
     ! check for deflation
+    call z_upr1fact_deflationcheck(N,start_index,stop_index,zero_index,P,Q,D,it_count,ITS,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_deflationcheck failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! if 1x1 block remove and check again 
     if(stop_index == zero_index)then

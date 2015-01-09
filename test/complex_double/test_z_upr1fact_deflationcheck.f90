@@ -10,6 +10,8 @@
 !
 ! 1) upper hessenberg
 ! 2) inverse hessenberg
+! 3) CMV
+! 4) inverse CMV
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_upr1fact_deflationcheck
@@ -17,7 +19,7 @@ program test_z_upr1fact_deflationcheck
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 4
+  integer, parameter :: N = 6
   integer :: ii, ind, INFO, ITCNT, STR, STP, ZERO, ITS(N-1)
   logical :: P(N-2)
   real(8) :: Q(3*(N-1)), D(2,2*(N+1))
@@ -62,30 +64,9 @@ program test_z_upr1fact_deflationcheck
     do ii=1,(N+1)
       D(1,2*ii-1) = 1d0
     end do
-
-! print Q
-print*, "Q"
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-
-! print D
-print*, "D"
-do ii=1,(N+1)
-print*,D(1,2*ii-1),D(1,2*ii)
-end do
-print*,""
         
     ! initialize H1
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
-    
-! print H1
-print*, "H1"
-do ii=1,N
-print*,H1(ii,1:N)
-end do
-print*,""
     
     ! set ITCNT
     ITCNT = 10
@@ -102,30 +83,9 @@ print*,""
     if (INFO.NE.0) then
       call u_test_failed(__LINE__)
     end if
-
-! print Q
-print*, "Q"
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-
-! print D
-print*, "D"
-do ii=1,(N+1)
-print*,D(1,2*ii-1),D(1,2*ii)
-end do
-print*,""
     
     ! initialize H2
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
-    
-! print H2
-print*, "H2"
-do ii=1,N
-print*,H2(ii,1:N)
-end do
-print*,""
     
     ! check difference
     if (maxval(abs(H1-H2)) > tol) then
@@ -152,7 +112,7 @@ print*,""
       call u_test_failed(__LINE__)
     end if
 
-! check 2)
+  ! check 2)
     ! initialize P
     P = .TRUE.
     
@@ -220,6 +180,152 @@ print*,""
       call u_test_failed(__LINE__)
  
     end if
+    
+  ! check 3)
+    ! initialize P
+    P = .FALSE.
+    ii = 2
+    do while (ii <= (N-2))
+      P(ii) = .TRUE.
+      ii = ii + 2
+    end do
+    
+    ! initialize Q
+    Q = 0d0
+    do ii=1,(N-1)
+      Q(3*ii-2) = 1d0/sqrt(2d0)
+      Q(3*ii) = 1d0/sqrt(2d0)
+    end do
+    ind = N/2
+    Q(3*ind-2) = 0d0
+    Q(3*ind-1) = 1d0
+    Q(3*ind) = 0d0
+    
+    ! initialize D
+    D = 0d0
+    do ii=1,(N+1)
+      D(1,2*ii-1) = 1d0
+    end do
+        
+    ! initialize H1
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
+    
+    ! set ITCNT
+    ITCNT = 10
+    
+    ! set STR, STP, ZERO
+    STR = 1
+    STP = N-1
+    ZERO = 0
+    
+    ! call z_upr1fact_deflationcheck
+    call z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
+    
+    ! check INFO
+    if (INFO.NE.0) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    ! initialize H2
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
+    
+    ! check difference
+    if (maxval(abs(H1-H2)) > tol) then
+      call u_test_failed(__LINE__)
+    end if      
+    
+    ! check ZERO
+    if (ZERO.NE.ind) then
+      call u_test_failed(__LINE__)
+    end if   
+    
+    ! check STR
+    if (STR.NE.(ind+1)) then
+      call u_test_failed(__LINE__)
+    end if  
+    
+    ! check ITCNT
+    if (ITCNT.NE.0) then
+      call u_test_failed(__LINE__)
+    end if  
+
+    ! check ITS
+    if (ITS(ind).NE.10) then
+      call u_test_failed(__LINE__)
+    end if
+    
+  ! check 4)
+    ! initialize P
+    P = .TRUE.
+    ii = 2
+    do while (ii <= (N-2))
+      P(ii) = .FALSE.
+      ii = ii + 2
+    end do
+    
+    ! initialize Q
+    Q = 0d0
+    do ii=1,(N-1)
+      Q(3*ii-2) = 1d0/sqrt(2d0)
+      Q(3*ii) = 1d0/sqrt(2d0)
+    end do
+    ind = N/2
+    Q(3*ind-2) = 0d0
+    Q(3*ind-1) = 1d0
+    Q(3*ind) = 0d0
+    
+    ! initialize D
+    D = 0d0
+    do ii=1,(N+1)
+      D(1,2*ii-1) = 1d0
+    end do
+        
+    ! initialize H1
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
+    
+    ! set ITCNT
+    ITCNT = 10
+    
+    ! set STR, STP, ZERO
+    STR = 1
+    STP = N-1
+    ZERO = 0
+    
+    ! call z_upr1fact_deflationcheck
+    call z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
+    
+    ! check INFO
+    if (INFO.NE.0) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    ! initialize H2
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
+    
+    ! check difference
+    if (maxval(abs(H1-H2)) > tol) then
+      call u_test_failed(__LINE__)
+    end if      
+    
+    ! check ZERO
+    if (ZERO.NE.ind) then
+      call u_test_failed(__LINE__)
+    end if   
+    
+    ! check STR
+    if (STR.NE.(ind+1)) then
+      call u_test_failed(__LINE__)
+    end if  
+    
+    ! check ITCNT
+    if (ITCNT.NE.0) then
+      call u_test_failed(__LINE__)
+    end if  
+
+    ! check ITS
+    if (ITS(ind).NE.10) then
+      call u_test_failed(__LINE__)
+    end if
  
   ! stop timer
   call system_clock(count=c_stop)
@@ -231,8 +337,9 @@ end program test_z_upr1fact_deflationcheck
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-!
-!
+! This subroutine computes the (N+1)x(N+1) extended hessenberg matrix defined
+! by Given's rotations stored in Q whose order is described by P and the
+! diagonal matrix D. The output is stored in H.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_form_hess_matrix(N,P,Q,D,H)

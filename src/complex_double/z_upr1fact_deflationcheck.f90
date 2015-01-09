@@ -204,13 +204,13 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       ! deflate downward
       do jj = 1,(STP-ind)
         
-        ! set downward index
-        down = ind + jj
-        
         ! exit if P == .TRUE.
-        if (P(down-1).EQV..TRUE.) then
+        if (P(down).EQV..TRUE.) then
           exit
         end if
+                
+        ! set downward index
+        down = ind + jj
         
         ! update Q
         cr = Q(3*down-2)
