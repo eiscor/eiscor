@@ -17,7 +17,7 @@ program test_z_upr1fact_deflationcheck
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 6
+  integer, parameter :: N = 4
   integer :: ii, ind, INFO, ITCNT, STR, STP, ZERO, ITS(N-1)
   logical :: P(N-2)
   real(8) :: Q(3*(N-1)), D(2,2*(N+1))
@@ -62,9 +62,30 @@ program test_z_upr1fact_deflationcheck
     do ii=1,(N+1)
       D(1,2*ii-1) = 1d0
     end do
+
+! print Q
+print*, "Q"
+do ii=1,(N-1)
+print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+end do
+print*,""
+
+! print D
+print*, "D"
+do ii=1,(N+1)
+print*,D(1,2*ii-1),D(1,2*ii)
+end do
+print*,""
         
     ! initialize H1
-    call nameless(N,P,Q,D,H1)
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
+    
+! print H1
+print*, "H1"
+do ii=1,N
+print*,H1(ii,1:N)
+end do
+print*,""
     
     ! set ITCNT
     ITCNT = 10
@@ -81,9 +102,30 @@ program test_z_upr1fact_deflationcheck
     if (INFO.NE.0) then
       call u_test_failed(__LINE__)
     end if
+
+! print Q
+print*, "Q"
+do ii=1,(N-1)
+print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+end do
+print*,""
+
+! print D
+print*, "D"
+do ii=1,(N+1)
+print*,D(1,2*ii-1),D(1,2*ii)
+end do
+print*,""
     
     ! initialize H2
-    call nameless(N,P,Q,D,H2)
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
+    
+! print H2
+print*, "H2"
+do ii=1,N
+print*,H2(ii,1:N)
+end do
+print*,""
     
     ! check difference
     if (maxval(abs(H1-H2)) > tol) then
@@ -132,7 +174,7 @@ program test_z_upr1fact_deflationcheck
     end do
         
     ! initialize H1
-    call nameless(N,P,Q,D,H1)
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
     
     ! set ITCNT
     ITCNT = 10
@@ -151,7 +193,7 @@ program test_z_upr1fact_deflationcheck
     end if
     
     ! initialize H2
-    call nameless(N,P,Q,D,H2)
+    call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
     
     ! check difference
     if (maxval(abs(H1-H2)) > tol) then
@@ -193,7 +235,7 @@ end program test_z_upr1fact_deflationcheck
 !
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine nameless(N,P,Q,D,H)
+subroutine z_upr1fact_form_hess_matrix(N,P,Q,D,H)
 
   implicit none
   
@@ -237,4 +279,4 @@ subroutine nameless(N,P,Q,D,H)
     H(:,ii) = H(:,ii)*cmplx(D(1,2*ii-1),D(1,2*ii),kind=8)
   end do
   
-end subroutine nameless
+end subroutine z_upr1fact_form_hess_matrix
