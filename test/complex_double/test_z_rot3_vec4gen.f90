@@ -10,43 +10,47 @@
 !
 ! 1)          
 !    [ 1 + 0i ] = [ 1 ] [ 1 ]
-!    [   0    ]   [ 0 ]
+!    [ 0 + 0i ]   [ 0 ]
 !                
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
 !
 ! 2)              
-!    [ 1 + i ] = [ sqrt(2)/2 + isqrt(2)/2  ] [ sqrt(2) ]
-!    [   0   ]   [           0             ]
+!    [ 1 + i  ] = [ sqrt(2)/2 + isqrt(2)/2  ] [ sqrt(2) ]
+!    [ 0 + 0i ]   [           0             ]
 !
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
 !
 ! 3)              
 !    [ 1 + 0i ] = [ sqrt(2)/2 ] [ sqrt(2) ]
-!    [   1    ]   [ sqrt(2)/2 ]
+!    [ 1 + 0i ]   [ sqrt(2)/2 ]
 !
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
 !
 ! 4)              
-!    [ 1 + i ] = [ 1/sqrt(3) + i 1/sqrt(3)] [ sqrt(3) ]
-!    [   1   ]   [ 1/sqrt(3)              ]
+!    [ 1 + i  ] = [ 1/sqrt(3) + i 1/sqrt(3)] [ sqrt(3) ]
+!    [ 1 + 0i ]   [ 1/sqrt(3)              ]
 !
 ! 5)              
-!    [ 0 + i ] = [ isqrt(2)/2 ] [ sqrt(2) ]
-!    [   1   ]   [  sqrt(2)/2 ]
+!    [ 0 + i  ] = [ isqrt(2)/2 ] [ sqrt(2) ]
+!    [ 1 + 0i ]   [  sqrt(2)/2 ]
 !
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
 !
 ! 6)              
-!    [ 0 + i ] = [ i ] [ 1 ]
-!    [   0   ]   [ 0 ]
+!    [ 0 + i  ] = [ i ] [ 1 ]
+!    [ 0 + 0i ]   [ 0 ]
 !
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
 !
 ! 7)              
 !    [ 0 + 0i ] = [ 0 ] [ 1 ]
-!    [   1    ]   [ 1 ]
+!    [ 1 + 0i ]   [ 1 ]
 !
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
+!
+! 8)              
+!    [ 3 + 2i ] = [ 0 ] [ 1 ]
+!    [ 1 - 4i ]   [ 1 ]
 !
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -656,6 +660,34 @@ program test_z_rot3_vec4gen
     call u_test_failed(__LINE__)
   end if
   if (abs(nrm-1d0)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 8)
+  ! set variables
+  a = 3d0
+  b = 2d0
+  c = 1d0
+  d = -4d0
+
+  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  
+  ! check INFO
+  if (INFO.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+  ! check results
+  if (abs(Q(1)+sqrt(5d0/17d0/6d0))>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(Q(2)-sqrt(17d0/30d0)*2+sqrt(80d0/102d0))>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(Q(3)-sqrt(17d0/30d0))>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(nrm-sqrt(30d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
