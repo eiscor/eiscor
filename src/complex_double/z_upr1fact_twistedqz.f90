@@ -88,14 +88,14 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   character(2), intent(in) :: ALG
   character, intent(in) :: COMPZ
   integer, intent(in) :: N
-  logical, intent(in) :: P(N-2)
+  logical, intent(inout) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO, ITS(N-1)
   interface
     logical function FUN(N,P)
       integer, intent(in) :: N
-      logical, intent(in) :: P(N-1)
+      logical, intent(in) :: P(N-2)
     end function FUN
   end interface
   
@@ -117,7 +117,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   end if
   
   ! check factorization
-  call z_upr1fact_factorcheck(ALG,N,P,Q,D,R,INFO)
+  call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
