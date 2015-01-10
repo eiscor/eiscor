@@ -88,7 +88,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   character(2), intent(in) :: ALG
   character, intent(in) :: COMPZ
   integer, intent(in) :: N
-  logical, intent(inout) :: P(N-2)
+  logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO, ITS(N-1)
