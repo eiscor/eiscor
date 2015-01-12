@@ -69,7 +69,7 @@ subroutine z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
   
   ! compute variables
   integer :: ind
-  complex(8) :: T(3,2)
+  complex(8) :: H(3,3), T(3,2)
   
   ! initialize INFO
   INFO = 0
@@ -135,51 +135,74 @@ subroutine z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
     T(1,:) = cmplx(D(1,ind-1),D(1,ind),kind=8)*T(1,:)
   end if
 
-  ! apply Q
-  ind = 3*(K-1)  
-  T(3,2) = cmplx(Q(ind+4),Q(ind+5),kind=8)*T(3,2)
-
-  A(1,1) = cmplx(Q(ind+1),Q(ind+2),kind=8)
-  A(2,1) = cmplx(Q(ind+3),0d0,kind=8)
-  A(1,2) = cmplx(-Q(ind+3),0d0,kind=8)
-  A(2,2) = cmplx(Q(ind+1),-Q(ind+2),kind=8)
+  ! build local Q
+  H = cmplx(0d0,0d0,kind=8)
+  H(1,1) = cmplx(1d0,0d0,kind=8)
   
-  T(2:3,1:2) = matmul(A,T(2:3,1:2))
-
+  ind = 3*(K-1)  
+  H(2,2) = cmplx(Q(ind+1),Q(ind+2),kind=8)
+  H(3,2) = cmplx(Q(ind+3),0d0,kind=8)
+  H(2,3) = cmplx(-Q(ind+3),0d0,kind=8)
+  H(3,3) = cmplx(Q(ind+1),-Q(ind+2),kind=8)
+  
   ! if not at top
   if (K > 1) then
     A(1,1) = cmplx(Q(ind-2),Q(ind-1),kind=8)
     A(2,1) = cmplx(Q(ind),0d0,kind=8)
     A(1,2) = cmplx(-Q(ind),0d0,kind=8)
     A(2,2) = cmplx(Q(ind-2),-Q(ind-1),kind=8)
-      
-    T(1:2,1:2) = matmul(A,T(1:2,1:2))
+    
+    if (P(K-1).EQV..FALSE.) then  
+      H(1:2,:) = matmul(A,H(1:2,:))
+    else
+      H(:,1:2) = matmul(H(:,1:2),A)
+    end if
+  end if
+  
+  ! if not at bottom
+  if (K < (N-1)) then
+    if (P(K).EQV..FALSE.) then  
+      H(:,3) = H(:,3)*cmplx(Q(ind-2),Q(ind-1),kind=8)
+    else
+      H(3,:) = H(3,:)*cmplx(Q(ind-2),Q(ind-1),kind=8)
+    end if
   end if
   
   ! set output
-  A = T(2:3,1:2)
+  A = matmul(H(2:3,:),T)
 
   ! compute B
-  ! set index
-  ind = 3*(K-1)
+  ! set to I if ALG == QR
+  if (ALG.EQ."QR") then
   
-  ! initialize 
-  B = cmplx(0d0,0d0,kind=8)
-
-  ! first column of T
-  ind = 3*(K-1)
-  B(1,1) = cmplx(-R(4,ind+3)/R(3,ind+3),0d0,kind=8)
-      
-  ! second column of T
-  ind = 3*K
-  B(2,2) = cmplx(-R(4,ind+3)/R(3,ind+3),0d0)
-  B(1,2) = (cmplx(-R(4,ind-2),R(4,ind-1),kind=8)*cmplx(R(4,ind+1),R(4,ind+2),kind=8) &
-      + B(2,2)*cmplx(R(3,ind-2),R(3,ind-1),kind=8)*cmplx(R(3,ind+1),-R(3,ind+2),kind=8))/cmplx(R(3,ind),0d0,kind=8)
+    B = cmplx(0d0,0d0,kind=8)
+    B(1,1) = cmplx(1d0,0d0,kind=8)
+    B(2,2) = cmplx(1d0,0d0,kind=8)
   
-  ! apply diagonal
-  ind = 2*(K-1)
-  B(1,:) = cmplx(D(2,ind+1),D(2,ind+2),kind=8)*B(1,:)
-  B(2,:) = cmplx(D(2,ind+3),D(2,ind+4),kind=8)*B(2,:)  
+  ! compute upper-triangular part otherwise
+  else
+  
+    ! set index
+    ind = 3*(K-1)
+    
+    ! initialize 
+    B = cmplx(0d0,0d0,kind=8)
 
+    ! first column of T
+    ind = 3*(K-1)
+    B(1,1) = cmplx(-R(4,ind+3)/R(3,ind+3),0d0,kind=8)
+        
+    ! second column of T
+    ind = 3*K
+    B(2,2) = cmplx(-R(4,ind+3)/R(3,ind+3),0d0)
+    B(1,2) = (cmplx(-R(4,ind-2),R(4,ind-1),kind=8)*cmplx(R(4,ind+1),R(4,ind+2),kind=8) &
+        + B(2,2)*cmplx(R(3,ind-2),R(3,ind-1),kind=8)*cmplx(R(3,ind+1),-R(3,ind+2),kind=8))/cmplx(R(3,ind),0d0,kind=8)
+    
+    ! apply diagonal
+    ind = 2*(K-1)
+    B(1,:) = cmplx(D(2,ind+1),D(2,ind+2),kind=8)*B(1,:)
+    B(2,:) = cmplx(D(2,ind+3),D(2,ind+4),kind=8)*B(2,:)  
+    
+  end if
 
 end subroutine z_upr1fact_2x2diagblocks
