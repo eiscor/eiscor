@@ -5,7 +5,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the generalized schur decomposition of an 
+! This routine computes the generalized Schur decomposition of an 
 ! extended upper-hessenberg, upper-triangular pencil. Both the hessenberg
 ! and triangular matrices are the sum of a unitary matrix and a rank 
 ! one matrix. These matrices are stored in 5 sequences of rotations 
@@ -13,6 +13,9 @@
 !
 ! The hessenberg part is stored as H = Q*D1*C1*B1
 ! The triangular part is stored as S = D2*C2*B2
+!
+! The matrices V and W are the right and left Schur vectors respectively.
+! Namely, W*(H,S)V is upper-triangular.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -74,10 +77,10 @@
 !  INFO           INTEGER
 !                   INFO = 1 implies no convergence 
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies COMPZ is invalid
-!                   INFO = -2 implies ALG, N, Q, D or R is invalid
-!                   INFO = -7 implies V is invalid
-!                   INFO = -8 implies W is invalid
+!                   INFO = -1 implies ALG, N, Q, D or R is invalid
+!                   INFO = -2 implies COMPZ is invalid
+!                   INFO = -9 implies V is invalid
+!                   INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
@@ -106,16 +109,6 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   ! initialize info
   INFO = 0
   
-  ! check COMPZ
-  if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
-    INFO = -1
-    ! print error message in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
-    end if
-    return
-  end if
-  
   ! check factorization
   call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
   if (INFO.NE.0) then
@@ -123,7 +116,17 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"ALG, N, Q, D or R is invalid",INFO,INFO)
     end if
+    INFO = -1
+    return
+  end if
+  
+  ! check COMPZ
+  if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
     INFO = -2
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
+    end if
     return
   end if
   
@@ -131,7 +134,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   if (COMPZ.EQ.'V') then
     call z_2Darray_check(N,N,V,INFO)
     if (INFO.NE.0) then
-      INFO = -7
+      INFO = -9
       ! print error message in debug mode
       if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,INFO)
@@ -144,7 +147,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   if ((ALG.EQ.'QZ').AND.(COMPZ.EQ.'V')) then
     call z_2Darray_check(N,N,W,INFO)
     if (INFO.NE.0) then
-      INFO = -8
+      INFO = -10
       ! print error message in debug mode
       if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,INFO)
@@ -206,6 +209,28 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     
     ! if 2x2 block remove and check again
     else if(stop_index-1 == zero_index)then
+    
+      ! compute 2x2 blocks
+      call z_upr1fact_2x2diagblocks(N,stop_index,ALG,P,Q,D,R,A,B,INFO)
+    
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if
+      
+      ! compute generalized Schur decomposition
+      call z_2x2array_geneig(A,B,Wt,Vt,INFO)
+    
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if
     
     ! if greater than 2x2 chase a bulge
     else
