@@ -95,7 +95,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   interface
     logical function FUN(N,P)
       integer, intent(in) :: N
-      logical, intent(in) :: P(N-1)
+      logical, intent(in) :: P(N-2)
     end function FUN
   end interface
   
@@ -117,7 +117,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   end if
   
   ! check factorization
-  call z_upr1fact_factorcheck(ALG,N,P,Q,D,R,INFO)
+  call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
@@ -199,10 +199,15 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     ! if 1x1 block remove and check again 
     if(stop_index == zero_index)then
     
+      ! update indices
+      stop_index = stop_index - 1
+      zero_index = 0
+      start_index = 1
+    
     ! if 2x2 block remove and check again
     else if(stop_index-1 == zero_index)then
     
-    ! if greater than 2x2 chase a bulge and check again
+    ! if greater than 2x2 chase a bulge
     else
     
     end if
