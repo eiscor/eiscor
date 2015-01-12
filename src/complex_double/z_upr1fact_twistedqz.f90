@@ -106,6 +106,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   integer :: ii, jj, kk
   integer :: start_index, stop_index, zero_index, it_max, it_count
   
+  
   ! initialize info
   INFO = 0
   
@@ -209,28 +210,6 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     
     ! if 2x2 block remove and check again
     else if(stop_index-1 == zero_index)then
-    
-      ! compute 2x2 blocks
-      call z_upr1fact_2x2diagblocks(N,stop_index,ALG,P,Q,D,R,A,B,INFO)
-    
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if
-      
-      ! compute generalized Schur decomposition
-      call z_2x2array_geneig(A,B,Wt,Vt,INFO)
-    
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if
     
     ! if greater than 2x2 chase a bulge
     else

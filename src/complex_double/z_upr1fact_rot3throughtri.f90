@@ -144,15 +144,55 @@ subroutine z_upr1fact_rot3throughtri(DIR,N,K,D,C,B,G,INFO)
     end if
     
     ! though C
+    ind1 = 3*K-2
+    ind2 = ind1+2
+    call z_rot3_turnover(C(ind1:ind2),C((ind1+3):(ind2+3)),G,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! through B
+    call z_rot3_turnover(B((ind1+3):(ind2+3)),B(ind1:ind2),G,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
   
   ! R2L
   else
   
     ! through B
+    ind1 = 3*K-2
+    ind2 = ind1+2
+    call z_rot3_turnover(B(ind1:ind2),B((ind1+3):(ind2+3)),G,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! through C
+    call z_rot3_turnover(C((ind1+3):(ind2+3)),C(ind1:ind2),G,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! through D
     ind1 = 2*K-1

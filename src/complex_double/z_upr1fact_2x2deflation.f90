@@ -66,20 +66,21 @@
 !                   INFO = -9 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,Q,D,R,V,W,INFO)
+subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
 
   implicit none
   
   ! input variables
   character(2), intent(in) :: ALG
   character, intent(in) :: COMPZ
-  integer, intent(in) :: N
+  integer, intent(in) :: N, K
+  logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO
   
   ! compute variables
-  complex(8) :: A(2,2), B(2,2), Ut(2,2), Vt(2,2)
+  complex(8) :: A(2,2), B(2,2), Vt(2,2), Wt(2,2)
   
   ! initialize info
   INFO = 0
@@ -122,7 +123,6 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,Q,D,R,V,W,INFO)
       call z_2Darray_check(N,N,W,INFO)
       if (INFO.NE.0) then
         call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,-9)
-        end if
       end if
     end if
     
