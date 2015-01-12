@@ -62,6 +62,7 @@ subroutine z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
   ! input variables
   character(2), intent(in) :: ALG
   integer, intent(in) :: N, K
+  integer, intent(inout) :: INFO
   logical, intent(in) :: P(N-2)
   real(8), intent(in) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
   complex(8), intent(inout) :: A(2,2), B(2,2)
