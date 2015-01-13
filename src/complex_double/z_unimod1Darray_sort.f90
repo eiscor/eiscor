@@ -70,16 +70,6 @@ subroutine z_unimod1Darray_sort(JOB,N,E,Z,INFO)
     end if
     
     ! check N
-    call i_scalar_nancheck(N,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
-      return
-    end if
-    call i_scalar_infcheck(N,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
-      return
-    end if
     if (N < 2) then
       INFO = -2
       call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)

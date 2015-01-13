@@ -76,24 +76,6 @@ subroutine d_orthhess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if
   
   ! check N
-  call i_scalar_nancheck(N,INFO)
-  if (INFO.NE.0) then
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
-    end if  
-    INFO = -2
-    return
-  end if
-  call i_scalar_infcheck(N,INFO)
-  if (INFO.NE.0) then
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
-    end if  
-    INFO = -2
-    return
-  end if
   if (N < 2) then
     INFO = -2
     ! print error in debug mode
