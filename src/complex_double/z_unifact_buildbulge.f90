@@ -65,16 +65,6 @@ subroutine z_unifact_buildbulge(N,K,Q,D,SHFT,B,INFO)
   if (DEBUG) then
     
     ! check N
-    call i_scalar_nancheck(N,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
-      return
-    end if
-    call i_scalar_infcheck(N,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
-      return
-    end if
     if (N < 2) then
       INFO = -1
       call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)

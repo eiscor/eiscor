@@ -76,16 +76,6 @@ subroutine z_unifact_deflationcheck(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
   if (DEBUG) then
     
     ! check N
-    call i_scalar_nancheck(N,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
-      return
-    end if
-    call i_scalar_infcheck(N,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
-      return
-    end if
     if (N < 2) then
       INFO = -1
       call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
@@ -114,16 +104,6 @@ subroutine z_unifact_deflationcheck(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
     end if  
     
     ! check ITCNT
-    call i_scalar_nancheck(ITCNT,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-7)
-      return
-    end if
-    call i_scalar_infcheck(ITCNT,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"ITCNT is invalid",INFO,-7)
-      return
-    end if
     if (ITCNT < 0) then
       INFO = -7
       call u_infocode_check(__FILE__,__LINE__,"ITCNT must be non-negative",INFO,INFO)

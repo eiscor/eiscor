@@ -43,6 +43,7 @@
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies JOB is invalid
+!                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies STR is invalid
 !                    INFO = -6 implies E is invalid
 !
@@ -74,6 +75,13 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
       call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,INFO)
       return
     end if  
+
+    ! check N
+    if (N < 2) then
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      return
+    end if         
   
     ! check STR
     if ((STR >= N).OR.(STR < 1)) then

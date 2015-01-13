@@ -48,6 +48,7 @@
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies COMPZ is invalid
+!                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies STR is invalid
 !                    INFO = -4 implies STP is invalid
 !
@@ -82,6 +83,13 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       return
     end if
     
+    ! check N
+    if (N < 2) then
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      return
+    end if         
+  
     ! check STR
     if ((STR < 1).OR.(STR > N-1)) then
       INFO = -3

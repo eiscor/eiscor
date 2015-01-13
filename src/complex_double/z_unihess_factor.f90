@@ -51,24 +51,6 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
   INFO = 0
   
   ! check N
-  call i_scalar_nancheck(N,INFO)
-  if (INFO.NE.0) then
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
-    end if
-    INFO = -1
-    return
-  end if
-  call i_scalar_infcheck(N,INFO)
-  if (INFO.NE.0) then
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
-    end if
-    INFO = -1
-    return
-  end if
   if (N < 2) then
     INFO = -1
     ! print error in debug mode
