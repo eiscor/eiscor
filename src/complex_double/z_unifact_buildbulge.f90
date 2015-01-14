@@ -5,9 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes a two by two diagonal block of a unitary upper 
-! hessenberg matrix that is stored as a product of givens rotations 
-! and a complex diagonal matrix. 
+! This routine computes the first transformation in a single shift
+! iteration for a unitary upper hessenberg matix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
