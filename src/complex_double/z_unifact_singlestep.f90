@@ -169,7 +169,7 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   ! project shift onto unit circle
   ar = dble(shift)
   ai = aimag(shift)
-  d_rot2_vec2gen(ar,ai,br,bi,nrm)
+  call d_rot2_vec2gen(ar,ai,br,bi,nrm)
   shift = cmplx(br,bi,kind=8)
 
 
