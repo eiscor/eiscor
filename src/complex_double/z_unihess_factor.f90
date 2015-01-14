@@ -110,12 +110,28 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
     Q(3*(ii-1)+3) = s
           
     ! store in D
-    call d_rot2_vec2gen(dble(H(ii,ii)),aimag(H(ii,ii)),D(2*(ii-1)+1),D(2*(ii-1)+2),nrm)
+    call d_rot2_vec2gen(dble(H(ii,ii)),aimag(H(ii,ii)),D(2*(ii-1)+1),D(2*(ii-1)+2),nrm,INFO)
    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+
   end do
   
   ! store in D
-  call d_rot2_vec2gen(dble(H(N,N)),aimag(H(N,N)),D(2*(N-1)+1),D(2*(N-1)+2),nrm)
+  call d_rot2_vec2gen(dble(H(N,N)),aimag(H(N,N)),D(2*(N-1)+1),D(2*(N-1)+2),nrm,INFO)
+  
+  ! check INFO in debug mode
+  if (DEBUG) then
+     call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+     if (INFO.NE.0) then 
+        return 
+     end if
+  end if
   
   ! check for unitarity       
   if (abs(nrm-1d0) >= tol) then

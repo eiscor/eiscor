@@ -40,9 +40,8 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   
   ! compute variables
   integer :: ii, id
-  real(8) :: detm, temp, nrm1, nrm2
-  complex(8) :: WORK(4)
-  complex(8) :: trace, disc
+  real(8) :: trace, disc, detm, temp, nrm1, nrm2
+  complex(8) :: WORK(4), swap
   
   ! initialize info
   INFO = 0
@@ -60,7 +59,7 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   end if  
 
   ! compute intermediate values
-  trace = cmplx(H(1,1) + H(2,2),0d0,kind=8)
+  trace = H(1,1) + H(2,2)
   detm = H(1,1)*H(2,2) - H(2,1)*H(1,2)
   temp = (H(1,1)-H(2,2))**2 + 4d0*H(1,2)*H(2,1)
   
@@ -71,20 +70,20 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   
   ! imaginary roots
   else if (temp < 0) then
-    disc = cmplx(0d0,sqrt(-temp),kind=8)
-    E(1) = (trace+disc)/2d0
-    E(2) = (trace-disc)/2d0
-    
+    disc = sqrt(-temp)
+    E(1) = cmplx(trace,disc,kind=8)/2d0
+    E(2) = cmplx(trace,-disc,kind=8)/2d0    
+
   ! real roots
   else
-    disc = cmplx(sqrt(temp),0d0,kind=8)
+    disc = sqrt(temp)
     
     ! compute E
     if(abs(trace+disc) > abs(trace-disc))then
-      E(1) = (trace+disc)/2d0
+      E(1) = cmplx((trace+disc)/2d0,0d0,kind=8)
       E(2) = cmplx(detm,0d0,kind=8)/E(1)
     else
-      E(1) = (trace-disc)/2d0
+      E(1) = cmplx((trace-disc)/2d0,0d0,kind=8)
       E(2) = cmplx(detm,0d0,kind=8)/E(1)
     end if
     
@@ -97,6 +96,7 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   WORK(4) = H(2,2) - E(2)
   
   id = 1
+  ! complex abs does not matter here
   temp = abs(WORK(1))
   do ii=1,3
     if(abs(WORK(ii+1)) > temp) then
@@ -119,15 +119,15 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   else if (id .EQ. 3) then
     Z(1,1) = H(1,2)
     Z(2,1) = -WORK(3)
-    trace = E(1)
+    swap = E(1)
     E(1) = E(2)
-    E(2) = trace
+    E(2) = swap
   else
     Z(1,1) = -WORK(4)
     Z(2,1) = H(2,1)
-    trace = E(1)
+    swap = E(1)
     E(1) = E(2)
-    E(2) = trace
+    E(2) = swap
   end if
 
   ! normalize first column of Z

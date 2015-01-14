@@ -419,7 +419,16 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   else
   
     ! normalize shifts
-    call d_rot2_vec2gen(dble(eigs(1)),aimag(eigs(1)),temp(1),temp(2),nrm) 
+    call d_rot2_vec2gen(dble(eigs(1)),aimag(eigs(1)),temp(1),temp(2),nrm,INFO) 
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+
     ! build bulge
     call d_orthfact_buildbulge('D',N,STR,Q,D,temp,b1,b2,INFO)
           

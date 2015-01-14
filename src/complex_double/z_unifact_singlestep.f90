@@ -169,7 +169,16 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   ! project shift onto unit circle
   ar = dble(shift)
   ai = aimag(shift)
-  call d_rot2_vec2gen(ar,ai,br,bi,nrm)
+  call d_rot2_vec2gen(ar,ai,br,bi,nrm,INFO)
+
+  ! check INFO in debug mode
+  if (DEBUG) then
+     call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+     if (INFO.NE.0) then 
+        return 
+     end if
+  end if
+  
   shift = cmplx(br,bi,kind=8)
 
 
