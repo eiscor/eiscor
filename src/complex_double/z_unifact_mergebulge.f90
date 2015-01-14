@@ -152,14 +152,16 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
     s3i = s1*c2i - s2*c1i
     
     ! compute phase
-    nrm = abs(cmplx(s3r,s3i,kind=8))
-    if(nrm /= 0)then
-      phr = s3r/nrm
-      phi = s3i/nrm
-    else
-      phr = 1d0
-      phi = 0d0
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm,INFO)
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
     end if
+
      
     ! update Q
     c2r = c3r*phr + c3i*phi
@@ -220,15 +222,16 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
     s3i = -(s1*c2i - s2*c1i)
      
     ! compute phase
-    nrm = abs(cmplx(s3r,s3i,kind=8))
-    if(nrm /= 0)then
-       phr = s3r/nrm
-       phi = s3i/nrm
-    else
-       phr = 1d0
-       phi = 0d0
-    end if
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
      
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+
     ! update Q
     c2r = c3r*phr + c3i*phi
     c2i = -c3r*phi + c3i*phr

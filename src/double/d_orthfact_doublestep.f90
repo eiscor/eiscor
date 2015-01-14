@@ -66,10 +66,10 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   ! compute variables
   integer :: ii, ind
   real(8) :: s1, s2
-  real(8) :: b1(2), b2(2), b3(2), temp(2)
+  real(8) :: b1(2), b2(2), b3(2), temp(2), nrm
   real(8) :: block(2,2) 
   complex(8) :: eigs(2), h(2,2)
-  
+
   ! initialize INFO
   INFO = 0
  
@@ -419,14 +419,17 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   else
   
     ! normalize shifts
-    if (abs(eigs(1)).EQ.0d0) then
-      eigs(1) = cmplx(0d0,1d0,kind=8)
+    call d_rot2_vec2gen(dble(eigs(1)),aimag(eigs(1)),temp(1),temp(2),nrm,INFO) 
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
     end if
-    eigs(1) = eigs(1)/abs(eigs(1)) 
 
     ! build bulge
-    temp(1) = dble(eigs(1))
-    temp(2) = aimag(eigs(1))
     call d_orthfact_buildbulge('D',N,STR,Q,D,temp,b1,b2,INFO)
           
     ! check INFO in debug mode
