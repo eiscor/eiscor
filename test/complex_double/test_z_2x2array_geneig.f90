@@ -8,11 +8,11 @@
 ! This program tests the subroutine test_z_2x2array_geneig. 
 ! The following tests are run:
 !
-! 1) A = [0, 1; 1, 0], B = [1, 0; 0, 1]
-! 2) A = [1, 0; 0, 1], B = [0, 1; 1, 0]
-! 3) A = [1, 2i; 3, 4i], B = [1, 0; 0, 1]
-! 4) A = [1, 2i; 3, 4i], B = [1, 0; 0, 0]
-! 5) A = [1, 2i; 2, 4i], B = [1, 0; 0, 1]
+! 1) A = [0, 1; 1, 0], B = [1, 0; 0, 1], JOB = 'G'
+! 2) A = [1, 0; 0, 1], B = [0, 1; 1, 0], JOB = 'G'
+! 3) A = [1, 2i; 3, 4i], B = [1, 0; 0, 1], JOB = 'G'
+! 4) A = [1, 2i; 3, 4i], B = [1, 0; 0, 0], JOB = 'G'
+! 5) A = [1, 2i; 2, 4i], B = [1, 0; 0, 1], JOB = 'G'
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_2x2array_geneig
@@ -59,7 +59,7 @@ program test_z_2x2array_geneig
   A = T
   B = S
   
-  call z_2x2array_geneig(A,B,Q,Z,INFO)
+  call z_2x2array_geneig('G',A,B,Q,Z,INFO)
   ! check info
   if (INFO.NE.0) then
      call u_test_failed(__LINE__)
@@ -100,7 +100,7 @@ program test_z_2x2array_geneig
   A = T
   B = S
   
-  call z_2x2array_geneig(A,B,Q,Z,INFO)
+  call z_2x2array_geneig('G',A,B,Q,Z,INFO)
   ! check info
   if (INFO.NE.0) then
      call u_test_failed(__LINE__)
@@ -141,7 +141,7 @@ program test_z_2x2array_geneig
   A = T
   B = S
   
-  call z_2x2array_geneig(A,B,Q,Z,INFO)
+  call z_2x2array_geneig('G',A,B,Q,Z,INFO)
   ! check info
   if (INFO.NE.0) then
      call u_test_failed(__LINE__)
@@ -182,7 +182,7 @@ program test_z_2x2array_geneig
   A = T
   B = S
   
-  call z_2x2array_geneig(A,B,Q,Z,INFO)
+  call z_2x2array_geneig('G',A,B,Q,Z,INFO)
   ! check info
   if (INFO.NE.0) then
      call u_test_failed(__LINE__)
@@ -223,7 +223,7 @@ program test_z_2x2array_geneig
   A = T
   B = S
   
-  call z_2x2array_geneig(A,B,Q,Z,INFO)
+  call z_2x2array_geneig('G',A,B,Q,Z,INFO)
   ! check info
   if (INFO.NE.0) then
      call u_test_failed(__LINE__)
