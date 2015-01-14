@@ -110,13 +110,15 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
     Q(3*(ii-1)+3) = s
           
     ! store in D
-    D(2*(ii-1)+1) = dble(H(ii,ii))/abs(H(ii,ii))
-    D(2*(ii-1)+2) = aimag(H(ii,ii))/abs(H(ii,ii))
+    d_rot2_vec2gen(dble(H(ii,ii)),aimag(H(ii,ii)),D(2*(ii-1)+1),D(2*(ii-1)+2),nrm)
    
   end do
   
+  ! store in D
+  d_rot2_vec2gen(dble(H(N,N)),aimag(H(N,N)),D(2*(ii-1)+1),D(2*(ii-1)+2),nrm)
+  
   ! check for unitarity       
-  if (abs(abs(H(N,N))-1d0) >= tol) then
+  if (abs(nrm-1d0) >= tol) then
     INFO = -2
     ! print error in debug mode
     if (DEBUG) then
@@ -125,8 +127,4 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
     return          
   end if
           
-  ! store in D
-  D(2*(N-1)+1) = dble(H(N,N))/abs(H(N,N))
-  D(2*(N-1)+2) = aimag(H(N,N))/abs(H(N,N))
-
 end subroutine z_unihess_factor
