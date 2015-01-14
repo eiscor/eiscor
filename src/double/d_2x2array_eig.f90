@@ -40,9 +40,9 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   
   ! compute variables
   integer :: ii, id
-  real(8) :: temp, nrm1, nrm2
+  real(8) :: detm, temp, nrm1, nrm2
   complex(8) :: WORK(4)
-  complex(8) :: trace, detm, disc
+  complex(8) :: trace, disc
   
   ! initialize info
   INFO = 0
@@ -61,7 +61,7 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
 
   ! compute intermediate values
   trace = cmplx(H(1,1) + H(2,2),0d0,kind=8)
-  detm = cmplx(H(1,1)*H(2,2) - H(2,1)*H(1,2),0d0,kind=8)
+  detm = H(1,1)*H(2,2) - H(2,1)*H(1,2)
   temp = (H(1,1)-H(2,2))**2 + 4d0*H(1,2)*H(2,1)
   
   ! zero roots
@@ -82,10 +82,10 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
     ! compute E
     if(abs(trace+disc) > abs(trace-disc))then
       E(1) = (trace+disc)/2d0
-      E(2) = detm/E(1)
+      E(2) = cmplx(detm,0d0,kind=8)/E(1)
     else
       E(1) = (trace-disc)/2d0
-      E(2) = detm/E(1)
+      E(2) = cmplx(detm,0d0,kind=8)/E(1)
     end if
     
   end if
@@ -131,8 +131,10 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   end if
 
   ! normalize first column of Z
-  nrm1 = abs(Z(1,1))
+  nrm1 = abs(Z(1,1)) 
   nrm2 = abs(Z(2,1))
+  ! complex abs does not matter here, since nrm2 < eps_single 
+  ! => nrm2**2 < eps_double
   if (nrm1 > nrm2) then
     nrm2 = nrm2/nrm1
     temp = nrm1*sqrt(1d0 + nrm2*nrm2)
