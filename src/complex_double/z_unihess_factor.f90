@@ -115,7 +115,7 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
   end do
   
   ! store in D
-  d_rot2_vec2gen(dble(H(N,N)),aimag(H(N,N)),D(2*(ii-1)+1),D(2*(ii-1)+2),nrm)
+  d_rot2_vec2gen(dble(H(N,N)),aimag(H(N,N)),D(2*(N-1)+1),D(2*(N-1)+2),nrm)
   
   ! check for unitarity       
   if (abs(nrm-1d0) >= tol) then
