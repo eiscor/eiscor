@@ -54,7 +54,7 @@ subroutine z_2x2array_geneig(JOB,A,B,Q,Z,INFO)
   if (DEBUG) then
   
     ! check JOB
-    if ((JOB.NE.'S').OR.(JOB.NE.'G')) then
+    if ((JOB.NE.'S').AND.(JOB.NE.'G')) then
       INFO = -1
       call u_infocode_check(__FILE__,__LINE__,"JOB must be 'S' or 'G'",INFO,INFO)
       return
