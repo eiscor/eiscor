@@ -152,14 +152,7 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
     s3i = s1*c2i - s2*c1i
     
     ! compute phase
-    nrm = abs(cmplx(s3r,s3i,kind=8))
-    if(nrm /= 0)then
-      phr = s3r/nrm
-      phi = s3i/nrm
-    else
-      phr = 1d0
-      phi = 0d0
-    end if
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
      
     ! update Q
     c2r = c3r*phr + c3i*phi
@@ -220,14 +213,7 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
     s3i = -(s1*c2i - s2*c1i)
      
     ! compute phase
-    nrm = abs(cmplx(s3r,s3i,kind=8))
-    if(nrm /= 0)then
-       phr = s3r/nrm
-       phi = s3i/nrm
-    else
-       phr = 1d0
-       phi = 0d0
-    end if
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
      
     ! update Q
     c2r = c3r*phr + c3i*phi
