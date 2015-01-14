@@ -224,6 +224,14 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
     ! compute phase
     call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
      
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+
     ! update Q
     c2r = c3r*phr + c3i*phi
     c2i = -c3r*phi + c3i*phr
