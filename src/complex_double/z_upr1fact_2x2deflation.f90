@@ -59,9 +59,13 @@
 !
 !  INFO           INTEGER
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies ALG, N, Q, D or R is invalid
-!                   INFO = -2 implies K is invalid
-!                   INFO = -3 implies COMPZ is invalid
+!                   INFO = -1 implies ALG is invalid
+!                   INFO = -2 implies COMPZ is invalid
+!                   INFO = -3 implies N is invalid
+!                   INFO = -4 implies K is invalid
+!                   INFO = -5 implies Q is invalid
+!                   INFO = -6 implies D is invalid
+!                   INFO = -7 implies R is invalid
 !                   INFO = -8 implies V is invalid
 !                   INFO = -9 implies W is invalid
 !
@@ -91,21 +95,37 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
   
     ! check factorization
     call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"ALG, N, Q, D or R is invalid",INFO,-1)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-3)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
+      return
+    end if
+    if (INFO.EQ.-4) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+      return
+    end if
+    if (INFO.EQ.-5) then
+      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,-7)
       return
     end if
     
     ! check K
     if ((K < 1).OR.(K > N-1)) then
-      INFO = -2
+      INFO = -4
       call u_infocode_check(__FILE__,__LINE__,"K must 1 <= K <= N-1",INFO,INFO)
       return
     end if 
   
     ! check COMPZ
     if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
-      INFO = -3
+      INFO = -2
       call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
       return
     end if
