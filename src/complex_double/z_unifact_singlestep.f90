@@ -68,7 +68,7 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
   ! compute variables
   integer :: ii, ind1, ind2
-  real(8) :: s1, s2
+  real(8) :: s1, s2, ar, ai, br, bi, nrm
   real(8) :: bulge(3),binv(3)
   complex(8) :: shift
   complex(8) :: block(2,2), temp(2,2), eigs(2)
@@ -157,6 +157,7 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     end if
           
     ! choose wikinson shift
+    ! complex abs does not matter here
     if(abs(block(2,2)-eigs(1)) < abs(block(2,2)-eigs(2)))then
       shift = eigs(1)
     else
@@ -166,10 +167,11 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   end if
         
   ! project shift onto unit circle
-  if (abs(shift) .EQ. 0d0) then
-    shift = cmplx(1d0,0d0,kind=8)
-  end if
-  shift = shift/abs(shift)
+  ar = dble(shift)
+  ai = aimag(shift)
+  d_rot2_vec2gen(ar,ai,br,bi,nrm)
+  shift = cmplx(br,bi,kind=8)
+
 
   ! build bulge
   call z_unifact_buildbulge(N,STR,Q,D,shift,bulge,INFO)
