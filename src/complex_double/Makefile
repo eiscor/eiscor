@@ -1,9 +1,11 @@
 include ../../make.inc
 
 ZSRCS := $(wildcard ./*.f90)
-ZOBJS := $(patsubst ./%.f90,./%.o,$(wildcard ./*.f90))
+ZOBJS := $(ZSRCS:.f90=.o)
 
-all: $(ZOBJS)
+all: srcs
+
+srcs: $(ZOBJS)
 
 %.o: %.f90
 	$(FC) $(FFLAGS) -cpp -fPIC -c $< -I../../include

@@ -13,6 +13,10 @@
 !
 ! INPUT VARIABLES:
 !
+!  JOB            CHARACTER
+!                    'S': assumes B = I (Standard)
+!                    'G': makes no assumptions on B (General)
+!
 !  A, B           COMPLEX(8) array of dimension (2,2)
 !                   The 2x2 matrix pencil. Upper-triangular on exit.
 !
@@ -29,18 +33,19 @@
 !                   INFO = -2 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_2x2array_geneig(A,B,Q,Z,INFO)
+subroutine z_2x2array_geneig(JOB,A,B,Q,Z,INFO)
   
   implicit none
   
   ! input variables
+  character, intent(in) :: JOB
   integer, intent(inout) :: INFO
   complex(8), intent(inout) :: A(2,2), B(2,2), Q(2,2), Z(2,2)
   
   ! compute variables
   integer :: ii
   real(8) :: nrm, cr, ci, s
-  complex(8) :: temp(2,2), p0, p1, p2, lambda, disc
+  complex(8) :: temp(2,2), E(2), p0, p1, p2, lambda, disc
   
   ! initialize info
   INFO = 0
@@ -48,20 +53,61 @@ subroutine z_2x2array_geneig(A,B,Q,Z,INFO)
   ! check input in debug mode
   if (DEBUG) then
   
+    ! check JOB
+    if ((JOB.NE.'S').AND.(JOB.NE.'G')) then
+      INFO = -1
+      call u_infocode_check(__FILE__,__LINE__,"JOB must be 'S' or 'G'",INFO,INFO)
+      return
+    end if
+  
     ! check A
     call z_2Darray_check(2,2,A,INFO)
     if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-2)
       return
     end if
     
     ! check B
     call z_2Darray_check(2,2,B,INFO)
     if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return
     end if
   
+  end if
+  
+  ! call z_2x2array_eig if JOB == S
+  if (JOB.EQ.'S') then
+  
+    ! call z_2x2array_eig
+    temp = A
+    call z_2x2array_eig(temp,E,Q,INFO)
+    
+    ! check info in debug mode
+    if (DEBUG) then
+      if (INFO.NE.0) then
+        call u_infocode_check(__FILE__,__LINE__,"z_2x2array_eig",INFO,1)
+        return
+      end if
+    end if
+    
+    ! set A
+    A = matmul(A,Q)
+    A = matmul(transpose(conjg(Q)),A)
+    A(2,1) = cmplx(0d0,0d0,kind=8)
+  
+    ! set B
+    B(1,1) = cmplx(1d0,0d0,kind=8)
+    B(2,1) = cmplx(0d0,0d0,kind=8)
+    B(2,2) = cmplx(1d0,0d0,kind=8)
+    B(1,2) = cmplx(0d0,0d0,kind=8)
+    
+    ! set Z
+    Z = Q
+    
+    ! return
+    return
+    
   end if
   
   ! make B upper-triangular

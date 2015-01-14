@@ -78,8 +78,7 @@ subroutine z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
   if (DEBUG) then
     
     ! check factorization
-    !call z_upr1fact_factorcheck(ALG,N,P,Q,D,R,INFO) ! z_upr1fact_factorcheck does not know P
-     call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"ALG, N, Q, D or R is invalid",INFO,INFO)
       INFO = -1
@@ -163,9 +162,9 @@ subroutine z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
   ! if not at bottom
   if (K < (N-1)) then
     if (P(K).EQV..FALSE.) then  
-      H(:,3) = H(:,3)*cmplx(Q(ind-2),Q(ind-1),kind=8)
+      H(:,3) = H(:,3)*cmplx(Q(ind+4),Q(ind+5),kind=8)
     else
-      H(3,:) = H(3,:)*cmplx(Q(ind-2),Q(ind-1),kind=8)
+      H(3,:) = H(3,:)*cmplx(Q(ind+4),Q(ind+5),kind=8)
     end if
   end if
   
