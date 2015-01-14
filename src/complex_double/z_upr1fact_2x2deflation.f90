@@ -211,12 +211,16 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     D(1,2*K+2) = D(1,2*K+2)/nrm
     
     ! update V
-    B(1,1) = cmplx(G1(1),G1(2),kind=8)
-    B(2,1) = cmplx(G1(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))
+    if (COMPZ.NE.'N') then
     
-    V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B)
+      B(1,1) = cmplx(G1(1),G1(2),kind=8)
+      B(2,1) = cmplx(G1(3),0d0,kind=8)
+      B(1,2) = -B(2,1)
+      B(2,2) = conjg(B(1,1))
+      
+      V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B)
+    
+    end if
 
   ! compute generalized Schur decomposition
   else
@@ -345,21 +349,26 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     D(1,2*K+1) = D(1,2*K+1)/nrm
     D(1,2*K+2) = D(1,2*K+2)/nrm
     
-    ! update V
-    B(1,1) = cmplx(G1(1),G1(2),kind=8)
-    B(2,1) = cmplx(G1(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))
+    ! update vecs
+    if (COMPZ.NE.'N') then
     
-    V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B) 
+      ! update V
+      B(1,1) = cmplx(G1(1),G1(2),kind=8)
+      B(2,1) = cmplx(G1(3),0d0,kind=8)
+      B(1,2) = -B(2,1)
+      B(2,2) = conjg(B(1,1))
+      
+      V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B) 
+      
+      ! update W
+      B(1,1) = cmplx(G2(1),G2(2),kind=8)
+      B(2,1) = cmplx(G2(3),0d0,kind=8)
+      B(1,2) = -B(2,1)
+      B(2,2) = conjg(B(1,1))
+      
+      W(:,K:(K+1)) = matmul(W(:,K:(K+1)),B)
     
-    ! update W
-    B(1,1) = cmplx(G2(1),G2(2),kind=8)
-    B(2,1) = cmplx(G2(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))
-    
-    W(:,K:(K+1)) = matmul(W(:,K:(K+1)),B)
+    end if
   
   end if
 

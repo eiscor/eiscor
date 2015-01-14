@@ -211,6 +211,22 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     ! if 2x2 block remove and check again
     else if(stop_index-1 == zero_index)then
     
+      ! call 2x2 deflation
+       call z_upr1fact_2x2deflation(ALG,COMPZ,N,stop_index,P,Q,D,R,V,W,INFO)
+    
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2deflation failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if
+      
+      ! update indices
+      stop_index = stop_index - 2
+      zero_index = 0
+      start_index = 1
+    
     ! if greater than 2x2 chase a bulge
     else
     
