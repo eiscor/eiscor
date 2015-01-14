@@ -196,19 +196,19 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     Q(3*K) = 0d0
         
     ! deflate into diagonal D
-    nrm = dble(A(1,1))*D(2*K-1) - aimag(A(1,1))*D(2*K)
-    D(2*K) = dble(A(1,1))*D(2*K) + aimag(A(1,1))*D(2*K-1)
-    D(2*K-1) = nrm
-    nrm = sqrt(D(2*K-1)**2 + D(2*K)**2)
-    D(2*K-1) = D(2*K-1)/nrm
-    D(2*K) = D(2*K)/nrm
+    nrm = dble(A(1,1))*D(1,2*K-1) - aimag(A(1,1))*D(1,2*K)
+    D(1,2*K) = dble(A(1,1))*D(1,2*K) + aimag(A(1,1))*D(1,2*K-1)
+    D(1,2*K-1) = nrm
+    nrm = sqrt(D(1,2*K-1)**2 + D(1,2*K)**2)
+    D(1,2*K-1) = D(1,2*K-1)/nrm
+    D(1,2*K) = D(1,2*K)/nrm
     
-    nrm = dble(A(2,2))*D(2*K+1) - aimag(A(2,2))*D(2*K+2)
-    D(2*K+2) = dble(A(2,2))*D(2*K+2) + aimag(A(2,2))*D(2*K+1)
-    D(2*K+1) = nrm
-    nrm = sqrt(D(2*K+1)**2 + D(2*K+2)**2)
-    D(2*K+1) = D(2*K+1)/nrm
-    D(2*K+2) = D(2*K+2)/nrm
+    nrm = dble(A(2,2))*D(1,2*K+1) - aimag(A(2,2))*D(1,2*K+2)
+    D(1,2*K+2) = dble(A(2,2))*D(1,2*K+2) + aimag(A(2,2))*D(1,2*K+1)
+    D(1,2*K+1) = nrm
+    nrm = sqrt(D(1,2*K+1)**2 + D(1,2*K+2)**2)
+    D(1,2*K+1) = D(1,2*K+1)/nrm
+    D(1,2*K+2) = D(1,2*K+2)/nrm
     
     ! update V
     B(1,1) = cmplx(G1(1),G1(2),kind=8)
@@ -216,13 +216,13 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     B(1,2) = -B(2,1)
     B(2,2) = conjg(B(1,1))
     
-    V(K:(K+1),:) = matmul(V(K:(K+1)),B)
+    V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B)
 
   ! compute generalized Schur decomposition
   else
   
     ! generalized schur decomposition
-    call z_2x2array_geneig('S',A,B,Wt,Vt,INFO)
+    call z_2x2array_geneig('G',A,B,Wt,Vt,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
@@ -233,24 +233,133 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     end if
     
     ! replace Vt with rotation G1
+    call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)),aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! replace Wt with rotation G2
+    call z_rot3_vec4gen(dble(Wt(1,1)),aimag(Wt(1,1)),dble(Wt(2,1)),aimag(Wt(2,1)),G2(1),G2(2),G2(3),nrm,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,INFO)
+      if (INFO.NE.0) then
+        return 
+      end if 
+    end if
 
     ! pass G1 through right triangular factor
+    G3 = G1
+    call z_upr1fact_rot3throughtri('R2L',N,K,D(2,:),R(3,:),R(4,:),G3,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! equivalence transform
+    A(1,1) = cmplx(G2(1),G2(2),kind=8)
+    A(2,1) = cmplx(G2(3),0d0,kind=8)
+    A(1,2) = -A(2,1)
+    A(2,2) = conjg(A(1,1))
+    
+    B(1,1) = cmplx(G3(1),G3(2),kind=8)
+    B(2,1) = cmplx(G3(3),0d0,kind=8)
+    B(1,2) = -B(2,1)
+    B(2,2) = conjg(B(1,1))
+    
+    A = matmul(transpose(conjg(A)),B)
     
     ! deflate into right diagonal D
+    nrm = dble(A(1,1))*D(2,2*K-1) - aimag(A(1,1))*D(2,2*K)
+    D(2,2*K) = dble(A(1,1))*D(2,2*K) + aimag(A(1,1))*D(2,2*K-1)
+    D(2,2*K-1) = nrm
+    nrm = sqrt(D(2,2*K-1)**2 + D(2,2*K)**2)
+    D(2,2*K-1) = D(2,2*K-1)/nrm
+    D(2,2*K) = D(2,2*K)/nrm
+    
+    nrm = dble(A(2,2))*D(2,2*K+1) - aimag(A(2,2))*D(2,2*K+2)
+    D(2,2*K+2) = dble(A(2,2))*D(2,2*K+2) + aimag(A(2,2))*D(2,2*K+1)
+    D(2,2*K+1) = nrm
+    nrm = sqrt(D(2,2*K+1)**2 + D(2,2*K+2)**2)
+    D(2,2*K+1) = D(2,2*K+1)/nrm
+    D(2,2*K+2) = D(2,2*K+2)/nrm
     
     ! pass G1 through left triangular factor
+    G3 = G1
+    call z_upr1fact_rot3throughtri('R2L',N,K,D(1,:),R(1,:),R(2,:),G3,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
     
     ! equivalence transform of Q
+    A(1,1) = cmplx(Q(3*K-2),Q(3*K-1),kind=8)
+    A(2,1) = cmplx(Q(3*K),0d0,kind=8)
+    A(1,2) = -A(2,1)
+    A(2,2) = conjg(A(1,1))
+    
+    B(1,1) = cmplx(G3(1),G3(2),kind=8)
+    B(2,1) = cmplx(G3(3),0d0,kind=8)
+    B(1,2) = -B(2,1)
+    B(2,2) = conjg(B(1,1))
+    
+    A = matmul(A,B)
+    
+    B(1,1) = cmplx(G2(1),G2(2),kind=8)
+    B(2,1) = cmplx(G2(3),0d0,kind=8)
+    B(1,2) = -B(2,1)
+    B(2,2) = conjg(B(1,1))
+    
+    A = matmul(transpose(conjg(B)),A)
+    
+    Q(3*K-2) = 1d0
+    Q(3*K-1) = 0d0
+    Q(3*K) = 0d0
     
     ! deflate into left diagonal D
+    nrm = dble(A(1,1))*D(1,2*K-1) - aimag(A(1,1))*D(1,2*K)
+    D(1,2*K) = dble(A(1,1))*D(1,2*K) + aimag(A(1,1))*D(1,2*K-1)
+    D(1,2*K-1) = nrm
+    nrm = sqrt(D(1,2*K-1)**2 + D(1,2*K)**2)
+    D(1,2*K-1) = D(1,2*K-1)/nrm
+    D(1,2*K) = D(1,2*K)/nrm
     
-    ! update V  
+    nrm = dble(A(2,2))*D(1,2*K+1) - aimag(A(2,2))*D(1,2*K+2)
+    D(1,2*K+2) = dble(A(2,2))*D(1,2*K+2) + aimag(A(2,2))*D(1,2*K+1)
+    D(1,2*K+1) = nrm
+    nrm = sqrt(D(1,2*K+1)**2 + D(1,2*K+2)**2)
+    D(1,2*K+1) = D(1,2*K+1)/nrm
+    D(1,2*K+2) = D(1,2*K+2)/nrm
+    
+    ! update V
+    B(1,1) = cmplx(G1(1),G1(2),kind=8)
+    B(2,1) = cmplx(G1(3),0d0,kind=8)
+    B(1,2) = -B(2,1)
+    B(2,2) = conjg(B(1,1))
+    
+    V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B) 
     
     ! update W
+    B(1,1) = cmplx(G2(1),G2(2),kind=8)
+    B(2,1) = cmplx(G2(3),0d0,kind=8)
+    B(1,2) = -B(2,1)
+    B(2,2) = conjg(B(1,1))
+    
+    W(:,K:(K+1)) = matmul(W(:,K:(K+1)),B)
   
   end if
 

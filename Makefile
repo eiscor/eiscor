@@ -16,13 +16,11 @@ example%:
 test%:
 	@$(MAKE) $@ -C ./test
 
-lib$(LIBNAME).$(SLIB).$(VERSION): $(OBJS)
+lib$(LIBNAME).$(SLIB).$(VERSION): srcs
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(OBJS) 
 
-$(OBJS): $(SRCS)
-	@$(MAKE) -C ./src
-
-$(SRCS):
+srcs:
+	@$(MAKE) $@ -C ./src
 
 uninstall: clean
 	@rm -rf $(INSTALLDIR)/$(LIBNAME)
