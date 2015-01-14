@@ -8,8 +8,8 @@
 INSTALLDIR := $(HOME)
 
 # fortran compiler and flags
-FC := /opt/icc/bin/ifort 
-FFLAGS := -std90 -heap-arrays
+FC := ifort 
+FFLAGS := -O3 -std90 -heap-arrays
 
 # libs required by compiler
 LIBS := -lifport
