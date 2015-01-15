@@ -7,6 +7,7 @@ Every test in __eiscor__ should adhere to the following template:
 - a single call at the end of the test to the function __u_test_passed__ with a total compute time as an argument (i.e. __call u_test_passed(0.0132)__)
 - the last requirement implies that every test must also be timed
 - if random tests are used, the seed must be explicitly set
+- in DEBUG mode the test should check if the functions is responding correct to incorrect inputs
 
 Below is a simple example of such a test that adheres to these requirements:
 ```fortran
