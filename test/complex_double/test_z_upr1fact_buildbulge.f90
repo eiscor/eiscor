@@ -150,6 +150,5 @@ program test_z_upr1fact_buildbulge
   
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
-  
      
 end program test_z_upr1fact_buildbulge

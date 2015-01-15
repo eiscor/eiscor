@@ -32,7 +32,7 @@
 !                    array of generators for givens rotations
 !                    generators must be orthogonal to working precision
 !
-!  D               REAL(8) array of dimension (2,2*(N+1))
+!  D               REAL(8) array of dimension (2*(N+1))
 !                    array of generators for complex diagonal matrix
 !                    generators must be orthogonal to working precision
 !
@@ -67,7 +67,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
   integer, intent(in) :: N, STP
   integer, intent(inout) :: STR, ZERO, ITCNT, INFO, ITS(N-1)
   logical, intent(in) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1))
+  real(8), intent(inout) :: Q(3*(N-1)), D(2*(N+1))
 
   ! compute variables
   integer :: ii, jj, ind, up, down
@@ -116,7 +116,7 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
     end if
 
     ! check D
-    call d_2Darray_check(2,2*(N+1),D,INFO)
+    call d_1Darray_check(2*(N+1),D,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
       return
@@ -173,30 +173,36 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         nrm = qr*cr + qi*ci
         ci = qr*ci - qi*cr
         cr = nrm
-        nrm = sqrt(cr*cr + ci*ci + s*s)
-        cr = cr/nrm
-        ci = ci/nrm
-        s = s/nrm
-                
-        Q(3*up-2) = cr
-        Q(3*up-1) = ci
-        Q(3*up) = s
+        
+        call z_rot3_vec3gen(cr,ci,s,Q(3*up-2),Q(3*up-1),Q(3*up),nrm,INFO)
+        
+        ! check INFO in debug mode
+        if (DEBUG) then
+          call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
+          if (INFO.NE.0) then 
+            return 
+          end if 
+        end if
         
       end do
        
       ! update upward diagonal
-      dr = D(1,2*up-1)
-      di = D(1,2*up)
+      dr = D(2*up-1)
+      di = D(2*up)
             
       nrm = qr*dr - qi*di
       di = qr*di + qi*dr
       dr = nrm
-      nrm = sqrt(dr*dr + di*di)
-      dr = dr/nrm
-      di = di/nrm
-            
-      D(1,2*up-1) = dr
-      D(1,2*up) = di     
+
+      call d_rot2_vec2gen(dr,di,D(2*up-1),D(2*up),nrm,INFO)
+
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if    
     
       ! initialize downward index
       down = ind
@@ -220,14 +226,16 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         nrm = qr*cr + qi*ci
         ci = qr*ci - qi*cr
         cr = nrm
-        nrm = sqrt(cr*cr + ci*ci + s*s)
-        cr = cr/nrm
-        ci = ci/nrm
-        s = s/nrm
-                
-        Q(3*down-2) = cr
-        Q(3*down-1) = ci
-        Q(3*down) = s
+
+        call z_rot3_vec3gen(cr,ci,s,Q(3*down-2),Q(3*down-1),Q(3*down),nrm,INFO)
+        
+        ! check INFO in debug mode
+        if (DEBUG) then
+          call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
+          if (INFO.NE.0) then 
+            return 
+          end if 
+        end if
                     
       end do
       
@@ -235,18 +243,22 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       down = down + 1
       
       ! update downward diagonal
-      dr = D(1,2*down-1)
-      di = D(1,2*down)
+      dr = D(2*down-1)
+      di = D(2*down)
             
       nrm = qr*dr + qi*di
       di = qr*di - qi*dr
       dr = nrm
-      nrm = sqrt(dr*dr + di*di)
-      dr = dr/nrm
-      di = di/nrm
-            
-      D(1,2*down-1) = dr
-      D(1,2*down) = di 
+      
+      call d_rot2_vec2gen(dr,di,D(2*down-1),D(2*down),nrm,INFO)
+
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if  
       
       ! update indices
       ZERO = STP+1-ii
