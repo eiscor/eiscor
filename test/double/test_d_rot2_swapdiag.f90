@@ -506,6 +506,14 @@ program test_d_rot2_swapdiag
      if (info.NE.-3) then
         call u_test_failed(__LINE__)
      end if
+
+     B(1) = 1.2d0
+     B(2) = 0d0
+     call d_rot2_swapdiag(JOB,D,B,INFO)
+     ! check info
+     if (info.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
   end if
 
   ! stop timer
