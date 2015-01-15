@@ -66,7 +66,7 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
   integer, intent(inout) :: INFO
   
   ! compute variables
-  integer :: ii, ind
+  integer :: ii, jj, ind, up, down
   real(8) :: c1r, c1i, s1
   real(8) :: c2r, c2i, s2
   real(8) :: c3r, c3i, s3r, s3i
@@ -229,8 +229,116 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
         return 
       end if 
     end if
+    
+    ! initialize up
+    up = K
   
+    ! move phase upward
+    do jj = 1,(K-STR)
+        
+      ! set upward index
+      up = K-jj
+        
+      ! exit loop if P == .FALSE.
+      if (P(up).EQV..FALSE.) then
+        up = up + 1
+        exit    
+      end if
+   
+      ! update Q
+      c1r = Q(3*up-2)
+      c1i = Q(3*up-1)
+      s1 = Q(3*up)
+                
+      nrm = phr*c1r + phi*c1i
+      c1i = phr*c1i - phi*c1r
+      c1r = nrm
+        
+      call z_rot3_vec3gen(c1r,c1i,s1,Q(3*up-2),Q(3*up-1),Q(3*up),nrm,INFO)
+        
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if
+        
+    end do
+       
+    ! update upward diagonal
+    d1r = D(2*up-1)
+    d1i = D(2*up)
+            
+    nrm = phr*d1r - phi*d1i
+    d1i = phr*d1i + phi*d1r
+    d1r = nrm
 
+    call d_rot2_vec2gen(d1r,d1i,D(2*up-1),D(2*up),nrm,INFO)
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if 
+    
+    ! initialize downward index
+    down = K
+        
+    ! move phase downward
+    do jj = 1,(STP-K)
+        
+      ! exit if P == .TRUE.
+      if (P(down).EQV..TRUE.) then
+        exit
+      end if
+                
+      ! set downward index
+      down = K + jj
+        
+      ! update Q
+      c2r = Q(3*down-2)
+      c2i = Q(3*down-1)
+      s2 = Q(3*down)
+                
+      nrm = phr*c2r + phi*c2i
+      c2i = phr*c2i - phi*c2r
+      c2r = nrm
+
+      call z_rot3_vec3gen(c2r,c2i,s2,Q(3*down-2),Q(3*down-1),Q(3*down),nrm,INFO)
+        
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if
+                    
+    end do
+      
+    ! update downward index
+    down = down + 1
+      
+    ! update downward diagonal
+    d2r = D(2*down-1)
+    d2i = D(2*down)
+            
+    nrm = phr*d2r + phi*d2i
+    d2i = phr*d2i - phi*d2r
+    d2r = nrm
+      
+    call d_rot2_vec2gen(d2r,d2i,D(2*down-1),D(2*down),nrm,INFO)
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if 
      
   ! fusion from right
   else
