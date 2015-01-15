@@ -8,8 +8,7 @@
 ! This routine computes the generator for a Givens rotation represented
 ! by 3 real numbers: the real and imaginary parts of a complex cosine
 ! and a scrictly real sine. The first column is constructed to be 
-! parallel with the complex vector [A,B]^T. The (3->3) refers to the 
-! 3 double inputs and 3 double outputs (excluding the norm).
+! parallel with the complex vector [A,B]^T.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !

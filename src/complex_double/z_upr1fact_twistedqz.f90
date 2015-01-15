@@ -190,7 +190,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     end if
     
     ! check for deflation
-    call z_upr1fact_deflationcheck(N,start_index,stop_index,zero_index,P,Q,D,it_count,ITS,INFO)
+    call z_upr1fact_deflationcheck(N,start_index,stop_index,zero_index,P,Q,D(1,:),it_count,ITS,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then

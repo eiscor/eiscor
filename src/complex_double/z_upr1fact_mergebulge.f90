@@ -66,7 +66,14 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
   integer, intent(inout) :: INFO
   
   ! compute variables
-  integer :: ii
+  integer :: ii, ind
+  real(8) :: c1r, c1i, s1
+  real(8) :: c2r, c2i, s2
+  real(8) :: c3r, c3i, s3r, s3i
+  real(8) :: d1r, d1i
+  real(8) :: d2r, d2i
+  real(8) :: phr, phi
+  real(8) :: nrm
   
   ! initialize INFO
   INFO = 0
@@ -180,13 +187,132 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
   ! fusion from left
   if(JOB.EQ.'L')then
   
+    ! set inputs  
+    c2r = G(1)
+    c2i = G(2)
+    s2 = G(3)
+  
+    ! retrieve Q(K)  
+    ind = 3*(K-1)
+    c1r = Q(ind+1)
+    c1i = Q(ind+2)
+    s1 = Q(ind+3)
+
+    ! compute product GQ(K)    
+    c3r = c1r*c2r - c1i*c2i - s1*s2
+    c3i = c1r*c2i + c1i*c2r
+    s3r = s1*c2r + s2*c1r
+    s3i = -(s1*c2i - s2*c1i)
+    
+    ! compute phase
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm,INFO)
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+      
+    ! update Q
+    c2r = c3r*phr + c3i*phi
+    c2i = -c3r*phi + c3i*phr
+    s2 = nrm
+    
+    call z_rot3_vec3gen(c2r,c2i,s2,Q(ind+1),Q(ind+2),Q(ind+3),nrm,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+  
 
      
   ! fusion from right
   else
   
+    ! set inputs  
+    c2r = G(1)
+    c2i = G(2)
+    s2 = G(3)
+  
+    ! retrieve Q(K)  
+    ind = 3*(K-1)
+    c1r = Q(ind+1)
+    c1i = Q(ind+2)
+    s1 = Q(ind+3)
+    
+    ! compute product Q(K)G
+    c3r = c1r*c2r - c1i*c2i - s1*s2
+    c3i = c1r*c2i + c1i*c2r
+    s3r = s1*c2r + s2*c1r
+    s3i = s1*c2i - s2*c1i
+    
+    ! compute phase
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm,INFO)
 
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+      
+    ! update Q
+    c2r = c3r*phr + c3i*phi
+    c2i = -c3r*phi + c3i*phr
+    s2 = nrm
+    
+    call z_rot3_vec3gen(c2r,c2i,s2,Q(ind+1),Q(ind+2),Q(ind+3),nrm,INFO)
+    
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+    
+    ! retrieve D
+    ind = 2*(K-1)
+    d1r = D(ind+1)
+    d1i = D(ind+2)
+    d2r = D(ind+3)
+    d2i = D(ind+4)
      
+    ! update first entry of D
+    c1r = phr*d1r - phi*d1i
+    c1i = phr*d1i + phi*d1r
+    
+    call d_rot2_vec2gen(c1r,c1i,D(ind+1),D(ind+2),nrm,INFO)
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+    
+    ! update second entry of D
+    c2r = phr*d2r + phi*d2i
+    c2i = phr*d2i - phi*d2r
+
+    call d_rot2_vec2gen(c2r,c2i,D(ind+3),D(ind+4),nrm,INFO)
+
+    ! check INFO in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      if (INFO.NE.0) then 
+        return 
+      end if 
+    end if
+    
   end if
 
 end subroutine z_upr1fact_mergebulge

@@ -22,7 +22,7 @@ program test_z_upr1fact_deflationcheck
   integer, parameter :: N = 6
   integer :: ii, ind, INFO, ITCNT, STR, STP, ZERO, ITS(N-1)
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D(2,2*(N+1))
+  real(8) :: Q(3*(N-1)), D(2*(N+1))
   complex(8) :: H1(N+1,N+1), H2(N+1,N+1)
   
   ! tolerance
@@ -62,7 +62,7 @@ program test_z_upr1fact_deflationcheck
     ! initialize D
     D = 0d0
     do ii=1,(N+1)
-      D(1,2*ii-1) = 1d0
+      D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
@@ -130,7 +130,7 @@ program test_z_upr1fact_deflationcheck
     ! initialize D
     D = 0d0
     do ii=1,(N+1)
-      D(1,2*ii-1) = 1d0
+      D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
@@ -204,7 +204,7 @@ program test_z_upr1fact_deflationcheck
     ! initialize D
     D = 0d0
     do ii=1,(N+1)
-      D(1,2*ii-1) = 1d0
+      D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
@@ -277,7 +277,7 @@ program test_z_upr1fact_deflationcheck
     ! initialize D
     D = 0d0
     do ii=1,(N+1)
-      D(1,2*ii-1) = 1d0
+      D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
@@ -349,7 +349,7 @@ subroutine z_upr1fact_form_hess_matrix(N,P,Q,D,H)
   ! input variables
   integer, intent(in) :: N
   logical, intent(in) :: P(N-2)
-  real(8), intent(in) :: Q(3*(N-1)), D(2,2*(N+1))
+  real(8), intent(in) :: Q(3*(N-1)), D(2*(N+1))
   complex(8), intent(inout) :: H(N+1,N+1)
   
   ! compute variables
@@ -383,7 +383,7 @@ subroutine z_upr1fact_form_hess_matrix(N,P,Q,D,H)
   
   ! apply D
   do ii=1,(N+1)
-    H(:,ii) = H(:,ii)*cmplx(D(1,2*ii-1),D(1,2*ii),kind=8)
+    H(:,ii) = H(:,ii)*cmplx(D(2*ii-1),D(2*ii),kind=8)
   end do
   
 end subroutine z_upr1fact_form_hess_matrix
