@@ -7,8 +7,7 @@
 !
 ! This routine fuses a Givens rotation represented by 3 real numbers: 
 ! the real and imaginary parts of a complex cosine and a scrictly real 
-! sine into the top or bottom of a unitary hessenberg matrix that is 
-! stored as a product of givens rotations and a complex diagonal matrix. 
+! sine into the extended hessenberg part of a upr1 pencil.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
