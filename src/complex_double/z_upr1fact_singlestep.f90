@@ -36,7 +36,7 @@
 !
 !  FUN             LOGICAL FUNCTION FUN(N,P)
 !                    takes integer N and logical array P of 
-!                    dimension N-1 and outputs a logical 
+!                    dimension N-2 and outputs a logical 
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
@@ -92,9 +92,10 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO, ITCNT
   interface
-    logical function FUN(N,P)
-      integer, intent(in) :: N
-      logical, intent(in) :: P(N-2)
+    function FUN(m,flags)
+      logical :: FUN
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
     end function FUN
   end interface
   
@@ -197,7 +198,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   else
   
     ! get 2x2 blocks
-    call z_upr1fact_2x2diagblocks(N,STP,ALG,P,Q,D,R,A,B,INFO)
+    call z_upr1fact_2x2diagblocks('H',ALG,N,STP,P,Q,D,R,A,B,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
@@ -251,7 +252,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       return 
     end if 
   end if
-  
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! iteration for QR
@@ -280,7 +281,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     if (P(STR).EQV..FALSE.) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('L',N,STR,STP,STR,P,Q,D,G1,INFO)
+      call z_upr1fact_mergebulge('L',N,STR,STP,STR,P,Q,D(1,:),G1,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
@@ -315,7 +316,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     if (P(STR).EQV..TRUE.) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('R',N,STR,STP,STR,P,Q,D,G2,INFO)
+      call z_upr1fact_mergebulge('R',N,STR,STP,STR,P,Q,D(1,:),G2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
@@ -497,7 +498,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       end if  
       
       ! merge bulge 
-      call z_upr1fact_mergebulge('R',N,STR,STP,STP,P,Q,D,G3,INFO)
+      call z_upr1fact_mergebulge('R',N,STR,STP,STP,P,Q,D(1,:),G3,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
@@ -544,7 +545,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       end if  
       
       ! merge bulge 
-      call z_upr1fact_mergebulge('L',N,STR,STP,STP,P,Q,D,G2,INFO)
+      call z_upr1fact_mergebulge('L',N,STR,STP,STP,P,Q,D(1,:),G2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then

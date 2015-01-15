@@ -12,6 +12,10 @@
 !
 ! INPUT VARIABLES:
 !
+!  JOB             CHARACTER
+!                    'T': only upper triangular parts are returned
+!                    'H': the extended hessenberg part is included
+!
 !  ALG             CHARACTER(2)
 !                    'QR': second triangular factor is assumed to be identity
 !                    'QZ': second triangular factor is assumed nonzero
@@ -55,11 +59,12 @@
 !                   INFO = -2 implies K is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
+subroutine z_upr1fact_2x2diagblocks(JOB,ALG,N,K,P,Q,D,R,A,B,INFO)
   
   implicit none
   
   ! input variables
+  character, intent(in) :: JOB
   character(2), intent(in) :: ALG
   integer, intent(in) :: N, K
   integer, intent(inout) :: INFO
@@ -135,41 +140,52 @@ subroutine z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
     T(1,:) = cmplx(D(1,ind-1),D(1,ind),kind=8)*T(1,:)
   end if
 
-  ! build local Q
-  H = cmplx(0d0,0d0,kind=8)
-  H(1,1) = cmplx(1d0,0d0,kind=8)
-  
-  ind = 3*(K-1)  
-  H(2,2) = cmplx(Q(ind+1),Q(ind+2),kind=8)
-  H(3,2) = cmplx(Q(ind+3),0d0,kind=8)
-  H(2,3) = cmplx(-Q(ind+3),0d0,kind=8)
-  H(3,3) = cmplx(Q(ind+1),-Q(ind+2),kind=8)
-  
-  ! if not at top
-  if (K > 1) then
-    A(1,1) = cmplx(Q(ind-2),Q(ind-1),kind=8)
-    A(2,1) = cmplx(Q(ind),0d0,kind=8)
-    A(1,2) = cmplx(-Q(ind),0d0,kind=8)
-    A(2,2) = cmplx(Q(ind-2),-Q(ind-1),kind=8)
+  ! extended hessenberg part
+  if (JOB.EQ.'H') then
+
+    ! build local Q
+    H = cmplx(0d0,0d0,kind=8)
+    H(1,1) = cmplx(1d0,0d0,kind=8)
     
-    if (P(K-1).EQV..FALSE.) then  
-      H(1:2,:) = matmul(A,H(1:2,:))
-    else
-      H(:,1:2) = matmul(H(:,1:2),A)
+    ind = 3*(K-1)  
+    H(2,2) = cmplx(Q(ind+1),Q(ind+2),kind=8)
+    H(3,2) = cmplx(Q(ind+3),0d0,kind=8)
+    H(2,3) = cmplx(-Q(ind+3),0d0,kind=8)
+    H(3,3) = cmplx(Q(ind+1),-Q(ind+2),kind=8)
+    
+    ! if not at top
+    if (K > 1) then
+      A(1,1) = cmplx(Q(ind-2),Q(ind-1),kind=8)
+      A(2,1) = cmplx(Q(ind),0d0,kind=8)
+      A(1,2) = cmplx(-Q(ind),0d0,kind=8)
+      A(2,2) = cmplx(Q(ind-2),-Q(ind-1),kind=8)
+      
+      if (P(K-1).EQV..FALSE.) then  
+        H(1:2,:) = matmul(A,H(1:2,:))
+      else
+        H(:,1:2) = matmul(H(:,1:2),A)
+      end if
     end if
-  end if
-  
-  ! if not at bottom
-  if (K < (N-1)) then
-    if (P(K).EQV..FALSE.) then  
-      H(:,3) = H(:,3)*cmplx(Q(ind+4),Q(ind+5),kind=8)
-    else
-      H(3,:) = H(3,:)*cmplx(Q(ind+4),Q(ind+5),kind=8)
+    
+    ! if not at bottom
+    if (K < (N-1)) then
+      if (P(K).EQV..FALSE.) then  
+        H(:,3) = H(:,3)*cmplx(Q(ind+4),Q(ind+5),kind=8)
+      else
+        H(3,:) = H(3,:)*cmplx(Q(ind+4),Q(ind+5),kind=8)
+      end if
     end if
+    
+    ! set output
+    A = matmul(H(2:3,:),T)
+    
+  ! upper triangular part only
+  else
+   
+    ! set output
+    A = T(2:3,1:2)
+    
   end if
-  
-  ! set output
-  A = matmul(H(2:3,:),T)
 
   ! compute B
   ! set to I if ALG == QR

@@ -78,7 +78,7 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
   
   ! compute variables
   real(8) :: nrm
-  complex(8) :: A(2,2), B(2,2), temp(2,2), vec1(2), vec2(2)
+  complex(8) :: A(2,2), B(2,2), vec1(2), vec2(2)
   
   ! initialize info
   INFO = 0
@@ -131,11 +131,11 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
   end if
   
   ! get 2x2 blocks
-  call z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('T',ALG,N,K,P,Q,D,R,A,B,INFO)
       
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,1)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -146,8 +146,8 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
   if (P(K).EQV..FALSE.) then
    
     ! first column of A
-    vec1(1) = A(1,1)
-    vec1(2) = A(2,1)
+    vec1(1) = cmplx(Q(3*K-2),Q(3*K-1),kind=8)*A(1,1)
+    vec1(2) = cmplx(Q(3*K),0d0,kind=8)*A(1,1)
     
     ! first column of B
     vec2(1) = B(1,1)
@@ -155,23 +155,10 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
   
   ! P(K) == TRUE
   else
-  
-    ! A^-1 e1
-    ! store Q(K)*
-    temp(1,1) = cmplx(Q(3*K-2),-Q(3*K-1),kind=8)
-    temp(2,1) = cmplx(-Q(3*K),0d0,kind=8)
-    temp(1,2) = -temp(2,1)
-    temp(2,2) = conjg(temp(1,1))
-    
-    ! adjust last row of A
-    A(2,:) = A(2,:)*cmplx(Q(3*K+1),-Q(3*K+2),kind=8)
-    
-    ! apply Q(K)* to get upper triangular part
-    A = matmul(temp,A)
     
     ! Q(K)*e1
-    vec2(1) = temp(1,1)
-    vec2(2) = temp(2,1)
+    vec2(1) = cmplx(Q(3*K-2),-Q(3*K-1),kind=8)
+    vec2(2) = cmplx(-Q(3*K),0d0,kind=8)
     
     ! back solve with A
     vec2(2) = vec2(2)/A(2,2)
@@ -191,7 +178,7 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
       
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen failed",INFO,1)
     if (INFO.NE.0) then 
       return 
     end if 

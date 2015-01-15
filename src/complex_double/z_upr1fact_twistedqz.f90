@@ -38,7 +38,7 @@
 !
 !  FUN             LOGICAL FUNCTION FUN(N,P)
 !                    takes integer N and logical array P of 
-!                    dimension N-1 and outputs a logical 
+!                    dimension N-2 and outputs a logical 
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
@@ -96,16 +96,16 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO, ITS(N-1)
   interface
-    logical function FUN(N,P)
-      integer, intent(in) :: N
-      logical, intent(in) :: P(N-2)
+    function FUN(m,flags)
+      logical :: FUN
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
     end function FUN
   end interface
   
   ! compute variables
   integer :: ii, jj, kk
   integer :: start_index, stop_index, zero_index, it_max, it_count
-  
   
   ! initialize info
   INFO = 0
@@ -185,7 +185,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   do kk=1,it_max
   
     ! check for completion
-    if(stop_index <= 0)then
+    if(stop_index <= 0)then    
       exit
     end if
     
@@ -212,7 +212,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     else if(stop_index-1 == zero_index)then
     
       ! call 2x2 deflation
-       call z_upr1fact_2x2deflation(ALG,COMPZ,N,stop_index,P,Q,D,R,V,W,INFO)
+      call z_upr1fact_2x2deflation(ALG,COMPZ,N,stop_index,P,Q,D,R,V,W,INFO)
     
       ! check INFO in debug mode
       if (DEBUG) then
@@ -229,14 +229,25 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     
     ! if greater than 2x2 chase a bulge
     else
+      
+      ! perform singleshift iteration
+      call z_upr1fact_singlestep(ALG,COMPZ,N,start_index,stop_index,P,FUN,Q,D,R,V,W,it_count,INFO)
+      
+      ! check INFO in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_singlestep failed",INFO,INFO)
+        if (INFO.NE.0) then 
+          return 
+        end if 
+      end if
     
     end if
     
     ! if it_max hit
-!    if (kk == it_max) then
-!      INFO = 1
-!      its(stop_index) = it_count
-!    end if
+    if (kk == it_max) then
+      INFO = 1
+      ITS(stop_index) = it_count
+    end if
     
   end do
 
