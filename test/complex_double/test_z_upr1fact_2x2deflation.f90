@@ -46,9 +46,9 @@ program test_z_upr1fact_2x2deflation
     do ii=1,(N-1)
       Q(3*ii-2) = 1d0
     end do
-    Q(1) = 1d0/sqrt(2d0)
+    Q(1) = 0d0
     Q(2) = 0d0
-    Q(3) = 1d0/sqrt(2d0)   
+    Q(3) = 1d0   
     temp(1,1) = cmplx(Q(1),Q(2),kind=8)
     temp(2,1) = cmplx(Q(3),0d0,kind=8)
     temp(1,2) = -temp(2,1)
