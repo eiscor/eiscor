@@ -7,7 +7,7 @@
 !
 ! This routine fuses a Givens rotation represented by 3 real numbers: 
 ! the real and imaginary parts of a complex cosine and a scrictly real 
-! sine into the extended hessenberg part of a upr1 pencil.
+! sine into the unitary extended hessenberg part of a upr1 pencil.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -37,7 +37,7 @@
 !  D               REAL(8) array of dimension (2*N+1)
 !                    array of generators for complex diagonal matrix
 !
-!  B               REAL(8) array of dimension (3)
+!  G               REAL(8) array of dimension (3)
 !                    generators for rotation that will be fused
 !
 ! OUTPUT VARIABLES:
@@ -49,7 +49,7 @@
 !                   INFO = -2 implies N is invalid
 !                   INFO = -3 implies STR is invalid
 !                   INFO = -4 implies STP is invalid
-!                   INFO = -7 implies B is invalid
+!                   INFO = -7 implies G is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
