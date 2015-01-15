@@ -31,6 +31,9 @@
 !  K               INTEGER
 !                    index where fusion should happen
 !
+!  P               LOGICAL array of dimension (N-2)
+!                    array of position flags for Q
+!
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
 !
