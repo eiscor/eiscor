@@ -36,6 +36,8 @@
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies N is invalid
 !                    INFO = -2 implies K is invalid
+!                    INFO = -3 implies Q is invalid
+!                    INFO = -4 implies D is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_orthfact_2x2diagblock(N,K,Q,D,H,INFO)
@@ -70,7 +72,22 @@ subroutine d_orthfact_2x2diagblock(N,K,Q,D,H,INFO)
       call u_infocode_check(__FILE__,__LINE__,"K must be 1 <= K <= N-1",INFO,INFO)
       return
     end if
-    
+
+    ! check Q and D
+    call d_orthfact_factorcheck(N,Q,D,INFO)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-3)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-4)
+      return
+    end if
+
   end if
   
   ! set index

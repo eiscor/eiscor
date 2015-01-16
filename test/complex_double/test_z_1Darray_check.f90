@@ -110,7 +110,7 @@ program test_z_1Darray_check
   C(2) = cmplx(a,b,kind=8)
   call z_1Darray_check(2,C,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -127,7 +127,7 @@ program test_z_1Darray_check
   C(2) = cmplx(a,b,kind=8)
   call z_1Darray_check(2,C,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -144,7 +144,7 @@ program test_z_1Darray_check
   C(2) = cmplx(a,b,kind=8)
   call z_1Darray_check(2,C,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -161,7 +161,7 @@ program test_z_1Darray_check
   C(2) = cmplx(a,b,kind=8)
   call z_1Darray_check(2,C,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -178,7 +178,7 @@ program test_z_1Darray_check
   C(2) = cmplx(a,b,kind=8)
   call z_1Darray_check(2,C,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -195,7 +195,7 @@ program test_z_1Darray_check
   C(2) = cmplx(a,b,kind=8)
   call z_1Darray_check(2,C,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 

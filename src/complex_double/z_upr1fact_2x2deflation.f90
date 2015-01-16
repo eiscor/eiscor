@@ -63,11 +63,11 @@
 !                   INFO = -2 implies COMPZ is invalid
 !                   INFO = -3 implies N is invalid
 !                   INFO = -4 implies K is invalid
-!                   INFO = -5 implies Q is invalid
-!                   INFO = -6 implies D is invalid
-!                   INFO = -7 implies R is invalid
-!                   INFO = -8 implies V is invalid
-!                   INFO = -9 implies W is invalid
+!                   INFO = -6 implies Q is invalid
+!                   INFO = -7 implies D is invalid
+!                   INFO = -8 implies R is invalid
+!                   INFO = -9 implies V is invalid
+!                   INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
@@ -104,15 +104,15 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
       return
     end if
     if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-6)
       return
     end if
     if (INFO.EQ.-4) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
       return
     end if
     if (INFO.EQ.-5) then
-      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,-7)
+      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,-8)
       return
     end if
     
@@ -134,7 +134,7 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     if (COMPZ.EQ.'V') then
       call z_2Darray_check(N,N,V,INFO)
       if (INFO.NE.0) then
-        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,-8)
+        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,-9)
         return
       end if
     end if   
@@ -143,7 +143,7 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     if ((ALG.EQ.'QZ').AND.(COMPZ.EQ.'V')) then
       call z_2Darray_check(N,N,W,INFO)
       if (INFO.NE.0) then
-        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,-9)
+        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,-10)
       end if
     end if
     

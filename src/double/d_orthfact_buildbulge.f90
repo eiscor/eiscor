@@ -45,6 +45,8 @@
 !                    INFO = -1 implies JOB is invalid
 !                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies STR is invalid
+!                    INFO = -4 implies Q is invalid
+!                    INFO = -5 implies D is invalid
 !                    INFO = -6 implies E is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -89,10 +91,25 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
       call u_infocode_check(__FILE__,__LINE__,"STR is invalid",INFO,INFO)
       return
     end if  
+
+    ! check Q and D
+    call d_orthfact_factorcheck(N,Q,D,INFO)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-4)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-5)
+      return
+    end if
   
     ! check E
     call d_1Darray_check(2,E,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,-6)
     if (INFO.NE.0) then 
       return 
     end if 

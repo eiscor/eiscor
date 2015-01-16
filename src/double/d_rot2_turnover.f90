@@ -56,6 +56,12 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
+    nrm = sqrt(Q1(1)**2 + Q1(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -1      
+      call u_infocode_check(__FILE__,__LINE__,"Q1 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
     
     ! check Q2
     call d_1Darray_check(2,Q2,INFO)
@@ -63,6 +69,12 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
     if (INFO.NE.0) then 
       return 
     end if   
+    nrm = sqrt(Q2(1)**2 + Q2(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"Q2 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
     
     ! check Q3
     call d_1Darray_check(2,Q3,INFO)
@@ -70,6 +82,12 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
     if (INFO.NE.0) then 
       return 
     end if  
+    nrm = sqrt(Q3(1)**2 + Q3(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"Q3 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
   
   end if
 

@@ -42,8 +42,10 @@
 !                    INFO = 1 implies failure to converge 
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies COMPZ is invalid
-!                    INFO = -2 implies N, Q, or D is invalid
-!                    INFO = -3 implies Z is invalid
+!                    INFO = -2 implies N is invalid
+!                    INFO = -3 implies Q is invalid
+!                    INFO = -4 implies D is invalid
+!                    INFO = -5 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
@@ -85,8 +87,16 @@ subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Invalid factorization",INFO,INFO)
   end if
   
-  if (INFO.NE.0) then 
+  if (INFO.NE.-1) then 
     INFO = -2
+    return 
+  end if 
+  if (INFO.NE.-2) then 
+    INFO = -3
+    return 
+  end if 
+  if (INFO.NE.-3) then 
+    INFO = -4
     return 
   end if 
   
@@ -101,7 +111,7 @@ subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
       end if
       
       if (INFO.NE.0) then 
-        INFO = -3
+        INFO = -5
         return 
       end if 
       

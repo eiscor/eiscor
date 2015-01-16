@@ -38,6 +38,7 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
   real(8), intent(inout) :: Q1(2), Q2(2)
 
   ! compute variables
+  real(8), parameter :: tol = epsilon(1d0)
   real(8) :: nrm
 
   ! initialize INFO
@@ -59,6 +60,12 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
+    nrm = sqrt(Q1(1)**2 + Q1(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"Q1 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
     
     ! check Q2
     call d_1Darray_check(2,Q2,INFO)
@@ -66,6 +73,12 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
+    nrm = sqrt(Q2(1)**2 + Q2(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"Q2 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
   
   end if
 

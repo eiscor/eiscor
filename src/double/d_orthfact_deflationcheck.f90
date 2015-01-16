@@ -50,6 +50,8 @@
 !                    INFO = -1 implies N is invalid
 !                    INFO = -2 implies STR is invalid
 !                    INFO = -3 implies STP is invalid
+!                    INFO = -5 implies Q is invalid
+!                    INFO = -6 implies D is invalid
 !                    INFO = -7 implies ITCNT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -92,6 +94,21 @@ subroutine d_orthfact_deflationcheck(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
     if ((STP < STR).OR.(STP > N-1)) then
       INFO = -3
       call u_infocode_check(__FILE__,__LINE__,"STP must be STR <= STP <= N-1",INFO,INFO)
+      return
+    end if
+
+    ! check Q and D
+    call d_orthfact_factorcheck(N,Q,D,INFO)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
       return
     end if
     

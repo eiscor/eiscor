@@ -42,6 +42,10 @@ subroutine d_rot2_swapdiag(JOB,D,B,INFO)
   integer, intent(inout) :: INFO
   real(8), intent(inout) :: D(4), B(2)
   
+  ! compute variables
+  real(8), parameter :: tol = epsilon(1d0)
+  real(8) :: nrm
+
   ! initialize INFO
   INFO = 0
   
@@ -73,6 +77,12 @@ subroutine d_rot2_swapdiag(JOB,D,B,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
+    nrm = sqrt(B(1)**2 + B(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"B is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
   
   end if
   

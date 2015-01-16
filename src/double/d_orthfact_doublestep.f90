@@ -51,6 +51,10 @@
 !                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies STR is invalid
 !                    INFO = -4 implies STP is invalid
+!                    INFO = -5 implies Q is invalid
+!                    INFO = -6 implies D is invalid
+!                    INFO = -7 implies Z is invalid
+!                    INFO = -8 implies ITCNT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
@@ -104,6 +108,37 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       return
     end if
   
+    ! check Q and D
+    call d_orthfact_factorcheck(N,Q,D,INFO)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+      return
+    end if
+
+    ! check Z
+    if (COMPZ.EQ.'V') then
+      call d_2Darray_check(N,N,Z,INFO)     
+      if (INFO.NE.0) then 
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-7)
+        return 
+      end if       
+    end if 
+
+    ! check ITCNT
+    if (ITCNT < 0) then
+      INFO = -8
+      call u_infocode_check(__FILE__,__LINE__,"ITCNT must be positive",INFO,INFO)
+      return
+    end if
+
   end if
   
   ! compute a nonzero shift

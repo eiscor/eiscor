@@ -20,7 +20,7 @@
 ! OUTPUT VARIABLES:
 !
 !  INFO            INTEGER
-!                    INFO equal to 1 implies A contains an INF or NAN.
+!                    INFO = -1 implies A contains an INF or NAN.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_2Darray_check(M,N,A,INFO)

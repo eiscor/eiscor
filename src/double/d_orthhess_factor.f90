@@ -28,9 +28,8 @@
 !
 !  INFO           INTEGER
 !                    INFO = 0 implies successful computation
-!                    INFO = -1 implies COMPZ is invalid
-!                    INFO = -2 implies N is invalid
-!                    INFO = -3 implies H is invalid
+!                    INFO = -1 implies N is invalid
+!                    INFO = -2 implies H is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_orthhess_factor(N,H,Q,D,INFO)

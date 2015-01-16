@@ -59,7 +59,7 @@ program test_d_1Darray_check
   A(1) = num+huge(1d0)
   call d_1Darray_check(3,A,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -73,7 +73,7 @@ program test_d_1Darray_check
   A(2) = num-huge(1d0)
   call d_1Darray_check(3,A,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -87,7 +87,7 @@ program test_d_1Darray_check
   A(3) = nul/nul
   call d_1Darray_check(3,A,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 

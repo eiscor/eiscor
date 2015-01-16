@@ -106,7 +106,7 @@ program test_d_scalar_nancheck
   num = nul/nul
   call d_scalar_nancheck(NUM,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 

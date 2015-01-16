@@ -121,6 +121,20 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
       return
     end if
+
+    call z_unifact_factorcheck(N,Q,D(1:2*N),INFO)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-6)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
+      return
+    end if
     
     ! check ITCNT
     if (ITCNT < 0) then
