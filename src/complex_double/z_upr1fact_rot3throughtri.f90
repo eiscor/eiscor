@@ -60,7 +60,7 @@ subroutine z_upr1fact_rot3throughtri(DIR,N,K,D,C,B,G,INFO)
   integer, intent(inout) :: INFO
   
   ! compute variables
-  integer :: ind1, ind2
+  integer :: ind1, ind2, ii
   
   ! initialize info
   INFO = 0
