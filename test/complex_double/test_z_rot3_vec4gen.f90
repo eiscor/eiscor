@@ -52,6 +52,7 @@
 !    [ 3 + 2i ] = [ 0 ] [ 1 ]
 !    [ 1 - 4i ]   [ 1 ]
 !
+! In DEBUG mode additionally checks with incorrect input are run. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_rot3_vec4gen
@@ -689,6 +690,41 @@ program test_z_rot3_vec4gen
   end if
   if (abs(nrm-sqrt(30d0))>tol) then
     call u_test_failed(__LINE__)
+  end if
+
+  if (DEBUG) then
+
+     a = a/0d0
+     call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)     
+     ! check INFO
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     a = 2d0
+     b = a/0d0
+     call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)  
+     ! check INFO
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     b = 3d0
+     c = a/0d0
+     call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)     
+     ! check INFO
+     if (INFO.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if     
+
+     c = -3d0
+     d = a/0d0
+     call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)     
+     ! check INFO
+     if (INFO.NE.-4) then
+        call u_test_failed(__LINE__)
+     end if     
+
   end if
 
   ! stop timer

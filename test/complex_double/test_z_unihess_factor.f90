@@ -18,6 +18,7 @@
 ! 2) Q, D given => H z_unihess_factor has to 
 !    reproduce Q and D, N = 17
 !
+! In DEBUG mode additional tests for invalid N and H are run.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unihess_factor
@@ -32,7 +33,7 @@ program test_z_unihess_factor
   ! compute variables
   integer :: N, M, ii, jj, INFO
   real(8) :: Q(3*(NMAX-1))
-  real(8) :: D(2*(NMAX)), nrm
+  real(8) :: D(2*(NMAX)), nrm, nul = 0d0
   complex(8), allocatable :: H(:,:), A(:,:), B(:,:), H2(:,:), Ho(:,:)
   
   ! timing variables
@@ -181,6 +182,25 @@ program test_z_unihess_factor
      end do
   end do
 
+  if (DEBUG) then
+     
+     call z_unihess_factor(0,H,Q,D,INFO)
+     
+     ! check info
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     H(1,1) = 1d0/nul
+     call z_unihess_factor(N,H,Q,D,INFO)
+     
+     ! check info
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+     
+  end if
+  
   deallocate(H,H2,Ho,A,B)  
 
   ! stop timer

@@ -19,7 +19,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! If DEBUG mode is activated a histogram of the accuracy of the turnover is 
+! If VERBOSE mode is activated a histogram of the accuracy of the turnover is 
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
 ! 
@@ -113,7 +113,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,1)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -174,7 +174,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,2)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -235,7 +235,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,3)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -272,10 +272,10 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do 
   histo2(1:7,4)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
-        write(*,*) "Arbitrary random rotation"
+        write(*,*) "three close to diagonal"
         write(*,*) ""
         write(*,*) "<1e-17",histo(1)
         write(*,*) "<1e-16",histo(2)
@@ -333,10 +333,10 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,5)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
-        write(*,*) "Arbitrary random rotation"
+        write(*,*) "one close to anti-diagonal"
         write(*,*) ""
         write(*,*) "<1e-17",histo(1)
         write(*,*) "<1e-16",histo(2)
@@ -394,10 +394,10 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,6)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
-        write(*,*) "Arbitrary random rotation"
+        write(*,*) "two close to anti-diagonal"
         write(*,*) ""
         write(*,*) "<1e-17",histo(1)
         write(*,*) "<1e-16",histo(2)
@@ -431,10 +431,10 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,7)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
-        write(*,*) "Arbitrary random rotation"
+        write(*,*) "three close to anti-diagonal"
         write(*,*) ""
         write(*,*) "<1e-17",histo(1)
         write(*,*) "<1e-16",histo(2)
@@ -564,10 +564,10 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,8)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
-        write(*,*) "Arbitrary random rotation"
+        write(*,*) "some/all exact (anti-)diagonal"
         write(*,*) ""
         write(*,*) "<1e-17",histo(1)
         write(*,*) "<1e-16",histo(2)
@@ -585,7 +585,7 @@ program test_d_rot2_turnover
      end if
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      ! print histogram
      write(*,*) ""
      write(*,*) "<1e-17",histo2(1,:)
@@ -612,7 +612,7 @@ program test_d_rot2_turnover
      ht = histot(7,jj)
      do ii=7,1,-1
         if (h2>ht*1.002) then
-           if (DEBUG) then
+           if (VERBOSE) then
               pass_all = .FALSE.
            else
               call u_test_failed(__LINE__)           
@@ -625,10 +625,55 @@ program test_d_rot2_turnover
      end do
   end do
  
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT. pass_all) then
         write(*,*) "At least one turnover test FAILED."
      end if
+  end if
+
+  ! test with wrong input
+  if (DEBUG) then
+     call random_number(rp)
+     rp = 2d0*pi*rp
+     call d_rot2_vec2gen(cos(rp),sin(rp),Q1(1),Q1(2),nrm,INFO)
+     call random_number(rp)
+     rp = 2d0*pi*rp
+     call d_rot2_vec2gen(cos(rp),sin(rp),Q2(1),Q2(2),nrm,INFO)
+     call random_number(rp)
+     rp = 2d0*pi*rp
+     call d_rot2_vec2gen(cos(rp),sin(rp),Q3(1),Q3(2),nrm,INFO)
+
+     call d_rot2_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.0) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     Q1(1) = 2d0     
+     call d_rot2_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     rp = 2d0*pi*rp
+     call d_rot2_vec2gen(cos(rp),sin(rp),Q1(1),Q1(2),nrm,INFO)
+     Q2(1) = 2d0
+     call d_rot2_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     rp = 2d0*pi*rp
+     call d_rot2_vec2gen(cos(rp),sin(rp),Q2(1),Q2(2),nrm,INFO)
+     Q3(1) = 2d0
+     call d_rot2_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+     
   end if
 
   ! stop timer

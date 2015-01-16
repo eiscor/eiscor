@@ -57,6 +57,12 @@ subroutine z_rot3_turnover(G1,G2,G3,INFO)
       call u_infocode_check(__FILE__,__LINE__,"G2 is invalid",INFO,-1)
       return
     end if
+    nrm = sqrt(G1(1)**2 + G1(2)**2 + G1(3)**2)
+    if (abs(nrm-1d0) > 1d1*tol) then
+      INFO = -1      
+      call u_infocode_check(__FILE__,__LINE__,"Q1 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
   
     ! check G2
     call d_1Darray_check(3,G2,INFO)
@@ -64,11 +70,23 @@ subroutine z_rot3_turnover(G1,G2,G3,INFO)
       call u_infocode_check(__FILE__,__LINE__,"G2 is invalid",INFO,-2)
       return
     end if
+    nrm = sqrt(G2(1)**2 + G2(2)**2 + G2(3)**2)
+    if (abs(nrm-1d0) > 1d1*tol) then
+      INFO = -2      
+      call u_infocode_check(__FILE__,__LINE__,"Q1 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
   
     ! check G3
     call d_1Darray_check(3,G3,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"G3 is invalid",INFO,-3)
+      return
+    end if
+    nrm = sqrt(G3(1)**2 + G3(2)**2 + G3(3)**2)
+    if (abs(nrm-1d0) > 1d1*tol) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"Q1 is not orthogonal to working precision",INFO,INFO)
       return
     end if
 

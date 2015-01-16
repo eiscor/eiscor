@@ -24,6 +24,7 @@
 !
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
 !
+! In DEBUG mode additionally checks with incorrect input are run. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_rot2_vec2gen
@@ -35,7 +36,7 @@ program test_d_rot2_vec2gen
   real(8) :: alpha = 1d-18 ! small perturbations
 
   ! compute variables
-  real(8) :: nrm
+  real(8) :: nrm, nul = 0d0
   real(8) :: a, b
   real(8) :: Q1(2)
   integer :: info, ii
@@ -74,7 +75,7 @@ program test_d_rot2_vec2gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, ""
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
@@ -104,7 +105,7 @@ program test_d_rot2_vec2gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -133,7 +134,7 @@ program test_d_rot2_vec2gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -165,7 +166,7 @@ program test_d_rot2_vec2gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -197,7 +198,7 @@ program test_d_rot2_vec2gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -225,7 +226,7 @@ program test_d_rot2_vec2gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -253,7 +254,7 @@ program test_d_rot2_vec2gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -282,11 +283,30 @@ program test_d_rot2_vec2gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
      print*, ""
+  end if
+
+  if (DEBUG) then
+     a = 1d0/nul
+     b = 1d0
+     call d_rot2_vec2gen(a,b,Q1(1),Q1(2),nrm,info)     
+     ! check INFO
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     a = 1d0
+     b = 1d0/nul
+     call d_rot2_vec2gen(a,b,Q1(1),Q1(2),nrm,info)     
+     ! check INFO
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
   end if
 
   ! stop timer

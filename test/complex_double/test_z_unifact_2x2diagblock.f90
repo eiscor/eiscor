@@ -23,6 +23,8 @@
 ! A) N = 1
 ! B) K = 0
 ! C) K = N
+! D) Q contains INF
+! E) D contains INF
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unifact_2x2diagblock
@@ -34,8 +36,8 @@ program test_z_unifact_2x2diagblock
   
   ! compute variables
   integer :: info
-  real(8) :: Q(9) ! N = 4
-  real(8) :: D(8)
+  real(8) :: Q(9),Qs(9) ! N = 4
+  real(8) :: D(8), nul = 0d0
   complex(8) :: H(2,2)
   
   ! timing variables
@@ -249,6 +251,30 @@ program test_z_unifact_2x2diagblock
      call z_unifact_2x2diagblock(4,4,Q,D,H,INFO)
      ! check info
      if (info.NE.-2) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check D)
+     ! Q with INF
+     Qs = Q
+     Q(1) = 1d0/nul
+     call z_unifact_2x2diagblock(4,1,Q,D,H,INFO)
+     ! check info
+     if (info.NE.-3) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check E)
+     ! D with INF
+     Q = Qs
+     D(1) = 1d0/nul
+     call z_unifact_2x2diagblock(4,1,Q,D,H,INFO)
+     ! check info
+     if (info.NE.-4) then
         print*, info
         call u_test_failed(__LINE__)
      end if

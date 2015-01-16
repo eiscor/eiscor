@@ -14,6 +14,8 @@
 ! 4) A = [1, 2i; 3, 4i], B = [1, 0; 0, 0], JOB = 'G'
 ! 5) A = [1, 2i; 2, 4i], B = [1, 0; 0, 1], JOB = 'G'
 !
+! In DEBUG mode additionally checks with incorrect input are run. 
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_2x2array_geneig
 
@@ -25,7 +27,8 @@ program test_z_2x2array_geneig
   ! compute variables
   integer :: info
   complex(8) :: A(2,2), B(2,2), Q(2,2), Z(2,2)
-  complex(8) :: T(2,2), S(2,2), eye(2,2)
+  complex(8) :: T(2,2), S(2,2), eye(2,2), swap
+  real(8) :: nul = 0d0
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -246,6 +249,46 @@ program test_z_2x2array_geneig
   end if
   if (maxval(abs(matmul(conjg(transpose(Q)),Q)-eye)) > tol) then
     call u_test_failed(__LINE__)
+  end if
+
+  if (DEBUG) then
+     call z_2x2array_geneig('R',A,B,Q,Z,INFO)
+     ! check info
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     swap = A(1,1)
+     A(1,1) = cmplx(1d0/nul,1d0)
+     call z_2x2array_geneig('G',A,B,Q,Z,INFO)
+     ! check info
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     A(1,1) = cmplx(1d0,-1d0/nul)
+     call z_2x2array_geneig('G',A,B,Q,Z,INFO)
+     ! check info
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     A(1,1) = swap
+     B(1,1) = cmplx(1d0/nul,1d0)
+     call z_2x2array_geneig('G',A,B,Q,Z,INFO)
+     ! check info
+     if (INFO.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+
+     B(1,1) = cmplx(1d0,-1d0/nul)
+     call z_2x2array_geneig('G',A,B,Q,Z,INFO)
+     ! check info
+     if (INFO.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+
+     
   end if
   
   ! stop timer

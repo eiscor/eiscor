@@ -23,7 +23,9 @@
 ! C) str = 4 (N=4, stp = 3)
 ! D) stp = 0
 ! E) stp = 4
-! F) itcnt = -1
+! G) Q with INF
+! H) D with INF
+! I) itcnt = -1
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_orthfact_deflationcheck

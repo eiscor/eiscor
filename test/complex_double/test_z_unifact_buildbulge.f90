@@ -20,6 +20,8 @@
 ! A) N = 1
 ! B) k = 0, K = 4
 ! C) SHIFT contains nan and inf
+! D) Q invalid
+! E) D invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unifact_buildbulge
@@ -31,7 +33,7 @@ program test_z_unifact_buildbulge
   
   ! compute variables
   integer :: N = 4, K, info
-  real(8) :: Q(9), D(8), B(3), B2(3), nul
+  real(8) :: Q(9), Qs(9), D(8), B(3), B2(3), nul
   complex(8) :: H(2,2), shift
   
   ! timing variables
@@ -210,6 +212,25 @@ program test_z_unifact_buildbulge
      call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
      ! check info
      if (info.NE.-5) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     SHIFT = cmplx(0d0,0d0,kind=8)
+     Qs = Q
+     Q(1) = 1d0/nul
+     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
+     ! check info
+     if (info.NE.-3) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     Q = Qs
+     D(1) = 1d0/nul
+     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
+     ! check info
+     if (info.NE.-4) then
         print*, info
         call u_test_failed(__LINE__)
      end if

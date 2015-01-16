@@ -73,12 +73,12 @@ subroutine z_unifact_buildbulge(N,K,Q,D,SHFT,B,INFO)
       return
     end if
     if (INFO.EQ.-2) then
-      INFO = -5
+      INFO = -3
       call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
       return
     end if
     if (INFO.EQ.-3) then
-      INFO = -6
+      INFO = -4
       call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
       return
     end if

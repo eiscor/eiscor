@@ -9,6 +9,8 @@
 !
 ! 1) Compute roots of unity and checks the residuals for various powers of 2
 !
+! In DEBUG mode additional tests for invalid N, H and Z are run.
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unihess_qr
 
@@ -19,9 +21,9 @@ program test_z_unihess_qr
   integer, parameter :: N = 2**MPOW
   integer :: ii, INFO, jj, M
   real(8) :: WORK(5*N)
-  complex(8) :: Hold(N,N), H(N,N), Z(N,N)
+  complex(8) :: Hold(N,N), H(N,N), Z(N,N), Hs(N,N)
   integer :: ITS(N-1)
-  real(8) :: tol
+  real(8) :: tol, nul = 0d0
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -46,6 +48,7 @@ program test_z_unihess_qr
     end do
     H(1,M) = cmplx(1d0,0d0,kind=8)
     Hold = H
+    Hs = H
     
     ! call dohfqr
     call z_unihess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
@@ -67,6 +70,45 @@ program test_z_unihess_qr
     end if  
  
   end do
+
+  if (DEBUG) then
+     H = Hs
+     call z_unihess_qr('X',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
+     ! check INFO
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     call z_unihess_qr('I',0,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
+     ! check INFO
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     H = Hs
+     H(1,1) = cmplx(1d0/nul,0d0,kind=8)
+     call z_unihess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)     
+     ! check INFO
+     if (INFO.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     H = Hs
+     Z(1,1) = cmplx(1d0/nul,0d0,kind=8)
+     call z_unihess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)    
+     ! check INFO
+     if (INFO.NE.0) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     Z(1,1) = cmplx(1d0/nul,0d0,kind=8)
+     call z_unihess_qr('V',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
+     ! check INFO
+     if (INFO.NE.-4) then
+        call u_test_failed(__LINE__)
+     end if
+
+  end if
   
   ! stop timer
   call system_clock(count=c_stop)

@@ -29,8 +29,9 @@
 ! INFO            INTEGER
 !                   INFO = 1 subroutine failed
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies A is invalid
-!                   INFO = -2 implies B is invalid
+!                   INFO = -1 implies JOB is invalid
+!                   INFO = -2 implies A is invalid
+!                   INFO = -3 implies B is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_2x2array_geneig(JOB,A,B,Q,Z,INFO)
