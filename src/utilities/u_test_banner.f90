@@ -15,5 +15,8 @@ subroutine u_test_banner(FILENAME)
 
   ! print banner
   write(STDERR,'(a,a,a)',advance='no') FILENAME(1:length),REPEAT(' ',36-length),' ... '
+  if (VERBOSE) then
+     write(STDERR,*) ''
+  end if
   
 end subroutine u_test_banner
