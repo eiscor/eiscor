@@ -222,7 +222,7 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
     s3i = -(s1*c2i - s2*c1i)
      
     ! compute phase
-    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm,INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
