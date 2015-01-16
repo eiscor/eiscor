@@ -53,7 +53,6 @@
 !                   INFO = -1 implies N is invalid
 !                   INFO = -2 implies STR is invalid
 !                   INFO = -3 implies STP is invalid
-!                   INFO = -4 implies ZERO is invalid
 !                   INFO = -6 implies Q is invalid
 !                   INFO = -7 implies D is invalid
 !                   INFO = -8 implies ITCNT is invalid
@@ -98,13 +97,6 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
     if ((STP < STR).OR.(STP > N-1)) then
       INFO = -3
       call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
-      return
-    end if  
-    
-    ! check ZERO
-    if ((ZERO >= STR).OR.(ZERO < 0)) then
-      INFO = -4
-      call u_infocode_check(__FILE__,__LINE__,"ZERO must 0 <= ZERO < STR",INFO,INFO)
       return
     end if  
     
