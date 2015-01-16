@@ -8,6 +8,7 @@ Every test in __eiscor__ should adhere to the following template:
 - the last requirement implies that every test must also be timed
 - if random tests are used, the seed must be explicitly set
 - in DEBUG mode the test should check if the functions is responding correct to incorrect inputs
+- in VERBOSE mode the test may provide additional output
 
 Below is a simple example of such a test that adheres to these requirements:
 ```fortran
