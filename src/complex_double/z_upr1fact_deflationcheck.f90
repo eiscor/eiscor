@@ -99,20 +99,6 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
       return
     end if  
-    
-    ! check Q
-    call d_1Darray_check(3*(N-1),Q,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-6)
-      return
-    end if
-
-    ! check D
-    call d_1Darray_check(2*(N+1),D,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
-      return
-    end if
 
     call z_unifact_factorcheck(N,Q,D(1:2*N),INFO)
     if (INFO.EQ.-1) then

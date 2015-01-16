@@ -75,14 +75,14 @@ subroutine d_orthfact_deflationcheck(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
   
   ! check input in debug mode
   if (DEBUG) then  
-  
+
     ! check N
     if (N < 2) then
       INFO = -1
       call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
     end if
-    
+
     ! check STR
     if ((STR < 1).OR.(STR > N-1)) then
       INFO = -2
@@ -97,18 +97,18 @@ subroutine d_orthfact_deflationcheck(N,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
       return
     end if
 
-    ! check Q and D
-    call d_orthfact_factorcheck(N,Q,D,INFO)
-    if (INFO.EQ.-1) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
+    ! check Q
+    call d_1Darray_check(2*N-2,Q,INFO)
+    if (INFO.NE.0) then
+      INFO = -5
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
       return
     end if
-    if (INFO.EQ.-2) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
-      return
-    end if
-    if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+    ! check D
+    call d_1Darray_check(2*N,D,INFO)
+    if (INFO.NE.0) then
+      INFO = -6
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
       return
     end if
     

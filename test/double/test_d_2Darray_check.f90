@@ -16,6 +16,8 @@
 !
 ! 4) test with one NAN
 !
+! In DEBUG mode additionally checks with incorrect input are run. 
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_2Darray_check
 
@@ -66,7 +68,7 @@ program test_d_2Darray_check
   A(1,1) = num+huge(1d0)
   call d_2Darray_check(3,2,A,INFO)
   ! check info
-  if (info.NE.-1) then
+  if (info.NE.-3) then
      call u_test_failed(__LINE__)
   end if
 
@@ -84,7 +86,7 @@ program test_d_2Darray_check
   A(1,2) = num-huge(1d0)
   call d_2Darray_check(3,2,A,INFO)
   ! check info
-  if (info.NE.-1) then
+  if (info.NE.-3) then
      call u_test_failed(__LINE__)
   end if
 
@@ -102,8 +104,36 @@ program test_d_2Darray_check
   A(3,2) = nul/nul
   call d_2Darray_check(3,2,A,INFO)
   ! check info
-  if (info.NE.-1) then
+  if (info.NE.-3) then
      call u_test_failed(__LINE__)
+  end if
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! incorrect input
+  if (DEBUG) then
+     call d_2Darray_check(0,1,A,INFO)
+     ! check info
+     if (info.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     call d_2Darray_check(-1,1,A,INFO)
+     ! check info
+     if (info.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     call d_2Darray_check(1,0,A,INFO)
+     ! check info
+     if (info.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     call d_2Darray_check(1,-1,A,INFO)
+     ! check info
+     if (info.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
   end if
 
   ! stop timer

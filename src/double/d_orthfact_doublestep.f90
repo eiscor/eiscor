@@ -47,6 +47,7 @@
 !
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
+!                    INFO > 0 implies failure in one of the subroutines
 !                    INFO = -1 implies COMPZ is invalid
 !                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies STR is invalid
@@ -86,14 +87,14 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
       return
     end if
-    
+  
     ! check N
     if (N < 2) then
       INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
-    end if         
-  
+    end if
+
     ! check STR
     if ((STR < 1).OR.(STR > N-1)) then
       INFO = -3
@@ -107,19 +108,19 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       call u_infocode_check(__FILE__,__LINE__,"STP must be STR <= STP <= N-1",INFO,INFO)
       return
     end if
-  
-    ! check Q and D
-    call d_orthfact_factorcheck(N,Q,D,INFO)
-    if (INFO.EQ.-1) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
+
+    ! check Q
+    call d_1Darray_check(2*N-2,Q,INFO)
+    if (INFO.NE.0) then
+      INFO = -5
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
       return
     end if
-    if (INFO.EQ.-2) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
-      return
-    end if
-    if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+    ! check D
+    call d_1Darray_check(2*N,D,INFO)
+    if (INFO.NE.0) then
+      INFO = -6
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
       return
     end if
 
@@ -127,7 +128,8 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     if (COMPZ.EQ.'V') then
       call d_2Darray_check(N,N,Z,INFO)     
       if (INFO.NE.0) then 
-        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-7)
+        INFO = -7
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
         return 
       end if       
     end if 
@@ -166,7 +168,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,1)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -177,7 +179,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_2x2array_eig failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_2x2array_eig failed",INFO,2)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -198,7 +200,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,3)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -212,7 +214,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,4)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -232,7 +234,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,5)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -243,7 +245,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,6)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -259,7 +261,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,7)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -272,7 +274,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,8)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -298,7 +300,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,9)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -309,7 +311,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,10)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -329,7 +331,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,11)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -340,7 +342,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,12)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -365,7 +367,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,13)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -376,7 +378,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,14)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -396,7 +398,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,15)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -407,7 +409,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,16)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -430,7 +432,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,17)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -441,7 +443,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,18)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -458,7 +460,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,19)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -469,7 +471,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
           
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_buildbulge failed",INFO,20)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -485,7 +487,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,21)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -496,7 +498,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
      
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,22)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -528,7 +530,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,23)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -539,7 +541,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,24)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -559,7 +561,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,25)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -570,7 +572,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,26)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -581,7 +583,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,27)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -612,7 +614,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,28)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -623,7 +625,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,29)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -643,7 +645,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,30)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -654,7 +656,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_turnover failed",INFO,31)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -665,7 +667,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,32)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -688,7 +690,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_swapdiag failed",INFO,33)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -699,7 +701,7 @@ subroutine d_orthfact_doublestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_fuse failed",INFO,34)
       if (INFO.NE.0) then 
         return 
       end if 

@@ -36,7 +36,7 @@ program test_d_orthfact_deflationcheck
   ! compute variables
   integer :: info, str, stp, zero, itcnt, its(4)
   real(8) :: Q(8) ! N = 5
-  real(8) :: D(10)
+  real(8) :: D(10), nul = 0d0
 
   
   ! timing variables
@@ -332,10 +332,36 @@ program test_d_orthfact_deflationcheck
      end if
 
      !!!!!!!!!!!!!!!!!!!!
-     ! check F)
+     ! check G)
+     ! Q contains INF
+     Q(1) = 2d0/nul
+     str = 2
+     stp = 3
+     call d_orthfact_deflationcheck(4,str,stp,zero,Q,D,itcnt,its,INFO)
+     ! check info
+     if (info.NE.-5) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check H)
+     ! D contains INF
+     D(1) = 2d0/nul
+     Q(1) = 8d-1
+     call d_orthfact_deflationcheck(4,str,stp,zero,Q,D,itcnt,its,INFO)
+     ! check info
+     if (info.NE.-6) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check I)
      ! itcnt = -1
      stp = 3
      itcnt = -1
+     D(1) = 1d0
      call d_orthfact_deflationcheck(4,str,stp,zero,Q,D,itcnt,its,INFO)
      ! check info
      if (info.NE.-7) then

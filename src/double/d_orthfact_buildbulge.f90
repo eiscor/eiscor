@@ -42,6 +42,7 @@
 !
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
+!                    INFO > 0 implies one of the subroutines failed
 !                    INFO = -1 implies JOB is invalid
 !                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies STR is invalid
@@ -81,10 +82,10 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
     ! check N
     if (N < 2) then
       INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
-    end if         
-  
+    end if
+
     ! check STR
     if ((STR >= N).OR.(STR < 1)) then
       INFO = -3
@@ -92,18 +93,19 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
       return
     end if  
 
-    ! check Q and D
-    call d_orthfact_factorcheck(N,Q,D,INFO)
-    if (INFO.EQ.-1) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
+    ! check Q
+    call d_1Darray_check(2*N-2,Q,INFO)
+    if (INFO.NE.0) then
+      INFO = -4
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
       return
     end if
-    if (INFO.EQ.-2) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-4)
-      return
-    end if
-    if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-5)
+
+    ! check D
+    call d_1Darray_check(2*N,D,INFO)
+    if (INFO.NE.0) then
+      INFO = -5
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
       return
     end if
   
@@ -133,7 +135,7 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,1)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -144,7 +146,7 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,2)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -164,7 +166,7 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,3)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -177,7 +179,7 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
 
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,4)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -193,7 +195,7 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,5)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -204,7 +206,7 @@ subroutine d_orthfact_buildbulge(JOB,N,STR,Q,D,E,B1,B2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,6)
       if (INFO.NE.0) then 
         return 
       end if 

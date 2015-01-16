@@ -88,11 +88,11 @@ subroutine d_orthhess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
   ! check H
   call d_2Darray_check(N,N,H,INFO)
   if (INFO.NE.0) then
+    INFO = -3
     ! print error in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,INFO)
     end if  
-    INFO = -3
     return
   end if  
   
@@ -100,11 +100,11 @@ subroutine d_orthhess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
   if (COMPZ.EQ.'V') then
     call d_2Darray_check(N,N,Z,INFO)
     if (INFO.NE.0) then
+      INFO = -4
       ! print error in debug mode
       if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
       end if  
-      INFO = -4
       return
     end if 
   end if
@@ -114,20 +114,19 @@ subroutine d_orthhess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthhess_factor",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthhess_factor",INFO,1)
     end if  
-    INFO = 1
     return
   end if  
   
   ! compute eigenvalues
+  print*, N
   call d_orthfact_qr(COMPZ,N,WORK(1:(2*N)),WORK((2*N+1):(4*N)),Z,ITS,INFO)
   if (INFO.NE.0) then
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_qr failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_qr failed",INFO,2)
     end if  
-    INFO = 2
     return
   end if 
   

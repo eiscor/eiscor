@@ -50,6 +50,7 @@ subroutine d_orthfact_factorcheck(N,Q,D,INFO)
   ! initialize INFO
   INFO = 0
   
+  print*, N
   ! check JOB
   if (N < 2) then
     INFO = -1
@@ -86,7 +87,7 @@ subroutine d_orthfact_factorcheck(N,Q,D,INFO)
       end if
     
       return
-   end if
+    end if
   end do
   
   ! check D
@@ -108,11 +109,12 @@ subroutine d_orthfact_factorcheck(N,Q,D,INFO)
       
       ! print warning in debug mode
       if (DEBUG) then 
+         print*, D
         call u_infocode_check(__FILE__,__LINE__,"D is not real orthogonal",INFO,INFO)
       end if
     
       return
-   end if
+    end if
   end do
   
 end subroutine d_orthfact_factorcheck

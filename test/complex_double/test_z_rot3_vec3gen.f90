@@ -102,7 +102,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, ""
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
@@ -136,7 +136,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -169,7 +169,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -203,7 +203,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -240,7 +240,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -273,7 +273,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -306,7 +306,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -343,7 +343,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -376,7 +376,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -409,7 +409,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -446,7 +446,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -484,7 +484,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -517,7 +517,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -550,7 +550,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -581,7 +581,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -614,7 +614,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -647,7 +647,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -681,7 +681,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -713,7 +713,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -746,7 +746,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -779,7 +779,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -813,7 +813,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)

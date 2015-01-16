@@ -84,7 +84,7 @@ program test_d_scalar_infcheck
   num = num+huge(1d0)
   call d_scalar_infcheck(NUM,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 

@@ -52,7 +52,10 @@
 !                   INFO = -2 implies N is invalid
 !                   INFO = -3 implies STR is invalid
 !                   INFO = -4 implies STP is invalid
-!                   INFO = -7 implies G is invalid
+!                   INFO = -5 implies K is invalid
+!                   INFO = -7 implies Q is invalid
+!                   INFO = -8 implies D is invalid
+!                   INFO = -9 implies G is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)

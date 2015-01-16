@@ -89,23 +89,28 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
     ! check factorization
     call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
     if (INFO.EQ.-1) then
-      call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
+      INFO = -1
+      call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,INFO)
       return
     end if
     if (INFO.EQ.-2) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
       return
     end if
     if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
+      INFO = -5
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
       return
     end if
     if (INFO.EQ.-4) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+      INFO = -6
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
       return
     end if
     if (INFO.EQ.-5) then
-      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,-7)
+      INFO = -7
+      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,INFO)
       return
     end if
     
@@ -119,12 +124,14 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
     ! check SHFT
     call z_scalar_nancheck(SHFT,INFO)
     if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-8)
+      INFO = -8
+      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,INFO)
       return
     end if
     call z_scalar_infcheck(SHFT,INFO)
     if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-8)
+      INFO = -8
+      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,INFO)
       return
     end if
   

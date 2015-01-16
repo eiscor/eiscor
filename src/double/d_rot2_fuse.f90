@@ -23,6 +23,7 @@
 !
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
+!                    INFO = 1 implies failure in d_rot2_vec2gen
 !                    INFO = -1 implies JOB is invalid
 !                    INFO = -2 implies Q1 is invalid
 !                    INFO = -3 implies Q2 is invalid
@@ -50,7 +51,7 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
     ! check JOB
     if ((JOB.NE.'L').AND.(JOB.NE.'R')) then
       INFO = -1
-      call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,INFO)
       return
     end if
     
@@ -94,7 +95,7 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -112,7 +113,7 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
       if (INFO.NE.0) then 
         return 
       end if 

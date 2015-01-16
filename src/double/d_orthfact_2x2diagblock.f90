@@ -65,7 +65,7 @@ subroutine d_orthfact_2x2diagblock(N,K,Q,D,H,INFO)
       call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
       return
     end if
-  
+
     ! check K
     if ((K < 1).OR.(K > N-1)) then
       INFO = -2
@@ -73,18 +73,18 @@ subroutine d_orthfact_2x2diagblock(N,K,Q,D,H,INFO)
       return
     end if
 
-    ! check Q and D
-    call d_orthfact_factorcheck(N,Q,D,INFO)
-    if (INFO.EQ.-1) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
+    ! check Q
+    call d_1Darray_check(2*N-2,Q,INFO)
+    if (INFO.NE.0) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
       return
     end if
-    if (INFO.EQ.-2) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-3)
-      return
-    end if
-    if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-4)
+    ! check D
+    call d_1Darray_check(2*N,D,INFO)
+    if (INFO.NE.0) then
+      INFO = -4
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
       return
     end if
 

@@ -18,16 +18,17 @@
 !  H               REAL(8) array of dimension (N,N)
 !                    orthogonal hessenberg matrix to be reduced
 !
+! OUTPUT VARIABLES:
+!
 !  Q               REAL(8) array of dimension (2*(N-1))
 !                    array of generators for Givens' rotations
 !
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
 !
-! OUTPUT VARIABLES:
-!
 !  INFO           INTEGER
 !                    INFO = 0 implies successful computation
+!                    INFO = 1 implies d_rot2_vec2gen failed
 !                    INFO = -1 implies N is invalid
 !                    INFO = -2 implies H is invalid
 !
@@ -62,11 +63,11 @@ subroutine d_orthhess_factor(N,H,Q,D,INFO)
   ! check H
   call d_2Darray_check(N,N,H,INFO)
   if (INFO.NE.0) then
+    INFO = -2
     ! print error in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,INFO)
     end if  
-    INFO = -2
     return
   end if  
   
@@ -82,7 +83,7 @@ subroutine d_orthhess_factor(N,H,Q,D,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
       if (INFO.NE.0) then 
         return 
       end if 
