@@ -144,7 +144,7 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
     if (JOB.EQ.'L') then
       
       ! check upper core transformation
-      if (K > 1) then
+      if (K > STR) then
         if (P(K-1).EQV..FALSE.) then
           INFO = 1 
           call u_infocode_check(__FILE__,__LINE__,"Upper core transformation interferes",INFO,INFO)
@@ -153,7 +153,7 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
       end if
       
       ! check lower core transformation
-      if (K < (N-1)) then
+      if (K < STP) then
         if (P(K).EQV..TRUE.) then
           INFO = 1 
           call u_infocode_check(__FILE__,__LINE__,"Lower core transformation interferes",INFO,INFO)
@@ -165,7 +165,7 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
      else
      
       ! check upper core transformation
-      if (K > 1) then
+      if (K > STR) then
         if (P(K-1).EQV..TRUE.) then
           INFO = 1 
           call u_infocode_check(__FILE__,__LINE__,"Upper core transformation interferes",INFO,INFO)
@@ -174,7 +174,7 @@ subroutine z_upr1fact_mergebulge(JOB,N,STR,STP,K,P,Q,D,G,INFO)
       end if
       
       ! check lower core transformation
-      if (K < (N-1)) then
+      if (K < STP) then
         if (P(K).EQV..FALSE.) then
           INFO = 1 
           call u_infocode_check(__FILE__,__LINE__,"Lower core transformation interferes",INFO,INFO)

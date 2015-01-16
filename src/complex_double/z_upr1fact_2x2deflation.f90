@@ -150,7 +150,7 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
   end if
   
   ! compute 2x2 blocks
-  call z_upr1fact_2x2diagblocks(N,K,ALG,P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('H',ALG,N,K,P,Q,D,R,A,B,INFO)
     
   ! check INFO in debug mode
   if (DEBUG) then
@@ -209,7 +209,25 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     B(2,2) = conjg(B(1,1))
     
     A = matmul(A,B)
-    A = matmul(transpose(conjg(B)),A)
+    
+    ! update V
+    if (COMPZ.NE.'N') then
+    
+      B(1,1) = cmplx(G1(1),G1(2),kind=8)
+      B(2,1) = cmplx(G1(3),0d0,kind=8)
+      B(1,2) = -B(2,1)
+      B(2,2) = conjg(B(1,1))
+      
+      V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B)
+    
+    end if
+
+    B(1,1) = cmplx(G1(1),-G1(2),kind=8)
+    B(2,1) = cmplx(G1(3),0d0,kind=8)
+    B(1,2) = -B(2,1)
+    B(2,2) = conjg(B(1,1))    
+
+    A = matmul(B,A)
     
     Q(3*K-2) = 1d0
     Q(3*K-1) = 0d0
@@ -230,18 +248,6 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     D(1,2*K+1) = D(1,2*K+1)/nrm
     D(1,2*K+2) = D(1,2*K+2)/nrm
     
-    ! update V
-    if (COMPZ.NE.'N') then
-    
-      B(1,1) = cmplx(G1(1),G1(2),kind=8)
-      B(2,1) = cmplx(G1(3),0d0,kind=8)
-      B(1,2) = -B(2,1)
-      B(2,2) = conjg(B(1,1))
-      
-      V(:,K:(K+1)) = matmul(V(:,K:(K+1)),B)
-    
-    end if
-
   ! compute generalized Schur decomposition
   else
   
@@ -343,12 +349,12 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     
     A = matmul(A,B)
     
-    B(1,1) = cmplx(G2(1),G2(2),kind=8)
-    B(2,1) = cmplx(G2(3),0d0,kind=8)
+    B(1,1) = cmplx(G2(1),-G2(2),kind=8)
+    B(2,1) = cmplx(-G2(3),0d0,kind=8)
     B(1,2) = -B(2,1)
     B(2,2) = conjg(B(1,1))
     
-    A = matmul(transpose(conjg(B)),A)
+    A = matmul(B,A)
     
     Q(3*K-2) = 1d0
     Q(3*K-1) = 0d0

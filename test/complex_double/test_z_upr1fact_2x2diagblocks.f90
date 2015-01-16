@@ -64,7 +64,7 @@ program test_z_upr1fact_2x2diagblocks
   end do
 
   ! top block
-  call z_upr1fact_2x2diagblocks(N,1,'QZ',P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('H','QZ',N,1,P,Q,D,R,A,B,INFO)
 
   ! check info
   if (INFO.NE.0) then
@@ -80,7 +80,7 @@ program test_z_upr1fact_2x2diagblocks
   end if
   
   ! bottom block
-  call z_upr1fact_2x2diagblocks(N,N-1,'QZ',P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('H','QZ',N,N-1,P,Q,D,R,A,B,INFO)
 
   ! check info
   if (INFO.NE.0) then

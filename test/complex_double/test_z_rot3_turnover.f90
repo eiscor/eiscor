@@ -26,10 +26,6 @@
 ! A deviation of 0.2% is still acceptable.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! Note: This test currently fails. 
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_rot3_turnover
   
   implicit none
@@ -56,7 +52,7 @@ program test_z_rot3_turnover
   integer :: histo(7), histo2(7,8), histot(7,8), h2, ht
 
   ! tol depending on accum
-  tol = 100d0*accum*epsilon(1d0) ! accuracy of turnover
+  tol = 2d0*accum*epsilon(1d0) ! accuracy of turnover
 
   ! fix seed
   INFO = 0
@@ -855,11 +851,11 @@ program test_z_rot3_turnover
   end if
 
   ! reference histogram, turnover passes test if histogram is better than this one
-  histot(1,:) = (/           0,          14,           7,          21,           4,      117772,      120000,       29449/)!
-  histot(2,:) = (/           6,         299,         150,          44,         108,           0,           0,         246/)!
-  histot(3,:) = (/       19077,       32315,       41996,       64126,       37913,        2228,           0,       41333/)!
-  histot(4,:) = (/       99727,       85729,       77120,       55804,       79636,           0,           0,       47972/)!
-  histot(5,:) = (/        1190,        1643,         727,           5,        2339,           0,           0,        1000/)!
+  histot(1,:) = (/           0,           0,           0,           0,           0,      116000,      120000,       24000/)!
+  histot(2,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
+  histot(3,:) = (/       15500,       27500,       39000,       59980,       36000,        3960,           0,       44000/)!
+  histot(4,:) = (/      103000,       90000,       80000,       60000,       80000,          40,           0,       50000/)!
+  histot(5,:) = (/        1500,        2500,        1000,          20,        4000,           0,           0,        2000/)!
   histot(6,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
   histot(7,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
 
