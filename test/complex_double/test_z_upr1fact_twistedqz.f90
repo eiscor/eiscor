@@ -16,7 +16,7 @@ program test_z_upr1fact_twistedqz
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**8
+  integer, parameter :: N = 2**9
   integer :: ii, INFO, ITS(N-1)
   logical :: P(N-2)
   real(8) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
