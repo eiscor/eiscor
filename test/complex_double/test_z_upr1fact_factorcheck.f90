@@ -33,7 +33,8 @@ program test_z_upr1fact_factorcheck
   integer :: ii, INFO
   character(2) :: ALG
   real(8) :: nan, inf
-  real(8) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -62,24 +63,28 @@ program test_z_upr1fact_factorcheck
     Q(3*ii) = 1d0
   end do     
   
-  ! set valid D
-  D = 0d0
+  ! set valid D1, D2
+  D1 = 0d0
   do ii=1,(N+1)
-    D(:,2*ii-1) = 1d0
+    D1(2*ii-1) = 1d0
   end do
+  D2 = D1
 
-  ! set valid R
-  R = 0d0
+  ! set valid C1, B1, C2, B2
+  C1 = 0d0
   do ii=1,N
-    R(:,3*ii) = 1d0
+    C1(3*ii) = 1d0
   end do
+  B1 = C1
+  C2 = C1
+  B2 = C1
   
   ! check 1)
     ! set INFO
     INFO = 0
   
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
@@ -91,7 +96,7 @@ program test_z_upr1fact_factorcheck
     INFO = 0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck('NULL',N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck('NULL',N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-1) then
@@ -103,7 +108,7 @@ program test_z_upr1fact_factorcheck
     INFO = 0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,1,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,1,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-2) then
@@ -118,7 +123,7 @@ program test_z_upr1fact_factorcheck
     Q(1) = nan
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-3) then
@@ -136,7 +141,7 @@ program test_z_upr1fact_factorcheck
     Q(1) = inf
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-3) then
@@ -154,7 +159,7 @@ program test_z_upr1fact_factorcheck
     Q(1) = 1d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-3) then
@@ -169,10 +174,10 @@ program test_z_upr1fact_factorcheck
     INFO = 0
     
     ! insert nan
-    D(2,1) = nan
+    D2(1) = nan
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-4) then
@@ -180,17 +185,17 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset D
-    D(2,1) = 1d0
+    D2(1) = 1d0
     
   ! check 8)
     ! set INFO
     INFO = 0
     
     ! insert inf
-    D(2,1) = inf
+    D2(1) = inf
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-4) then
@@ -198,17 +203,17 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset D
-    D(2,1) = 1d0
+    D2(1) = 1d0
     
   ! check 9)
     ! set INFO
     INFO = 0
     
     ! insert 1
-    D(2,2) = 1d0
+    D2(2) = 1d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-4) then
@@ -216,17 +221,17 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset D
-    D(2,2) = 0d0
+    D2(2) = 0d0
     
   ! check 10)
     ! set INFO
     INFO = 0
     
     ! insert nan
-    R(3,1) = nan
+    C2(1) = nan
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-5) then
@@ -234,17 +239,17 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset R
-    R(3,1) = 1d0
+    C2(1) = 1d0
     
   ! check 11)
     ! set INFO
     INFO = 0
     
     ! insert inf
-    R(3,1) = inf
+    C2(1) = inf
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-5) then
@@ -252,17 +257,17 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset R
-    R(3,1) = 1d0
+    C2(1) = 1d0
     
   ! check 12)
     ! set INFO
     INFO = 0
     
     ! insert 1
-    R(3,1) = 1d0
+    C2(1) = 1d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-5) then
@@ -270,18 +275,18 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset R
-    R(3,1) = 0d0
+    C2(1) = 0d0
     
   ! check 13)
     ! set INFO
     INFO = 0
     
     ! insert 1
-    R(4,1) = 1d0
-    R(4,3) = 0d0
+    B2(1) = 1d0
+    B2(3) = 0d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-5) then
@@ -289,19 +294,19 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset R
-    R(4,1) = 0d0
-    R(4,3) = 1d0
+    B2(1) = 0d0
+    B2(3) = 1d0
   
   ! check 14)
     ! set INFO
     INFO = 0
     
     ! insert 1
-    R(3,1) = 1d0
-    R(3,3) = 0d0
+    C2(1) = 1d0
+    C2(3) = 0d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
     if (INFO.NE.-5) then
@@ -309,8 +314,8 @@ program test_z_upr1fact_factorcheck
     end if 
     
     ! reset R
-    R(3,1) = 0d0
-    R(3,3) = 1d0
+    C2(1) = 0d0
+    C2(3) = 1d0
   
   ! stop timer
   call system_clock(count=c_stop)
