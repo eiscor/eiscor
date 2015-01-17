@@ -23,12 +23,12 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) array of dimension (2,2*(N+1))
-!                    array of generators for complex diagonal matrices
+!  D1, D2          REAL(8) array of dimension (2*(N+1))
+!                    arrays of generators for complex diagonal matrices
 !                    in the upper-triangular factors
 !
-!  R               REAL(8) array of dimension (4,3*N)
-!                    array of generators for upper-triangular parts
+!  C1, B1, C2, B2  REAL(8) array of dimension (4,3*N)
+!                    arrays of generators for upper-triangular parts
 !                    of the pencil
 !
 ! OUTPUT VARIABLES:
@@ -42,14 +42,15 @@
 !                   INFO = -5 implies R is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+subroutine z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
 
   implicit none
   
   ! input variables
   character(2), intent(in) :: ALG
   integer, intent(in) :: N
-  real(8), intent(in) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8), intent(inout) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   integer, intent(inout) :: INFO
   
   ! compute variables
@@ -105,7 +106,7 @@ subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
   end do
   
   ! check D
-  call d_1Darray_check(2*(N+1),D(1,:),INFO)
+  call d_1Darray_check(2*(N+1),D1,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
@@ -115,7 +116,7 @@ subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
     return
   end if
   if (ALG.EQ.'QZ') then
-    call d_1Darray_check(2*(N+1),D(2,:),INFO)
+    call d_1Darray_check(2*(N+1),D2,INFO)
     if (INFO.NE.0) then
       ! print error message in debug mode
       if (DEBUG) then
@@ -128,7 +129,7 @@ subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
   
   ! check D for orthogonality
   do ii=1,(N+1)
-    nrm = sqrt(D(1,2*ii-1)**2 + D(1,2*ii)**2)
+    nrm = sqrt(D1(2*ii-1)**2 + D1(2*ii)**2)
     if (abs(nrm-1d0) > tol) then
       INFO = -4
       ! print error message in debug mode
@@ -140,7 +141,7 @@ subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
   end do
   if (ALG.EQ.'QZ') then
     do ii=1,(N+1)
-      nrm = sqrt(D(2,2*ii-1)**2 + D(2,2*ii)**2)
+      nrm = sqrt(D2(2*ii-1)**2 + D2(2*ii)**2)
       if (abs(nrm-1d0) > tol) then
         INFO = -4
         ! print error message in debug mode
@@ -152,118 +153,154 @@ subroutine z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
     end do
   end if
   
-  ! check R for NANs and INFs
-  call d_2Darray_check(2,3*N,R(1:2,:),INFO)
+  ! check C1 for NANs and INFs
+  call d_1Darray_check(3*N,C1,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"C1 is invalid",INFO,INFO)
     end if
     INFO = -5
     return
   end if
+  
+  ! check B1 for NANs and INFs
+  call d_1Darray_check(3*N,B1,INFO)
+  if (INFO.NE.0) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"B1 is invalid",INFO,INFO)
+    end if
+    INFO = -5
+    return
+  end if
+  
+  ! check C2 for NANs and INFs  
   if (ALG.EQ.'QZ') then
-    call d_2Darray_check(2,3*N,R(3:4,:),INFO)
+    call d_1Darray_check(3*N,C2,INFO)
     if (INFO.NE.0) then
       ! print error message in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"C2 is invalid",INFO,INFO)
       end if
       INFO = -5
       return
     end if
   end if
   
-  ! check R for orthogonality
+  ! check B2 for NANs and INFs  
+  if (ALG.EQ.'QZ') then
+    call d_1Darray_check(3*N,B2,INFO)
+    if (INFO.NE.0) then
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"B2 is invalid",INFO,INFO)
+      end if
+      INFO = -5
+      return
+    end if
+  end if
+  
+  ! check C1 for orthogonality
   do ii=1,N
-    nrm = sqrt(R(1,3*ii-2)**2 + R(1,3*ii-1)**2 + R(1,3*ii)**2)
+    nrm = sqrt(C1(3*ii-2)**2 + C1(3*ii-1)**2 + C1(3*ii)**2)
     if (abs(nrm-1d0) > tol) then
       INFO = -5
       ! print error message in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"R is not unitary",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"C1 is not unitary",INFO,INFO)
       end if
       return
    end if
   end do
+  
+  ! check B1 for orthogonality
   do ii=1,N
-    nrm = sqrt(R(2,3*ii-2)**2 + R(2,3*ii-1)**2 + R(2,3*ii)**2)
+    nrm = sqrt(B1(3*ii-2)**2 + B1(3*ii-1)**2 + B1(3*ii)**2)
     if (abs(nrm-1d0) > tol) then
       INFO = -5
       ! print error message in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"R is not unitary",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"B1 is not unitary",INFO,INFO)
       end if
       return
    end if
   end do
+  
+  ! check C2 for orthogonality
   if (ALG.EQ.'QZ') then
     do ii=1,N
-      nrm = sqrt(R(3,3*ii-2)**2 + R(3,3*ii-1)**2 + R(3,3*ii)**2)
+      nrm = sqrt(C2(3*ii-2)**2 + C2(3*ii-1)**2 + C2(3*ii)**2)
       if (abs(nrm-1d0) > tol) then
         INFO = -5
         ! print error message in debug mode
         if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"R is not unitary",INFO,INFO)
+          call u_infocode_check(__FILE__,__LINE__,"C2 is not unitary",INFO,INFO)
         end if
         return
      end if
     end do
+    
+  ! check B2 for orthogonality
     do ii=1,N
-      nrm = sqrt(R(4,3*ii-2)**2 + R(4,3*ii-1)**2 + R(4,3*ii)**2)
+      nrm = sqrt(B2(3*ii-2)**2 + B2(3*ii-1)**2 + B2(3*ii)**2)
       if (abs(nrm-1d0) > tol) then
         INFO = -5
         ! print error message in debug mode
         if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"R is not unitary",INFO,INFO)
+          call u_infocode_check(__FILE__,__LINE__,"B2 is not unitary",INFO,INFO)
         end if
         return
      end if
     end do  
   end if
   
-  ! check R for zero diagonal elements
+  ! check B1 for zero diagonal elements
   do ii=1,N
-    if (abs(R(2,3*ii)) <= tol) then
+    if (abs(B1(3*ii)) <= tol) then
       INFO = -5
       ! print error message in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"R has a zero diagonal element",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"B1 has a zero diagonal element",INFO,INFO)
       end if
       return
    end if
   end do
+  
+  ! check B2 for zero diagonal elements
   if (ALG.EQ.'QZ') then  
     do ii=1,N
-      if (abs(R(4,3*ii)) <= tol) then
+      if (abs(B2(3*ii)) <= tol) then
         INFO = -5
         ! print error message in debug mode
         if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"R has a zero diagonal element",INFO,INFO)
+          call u_infocode_check(__FILE__,__LINE__,"B2 has a zero diagonal element",INFO,INFO)
         end if
         return
      end if
     end do
   end if
   
-  ! check R for inf diagonal elements
+  ! check C1 for inf diagonal elements
   do ii=1,N
-    if (abs(R(1,3*ii)) <= tol) then
+    if (abs(C1(3*ii)) <= tol) then
       INFO = -5
       ! print error message in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"R has an infinite diagonal element",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"C1 has an infinite diagonal element",INFO,INFO)
       end if
       return
    end if
   end do
+  
+  ! check C2 for inf diagonal elements
   if (ALG.EQ.'QZ') then  
     do ii=1,N
-      if (abs(R(3,3*ii)) <= tol) then
+      if (abs(C2(3*ii)) <= tol) then
         INFO = -5
         ! print error message in debug mode
         if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"R has an infinite diagonal element",INFO,INFO)
+          call u_infocode_check(__FILE__,__LINE__,"C2 has an infinite diagonal element",INFO,INFO)
         end if
         return
      end if
