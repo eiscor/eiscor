@@ -22,7 +22,8 @@ program test_z_upr1fact_2x2diagblocks
   ! compute variables
   integer :: ii, info
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   complex(8) :: A(2,2), B(2,2), eye(2,2)
   
   ! timing variables
@@ -50,21 +51,23 @@ program test_z_upr1fact_2x2diagblocks
     Q(3*ii-2) = 1d0
   end do
   
-  D = 0d0
+  D1 = 0d0
   do ii=1,(N+1)
-    D(:,2*ii-1) = 1d0
+    D1(2*ii-1) = 1d0
   end do
+  D2 = D1
   
-  R = 0d0
+  C1 = 0d0
+  B1 = 0d0
   do ii=1,N
-    R(1,3*ii) = 1d0
-    R(2,3*ii) = -1d0
-    R(3,3*ii) = 1d0
-    R(4,3*ii) = -1d0
+    C1(3*ii) = -1d0
+    B1(3*ii) = 1d0
   end do
+  C2 = C1
+  B2 = B1
 
   ! top block
-  call z_upr1fact_2x2diagblocks('H','QZ',N,1,P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('H','QZ',N,1,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
 
   ! check info
   if (INFO.NE.0) then
@@ -80,7 +83,7 @@ program test_z_upr1fact_2x2diagblocks
   end if
   
   ! bottom block
-  call z_upr1fact_2x2diagblocks('H','QZ',N,N-1,P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('H','QZ',N,N-1,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
 
   ! check info
   if (INFO.NE.0) then
