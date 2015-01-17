@@ -29,19 +29,13 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) array of dimension (2,2*(N+1))
-!                    array of generators for complex diagonal matrices
+!  D1, D2          REAL(8) array of dimension (2*(N+1))
+!                    arrays of generators for complex diagonal matrices
 !                    in the upper-triangular factors
-!                    D1 = D(1,:)
-!                    D2 = D(2,:)
 !
-!  R               REAL(8) array of dimension (4,3*N)
-!                    array of generators for upper-triangular parts
+!  C1, B1, C2, B2  REAL(8) array of dimension (4,3*N)
+!                    arrays of generators for upper-triangular parts
 !                    of the pencil
-!                    C1 = R(1,:)
-!                    B1 = R(2,:)
-!                    C2 = R(3,:)
-!                    B2 = R(4,:)
 !
 ! OUTPUT VARIABLES:
 !
@@ -70,7 +64,7 @@
 !                   INFO = -9 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
+subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
 
   implicit none
   
@@ -79,7 +73,8 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
   character, intent(in) :: COMPZ
   integer, intent(in) :: N, K
   logical, intent(in) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8), intent(inout) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO
   
@@ -94,7 +89,7 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
   if (DEBUG) then
   
     ! check factorization
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     if (INFO.EQ.-1) then
       call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
       return
@@ -150,7 +145,7 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
   end if
   
   ! compute 2x2 blocks
-  call z_upr1fact_2x2diagblocks('H',ALG,N,K,P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('H',ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
     
   ! check INFO in debug mode
   if (DEBUG) then
@@ -187,7 +182,7 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     
     ! pass G1 through triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri('R2L',N,K,D(1,:),R(1,:),R(2,:),G3,INFO)
+    call z_upr1fact_rot3throughtri('R2L',N,K,D1,C1,B1,G3,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
@@ -234,19 +229,19 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     Q(3*K) = 0d0
         
     ! deflate into diagonal D
-    nrm = dble(A(1,1))*D(1,2*K-1) - aimag(A(1,1))*D(1,2*K)
-    D(1,2*K) = dble(A(1,1))*D(1,2*K) + aimag(A(1,1))*D(1,2*K-1)
-    D(1,2*K-1) = nrm
-    nrm = sqrt(D(1,2*K-1)**2 + D(1,2*K)**2)
-    D(1,2*K-1) = D(1,2*K-1)/nrm
-    D(1,2*K) = D(1,2*K)/nrm
+    nrm = dble(A(1,1))*D1(2*K-1) - aimag(A(1,1))*D1(2*K)
+    D1(2*K) = dble(A(1,1))*D1(2*K) + aimag(A(1,1))*D1(2*K-1)
+    D1(2*K-1) = nrm
+    nrm = sqrt(D1(2*K-1)**2 + D1(2*K)**2)
+    D1(2*K-1) = D1(2*K-1)/nrm
+    D1(2*K) = D1(2*K)/nrm
     
-    nrm = dble(A(2,2))*D(1,2*K+1) - aimag(A(2,2))*D(1,2*K+2)
-    D(1,2*K+2) = dble(A(2,2))*D(1,2*K+2) + aimag(A(2,2))*D(1,2*K+1)
-    D(1,2*K+1) = nrm
-    nrm = sqrt(D(1,2*K+1)**2 + D(1,2*K+2)**2)
-    D(1,2*K+1) = D(1,2*K+1)/nrm
-    D(1,2*K+2) = D(1,2*K+2)/nrm
+    nrm = dble(A(2,2))*D1(2*K+1) - aimag(A(2,2))*D1(2*K+2)
+    D1(2*K+2) = dble(A(2,2))*D1(2*K+2) + aimag(A(2,2))*D1(2*K+1)
+    D1(2*K+1) = nrm
+    nrm = sqrt(D1(2*K+1)**2 + D1(2*K+2)**2)
+    D1(2*K+1) = D1(2*K+1)/nrm
+    D1(2*K+2) = D1(2*K+2)/nrm
     
   ! compute generalized Schur decomposition
   else
@@ -286,7 +281,7 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
 
     ! pass G1 through right triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri('R2L',N,K,D(2,:),R(3,:),R(4,:),G3,INFO)
+    call z_upr1fact_rot3throughtri('R2L',N,K,D2,C2,B2,G3,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
@@ -310,23 +305,23 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     A = matmul(transpose(conjg(A)),B)
     
     ! deflate into right diagonal D
-    nrm = dble(A(1,1))*D(2,2*K-1) - aimag(A(1,1))*D(2,2*K)
-    D(2,2*K) = dble(A(1,1))*D(2,2*K) + aimag(A(1,1))*D(2,2*K-1)
-    D(2,2*K-1) = nrm
-    nrm = sqrt(D(2,2*K-1)**2 + D(2,2*K)**2)
-    D(2,2*K-1) = D(2,2*K-1)/nrm
-    D(2,2*K) = D(2,2*K)/nrm
+    nrm = dble(A(1,1))*D2(2*K-1) - aimag(A(1,1))*D2(2*K)
+    D2(2*K) = dble(A(1,1))*D2(2*K) + aimag(A(1,1))*D2(2*K-1)
+    D2(2*K-1) = nrm
+    nrm = sqrt(D2(2*K-1)**2 + D2(2*K)**2)
+    D2(2*K-1) = D2(2*K-1)/nrm
+    D2(2*K) = D2(2*K)/nrm
     
-    nrm = dble(A(2,2))*D(2,2*K+1) - aimag(A(2,2))*D(2,2*K+2)
-    D(2,2*K+2) = dble(A(2,2))*D(2,2*K+2) + aimag(A(2,2))*D(2,2*K+1)
-    D(2,2*K+1) = nrm
-    nrm = sqrt(D(2,2*K+1)**2 + D(2,2*K+2)**2)
-    D(2,2*K+1) = D(2,2*K+1)/nrm
-    D(2,2*K+2) = D(2,2*K+2)/nrm
+    nrm = dble(A(2,2))*D2(2*K+1) - aimag(A(2,2))*D2(2*K+2)
+    D2(2*K+2) = dble(A(2,2))*D2(2*K+2) + aimag(A(2,2))*D2(2*K+1)
+    D2(2*K+1) = nrm
+    nrm = sqrt(D2(2*K+1)**2 + D2(2*K+2)**2)
+    D2(2*K+1) = D2(2*K+1)/nrm
+    D2(2*K+2) = D2(2*K+2)/nrm
     
     ! pass G1 through left triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri('R2L',N,K,D(1,:),R(1,:),R(2,:),G3,INFO)
+    call z_upr1fact_rot3throughtri('R2L',N,K,D1,C1,B1,G3,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
@@ -361,19 +356,19 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     Q(3*K) = 0d0
     
     ! deflate into left diagonal D
-    nrm = dble(A(1,1))*D(1,2*K-1) - aimag(A(1,1))*D(1,2*K)
-    D(1,2*K) = dble(A(1,1))*D(1,2*K) + aimag(A(1,1))*D(1,2*K-1)
-    D(1,2*K-1) = nrm
-    nrm = sqrt(D(1,2*K-1)**2 + D(1,2*K)**2)
-    D(1,2*K-1) = D(1,2*K-1)/nrm
-    D(1,2*K) = D(1,2*K)/nrm
+    nrm = dble(A(1,1))*D1(2*K-1) - aimag(A(1,1))*D1(2*K)
+    D1(2*K) = dble(A(1,1))*D1(2*K) + aimag(A(1,1))*D1(2*K-1)
+    D1(2*K-1) = nrm
+    nrm = sqrt(D1(2*K-1)**2 + D1(2*K)**2)
+    D1(2*K-1) = D1(2*K-1)/nrm
+    D1(2*K) = D1(2*K)/nrm
     
-    nrm = dble(A(2,2))*D(1,2*K+1) - aimag(A(2,2))*D(1,2*K+2)
-    D(1,2*K+2) = dble(A(2,2))*D(1,2*K+2) + aimag(A(2,2))*D(1,2*K+1)
-    D(1,2*K+1) = nrm
-    nrm = sqrt(D(1,2*K+1)**2 + D(1,2*K+2)**2)
-    D(1,2*K+1) = D(1,2*K+1)/nrm
-    D(1,2*K+2) = D(1,2*K+2)/nrm
+    nrm = dble(A(2,2))*D1(2*K+1) - aimag(A(2,2))*D1(2*K+2)
+    D1(2*K+2) = dble(A(2,2))*D1(2*K+2) + aimag(A(2,2))*D1(2*K+1)
+    D1(2*K+1) = nrm
+    nrm = sqrt(D1(2*K+1)**2 + D1(2*K+2)**2)
+    D1(2*K+1) = D1(2*K+1)/nrm
+    D1(2*K+2) = D1(2*K+2)/nrm
     
     ! update vecs
     if (COMPZ.NE.'N') then
