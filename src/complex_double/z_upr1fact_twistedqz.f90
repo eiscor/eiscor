@@ -44,11 +44,11 @@
 !                    array of generators for first sequence of rotations
 !
 !  D1, D2          REAL(8) array of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
+!                    arrays of generators for complex diagonal matrices
 !                    in the upper-triangular factors
 !
 !  C1, B1, C2, B2  REAL(8) array of dimension (4,3*N)
-!                    array of generators for upper-triangular parts
+!                    arrays of generators for upper-triangular parts
 !                    of the pencil
 !
 ! OUTPUT VARIABLES:
@@ -106,7 +106,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   INFO = 0
   
   ! check factorization
-!  call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+  call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
