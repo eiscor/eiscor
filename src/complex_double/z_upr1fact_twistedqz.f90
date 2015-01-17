@@ -43,19 +43,13 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) array of dimension (2,2*(N+1))
+!  D1, D2          REAL(8) array of dimension (2*(N+1))
 !                    array of generators for complex diagonal matrices
 !                    in the upper-triangular factors
-!                    D1 = D(1,:)
-!                    D2 = D(2,:)
 !
-!  R               REAL(8) array of dimension (4,3*N)
+!  C1, B1, C2, B2  REAL(8) array of dimension (4,3*N)
 !                    array of generators for upper-triangular parts
 !                    of the pencil
-!                    C1 = R(1,:)
-!                    B1 = R(2,:)
-!                    C2 = R(3,:)
-!                    B2 = R(4,:)
 !
 ! OUTPUT VARIABLES:
 !
@@ -83,7 +77,7 @@
 !                   INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
+subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
 
   implicit none
   
@@ -92,7 +86,8 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   character, intent(in) :: COMPZ
   integer, intent(in) :: N
   logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8), intent(inout) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO, ITS(N-1)
   interface
@@ -111,7 +106,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   INFO = 0
   
   ! check factorization
-  call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+!  call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
@@ -190,7 +185,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     end if
     
     ! check for deflation
-    call z_upr1fact_deflationcheck(N,start_index,stop_index,zero_index,P,Q,D(1,:),it_count,ITS,INFO)
+    call z_upr1fact_deflationcheck(N,start_index,stop_index,zero_index,P,Q,D1,it_count,ITS,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
@@ -212,7 +207,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     else if(stop_index-1 == zero_index)then
     
       ! call 2x2 deflation
-      call z_upr1fact_2x2deflation(ALG,COMPZ,N,stop_index,P,Q,D,R,V,W,INFO)
+      call z_upr1fact_2x2deflation(ALG,COMPZ,N,stop_index,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
     
       ! check INFO in debug mode
       if (DEBUG) then
@@ -231,7 +226,7 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
     else
       
       ! perform singleshift iteration
-      call z_upr1fact_singlestep(ALG,COMPZ,N,start_index,stop_index,P,FUN,Q,D,R,V,W,it_count,INFO)
+      call z_upr1fact_singlestep(ALG,COMPZ,N,start_index,stop_index,P,FUN,Q,D1,C1,B1,D2,C2,B2,V,W,it_count,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
