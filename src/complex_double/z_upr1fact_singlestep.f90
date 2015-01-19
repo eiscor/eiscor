@@ -41,11 +41,15 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
 !
-!  D               REAL(8) array of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
+!  Q               REAL(8) array of dimension (3*(N-1))
+!                    array of generators for first sequence of rotations
 !
-!  R               REAL(8) array of dimension (4,3*N)
-!                    array of generators for upper-triangular parts
+!  D1, D2          REAL(8) array of dimension (2*(N+1))
+!                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
+!
+!  C1, B1, C2, B2  REAL(8) array of dimension (4,3*N)
+!                    arrays of generators for upper-triangular parts
 !                    of the pencil
 !
 !  V              COMPLEX(8) array of dimension (N,N)
@@ -79,7 +83,7 @@
 !                   INFO = -13 implies ITCNT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
+subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D1,C1,B1,D2,C2,B2,V,W,ITCNT,INFO)
 
   implicit none
   
@@ -88,7 +92,8 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   character, intent(in) :: COMPZ
   integer, intent(in) :: N, STR, STP
   logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8), intent(inout) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
   integer, intent(inout) :: INFO, ITCNT
   interface
@@ -112,7 +117,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   if (DEBUG) then
   
     ! check factorization
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     if (INFO.EQ.-1) then
       call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
       return
@@ -198,7 +203,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   else
   
     ! get 2x2 blocks
-    call z_upr1fact_2x2diagblocks('H',ALG,N,STP,P,Q,D,R,A,B,INFO)
+    call z_upr1fact_2x2diagblocks('H',ALG,N,STP,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
@@ -243,7 +248,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   end if
 
   ! build bulge
-  call z_upr1fact_buildbulge(ALG,N,STR,P,Q,D,R,shift,G2,INFO)
+  call z_upr1fact_buildbulge(ALG,N,STR,P,Q,D1,C1,B1,D2,C2,B2,shift,G2,INFO)
         
   ! check INFO in debug mode
   if (DEBUG) then
@@ -281,7 +286,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     if (P(STR).EQV..FALSE.) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('L',N,STR,STP,STR,P,Q,D(1,:),G1,INFO)
+      call z_upr1fact_mergebulge('L',N,STR,STP,STR,P,Q,D1,G1,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
@@ -299,7 +304,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     end if
     
     ! pass G2 through triangular part
-    call z_upr1fact_rot3throughtri('R2L',N,STR,D(1,:),R(1,:),R(2,:),G2,INFO)
+    call z_upr1fact_rot3throughtri('R2L',N,STR,D1,C1,B1,G2,INFO)
     
     ! check INFO in debug mode
     if (DEBUG) then
@@ -316,7 +321,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     if (P(STR).EQV..TRUE.) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('R',N,STR,STP,STR,P,Q,D(1,:),G2,INFO)
+      call z_upr1fact_mergebulge('R',N,STR,STP,STR,P,Q,D1,G2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
@@ -390,7 +395,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
         end if
         
         ! pass G3 through upper triangular part
-        call z_upr1fact_rot3throughtri('R2L',N,ii+1,D(1,:),R(1,:),R(2,:),G3,INFO)
+        call z_upr1fact_rot3throughtri('R2L',N,ii+1,D1,C1,B1,G3,INFO)
         
         ! check INFO in debug mode
         if (DEBUG) then
@@ -412,7 +417,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
         Q(3*ii+3) = G3(3)  
         
         ! pass G2 through upper triangular part
-        call z_upr1fact_rot3throughtri('L2R',N,ii+1,D(1,:),R(1,:),R(2,:),G2,INFO)
+        call z_upr1fact_rot3throughtri('L2R',N,ii+1,D1,C1,B1,G2,INFO)
         
         ! check INFO in debug mode
         if (DEBUG) then
@@ -487,7 +492,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       end if    
     
       ! pass G3 through upper triangular part
-      call z_upr1fact_rot3throughtri('R2L',N,STP,D(1,:),R(1,:),R(2,:),G3,INFO)
+      call z_upr1fact_rot3throughtri('R2L',N,STP,D1,C1,B1,G3,INFO)
         
       ! check INFO in debug mode
       if (DEBUG) then
@@ -498,7 +503,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       end if  
       
       ! merge bulge 
-      call z_upr1fact_mergebulge('R',N,STR,STP,STP,P,Q,D(1,:),G3,INFO)
+      call z_upr1fact_mergebulge('R',N,STR,STP,STP,P,Q,D1,G3,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then
@@ -522,7 +527,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       Q(3*STP) = G3(3)  
       
       ! pass G2 through upper triangular part
-      call z_upr1fact_rot3throughtri('L2R',N,STP,D(1,:),R(1,:),R(2,:),G2,INFO)
+      call z_upr1fact_rot3throughtri('L2R',N,STP,D1,C1,B1,G2,INFO)
         
       ! check INFO in debug mode
       if (DEBUG) then
@@ -545,7 +550,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       end if  
       
       ! merge bulge 
-      call z_upr1fact_mergebulge('L',N,STR,STP,STP,P,Q,D(1,:),G2,INFO)
+      call z_upr1fact_mergebulge('L',N,STR,STP,STP,P,Q,D1,G2,INFO)
       
       ! check INFO in debug mode
       if (DEBUG) then

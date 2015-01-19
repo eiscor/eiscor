@@ -29,19 +29,13 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) array of dimension (2,2*(N+1))
-!                    array of generators for complex diagonal matrices
+!  D1, D2          REAL(8) array of dimension (2*(N+1))
+!                    arrays of generators for complex diagonal matrices
 !                    in the upper-triangular factors
-!                    D1 = D(1,:)
-!                    D2 = D(2,:)
 !
-!  R               REAL(8) array of dimension (4,3*N)
-!                    array of generators for upper-triangular parts
+!  C1, B1, C2, B2  REAL(8) array of dimension (4,3*N)
+!                    arrays of generators for upper-triangular parts
 !                    of the pencil
-!                    C1 = R(1,:)
-!                    B1 = R(2,:)
-!                    C2 = R(3,:)
-!                    B2 = R(4,:)
 !
 !  SHFT            COMPLEX(8) 
 !                    contains the shift needed for the first transformation
@@ -63,7 +57,7 @@
 !                   INFO = -8 implies SHFT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
+subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G,INFO)
   
   implicit none
   
@@ -71,7 +65,8 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
   character(2), intent(in) :: ALG
   integer, intent(in) :: N, K
   logical, intent(in) :: P(N-2)
-  real(8), intent(in) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8), intent(inout) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   complex(8), intent(in) :: SHFT
   real(8), intent(inout) :: G(3)
   integer, intent(inout) :: INFO
@@ -87,7 +82,7 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
   if (DEBUG) then
     
     ! check factorization
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     if (INFO.EQ.-1) then
       call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
       return
@@ -131,7 +126,7 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D,R,SHFT,G,INFO)
   end if
   
   ! get 2x2 blocks
-  call z_upr1fact_2x2diagblocks('T',ALG,N,K,P,Q,D,R,A,B,INFO)
+  call z_upr1fact_2x2diagblocks('T',ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
       
   ! check INFO in debug mode
   if (DEBUG) then

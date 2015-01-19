@@ -24,7 +24,8 @@ program test_z_upr1fact_buildbulge
   real(8), parameter :: tol = 1d1*epsilon(1d0)
   integer :: ii, INFO
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N), G(3)
+  real(8) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N), G(3)
   complex(8) :: SHFT
   
   ! timing variables
@@ -53,26 +54,28 @@ program test_z_upr1fact_buildbulge
     Q(2) = 0d0
     Q(3) = 1d0     
   
-    ! set valid D
-    D = 0d0
+    ! set valid D1, D2
+    D1 = 0d0
     do ii=1,(N+1)
-      D(:,2*ii-1) = 1d0
+      D1(2*ii-1) = 1d0
     end do
+    D2 = D1
 
-    ! set valid R
-    R = 0d0
+    ! set valid C1, B1, C2, B2
+    C1 = 0d0
+    B1 = 0d0
     do ii=1,N
-      R(1,3*ii) = -1d0
-      R(2,3*ii) = 1d0
-      R(3,3*ii) = -1d0
-      R(4,3*ii) = 1d0
+      C1(3*ii) = -1d0
+      B1(3*ii) = 1d0
     end do
+    C2 = C1
+    B2 = B1
     
     ! set valid SHFT
     SHFT = cmplx(1d0,0d0,kind=8)
     
     ! call build bulge
-    call z_upr1fact_buildbulge('QZ',N,1,P,Q,D,R,SHFT,G,INFO)
+    call z_upr1fact_buildbulge('QZ',N,1,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
@@ -107,26 +110,28 @@ program test_z_upr1fact_buildbulge
     Q(2) = 0d0
     Q(3) = 1d0     
   
-    ! set valid D
-    D = 0d0
+    ! set valid D1, D2
+    D1 = 0d0
     do ii=1,(N+1)
-      D(:,2*ii-1) = 1d0
+      D1(2*ii-1) = 1d0
     end do
+    D2 = D1
 
-    ! set valid R
-    R = 0d0
+    ! set valid C1, B1, C2, B2
+    C1 = 0d0
+    B1 = 0d0
     do ii=1,N
-      R(1,3*ii) = -1d0
-      R(2,3*ii) = 1d0
-      R(3,3*ii) = -1d0
-      R(4,3*ii) = 1d0
+      C1(3*ii) = -1d0
+      B1(3*ii) = 1d0
     end do
+    C2 = C1
+    B2 = B1
     
     ! set valid SHFT
     SHFT = cmplx(1d0,0d0,kind=8)
     
     ! call build bulge
-    call z_upr1fact_buildbulge('QZ',N,1,P,Q,D,R,SHFT,G,INFO)
+    call z_upr1fact_buildbulge('QZ',N,1,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G,INFO)
     
     ! check INFO
     if (INFO.NE.0) then

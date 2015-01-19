@@ -20,7 +20,8 @@ program test_z_upr1fact_2x2deflation
   real(8), parameter :: tol = 1d1*epsilon(1d0)
   integer :: ii, INFO
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   complex(8) :: V(N,N), W(N,N)
   complex(8) :: temp(2,2), A(2,2), B(2,2)
   
@@ -54,20 +55,22 @@ program test_z_upr1fact_2x2deflation
     temp(1,2) = -temp(2,1)
     temp(2,2) = conjg(temp(1,1))
   
-    ! set valid D
-    D = 0d0
+    ! set valid D1, D2
+    D1 = 0d0
     do ii=1,(N+1)
-      D(:,2*ii-1) = 1d0
+      D1(2*ii-1) = 1d0
     end do
-
-    ! set valid R
-    R = 0d0
+    D2 = D1
+    
+    ! set valid C1, B1, C2, B2
+    C1 = 0d0
+    B1 = 0d0
     do ii=1,N
-      R(1,3*ii) = -1d0
-      R(2,3*ii) = 1d0
-      R(3,3*ii) = -1d0
-      R(4,3*ii) = 1d0
+      C1(3*ii) = -1d0
+      B1(3*ii) = 1d0
     end do
+    C2 = C1
+    B2 = B1
     
     ! set valid V
     V = cmplx(0d0,0d0,kind=8)
@@ -79,7 +82,7 @@ program test_z_upr1fact_2x2deflation
     W = V
     
     ! call twisted QZ
-    call z_upr1fact_2x2deflation('QZ','I',N,1,P,Q,D,R,V,W,INFO)
+    call z_upr1fact_2x2deflation('QZ','I',N,1,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
@@ -91,15 +94,15 @@ program test_z_upr1fact_2x2deflation
     A(2,1) = cmplx(Q(3),0d0,kind=8)
     A(1,2) = -A(2,1)
     A(2,2) = conjg(A(1,1))
-    A(:,1) = A(:,1)*cmplx(D(1,1),D(1,2),kind=8)
-    A(:,2) = A(:,2)*cmplx(D(1,3),D(1,4),kind=8)
+    A(:,1) = A(:,1)*cmplx(D1(1),D1(2),kind=8)
+    A(:,2) = A(:,2)*cmplx(D1(3),D1(4),kind=8)
     
     A = matmul(V(1:2,1:2),A)
     A = matmul(A,transpose(conjg(W(1:2,1:2))))
     
     B = cmplx(0d0,0d0,kind=8)
-    B(1,1) = cmplx(D(2,1),D(2,2),kind=8)
-    B(2,2) = cmplx(D(2,3),D(2,4),kind=8)
+    B(1,1) = cmplx(D2(1),D2(2),kind=8)
+    B(2,2) = cmplx(D2(3),D2(4),kind=8)
     
     B = matmul(V(1:2,1:2),B)
     B = matmul(B,transpose(conjg(W(1:2,1:2))))

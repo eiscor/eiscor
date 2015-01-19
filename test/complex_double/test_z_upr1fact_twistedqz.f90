@@ -16,10 +16,11 @@ program test_z_upr1fact_twistedqz
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**8
+  integer, parameter :: N = 2**9
   integer :: ii, INFO, ITS(N-1)
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
+  real(8) :: Q(3*(N-1)), D1(2*(N+1)), D2(2*(N+1))
+  real(8) :: C1(3*N), B1(3*N), C2(3*N) ,B2(3*N)
   complex(8) :: V(N,N), W(N,N)
   interface
     function l_upr1fact_upperhess(m,flags)
@@ -53,27 +54,22 @@ program test_z_upr1fact_twistedqz
     end do     
   
     ! set valid D
-    D = 0d0
+    D1 = 0d0
     do ii=1,(N+1)
-      D(:,2*ii-1) = 1d0
+      D1(2*ii-1) = 1d0
     end do
-    D(1,2*N-1) = (-1d0)**(N-1)
+    D1(2*N-1) = (-1d0)**(N-1)
 
-    ! set valid R
-    R = 0d0
+    ! set valid C1, B1
+    C1 = 0d0
+    B1 = 0d0
     do ii=1,N
-      R(1,3*ii) = -1d0
-      R(2,3*ii) = 1d0
-      R(3,3*ii) = -1d0
-      R(4,3*ii) = 1d0
+      C1(3*ii) = -1d0
+      B1(3*ii) = 1d0
     end do
-    
-!print*,""
-!print*,l_upr1fact_upperhess(N,P)
-!print*,""
     
     ! call twisted QZ
-    call z_upr1fact_twistedqz('QR','I',N,P,l_upr1fact_upperhess,Q,D,R,V,W,ITS,INFO)
+    call z_upr1fact_twistedqz('QR','I',N,P,l_upr1fact_upperhess,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
