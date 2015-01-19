@@ -57,8 +57,8 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
     
     ! check Q1
     call d_1Darray_check(2,Q1,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"Q1 is invalid",INFO,-2)
     if (INFO.NE.0) then 
+      call u_infocode_check(__FILE__,__LINE__,"Q1 is invalid",INFO,-2)
       return 
     end if 
     nrm = sqrt(Q1(1)**2 + Q1(2)**2)
@@ -70,8 +70,8 @@ subroutine d_rot2_fuse(JOB,Q1,Q2,INFO)
     
     ! check Q2
     call d_1Darray_check(2,Q2,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"Q2 is invalid",INFO,-3)
     if (INFO.NE.0) then 
+      call u_infocode_check(__FILE__,__LINE__,"Q2 is invalid",INFO,-3)
       return 
     end if 
     nrm = sqrt(Q2(1)**2 + Q2(2)**2)
