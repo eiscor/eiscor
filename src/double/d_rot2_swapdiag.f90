@@ -73,8 +73,8 @@ subroutine d_rot2_swapdiag(JOB,D,B,INFO)
       
     ! check B
     call d_1Darray_check(2,B,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
     if (INFO.NE.0) then 
+      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return 
     end if 
     nrm = sqrt(B(1)**2 + B(2)**2)
