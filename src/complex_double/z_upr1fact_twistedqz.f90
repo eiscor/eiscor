@@ -77,8 +77,12 @@
 !  INFO           INTEGER
 !                   INFO = 1 implies no convergence 
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies ALG, N, Q, D or R is invalid
+!                   INFO = -1 implies ALG is invalid
 !                   INFO = -2 implies COMPZ is invalid
+!                   INFO = -3 implies N is invalid
+!                   INFO = -6 implies Q is invalid
+!                   INFO = -7 implies D is invalid
+!                   INFO = -8 implies R is invalid
 !                   INFO = -9 implies V is invalid
 !                   INFO = -10 implies W is invalid
 !
@@ -112,6 +116,46 @@ subroutine z_upr1fact_twistedqz(ALG,COMPZ,N,P,FUN,Q,D,R,V,W,ITS,INFO)
   
   ! check factorization
   call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+  if (INFO.EQ.-1) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"ALG is invalid",INFO,INFO)
+    end if
+    INFO = -1
+    return
+  end if
+  if (INFO.EQ.-2) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+    end if
+    INFO = -3
+    return
+  end if
+  if (INFO.EQ.-3) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
+    end if
+    INFO = -6
+    return
+  end if
+  if (INFO.EQ.-4) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
+    end if
+    INFO = -7
+    return
+  end if
+  if (INFO.EQ.-5) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,INFO)
+    end if
+    INFO = -8
+    return
+  end if
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then

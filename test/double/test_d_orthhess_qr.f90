@@ -9,6 +9,8 @@
 !
 ! 1) Compute roots of unity and checks the residuals for various powers of 2
 !
+! In DEBUG additional test with wrong COMPZ, N, H and Z are run.
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_orthhess_qr
 
@@ -20,7 +22,7 @@ program test_d_orthhess_qr
   integer :: ii, INFO, jj, M
   real(8) :: WORK(4*N), Hold(N,N), H(N,N), Z(N,N)
   integer :: ITS(N-1)
-  real(8) :: tol
+  real(8) :: tol, swap, nul=0d0
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -47,6 +49,7 @@ program test_d_orthhess_qr
     Hold = H
     
     ! call dohfqr
+    print*, M
     call d_orthhess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
     
     ! check INFO
@@ -67,6 +70,45 @@ program test_d_orthhess_qr
  
   end do
   
+  if (DEBUG) then
+
+    call d_orthhess_qr('Q',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)   
+    ! check INFO
+    if (INFO.NE.-1) then
+      call u_test_failed(__LINE__)
+    end if
+
+    call d_orthhess_qr('I',1,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)   
+    ! check INFO
+    if (INFO.NE.-2) then
+      call u_test_failed(__LINE__)
+    end if
+
+    swap = H(1,1)
+    H(1,1) = 1d0/nul
+    call d_orthhess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)   
+    ! check INFO
+    if (INFO.NE.-3) then
+      call u_test_failed(__LINE__)
+    end if
+
+    H(1,1) = swap
+    Z(1,1) = 1d0/nul
+    call d_orthhess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)   
+    ! check INFO
+    if (INFO.NE.0) then
+      call u_test_failed(__LINE__)
+    end if
+
+    Z(1,1) = 1d0/nul
+    call d_orthhess_qr('V',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)   
+    ! check INFO
+    if (INFO.NE.-4) then
+      call u_test_failed(__LINE__)
+    end if
+     
+  end if
+
   ! stop timer
   call system_clock(count=c_stop)
   

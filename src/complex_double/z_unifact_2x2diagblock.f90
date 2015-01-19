@@ -36,6 +36,8 @@
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies N is invalid
 !                   INFO = -2 implies K is invalid
+!                   INFO = -3 implies Q is invalid
+!                   INFO = -4 implies D is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_unifact_2x2diagblock(N,K,Q,D,H,INFO)
@@ -70,6 +72,23 @@ subroutine z_unifact_2x2diagblock(N,K,Q,D,H,INFO)
       call u_infocode_check(__FILE__,__LINE__,"K must 1 <= K <= N-1",INFO,INFO)
       return
     end if 
+
+    ! check Q and D
+    call z_unifact_factorcheck(N,Q,D,INFO)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      INFO = -4
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
+      return
+    end if
 
   end if
   

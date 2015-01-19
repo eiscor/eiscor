@@ -17,7 +17,7 @@
 ! OUTPUT VARIABLES:
 !
 !  INFO            INTEGER
-!                    INFO equal to 1 implies NUM is a NAN.
+!                    INFO = -1 implies NUM is a NAN.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_scalar_nancheck(NUM,INFO)
@@ -33,7 +33,7 @@ subroutine z_scalar_nancheck(NUM,INFO)
   
   ! check self equality
   if (NUM.NE.NUM) then
-    INFO = 1
+    INFO = -1
   end if
 
 end subroutine z_scalar_nancheck

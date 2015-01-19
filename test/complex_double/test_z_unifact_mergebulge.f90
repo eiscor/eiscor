@@ -24,6 +24,8 @@
 ! C) STR out of range
 ! D) STP out of range
 ! E) B contrains inf or nan
+! F) Q invalid
+! G) D invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unifact_mergebulge
@@ -278,6 +280,22 @@ program test_z_unifact_mergebulge
      call z_unifact_mergebulge('T',N,STR,STP,Q,D,B,INFO)
      ! check info
      if (INFO.NE.-7) then
+        call u_test_failed(__LINE__)
+     end if
+
+     B(1) = 0d0
+     Q(1) = 0d0/nul
+     call z_unifact_mergebulge('T',N,STR,STP,Q,D,B,INFO)
+     ! check info
+     if (INFO.NE.-5) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     Q(1) = 0.8d0
+     D(1) = 0d0/nul
+     call z_unifact_mergebulge('T',N,STR,STP,Q,D,B,INFO)
+     ! check info
+     if (INFO.NE.-6) then
         call u_test_failed(__LINE__)
      end if
 

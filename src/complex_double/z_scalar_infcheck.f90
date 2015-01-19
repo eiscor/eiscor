@@ -17,7 +17,7 @@
 ! OUTPUT VARIABLES:
 !
 !  INFO            INTEGER
-!                    INFO equal to 1 implies NUM is an INF.
+!                    INFO = -1 implies NUM is an INF.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_scalar_infcheck(NUM,INFO)
@@ -37,7 +37,7 @@ subroutine z_scalar_infcheck(NUM,INFO)
   
   ! check magnitude of real and imaginary parts
   if ((abs(dble(NUM))>infdef).OR.(abs(aimag(NUM))>infdef)) then
-    INFO = 1
+    INFO = -1
   end if
 
 end subroutine z_scalar_infcheck

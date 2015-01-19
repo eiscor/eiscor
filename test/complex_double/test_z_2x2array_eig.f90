@@ -14,6 +14,8 @@
 !
 ! 3) H = [1+i, 1; i, 3]
 !
+! In DEBUG mode additionally checks with incorrect input are run. 
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_2x2array_eig
 
@@ -26,6 +28,7 @@ program test_z_2x2array_eig
   integer :: info
   complex(8) :: H(2,2)
   complex(8) :: E(2), Z(2,2)
+  real(8) :: nul = 0d0
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -148,7 +151,7 @@ program test_z_2x2array_eig
   H(2,1) = cmplx(0d0,1d0,kind=8)
   H(2,2) = cmplx(3d0,0d0,kind=8)
 
-   call z_2x2array_eig(H,E,Z,INFO)
+  call z_2x2array_eig(H,E,Z,INFO)
   ! check info
   if (INFO.NE.0) then
      call u_test_failed(__LINE__)
@@ -177,6 +180,23 @@ program test_z_2x2array_eig
   end if
   if (abs(abs(Z(2,2))-cmplx(sqrt(2d0)/2d0,0d0,kind=8))>tol) then
      call u_test_failed(__LINE__)
+  end if
+
+  if (DEBUG) then
+     H(1,1) = cmplx(1d0/nul,1d0)
+     call z_2x2array_eig(H,E,Z,INFO)
+     ! check info
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     H(1,1) = cmplx(1d0,-1d0/nul)
+     call z_2x2array_eig(H,E,Z,INFO)
+     ! check info
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+     
   end if
 
   ! stop timer

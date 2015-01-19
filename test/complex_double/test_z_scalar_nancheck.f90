@@ -159,7 +159,7 @@ program test_z_scalar_nancheck
   num = cmplx(a,b,kind=8)
   call z_scalar_nancheck(NUM,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -173,7 +173,7 @@ program test_z_scalar_nancheck
   num = cmplx(a,b,kind=8)
   call z_scalar_nancheck(NUM,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -187,7 +187,7 @@ program test_z_scalar_nancheck
   num = cmplx(a,b,kind=8)
   call z_scalar_nancheck(NUM,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 
@@ -201,7 +201,7 @@ program test_z_scalar_nancheck
   num = cmplx(a,b,kind=8)
   call z_scalar_nancheck(NUM,INFO)
   ! check info
-  if (info.NE.1) then
+  if (info.NE.-1) then
      call u_test_failed(__LINE__)
   end if
 

@@ -42,6 +42,10 @@ subroutine d_rot2_swapdiag(JOB,D,B,INFO)
   integer, intent(inout) :: INFO
   real(8), intent(inout) :: D(4), B(2)
   
+  ! compute variables
+  real(8), parameter :: tol = epsilon(1d0)
+  real(8) :: nrm
+
   ! initialize INFO
   INFO = 0
   
@@ -51,28 +55,34 @@ subroutine d_rot2_swapdiag(JOB,D,B,INFO)
     ! check JOB
     if ((JOB.NE.'L').AND.(JOB.NE.'R')) then
       INFO = -1
-      call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,-1)
+      call u_infocode_check(__FILE__,__LINE__,"JOB is invalid",INFO,INFO)
       return
     end if
   
     ! check D
     if ((abs(D(1)).NE.1d0).OR.(abs(D(2)).NE.0d0)) then
       INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,INFo)
       return
     end if
     if ((abs(D(3)).NE.1d0).OR.(abs(D(4)).NE.0d0)) then
       INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,-2)
+      call u_infocode_check(__FILE__,__LINE__,"D must be diagonal with entries 1 or -1",INFO,INFO)
       return
     end if
       
     ! check B
     call d_1Darray_check(2,B,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
     if (INFO.NE.0) then 
+      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-3)
       return 
     end if 
+    nrm = sqrt(B(1)**2 + B(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"B is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
   
   end if
   

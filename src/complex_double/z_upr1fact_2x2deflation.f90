@@ -63,11 +63,11 @@
 !                   INFO = -2 implies COMPZ is invalid
 !                   INFO = -3 implies N is invalid
 !                   INFO = -4 implies K is invalid
-!                   INFO = -5 implies Q is invalid
-!                   INFO = -6 implies D is invalid
-!                   INFO = -7 implies R is invalid
-!                   INFO = -8 implies V is invalid
-!                   INFO = -9 implies W is invalid
+!                   INFO = -6 implies Q is invalid
+!                   INFO = -7 implies D is invalid
+!                   INFO = -8 implies R is invalid
+!                   INFO = -9 implies V is invalid
+!                   INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
@@ -96,23 +96,28 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     ! check factorization
     call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
     if (INFO.EQ.-1) then
-      call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
+      INFO = -1
+      call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,INFO)
       return
     end if
     if (INFO.EQ.-2) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-3)
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
       return
     end if
     if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
+      INFO = -6
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
       return
     end if
     if (INFO.EQ.-4) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+      INFO = -7
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
       return
     end if
     if (INFO.EQ.-5) then
-      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,-7)
+      INFO = -8
+      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,INFO)
       return
     end if
     
@@ -134,7 +139,8 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     if (COMPZ.EQ.'V') then
       call z_2Darray_check(N,N,V,INFO)
       if (INFO.NE.0) then
-        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,-8)
+        INFO = -9
+        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,INFO)
         return
       end if
     end if   
@@ -143,7 +149,8 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D,R,V,W,INFO)
     if ((ALG.EQ.'QZ').AND.(COMPZ.EQ.'V')) then
       call z_2Darray_check(N,N,W,INFO)
       if (INFO.NE.0) then
-        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,-9)
+        INFO = -10
+        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,INFO)
       end if
     end if
     

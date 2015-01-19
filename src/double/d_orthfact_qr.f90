@@ -39,11 +39,14 @@
 !                    Contains the number of iterations per deflation
 !
 !  INFO            INTEGER
+!                    INFO >= 2 implies failure in one of the subroutines
 !                    INFO = 1 implies failure to converge 
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies COMPZ is invalid
-!                    INFO = -2 implies N, Q, or D is invalid
-!                    INFO = -3 implies Z is invalid
+!                    INFO = -2 implies N is invalid
+!                    INFO = -3 implies Q is invalid
+!                    INFO = -4 implies D is invalid
+!                    INFO = -5 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
@@ -85,27 +88,35 @@ subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
     call u_infocode_check(__FILE__,__LINE__,"Invalid factorization",INFO,INFO)
   end if
   
-  if (INFO.NE.0) then 
+  if (INFO.EQ.-1) then 
     INFO = -2
     return 
   end if 
+  if (INFO.EQ.-2) then 
+    INFO = -3
+    return 
+  end if 
+  if (INFO.EQ.-3) then 
+    INFO = -4
+    return 
+  end if 
   
-    ! check Z
-    if (COMPZ.EQ.'V') then
-    
-      call d_2Darray_check(N,N,Z,INFO)
+  ! check Z
+  if (COMPZ.EQ.'V') then
+     
+    call d_2Darray_check(N,N,Z,INFO)
+     
+    ! print error in debug mode
+    if (DEBUG) then
+       call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
+    end if
       
-      ! print error in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
-      end if
+    if (INFO.NE.0) then 
+       INFO = -5
+       return 
+    end if
       
-      if (INFO.NE.0) then 
-        INFO = -3
-        return 
-      end if 
-      
-    end if 
+  end if
   
   ! initialize storage
   ITS = 0
@@ -137,7 +148,7 @@ subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
       
     ! check INFO in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_deflationcheck failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthfact_deflationcheck failed",INFO,2)
       if (INFO.NE.0) then 
         return 
       end if 
@@ -159,7 +170,7 @@ subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
         
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_orthfact_2x2diagblock failed",INFO,3)
         if (INFO.NE.0) then 
           return 
         end if 
@@ -182,7 +193,7 @@ subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
           
         ! check INFO in debug mode
         if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"d_2x2array_eig failed",INFO,INFO)
+          call u_infocode_check(__FILE__,__LINE__,"d_2x2array_eig failed",INFO,4)
           if (INFO.NE.0) then 
             return 
           end if 
@@ -224,7 +235,7 @@ subroutine d_orthfact_qr(COMPZ,N,Q,D,Z,ITS,INFO)
 
       ! check INFO in debug mode
       if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_orthfact_doublestep failed",INFO,INFO)
+        call u_infocode_check(__FILE__,__LINE__,"d_orthfact_doublestep failed",INFO,5)
         if (INFO.NE.0) then 
           return 
         end if 

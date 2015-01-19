@@ -23,6 +23,8 @@
 ! C) STP = 0, STP = 4
 ! D) ZERO = -1, ZERO = 2
 ! E) ITCNT = -1
+! F) Q invalid
+! G) D invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unifact_deflationcheck
@@ -34,8 +36,8 @@ program test_z_unifact_deflationcheck
   
   ! compute variables
   integer :: info, ITS(3), ITCNT, STR, STP, ZERO
-  real(8) :: Q(9) ! N = 4
-  real(8) :: D(8)
+  real(8) :: Q(9), Qs(9) ! N = 4
+  real(8) :: D(8), nul = 0d0
   complex(8) :: H(2,2)
   
   ! timing variables
@@ -460,6 +462,29 @@ program test_z_unifact_deflationcheck
      call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
      ! check info
      if (info.NE.-7) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check F)
+     ITCNT = 1
+     Qs = Q
+     Q(1) = 1d0/nul
+     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
+     ! check info
+     if (info.NE.-5) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check G)
+     Q = Qs
+     D(1) = 1d0/nul
+     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
+     ! check info
+     if (info.NE.-6) then
         print*, info
         call u_test_failed(__LINE__)
      end if

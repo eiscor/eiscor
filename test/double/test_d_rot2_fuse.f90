@@ -216,7 +216,33 @@ program test_d_rot2_fuse
   if (abs(A(2)+1d0)>tol) then
      call u_test_failed(__LINE__)
   end if
-  
+
+  if (DEBUG) then
+     ! wrong JOB
+     call d_rot2_fuse('Q',C,D,INFO)
+     ! check info
+     if (info.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     !  C not orthogonal
+     C(1) = 1d0
+     call d_rot2_fuse('L',C,D,INFO)
+     ! check info
+     if (info.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     ! D not orthogonal
+     C = A
+     D(1) = 1d0
+     call d_rot2_fuse('L',C,D,INFO)
+     ! check info
+     if (info.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+     
+  end if
   
   ! stop timer
   call system_clock(count=c_stop)

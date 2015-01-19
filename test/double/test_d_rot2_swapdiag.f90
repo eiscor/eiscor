@@ -427,17 +427,7 @@ program test_d_rot2_swapdiag
      if (info.NE.-2) then
         call u_test_failed(__LINE__)
      end if
-
-     D(1) = 1d0
-     D(2) = -1d0
-     D(3) = 1d0
-     D(4) = 0d0
-     call d_rot2_swapdiag(JOB,D,B,INFO)
-     ! check info
-     if (info.NE.-2) then
-        call u_test_failed(__LINE__)
-     end if
-     
+    
      D(1) = 1d0
      D(2) = 0d0
      D(3) = 2d-1
@@ -501,6 +491,14 @@ program test_d_rot2_swapdiag
      c = 0d0
      B(1) = 2d0
      B(2) = c/c
+     call d_rot2_swapdiag(JOB,D,B,INFO)
+     ! check info
+     if (info.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+
+     B(1) = 1.2d0
+     B(2) = 0d0
      call d_rot2_swapdiag(JOB,D,B,INFO)
      ! check info
      if (info.NE.-3) then

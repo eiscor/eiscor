@@ -19,6 +19,8 @@
 !    reproduce Q and D, N = 17
 !
 !
+! In DEBUG additional test with N to small and H containing INF are done.
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_orthhess_factor
 
@@ -177,6 +179,27 @@ program test_d_orthhess_factor
         end if
      end do
   end do
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! additional tests with wrong inputs
+  if (DEBUG) then
+     call d_orthhess_factor(1,H,Q,D,INFO)
+     
+     ! check info
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     nrm = 0d0
+     H(1,1) = 1d0/nrm
+     call d_orthhess_factor(N,H,Q,D,INFO)
+     
+     ! check info
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+     
+  end if
 
   deallocate(H,H2,Ho,A,B)  
 

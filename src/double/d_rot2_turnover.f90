@@ -20,6 +20,7 @@
 !
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
+!                    INFO = 1 implies failure in d_rot2_vec2gen
 !                    INFO = -1 implies Q1 is invalid
 !                    INFO = -2 implies Q2 is invalid
 !                    INFO = -3 implies Q3 is invalid
@@ -56,6 +57,12 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
     if (INFO.NE.0) then 
       return 
     end if 
+    nrm = sqrt(Q1(1)**2 + Q1(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -1      
+      call u_infocode_check(__FILE__,__LINE__,"Q1 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
     
     ! check Q2
     call d_1Darray_check(2,Q2,INFO)
@@ -63,6 +70,12 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
     if (INFO.NE.0) then 
       return 
     end if   
+    nrm = sqrt(Q2(1)**2 + Q2(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"Q2 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
     
     ! check Q3
     call d_1Darray_check(2,Q3,INFO)
@@ -70,6 +83,12 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
     if (INFO.NE.0) then 
       return 
     end if  
+    nrm = sqrt(Q3(1)**2 + Q3(2)**2)
+    if (abs(nrm-1d0) > tol) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"Q3 is not orthogonal to working precision",INFO,INFO)
+      return
+    end if
   
   end if
 
@@ -90,7 +109,7 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -105,7 +124,7 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
     if (INFO.NE.0) then 
       return 
     end if 
@@ -120,7 +139,7 @@ subroutine d_rot2_turnover(Q1,Q2,Q3,INFO)
 
   ! check INFO in debug mode
   if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
+    call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
     if (INFO.NE.0) then 
       return 
     end if 

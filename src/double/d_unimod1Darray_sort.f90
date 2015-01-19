@@ -110,11 +110,11 @@ subroutine d_unimod1Darray_sort(JOB,N,E,Z,INFO)
   if (JOB.EQ.'V') then
     call d_2Darray_check(N,N,Z,INFO)
     if (INFO.NE.0) then
+      INFO = -4   
       ! print error in debug mode
       if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
       end if
-      INFO = -4   
       return 
     end if
   end if 

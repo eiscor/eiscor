@@ -7,6 +7,9 @@ subroutine u_test_passed(TIME)
   real(8), intent(in) :: TIME
 
   ! print failure
+  if (VERBOSE) then
+     write(STDERR,*) ''
+  end if
   write(STDERR,'(a,F10.5,a)') 'PASSED in ',TIME,' secs'
   
 end subroutine u_test_passed

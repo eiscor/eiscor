@@ -18,13 +18,13 @@
 !  H               COMPLEX(8) array of dimension (N,N)
 !                    unitary matrix to be reduced
 !
+! OUTPUT VARIABLES:
+!
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for Givens' rotations
 !
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
-!
-! OUTPUT VARIABLES:
 !
 !  INFO           INTEGER
 !                   INFO = 0 implies successful computation

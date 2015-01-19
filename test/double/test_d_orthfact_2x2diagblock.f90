@@ -16,6 +16,8 @@
 ! A) N = 1
 ! B) K = 0
 ! C) K = N
+! D) Q not orthogonal
+! E) D not orthogonal
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_orthfact_2x2diagblock
@@ -27,9 +29,9 @@ program test_d_orthfact_2x2diagblock
   
   ! compute variables
   integer :: info
-  real(8) :: Q(6) ! N = 4
+  real(8) :: Q(6), Qs(6) ! N = 4
   real(8) :: D(8)
-  real(8) :: H(2,2)
+  real(8) :: H(2,2), nul = 0d0
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -137,7 +139,7 @@ program test_d_orthfact_2x2diagblock
 
      !!!!!!!!!!!!!!!!!!!!
      ! check B)
-     ! N = 1
+     ! K = 0
      call d_orthfact_2x2diagblock(4,0,Q,D,H,INFO)
      ! check info
      if (info.NE.-2) then
@@ -151,6 +153,30 @@ program test_d_orthfact_2x2diagblock
      call d_orthfact_2x2diagblock(4,4,Q,D,H,INFO)
      ! check info
      if (info.NE.-2) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check D)
+     ! Q contains INF
+     Qs = Q
+     Q(1) = 2d0/nul
+     call d_orthfact_2x2diagblock(4,1,Q,D,H,INFO)
+     ! check info
+     if (info.NE.-3) then
+        print*, info
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     ! check E)
+     ! D contains INF
+     Q = Qs
+     D(1) = 2d0/nul
+     call d_orthfact_2x2diagblock(4,1,Q,D,H,INFO)
+     ! check info
+     if (info.NE.-4) then
         print*, info
         call u_test_failed(__LINE__)
      end if

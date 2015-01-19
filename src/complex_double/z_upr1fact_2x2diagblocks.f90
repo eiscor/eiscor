@@ -55,8 +55,13 @@
 !
 !  INFO           INTEGER
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies ALG, N, Q, D or R is invalid
-!                   INFO = -2 implies K is invalid
+!                   INFO = -1 implies JOB is invalid
+!                   INFO = -2 implies ALG is invalid
+!                   INFO = -3 implies N is invalid
+!                   INFO = -4 implies K is invalid
+!                   INFO = -6 implies Q is invalid
+!                   INFO = -7 implies D is invalid
+!                   INFO = -8 implies R is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_2x2diagblocks(JOB,ALG,N,K,P,Q,D,R,A,B,INFO)
@@ -82,8 +87,40 @@ subroutine z_upr1fact_2x2diagblocks(JOB,ALG,N,K,P,Q,D,R,A,B,INFO)
   ! check input in debug mode
   if (DEBUG) then
     
+     ! check ALG
+     if ((JOB.NE.'T').AND.(JOB.NE.'H')) then
+        INFO = -1
+        call u_infocode_check(__FILE__,__LINE__,"JOB must be 'T' or 'H'",INFO,INFO)
+        return
+     end if
+
     ! check factorization
     call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
+    if (INFO.EQ.-1) then
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"ALG is invalid",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      INFO = -3
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      INFO = -6
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-4) then
+      INFO = -7
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-5) then
+      INFO = -8
+      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,INFO)
+      return
+    end if
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"ALG, N, Q, D or R is invalid",INFO,INFO)
       INFO = -1
@@ -92,7 +129,7 @@ subroutine z_upr1fact_2x2diagblocks(JOB,ALG,N,K,P,Q,D,R,A,B,INFO)
     
     ! check K
     if ((K < 1).OR.(K > N-1)) then
-      INFO = -2
+      INFO = -4
       call u_infocode_check(__FILE__,__LINE__,"K must 1 <= K <= N-1",INFO,INFO)
       return
     end if 

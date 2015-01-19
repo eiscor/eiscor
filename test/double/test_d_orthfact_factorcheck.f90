@@ -134,7 +134,7 @@ program test_d_orthfact_factorcheck
    
 
   !!!!!!!!!!!!!!!!!!!!
-  ! check 2)
+  ! check 2) N too small
   Q = Qs
   D = Ds
   call d_orthfact_factorcheck(1,Q,D,INFO)

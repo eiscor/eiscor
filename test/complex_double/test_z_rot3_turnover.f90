@@ -19,11 +19,15 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! If DEBUG mode is activated a histogram of the accuracy of the turnover is 
+! If VERBOSE mode is activated a histogram of the accuracy of the turnover is 
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
 ! 
 ! A deviation of 0.2% is still acceptable.
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! In DEBUG mode additionally checks with incorrect input are run. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_rot3_turnover
@@ -119,7 +123,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,1)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -198,7 +202,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,2)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "One close to diagonal"
@@ -277,7 +281,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,3)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "two close to diagonal"
@@ -320,7 +324,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do 
   histo2(1:7,4)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "three close to diagonal"
@@ -399,7 +403,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,5)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "one close to anti-diagonal"
@@ -478,7 +482,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,6)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "two close to anti-diagonal"
@@ -521,7 +525,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,7)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "three close to anti-diagonal"
@@ -563,7 +567,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -586,7 +590,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -609,7 +613,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -632,7 +636,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -655,7 +659,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -678,7 +682,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -701,7 +705,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -724,7 +728,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -747,7 +751,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -770,7 +774,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -793,7 +797,7 @@ program test_z_rot3_turnover
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -817,7 +821,7 @@ program test_z_rot3_turnover
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,8)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "exact to (anti-)diagonal"
@@ -838,7 +842,7 @@ program test_z_rot3_turnover
      end if
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      ! print histogram
      write(*,*) ""
      write(*,*) "<1e-17",histo2(1,:)
@@ -865,7 +869,7 @@ program test_z_rot3_turnover
      ht = histot(7,jj)
      do ii=7,1,-1
         if (h2>ht*1.002) then
-           if (DEBUG) then
+           if (VERBOSE) then
               pass_all = .FALSE.
            else
               call u_test_failed(__LINE__)           
@@ -878,10 +882,68 @@ program test_z_rot3_turnover
      end do
   end do
  
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT. pass_all) then
         write(*,*) "At least one turnover test FAILED."
      end if
+  end if
+
+  if (DEBUG) then
+     rp = 2d0*pi*rp
+     call random_number(rm)
+     rm = 2d0*pi*rm
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call random_number(rp)
+     rp = 2d0*pi*rp
+     call random_number(rm)
+     rm = 2d0*pi*rm
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call random_number(rp)
+     rp = 2d0*pi*rp
+     call random_number(rm)
+     rm = 2d0*pi*rm
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+
+     !!!!!!!!!!!!!!!!!!!!
+     call z_rot3_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.0) then
+        call u_test_failed(__LINE__)
+     end if
+     
+     !!!!!!!!!!!!!!!!!!!!
+     Q1(1) = -10d0
+     call z_rot3_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     Q2(3) = -2d0
+     rp = 2d0*pi*rp
+     call random_number(rm)
+     rm = 2d0*pi*rm
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     !!!!!!!!!!!!!!!!!!!!
+     call random_number(rp)
+     rp = 2d0*pi*rp
+     call random_number(rm)
+     rm = 2d0*pi*rm
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     Q3(2) = 2d0
+     call z_rot3_turnover(Q1,Q2,Q3,INFO)
+     ! check INFO
+     if (INFO.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+
   end if
 
   ! stop timer

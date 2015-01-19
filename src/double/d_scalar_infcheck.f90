@@ -16,7 +16,7 @@
 ! OUTPUT VARIABLES:
 !
 !  INFO            INTEGER
-!                    INFO equal to 1 implies NUM is an INF.
+!                    INFO = -1 implies NUM is an INF.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_scalar_infcheck(NUM,INFO)
@@ -36,7 +36,7 @@ subroutine d_scalar_infcheck(NUM,INFO)
   
   ! check magnitude 
   if (abs(NUM)>infdef) then
-    INFO = 1
+    INFO = -1
   end if
 
 end subroutine d_scalar_infcheck

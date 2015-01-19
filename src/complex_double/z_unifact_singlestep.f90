@@ -51,6 +51,8 @@
 !                   INFO = -2 implies N is invalid
 !                   INFO = -3 implies STR is invalid
 !                   INFO = -4 implies STP is invalid
+!                   INFO = -5 implies Q is invalid
+!                   INFO = -6 implies D is invalid
 !                   INFO = -7 implies Z is invalid
 !                   INFO = -8 implies ITCNT is invalid
 !
@@ -107,6 +109,24 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
       return
     end if  
     
+
+    call z_unifact_factorcheck(N,Q,D,INFO)
+    if (INFO.EQ.-1) then
+      INFO = -2
+      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-2) then
+      INFO = -5
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
+      return
+    end if
+    if (INFO.EQ.-3) then
+      INFO = -6
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
+      return
+    end if   
+
     ! check Z
     if (COMPZ.EQ.'V') then
       call z_2Darray_check(N,N,Z,INFO)

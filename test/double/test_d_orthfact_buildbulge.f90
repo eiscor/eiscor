@@ -20,6 +20,8 @@
 !    D = diag([1, -1, -1, 1, 1])
 !    double shift 0.5 +- i*sqrt(3)/2
 !
+! In DEBUG mode additionally checks with incorrect input are run. 
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 
 ! Notes:
@@ -48,7 +50,7 @@ program test_d_orthfact_buildbulge
   real(8) :: Q(8), Qs(8) ! N = 5
   real(8) :: D(10), Ds(10)
   real(8) :: E(2), Es(2)
-  real(8) :: B1(2), B2(2)
+  real(8) :: B1(2), B2(2), nul = 0d0
 
   
   ! timing variables
@@ -131,6 +133,63 @@ program test_d_orthfact_buildbulge
   end if
   if (abs(B2(2)-sqrt(0.3996d0)/1.2d0)>tol) then
      call u_test_failed(__LINE__)
+  end if
+
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! incorrect input
+  if (DEBUG) then
+     ! wrong job
+     call d_orthfact_buildbulge('E',5,1,Q,D,E,B1,B2,INFO)    
+     ! check info
+     if (INFO.NE.-1) then
+        call u_test_failed(__LINE__)
+     end if
+
+     ! too small N
+     call d_orthfact_buildbulge('D',1,1,Q,D,E,B1,B2,INFO)    
+     ! check info
+     if (INFO.NE.-2) then
+        call u_test_failed(__LINE__)
+     end if
+
+     ! too small STR
+     call d_orthfact_buildbulge('D',5,0,Q,D,E,B1,B2,INFO)    
+     ! check info
+     if (INFO.NE.-3) then
+        call u_test_failed(__LINE__)
+     end if
+
+     ! wrong Q
+     Q = Qs
+     D = Ds
+     Q(1) = 10d0/nul
+     call d_orthfact_buildbulge('D',5,1,Q,D,E,B1,B2,INFO)    
+     ! check info
+     if (INFO.NE.-4) then
+        call u_test_failed(__LINE__)
+     end if
+
+     ! wrong D
+     Q = Qs
+     D = Ds
+     D(1) = 10d0/nul
+     call d_orthfact_buildbulge('D',5,1,Q,D,E,B1,B2,INFO)    
+     ! check info
+     if (INFO.NE.-5) then
+        call u_test_failed(__LINE__)
+     end if
+
+     ! wrong E
+     Q = Qs
+     D = Ds
+     call d_orthfact_buildbulge('S',5,1,Q,D,E,B1,B2,INFO)    
+     ! check info
+     if (INFO.NE.-6) then
+        call u_test_failed(__LINE__)
+     end if
+
+
   end if
 
   ! stop timer

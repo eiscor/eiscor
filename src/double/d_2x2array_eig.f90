@@ -51,7 +51,7 @@ subroutine d_2x2array_eig(H,E,Z,INFO)
   
     ! check H
     call d_2Darray_check(2,2,H,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-1)
+    call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,-1)
     if (INFO.NE.0) then
       return
     end if 
