@@ -52,6 +52,7 @@
 !                   if COMPZ = 'V' update W to store left schurvectors 
 !
 !  INFO           INTEGER
+!                   INFO = 1 implies subroutine failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies ALG is invalid
 !                   INFO = -2 implies COMPZ is invalid
@@ -168,11 +169,9 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
   call z_upr1fact_2x2diagblocks('H',ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
     
   ! check INFO in debug mode
-  if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
-    if (INFO.NE.0) then 
-      return 
-    end if 
+  if ((DEBUG).AND.(INFO.NE.0)) then
+    call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,1)
+    return 
   end if
       
   ! compute standard Schur decomposition
@@ -182,22 +181,18 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
     call z_2x2array_geneig('S',A,B,Wt,Vt,INFO)
       
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,1)
+      return 
     end if
     
     ! replace Vt with rotation G1
     call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)),aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm,INFO)
     
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,1)
+      return 
     end if
     
     ! pass G1 through triangular factor
@@ -205,11 +200,9 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
     call z_upr1fact_rot3throughtri('R2L',N,K,D1,C1,B1,G3,INFO)
     
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,1)
+      return 
     end if
     
     ! similarity transform of Q
@@ -270,33 +263,27 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
     call z_2x2array_geneig('G',A,B,Wt,Vt,INFO)
       
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig",INFO,1)
+      return 
     end if
     
     ! replace Vt with rotation G1
     call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)),aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm,INFO)
     
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,1)
+      return 
     end if
     
     ! replace Wt with rotation G2
     call z_rot3_vec4gen(dble(Wt(1,1)),aimag(Wt(1,1)),dble(Wt(2,1)),aimag(Wt(2,1)),G2(1),G2(2),G2(3),nrm,INFO)
     
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,INFO)
-      if (INFO.NE.0) then
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen",INFO,1)
+      return 
     end if
 
     ! pass G1 through right triangular factor
@@ -304,11 +291,9 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
     call z_upr1fact_rot3throughtri('R2L',N,K,D2,C2,B2,G3,INFO)
     
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,1)
+      return 
     end if
     
     ! equivalence transform
@@ -344,11 +329,9 @@ subroutine z_upr1fact_2x2deflation(ALG,COMPZ,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
     call z_upr1fact_rot3throughtri('R2L',N,K,D1,C1,B1,G3,INFO)
     
     ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    if ((DEBUG).AND.(INFO.NE.0)) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri",INFO,1)
+      return 
     end if
     
     ! equivalence transform of Q
