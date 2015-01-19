@@ -12,13 +12,24 @@
 !
 ! INPUT VARIABLES:
 !
+!  ALG             CHARACTER(2)
+!                    'QR': construct compressed QR factorization
+!                    'QZ': construct compressed QZ factorization
+!
+!  COMPZ           CHARACTER
+!                    'N': no schurvectors
+!                    'I': initialize schurvectors to I
+!                    'V': assume schur vectors already initialized
+!
 !  N               INTEGER
 !                    dimension of matrix
 !
-!  A1          COMPLEX(8) array of dimension (N)
-!                   coefficients of polynomial, assumed to be of degree
-!                   exactly N, have leading coefficient 1 and have no 
-!                   zero roots
+!  A1, A2          COMPLEX(8) array of dimension (N)
+!                   valid split of coefficients of polynomial, assumed 
+!                   to be of degree exactly N
+!
+!  P               LOGICAL array of dimension (N-2)
+!                    array of position flags for extended hessenberg matrix
 !
 !  Q               REAL(8) array of dimension (3*N)
 !                    array of generators for first sequence of Givens' 
@@ -39,7 +50,7 @@
 !                   an improper value, i.e. INFO=-2 => N is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_factorcompmat(ALG,COMPZ,N,A1,A2,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
+subroutine z_upr1fact_factorcompmat(ALG,COMPZ,N,A1,A2,P,Q,D1,C1,B1,D2,C2,B2,V,W,INFO)
 
   implicit none
   
@@ -48,6 +59,7 @@ subroutine z_upr1fact_factorcompmat(ALG,COMPZ,N,A1,A2,Q,D1,C1,B1,D2,C2,B2,V,W,IN
   character, intent(in) :: COMPZ
   integer, intent(in) :: N
   complex(8), intent(in) :: A1(N), A2(N)
+  logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*N), D1(2*(N+1)), D2(2*(N+1))
   real(8), intent(inout) :: C1(3*N), B1(3*N), C2(3*N), B2(3*N)
   complex(8), intent(inout) :: V(N,N), W(N,N)
@@ -93,7 +105,7 @@ subroutine z_upr1fact_factorcompmat(ALG,COMPZ,N,A1,A2,Q,D1,C1,B1,D2,C2,B2,V,W,IN
       V(:,N) = cmplx(phr,-phi,kind=8)*V(:,N)
     end if
     
-    ! set Q
+    ! set Q for upper hessenberg form
     do ii=1,(N-1)
       ind = 3*(ii-1)
       Q(ind+1) = 0d0
@@ -135,6 +147,7 @@ subroutine z_upr1fact_factorcompmat(ALG,COMPZ,N,A1,A2,Q,D1,C1,B1,D2,C2,B2,V,W,IN
     B1(ind+2) = 0d0
     B1(ind+3) = C1(ind+1)*(-1d0)**(N)
     
+    ! chase phase to the top
     do ii=2,N
       ind = 3*(N-ii+1)
       t2 = cmplx(C1(ind+1),-C1(ind+2),kind=8)*t1 + cmplx(C1(ind+3),0d0,kind=8)*t2
@@ -154,6 +167,8 @@ subroutine z_upr1fact_factorcompmat(ALG,COMPZ,N,A1,A2,Q,D1,C1,B1,D2,C2,B2,V,W,IN
       B1(ind+2) = -C1(ind+2)
       B1(ind+3) = -C1(ind+3)
     end do
+    
+    ! reorder factors according to P
   
   ! QZ factorization
   else
