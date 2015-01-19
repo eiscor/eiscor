@@ -48,7 +48,7 @@
 !                   the upper-triangular matrix
 !
 !  INFO           INTEGER
-!                   INFO = 1 implies successful computation
+!                   INFO = 1 implies subroutine failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies JOB is invalid
 !                   INFO = -2 implies ALG is invalid
