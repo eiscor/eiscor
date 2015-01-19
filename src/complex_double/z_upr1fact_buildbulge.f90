@@ -47,14 +47,19 @@
 !                    transformation
 !
 !  INFO            INTEGER
+!                   INFO = 1 implies subroutine failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies ALG is invalid
 !                   INFO = -2 implies N is invalid
 !                   INFO = -3 implies K is invalid
 !                   INFO = -5 implies Q is invalid
-!                   INFO = -6 implies D is invalid
-!                   INFO = -7 implies R is invalid
-!                   INFO = -8 implies SHFT is invalid
+!                   INFO = -6 implies D1 is invalid
+!                   INFO = -7 implies C1 is invalid
+!                   INFO = -8 implies B1 is invalid
+!                   INFO = -9 implies D2 is invalid
+!                   INFO = -10 implies C2 is invalid
+!                   INFO = -11 implies B2 is invalid
+!                   INFO = -12 implies SHFT is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G,INFO)
@@ -86,40 +91,51 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G,INFO)
     if (INFO.EQ.-1) then
       call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
       return
-    end if
-    if (INFO.EQ.-2) then
+    else if (INFO.EQ.-2) then
       call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-2)
       return
-    end if
-    if (INFO.EQ.-3) then
+    else if (INFO.EQ.-3) then
       call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-5)
       return
-    end if
-    if (INFO.EQ.-4) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-6)
+    else if (INFO.EQ.-4) then
+      call u_infocode_check(__FILE__,__LINE__,"D1 is invalid",INFO,-6)
       return
-    end if
-    if (INFO.EQ.-5) then
-      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,-7)
+    else if (INFO.EQ.-5) then
+      call u_infocode_check(__FILE__,__LINE__,"C1 is invalid",INFO,-7)
       return
-    end if
+    else if (INFO.EQ.-6) then
+      call u_infocode_check(__FILE__,__LINE__,"B1 is invalid",INFO,-8)
+      return
+    else if (INFO.EQ.-7) then
+      call u_infocode_check(__FILE__,__LINE__,"D2 is invalid",INFO,-9)
+      return
+    else if (INFO.EQ.-8) then
+      call u_infocode_check(__FILE__,__LINE__,"C2 is invalid",INFO,-10)
+      return
+    else if (INFO.EQ.-9) then
+      call u_infocode_check(__FILE__,__LINE__,"B2 is invalid",INFO,-11)
+      return
+    else if (INFO.NE.0) then
+      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_factorcheck failed",INFO,1)
+      return
+    end if  
     
     ! check K
     if ((K < 1).OR.(K >= N-1)) then
       INFO = -3
       call u_infocode_check(__FILE__,__LINE__,"K must 1 <= K < N-1",INFO,INFO)
       return
-    end if 
+    end if  
   
     ! check SHFT
     call z_scalar_nancheck(SHFT,INFO)
     if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-8)
+      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-12)
       return
     end if
     call z_scalar_infcheck(SHFT,INFO)
     if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-8)
+      call u_infocode_check(__FILE__,__LINE__,"SHFT is invalid",INFO,-12)
       return
     end if
   
@@ -129,11 +145,9 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G,INFO)
   call z_upr1fact_2x2diagblocks('T',ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
       
   ! check INFO in debug mode
-  if (DEBUG) then
+  if ((DEBUG).AND.(INFO.NE.0)) then
     call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,1)
-    if (INFO.NE.0) then 
-      return 
-    end if 
+    return 
   end if
   
   ! compute first columns
@@ -172,11 +186,9 @@ subroutine z_upr1fact_buildbulge(ALG,N,K,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G,INFO)
   call z_rot3_vec4gen(dble(vec1(1)),aimag(vec1(1)),dble(vec1(2)),aimag(vec1(2)),G(1),G(2),G(3),nrm,INFO)
       
   ! check INFO in debug mode
-  if (DEBUG) then
+  if ((DEBUG).AND.(INFO.NE.0)) then
     call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen failed",INFO,1)
-    if (INFO.NE.0) then 
-      return 
-    end if 
+    return 
   end if
 
 end subroutine z_upr1fact_buildbulge

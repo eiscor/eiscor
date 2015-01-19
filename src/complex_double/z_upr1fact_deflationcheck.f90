@@ -49,11 +49,11 @@
 !                    Contains the number of iterations per deflation
 !
 !  INFO            INTEGER
+!                   INFO = 1 implies subroutine failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies N is invalid
 !                   INFO = -2 implies STR is invalid
 !                   INFO = -3 implies STP is invalid
-!                   INFO = -4 implies ZERO is invalid
 !                   INFO = -6 implies Q is invalid
 !                   INFO = -7 implies D is invalid
 !                   INFO = -8 implies ITCNT is invalid
@@ -81,9 +81,18 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
   if (DEBUG) then
     
     ! check N
-    if (N < 2) then
-      INFO = -1
-      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
+    call z_unifact_factorcheck(N,Q,D,INFO)
+    if (INFO.EQ.-1) then
+      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-1)
+      return
+    else if (INFO.EQ.-2) then
+      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-6)
+      return
+    else if (INFO.EQ.-3) then
+      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
+      return
+    else if (INFO.NE.0) then
+      call u_infocode_check(__FILE__,__LINE__,"z_unifact_factorcheck failed",INFO,1)
       return
     end if
     
@@ -100,27 +109,6 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
       return
     end if  
-    
-    ! check ZERO
-    if ((ZERO >= STR).OR.(ZERO < 0)) then
-      INFO = -4
-      call u_infocode_check(__FILE__,__LINE__,"ZERO must 0 <= ZERO < STR",INFO,INFO)
-      return
-    end if  
-    
-    ! check Q
-    call d_1Darray_check(3*(N-1),Q,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-6)
-      return
-    end if
-
-    ! check D
-    call d_1Darray_check(2*(N+1),D,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-7)
-      return
-    end if
     
     ! check ITCNT
     if (ITCNT < 0) then
@@ -177,11 +165,9 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         call z_rot3_vec3gen(cr,ci,s,Q(3*up-2),Q(3*up-1),Q(3*up),nrm,INFO)
         
         ! check INFO in debug mode
-        if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
-          if (INFO.NE.0) then 
-            return 
-          end if 
+        if ((DEBUG).AND.(INFO.NE.0)) then
+          call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,1)
+          return 
         end if
         
       end do
@@ -197,12 +183,10 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       call d_rot2_vec2gen(dr,di,D(2*up-1),D(2*up),nrm,INFO)
 
       ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if    
+      if ((DEBUG).AND.(INFO.NE.0)) then
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
+        return 
+      end if   
     
       ! initialize downward index
       down = ind
@@ -230,12 +214,10 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
         call z_rot3_vec3gen(cr,ci,s,Q(3*down-2),Q(3*down-1),Q(3*down),nrm,INFO)
         
         ! check INFO in debug mode
-        if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,INFO)
-          if (INFO.NE.0) then 
-            return 
-          end if 
-        end if
+        if ((DEBUG).AND.(INFO.NE.0)) then
+          call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec3gen failed",INFO,1)
+          return 
+        end if 
                     
       end do
       
@@ -253,12 +235,10 @@ subroutine z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
       call d_rot2_vec2gen(dr,di,D(2*down-1),D(2*down),nrm,INFO)
 
       ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if  
+      if ((DEBUG).AND.(INFO.NE.0)) then
+        call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,1)
+        return 
+      end if    
       
       ! update indices
       ZERO = STP+1-ii

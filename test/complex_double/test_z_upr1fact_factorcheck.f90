@@ -180,7 +180,7 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-4) then
+    if (INFO.NE.-7) then
       call u_test_failed(__LINE__)
     end if 
     
@@ -198,11 +198,11 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-4) then
+    if (INFO.NE.-7) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset D
+    ! reset D2
     D2(1) = 1d0
     
   ! check 9)
@@ -216,11 +216,11 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-4) then
+    if (INFO.NE.-7) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset D
+    ! reset D2
     D2(2) = 0d0
     
   ! check 10)
@@ -234,11 +234,11 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-5) then
+    if (INFO.NE.-8) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset R
+    ! reset C2
     C2(1) = 1d0
     
   ! check 11)
@@ -252,11 +252,11 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-5) then
+    if (INFO.NE.-8) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset R
+    ! reset C2
     C2(1) = 1d0
     
   ! check 12)
@@ -270,11 +270,11 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-5) then
+    if (INFO.NE.-8) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset R
+    ! reset C2
     C2(1) = 0d0
     
   ! check 13)
@@ -289,11 +289,11 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-5) then
+    if (INFO.NE.-9) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset R
+    ! reset B2
     B2(1) = 0d0
     B2(3) = 1d0
   
@@ -309,11 +309,11 @@ program test_z_upr1fact_factorcheck
     call z_upr1fact_factorcheck(ALG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
     
     ! check INFO
-    if (INFO.NE.-5) then
+    if (INFO.NE.-8) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset R
+    ! reset C2
     C2(1) = 0d0
     C2(3) = 1d0
   
