@@ -1,17 +1,24 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! d_rot2_vec2gen
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the generator for A Givens rotation represented
-! by 2 real numbers: A strictly real cosine and A scrictly real sine. 
-! The first column is constructed to be parallel with the real vector 
-! [A,B]^T. The (2->2) refers to the 2 double inputs and 2 double outputs 
-! (excluding the norm).
+! This routine computes the generator for a Givens rotation represented by 2
+! real numbers: A strictly real cosine and a scrictly real sine.  The first
+! column is constructed to be parallel with the real vector [A,B]^T. 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! The rot2 refers to two double outputs and the vec2 to two double inputs;
+! excluding the norm.
+! 
+! This routine serves the purpose of eiscor. The routine is fast and accurate
+! enough. However, the routine is not robust against under- and
+! overflow. Further, the routine does not compute continous rotations. For an
+! algorithm with these properties, see "On computing Givens rotations reliably
+! and efficiently" by D. Bindel, J. Demmel, W. Kahan, and O. Marques.
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
@@ -34,7 +41,7 @@
 !  NRM             REAL(8)
 !                    on exit contains the norm of the vector [A,B]^T
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 
 ! EXCEPTIONAL CASES
 !
@@ -65,9 +72,7 @@
 !   NAN   |   0d0   |   NAN   |   NAN   |   NAN
 !   0d0   |   NAN   |   NAN   |   NAN   |   NAN
 !
-!
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_rot2_vec2gen(A,B,C,S,NRM)
 
   implicit none
