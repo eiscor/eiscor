@@ -55,7 +55,7 @@ program test_z_rot3_vec3gen
   implicit none
 
   ! parameter
-  real(8), parameter :: tol = 1d0*epsilon(1d0) ! accuracy (tolerance)
+  real(8), parameter :: tol = 1d0*EISCOR_DBL_EPS ! accuracy (tolerance)
   real(8), parameter :: alpha = 1d-18 ! small perturbations
 
   ! compute variables

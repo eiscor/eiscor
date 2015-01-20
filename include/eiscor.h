@@ -19,3 +19,10 @@
 #define VERBOSE (.FALSE.)
 #endif 
 
+#ifdef EISCOR_DBL_EPS 
+#undef EISCOR_DBL_EPS
+#define EISCOR_DBL_EPS (epsilon(1d0))
+#else 
+#define EISCOR_DBL_EPS (epsilon(1d0))
+#endif
+
