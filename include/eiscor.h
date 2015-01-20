@@ -26,3 +26,10 @@
 #define EISCOR_DBL_EPS (epsilon(1d0))
 #endif
 
+#ifdef EISCOR_DBL_INF 
+#undef EISCOR_DBL_INF
+#define EISCOR_DBL_INF (huge(1d0))
+#else 
+#define EISCOR_DBL_INF (huge(1d0))
+#endif
+

@@ -14,12 +14,16 @@
 ! If any part of the input vector [AR+iAI,B]^T contains a NAN then
 ! CR, CI, S and NRM are all set to NAN.
 !
-! If AR, AI or B = +/-INF then the corresponding AR, AI or B are first 
+! If one of AR, AI or B = +/-INF then the corresponding AR, AI or B is first 
 ! set to +/-1 and the remaining terms are set to 0. Then the CR, CI 
 ! and S are computed from the new vector containing +/-1 and 0. In 
 ! this case NRM is always set to INF.
 !
+! If more than one of AR, AI or B = +/- INF then CR = CI = S = NAN and NRM = INF
+!
 ! If AR = AI = B = 0 then CR = 1, CI = S = 0 and NRM = 0.
+!
+!
 !
 ! Examples:
 !
