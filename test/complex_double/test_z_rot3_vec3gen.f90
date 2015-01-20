@@ -865,7 +865,7 @@ program test_z_rot3_vec3gen
   
   ! set variables
   c = EISCOR_DBL_INF
-  c = c*10d0
+  c = -c*10d0
   a = 1d0
   b = 1d0
 
@@ -909,13 +909,13 @@ program test_z_rot3_vec3gen
      print*, ""
   end if
    
-  if (Q(1).NE.1d0/sqrt(3d0)) then
+  if (Q(1).EQ.Q(1)) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(2).NE.1d0/sqrt(2d0)) then
+  if (Q(2).EQ.Q(2)) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(3).NE.0d0) then
+  if (Q(3).EQ.Q(3)) then
     call u_test_failed(__LINE__)
   end if
   if (nrm <= EISCOR_DBL_INF) then

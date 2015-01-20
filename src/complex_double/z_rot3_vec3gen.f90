@@ -23,7 +23,31 @@
 !
 ! If AR = AI = B = 0 then CR = 1, CI = S = 0 and NRM = 0.
 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! 
+! EXCEPTIONAL CASES
 !
+!    AR   |    AI   |    B    |    CR   |    CI   |    S    |   NRM 
+! ------- | ------- | ------- | ------- | ------- | ------- | -------
+! +-INF   |   XdX   |   XdX   | +-1d0   |   0d0   |   0d0   |   INF
+!   XdX   | +-INF   |   XdX   |   0d0   | +-1d0   |   0d0   |   INF
+!   XdX   |   XdX   | +-INF   |   0d0   |   0d0   | +-1d0   |   INF
+! +-INF   | +-INF   |   XdX   |   NAN   |   NAN   |   NAN   |   INF
+! +-INF   |   XdX   | +-INF   |   NAN   |   NAN   |   NAN   |   INF
+!   XdX   | +-INF   | +-INF   |   NAN   |   NAN   |   NAN   |   INF
+! +-INF   | +-INF   | +-INF   |   NAN   |   NAN   |   NAN   |   INF
+! ------- | ------- | ------- | ------- | ------- | ------- | -------
+!   NAN   |   XdX   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN
+!   XdX   |   NAN   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN
+!   XdX   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
+!   NAN   |   NAN   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN
+!   XdX   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
+!   NAN   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
+!   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
+! ------- | ------- | ------- | ------- | ------- | ------- | -------
+!   0d0   |   0d0   |   0d0   |   1d0   |   0d0   |   0d0   |   0d0
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! Examples:
 !
@@ -32,8 +56,7 @@
 !   CR = AR/NRM, CI = AI/NRM, S = B/NRM.
 !
 ! Case with INFs:
-!   AR = INF, AI = 3, B = -INF. First reset to AR = 1, AI = 0, B = -1
-!   then set CR = 1/sqrt(2), CI = 0, S = -1/sqrt(2) and NRM = INF.
+!   AR = INF, AI = 3, B = -INF. Set to CR = CI = S = NAN and NRM = INF.
 !
 ! Case with NANs:
 !   AR = NAN, AI = 1, B = 47.3.
@@ -81,6 +104,19 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
   nai = abs(AI)
   nb = abs(B)
   NRM = 1d0
+  
+  ! 2 or more INFs
+  if (((nar>EISCOR_DBL_INF).AND.((nai>EISCOR_DBL_INF).OR.(nb>EISCOR_DBL_INF))).OR.((nai>EISCOR_DBL_INF).AND.(nb>EISCOR_DBL_INF))) then
+  
+    NRM = max(nar,nai)
+    CR = 0d0
+    CR = CR/CR
+    CI = CR
+    S = CR
+    
+    return
+  
+  end if
   
   ! AR = AI = B = 0
   if(nar.EQ.0 .AND. nai.EQ.0 .AND. nb.EQ.0)then
