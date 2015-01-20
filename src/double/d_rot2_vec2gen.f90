@@ -34,50 +34,58 @@
 !  NRM             REAL(8)
 !                    on exit contains the norm of the vector [A,B]^T
 !
-!  INFO            INTEGER
-!                    INFO = 0 implies successful computation
-!                    INFO = -1 implies A is invalid
-!                    INFO = -2 implies B is invalid
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! 
+! EXCEPTIONAL CASES
+!
+!    A    |    B    |    C    |    S    |   NRM 
+! ------- | ------- | ------- | ------- | -------
+!   INF   |   0d0   |   1d0   |   0d0   |   INF
+!   INF   |   XdX   |   1d0   |   0d0   |   INF
+!   INF   |  -XdX   |   1d0   |   0d0   |   INF
+!  -INF   |   0d0   |  -1d0   |   0d0   |   INF
+!  -INF   |   XdX   |  -1d0   |   0d0   |   INF
+!  -INF   |  -XdX   |  -1d0   |   0d0   |   INF
+! ------- | ------- | ------- | ------- | -------
+!   0d0   |   INF   |   0d0   |   1d0   |   INF
+!   XdX   |   INF   |   0d0   |   1d0   |   INF
+!  -XdX   |   INF   |   0d0   |   1d0   |   INF
+!   0d0   |  -INF   |   0d0   |  -1d0   |   INF
+!   XdX   |  -INF   |   0d0   |  -1d0   |   INF
+!  -XdX   |  -INF   |   0d0   |  -1d0   |   INF
+! ------- | ------- | ------- | ------- | -------
+!   INF   |   INF   |   NAN   |   NAN   |   NAN
+!  -INF   |   INF   |   NAN   |   NAN   |   NAN
+!   INF   |  -INF   |   NAN   |   NAN   |   NAN
+!  -INF   |  -INF   |   NAN   |   NAN   |   NAN
+! ------- | ------- | ------- | ------- | -------
+!   NAN   | +-XdX   |   NAN   |   NAN   |   NAN
+! +-XdX   |   NAN   |   NAN   |   NAN   |   NAN
+!   NAN   |   NAN   |   NAN   |   NAN   |   NAN
+!   NAN   |   0d0   |   NAN   |   NAN   |   NAN
+!   0d0   |   NAN   |   NAN   |   NAN   |   NAN
+!
+!
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_rot2_vec2gen(A,B,C,S,NRM,INFO)
+subroutine d_rot2_vec2gen(A,B,C,S,NRM)
 
   implicit none
   
   ! input variables
-  integer, intent(inout) :: INFO
   real(8), intent(in) :: A,B
   real(8), intent(inout) :: C,S,NRM
   
   ! compute variables
   real(8), parameter :: tol = epsilon(1d0)
-
-  ! initialize INFO
-  INFO = 0
-
-  ! check input in debug mode
-  if (DEBUG) then   
-  
-    ! Check A
-    call d_1Darray_check(1,A,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
-    if (INFO.NE.0) then 
-      return 
-    end if   
-    
-    ! Check B
-    call d_1Darray_check(1,B,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
-    if (INFO.NE.0) then 
-      return 
-    end if 
-    
-  end if 
-  
+ 
   ! construct rotation
-  NRM = 1d0  
   if (B == 0) then
-     if (A<0) then 
+     if (A.NE.A) then
+        C = A
+        S = A
+        NRM = A
+     else if (A<0) then 
         C = -1d0
         S = 0d0
         NRM = -A
@@ -86,30 +94,56 @@ subroutine d_rot2_vec2gen(A,B,C,S,NRM,INFO)
         S = 0d0
         NRM = A
      endif
+  else if (A**2 + B**2 - 1 < 1d1*tol) then
+     C = A
+     S = B
+     NRM = 1d0
   else if (abs(A) >= abs(B)) then
      S = B/A
-     NRM = sqrt(1.d0 + S**2)
+
      if (A<0) then
-        C = -1.d0/NRM
-        S =  S*C
-        NRM = -A*NRM
+        NRM = -sqrt(1.d0 + S**2)
      else
-        C =  1.d0/NRM
-        S =  S*C
-        NRM =  A*NRM
+        NRM = sqrt(1.d0 + S**2)
      end if
+     C =  1.d0/NRM
+     S =  S*C
+     NRM =  A*NRM
+
+!!$     NRM = sqrt(1.d0 + S**2)
+!!$     if (A<0) then
+!!$        C = -1.d0/NRM
+!!$        S =  S*C
+!!$        NRM = -A*NRM
+!!$     else
+!!$        C =  1.d0/NRM
+!!$        S =  S*C
+!!$        NRM =  A*NRM
+!!$     end if
+
   else
      C = A/B;
-     NRM = sqrt(1.d0 + C**2)
+
      if (B<0) then
-        S = -1.d0/NRM
-        C =  C*S
-        NRM = -B*NRM
+        NRM = -sqrt(1.d0 + C**2)
      else
-        S =  1.d0/NRM
-        C =  C*S
-        NRM =  B*NRM
+        NRM = sqrt(1.d0 + C**2)
      end if
+     S =  1.d0/NRM
+     C =  C*S
+     NRM =  B*NRM
+
+!!$     NRM = sqrt(1.d0 + C**2)
+!!$     if (B<0) then
+!!$        S = -1.d0/NRM
+!!$        C =  C*S
+!!$        NRM = -B*NRM
+!!$     else
+!!$        S =  1.d0/NRM
+!!$        C =  C*S
+!!$        NRM =  B*NRM
+!!$     end if
+
   end if
            
 end subroutine d_rot2_vec2gen
