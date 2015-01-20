@@ -12,5 +12,10 @@
 #define STDERR (0)
 #endif 
 
-
+#ifdef VERBOSE 
+#undef VERBOSE
+#define VERBOSE (.TRUE.)
+#else 
+#define VERBOSE (.FALSE.)
+#endif 
 
