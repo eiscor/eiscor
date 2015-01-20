@@ -9,7 +9,7 @@ INSTALLDIR := $(HOME)
 
 # fortran compiler and flags
 FC := gfortran
-FFLAGS := -DVERBOSE
+FFLAGS := -O3 -std=f95
 
 # libs required by compiler
 LIBS := 

@@ -885,7 +885,7 @@ program test_z_rot3_vec3gen
   if (Q(2).NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(3).NE.1d0) then
+  if (Q(3).NE.-1d0) then
     call u_test_failed(__LINE__)
   end if
   if (nrm <= EISCOR_DBL_INF) then
