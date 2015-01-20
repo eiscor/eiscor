@@ -55,14 +55,14 @@ program test_z_rot3_vec3gen
   implicit none
 
   ! parameter
-  real(8) :: tol = 1d0*epsilon(1d0) ! accuracy (tolerance)
-  real(8) :: alpha = 1d-18 ! small perturbations
+  real(8), parameter :: tol = 1d0*EISCOR_DBL_EPS ! accuracy (tolerance)
+  real(8), parameter :: alpha = 1d-18 ! small perturbations
 
   ! compute variables
   real(8) :: rp,rm,nrm,pi = 3.141592653589793239d0
   real(8) :: a, b, c
   real(8) :: Q1(3)
-  integer :: info, ii
+  integer :: ii
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -82,12 +82,9 @@ program test_z_rot3_vec3gen
   b = 0d0
   c = 0d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
    
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (Q1(1).NE.1d0) then
     call u_test_failed(__LINE__)
@@ -102,7 +99,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, ""
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
@@ -116,12 +113,9 @@ program test_z_rot3_vec3gen
   b = 0d0
   c = alpha
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
@@ -136,7 +130,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -149,12 +143,9 @@ program test_z_rot3_vec3gen
   b = -alpha
   c = alpha
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
@@ -169,7 +160,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -183,12 +174,9 @@ program test_z_rot3_vec3gen
   b = tol
   c = -tol
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
@@ -203,7 +191,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -219,12 +207,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = 0d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
@@ -240,7 +225,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -253,12 +238,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = alpha
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
     
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
@@ -273,7 +255,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -286,12 +268,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = -tol
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
@@ -306,7 +285,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -322,12 +301,9 @@ program test_z_rot3_vec3gen
   b = 0d0
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
@@ -343,7 +319,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -356,12 +332,9 @@ program test_z_rot3_vec3gen
   b = alpha
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
     
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
@@ -376,7 +349,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -389,12 +362,9 @@ program test_z_rot3_vec3gen
   b = -tol
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
@@ -409,7 +379,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -425,12 +395,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1)-1d0/sqrt(3d0))>tol) then
     call u_test_failed(__LINE__)
@@ -446,7 +413,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -463,12 +430,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (Q1(1).NE.0d0) then
     call u_test_failed(__LINE__)
@@ -484,7 +448,7 @@ program test_z_rot3_vec3gen
   end if
 
   
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -497,12 +461,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
     
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -517,7 +478,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -530,12 +491,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -550,7 +508,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -566,7 +524,7 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = 0d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
    
   if (Q1(1).NE.0d0) then
     call u_test_failed(__LINE__)
@@ -581,7 +539,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -594,12 +552,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = 0d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -614,7 +569,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -627,12 +582,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = alpha
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -647,7 +599,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -661,12 +613,9 @@ program test_z_rot3_vec3gen
   b = 1d0
   c = -tol
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -681,7 +630,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -698,7 +647,7 @@ program test_z_rot3_vec3gen
   b = 0d0
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
    
   if (Q1(1).NE.0d0) then
     call u_test_failed(__LINE__)
@@ -713,7 +662,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -726,12 +675,9 @@ program test_z_rot3_vec3gen
   b = 0d0
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -746,7 +692,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -759,12 +705,9 @@ program test_z_rot3_vec3gen
   b = alpha
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -779,7 +722,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
@@ -793,12 +736,9 @@ program test_z_rot3_vec3gen
   b = -tol
   c = 1d0
 
-  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm,info)
+  call z_rot3_vec3gen(a,b,c,Q1(1),Q1(2),Q1(3),nrm)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
   if (abs(Q1(1))>tol) then
     call u_test_failed(__LINE__)
@@ -813,7 +753,7 @@ program test_z_rot3_vec3gen
     call u_test_failed(__LINE__)
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      print*, Q1, nrm  
      print*, a, nrm*Q1(1), a - nrm*Q1(1)
      print*, b, nrm*Q1(2), b - nrm*Q1(2)
