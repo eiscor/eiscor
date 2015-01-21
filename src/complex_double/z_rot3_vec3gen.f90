@@ -29,6 +29,8 @@
 !
 !    AR   |    AI   |    B    |    CR   |    CI   |    S    |   NRM 
 ! ------- | ------- | ------- | ------- | ------- | ------- | -------
+!   0d0   |   0d0   |   0d0   |   1d0   |   0d0   |   0d0   |   0d0
+! ------- | ------- | ------- | ------- | ------- | ------- | -------
 ! +-INF   |   XdX   |   XdX   | +-1d0   |   0d0   |   0d0   |   INF
 !   XdX   | +-INF   |   XdX   |   0d0   | +-1d0   |   0d0   |   INF
 !   XdX   |   XdX   | +-INF   |   0d0   |   0d0   | +-1d0   |   INF
@@ -44,8 +46,6 @@
 !   XdX   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
 !   NAN   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
 !   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
-! ------- | ------- | ------- | ------- | ------- | ------- | -------
-!   0d0   |   0d0   |   0d0   |   1d0   |   0d0   |   0d0   |   0d0
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -55,7 +55,10 @@
 !   AR = 1, AI = -2, B = 3. NRM = sqrt(AR^2 + AI^2 + B^2) = sqrt(14),
 !   CR = AR/NRM, CI = AI/NRM, S = B/NRM.
 !
-! Case with INFs:
+! Case with 1 INF:
+!   AR = 10, AI = 3, B = -INF. Set to CR = CI = 0, S = -1 and NRM = INF.
+!
+! Case with 2 INFs:
 !   AR = INF, AI = 3, B = -INF. Set to CR = CI = S = NAN and NRM = INF.
 !
 ! Case with NANs:
@@ -110,7 +113,7 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
   
     NRM = max(nar,nai)
     CR = 0d0
-    CR = CR/CR
+    CR = 0d0/CR
     CI = CR
     S = CR
     

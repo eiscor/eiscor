@@ -1,16 +1,13 @@
+#ifndef STDERR 
+#define STDERR (0)
+#endif 
+
 #ifdef DEBUG 
 #undef DEBUG
 #define DEBUG (.TRUE.)
 #else 
 #define DEBUG (.FALSE.)
 #endif   
-
-#ifdef STDERR 
-#undef STDERR
-#define STDERR (0)
-#else 
-#define STDERR (0)
-#endif 
 
 #ifdef VERBOSE 
 #undef VERBOSE
@@ -31,5 +28,12 @@
 #define EISCOR_DBL_INF (huge(1d0))
 #else 
 #define EISCOR_DBL_INF (huge(1d0))
+#endif
+
+#ifdef EISCOR_DBL_PI 
+#undef EISCOR_DBL_PI
+#define EISCOR_DBL_PI (3.141592653589793239d0)
+#else 
+#define EISCOR_DBL_PI (3.141592653589793239d0)
 #endif
 
