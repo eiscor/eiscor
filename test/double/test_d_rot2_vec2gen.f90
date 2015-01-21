@@ -24,6 +24,11 @@
 !
 !    and replace 0 by (+-) 1e-18 and (+-) eps 
 !
+! 4) [ 0 ] = [ 1 ] [ 0 ] 
+!    [ 0 ]   [ 0 ] 
+!
+! 5) Test exceptional cases with INF and NAN
+!
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_rot2_vec2gen
@@ -60,8 +65,8 @@ program test_d_rot2_vec2gen
   b = 0d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if   
   ! check results
   if (c.NE.1d0) then
@@ -79,8 +84,8 @@ program test_d_rot2_vec2gen
   b = -alpha
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if     
   ! check results
   if (abs(c-1d0).GT.EISCOR_DBL_EPS) then
@@ -98,8 +103,8 @@ program test_d_rot2_vec2gen
   b = EISCOR_DBL_EPS
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if     
   ! check results
   if (abs(c-1d0).GT.EISCOR_DBL_EPS) then
@@ -120,8 +125,8 @@ program test_d_rot2_vec2gen
   b = 1d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if   
   ! check results
   if (abs(c-sqrt(2d0)/2d0).GT.EISCOR_DBL_EPS) then
@@ -143,8 +148,8 @@ program test_d_rot2_vec2gen
   b = 1d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if   
   ! check results
   if (c.NE.0d0) then
@@ -162,8 +167,8 @@ program test_d_rot2_vec2gen
   b = 1d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if     
   ! check results
   if (abs(c).GT.EISCOR_DBL_EPS) then
@@ -181,8 +186,8 @@ program test_d_rot2_vec2gen
   b = 1d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if     
   ! check results
   if (abs(c).GT.EISCOR_DBL_EPS) then
@@ -200,8 +205,8 @@ program test_d_rot2_vec2gen
   b = 1d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if    
   ! check results
   if (abs(c).GT.EISCOR_DBL_EPS) then
@@ -215,6 +220,30 @@ program test_d_rot2_vec2gen
   end if
 
   !!!!!!!!!!!!!!!!!!!!
+  ! check 4)
+  ! set variables
+  a = 0d0
+  b = 0d0
+
+  call d_rot2_vec2gen(a,b,c,s,nrm)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
+  end if     
+  ! check results
+  if (abs(c-1d0).GT.EISCOR_DBL_EPS) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(s).GT.EISCOR_DBL_EPS) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(nrm).GT.EISCOR_DBL_EPS) then
+    call u_test_failed(__LINE__)
+  end if
+
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 5)
+  !!!!!!!!!!!!!!!!!!!!
   ! Test with INF
 
   ! set variables
@@ -222,8 +251,8 @@ program test_d_rot2_vec2gen
   b = 0d0     ! 0d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(c-1d0).GT.EISCOR_DBL_EPS) then
@@ -232,7 +261,7 @@ program test_d_rot2_vec2gen
   if (abs(s).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -241,8 +270,8 @@ program test_d_rot2_vec2gen
   b = 2d0     ! 2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(c-1d0).GT.EISCOR_DBL_EPS) then
@@ -251,7 +280,7 @@ program test_d_rot2_vec2gen
   if (abs(s).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
  
@@ -260,8 +289,8 @@ program test_d_rot2_vec2gen
   b = -2d0     ! -2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(c-1d0).GT.EISCOR_DBL_EPS) then
@@ -270,7 +299,7 @@ program test_d_rot2_vec2gen
   if (abs(s).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -279,8 +308,8 @@ program test_d_rot2_vec2gen
   b = 0d0      ! 0d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(c+1d0).GT.EISCOR_DBL_EPS) then
@@ -289,7 +318,7 @@ program test_d_rot2_vec2gen
   if (abs(s).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
   
@@ -298,8 +327,8 @@ program test_d_rot2_vec2gen
   b = 2d0      ! 2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(c+1d0).GT.EISCOR_DBL_EPS) then
@@ -308,7 +337,7 @@ program test_d_rot2_vec2gen
   if (abs(s).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -317,8 +346,8 @@ program test_d_rot2_vec2gen
   b = -2d0     ! -2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(c+1d0).GT.EISCOR_DBL_EPS) then
@@ -327,7 +356,7 @@ program test_d_rot2_vec2gen
   if (abs(s).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -338,8 +367,8 @@ program test_d_rot2_vec2gen
   a = 0d0     ! 0d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(s-1d0).GT.EISCOR_DBL_EPS) then
@@ -348,7 +377,7 @@ program test_d_rot2_vec2gen
   if (abs(c).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -357,8 +386,8 @@ program test_d_rot2_vec2gen
   a = 2d0     ! 2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(s-1d0).GT.EISCOR_DBL_EPS) then
@@ -367,7 +396,7 @@ program test_d_rot2_vec2gen
   if (abs(c).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
  
@@ -376,8 +405,8 @@ program test_d_rot2_vec2gen
   a = -2d0     ! -2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(s-1d0).GT.EISCOR_DBL_EPS) then
@@ -386,7 +415,7 @@ program test_d_rot2_vec2gen
   if (abs(c).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -395,8 +424,8 @@ program test_d_rot2_vec2gen
   a = 0d0      ! 0d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(s+1d0).GT.EISCOR_DBL_EPS) then
@@ -405,7 +434,7 @@ program test_d_rot2_vec2gen
   if (abs(c).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
   
@@ -414,8 +443,8 @@ program test_d_rot2_vec2gen
   a = 2d0      ! 2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(s+1d0).GT.EISCOR_DBL_EPS) then
@@ -424,7 +453,7 @@ program test_d_rot2_vec2gen
   if (abs(c).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -433,8 +462,8 @@ program test_d_rot2_vec2gen
   a = -2d0     ! -2d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (abs(s+1d0).GT.EISCOR_DBL_EPS) then
@@ -443,7 +472,7 @@ program test_d_rot2_vec2gen
   if (abs(c).GT.EISCOR_DBL_EPS) then
     call u_test_failed(__LINE__)
   end if
-  if (.NOT.(nrm.GT.infdef)) then
+  if (.NOT.(nrm.GT.EISCOR_DBL_INF)) then
     call u_test_failed(__LINE__)
   end if
 
@@ -454,8 +483,8 @@ program test_d_rot2_vec2gen
   b = 1d0/nul ! INF
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -473,8 +502,8 @@ program test_d_rot2_vec2gen
   b = 1d0/nul  ! INF
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -492,8 +521,8 @@ program test_d_rot2_vec2gen
   b = -1d0/nul ! -INF
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -511,8 +540,8 @@ program test_d_rot2_vec2gen
   b = -1d0/nul ! -INF
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -534,8 +563,8 @@ program test_d_rot2_vec2gen
   b = 1d0     ! 1d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -553,8 +582,8 @@ program test_d_rot2_vec2gen
   b = 0d0/nul ! NAN
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -572,8 +601,8 @@ program test_d_rot2_vec2gen
   b = 0d0/nul ! NAN
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -591,8 +620,8 @@ program test_d_rot2_vec2gen
   b = 0d0/nul ! NAN
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
@@ -610,8 +639,8 @@ program test_d_rot2_vec2gen
   b = 0d0     ! 0d0
 
   call d_rot2_vec2gen(a,b,c,s,nrm)
-  if (DEBUG) then
-     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", infdef, "nrm>infdef", (nrm.GT.infdef)
+  if (VERBOSE) then
+     print*, "a", a, "b", b, "c", c, "s", s, "nrm", nrm, "infdef", EISCOR_DBL_INF, "nrm>infdef", (nrm.GT.EISCOR_DBL_INF)
   end if
   ! check results
   if (c.EQ.c) then
