@@ -93,7 +93,7 @@ program test_z_rot3_vec3gen
       call u_test_failed(__LINE__)
     end if
     
-    ! 1 INF
+    ! one INF
     AR = inf; AI = 1d0; B = 1d0
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     if ((CR.NE.1d0).OR.(CI.NE.0d0).OR.(S.NE.0d0).OR.(NRM.NE.inf)) then
@@ -112,7 +112,7 @@ program test_z_rot3_vec3gen
       call u_test_failed(__LINE__)
     end if
     
-    ! 1 -INF
+    ! one -INF
     AR = -inf; AI = 1d0; B = 1d0
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     if ((CR.NE.-1d0).OR.(CI.NE.0d0).OR.(S.NE.0d0).OR.(NRM.NE.inf)) then
@@ -131,7 +131,7 @@ program test_z_rot3_vec3gen
       call u_test_failed(__LINE__)
     end if
     
-    ! 2 INFs
+    ! two INFs
     AR = inf; AI = inf; B = 1d0
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
@@ -150,14 +150,14 @@ program test_z_rot3_vec3gen
       call u_test_failed(__LINE__)
     end if
     
-    ! 3 INFs
+    ! three INFs
     AR = inf; AI = inf; B = inf
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
       call u_test_failed(__LINE__)
     end if
     
-     ! 1 NAN
+     ! one NAN
     AR = nan; AI = 1d0; B = 1d0
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
@@ -176,7 +176,7 @@ program test_z_rot3_vec3gen
       call u_test_failed(__LINE__)
     end if
     
-     ! 2 NANs
+     ! two NANs
     AR = nan; AI = nan; B = 1d0
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
@@ -195,7 +195,7 @@ program test_z_rot3_vec3gen
       call u_test_failed(__LINE__)
     end if
     
-     ! 3 NANs
+     ! three NANs
     AR = nan; AI = nan; B = nan
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then

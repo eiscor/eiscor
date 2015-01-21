@@ -1,4 +1,3 @@
-# user defined make include file
 include make.inc .master.inc
 
 SRCS := $(wildcard ./src/*/*.f90)
@@ -16,6 +15,9 @@ example%:
 test%:
 	@$(MAKE) $@ -C ./test
 
+benchmark%:
+	@$(MAKE) $@ -C ./benchmark
+
 lib$(LIBNAME).$(SLIB).$(VERSION): srcs
 	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(OBJS) 
 
@@ -29,6 +31,7 @@ clean:
 	@$(MAKE) clean -C ./src
 	@$(MAKE) clean -C ./example
 	@$(MAKE) clean -C ./test
+	@$(MAKE) clean -C ./benchmark
 	@rm -f lib$(LIBNAME).so.$(VERSION)
 
 
