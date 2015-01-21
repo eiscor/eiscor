@@ -9,8 +9,8 @@
 ! real numbers: A strictly real cosine and a scrictly real sine.  The first
 ! column is constructed to be parallel with the real vector [A,B]^T. 
 !
-! The rot2 refers to two double outputs and the vec2 to two double inputs;
-! excluding the norm.
+! The rot2 refers to a rotation desribed by two double and the vec2 to a vector
+! of lenght two described by two double.
 ! 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
