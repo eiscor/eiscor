@@ -37,9 +37,6 @@ program test_d_rot2_vec2gen
 
   ! parameter
   real(8) :: alpha = 1d-18 ! small perturbations
-  real(8), parameter :: infdef = huge(1d0)
-  integer, parameter :: notests = 1000000000 ! 1 billion
-  !integer, parameter :: notests = 1000000 ! 1 million
   
   ! compute variables
   real(8) :: nrm, nul=0d0
@@ -652,13 +649,7 @@ program test_d_rot2_vec2gen
   if (nrm.EQ.nrm) then
     call u_test_failed(__LINE__)
   end if
-
-  do ii=1,notests
-     call random_number(a)
-     call random_number(b)
-     call d_rot2_vec2gen(a,b,c,s,nrm)
-  end do
-  
+ 
   ! stop timer
   call system_clock(count=c_stop)
 

@@ -41,6 +41,7 @@
 !
 !    A    |    B    |    C    |    S    |   NRM 
 ! ------- | ------- | ------- | ------- | -------
+!     0d0 !     0d0 !     1d0 !     0d0 |   0d0
 ! +/- INF | +/- XdX | +/- 1d0 |     0d0 |   INF
 ! +/- XdX | +/- INF |     0d0 | +/- 1d0 |   INF
 ! +/- INF | +/- INF |     NAN |     NAN |   NAN
@@ -57,7 +58,21 @@ subroutine d_rot2_vec2gen(A,B,C,S,NRM)
   real(8), intent(inout) :: C,S,NRM
   
   ! construct rotation
-  if (abs(A**2 + B**2 - 1) .LT. 3d0*EISCOR_DBL_EPS) then
+  if (B.EQ.0d0) then
+     if (A.NE.A) then
+        C = A
+        S = A
+        NRM =A
+     else if (A.LT.0d0) then
+        C = -1d0
+        S = 0d0
+        NRM = -A
+     else
+        C = 1d0
+        S = 0d0
+        NRM = A
+     end if
+  else if (abs(A**2 + B**2 - 1d0) .LT. 3d0*EISCOR_DBL_EPS) then
      C = A
      S = B
      NRM = 1d0
