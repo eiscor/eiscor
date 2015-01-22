@@ -70,6 +70,7 @@ program test_z_rot3_vec4gen
   real(8) :: rp,rm,NRM
   real(8) :: AR, AI, BR, BI
   real(8) :: CR, CI, S
+  real(8) :: inf, nan
   integer :: ii
   
   ! timing variables
@@ -81,6 +82,150 @@ program test_z_rot3_vec4gen
 
   ! print banner
   call u_test_banner(__FILE__)
+  
+  ! set inf
+  inf = EISCOR_DBL_INF
+  inf = 10d0*inf
+  
+  ! set nan
+  nan = 0d0
+  nan = 0d0/nan
+  
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 0)
+    ! all zeros
+    AR = 0; AI = 0; BR = 0; BI = 0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.1d0).OR.(CI.NE.0d0).OR.(S.NE.0d0).OR.(NRM.NE.0d0)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    ! one INF
+    AR = inf; AI = 1d0; BR = 1d0; BI = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    
+print*,""
+print*,CR,CI,S,NRM
+print*,""
+
+    if ((CR.NE.1d0).OR.(CI.NE.0d0).OR.(S.NE.0d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = inf; BR = 1d0; BI = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.0d0).OR.(CI.NE.1d0).OR.(S.NE.0d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = 1d0; BR = inf; BI = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.0d0).OR.(CI.NE.0d0).OR.(S.NE.1d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = 1d0; BR = 1d0; BI = inf
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.0d0).OR.(CI.NE.0d0).OR.(S.NE.1d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    ! one -INF
+    AR = -inf; AI = 1d0; BR = 1d0; BI = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.1d0).OR.(CI.NE.0d0).OR.(S.NE.0d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = -inf; BR = 1d0; BI = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.0d0).OR.(CI.NE.1d0).OR.(S.NE.0d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = 1d0; BR = -inf; BI = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.0d0).OR.(CI.NE.0d0).OR.(S.NE.1d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = 1d0; BR = 1d0; BI = -inf
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.NE.0d0).OR.(CI.NE.0d0).OR.(S.NE.1d0).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    ! two INFs
+    AR = inf; AI = inf; BR = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = inf; BR = inf
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = inf; AI = 1d0; BR = inf
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    ! three INFs
+    AR = inf; AI = inf; BR = inf
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+     ! one NAN
+    AR = nan; AI = 1d0; BR = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = nan; BR = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = 1d0; BR = nan
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+     ! two NANs
+    AR = nan; AI = nan; BR = 1d0
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = 1d0; AI = nan; BR = nan
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+    AR = nan; AI = 1d0; BR = nan
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
+      call u_test_failed(__LINE__)
+    end if
+    
+     ! three NANs
+    AR = nan; AI = nan; BR = nan
+    call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
+      call u_test_failed(__LINE__)
+    end if
+  
 
   !!!!!!!!!!!!!!!!!!!!
   ! check 1)
