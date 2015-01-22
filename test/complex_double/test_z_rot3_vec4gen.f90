@@ -8,6 +8,8 @@
 ! This program tests the subroutine z_rot3_vec4gen (generating rotations). 
 ! The following tests are run:
 !
+! 0) checks every exceptional case in comment block
+!
 ! 1)          
 !    [ 1 + 0i ] = [ 1 ] [ 1 ]
 !    [ 0 + 0i ]   [ 0 ]
@@ -59,15 +61,16 @@ program test_z_rot3_vec4gen
   implicit none
 
   ! parameter
-  real(8) :: tol = 2d0*epsilon(1d0) ! accuracy (tolerance)
-  real(8) :: alpha = 1d-18 ! small perturbations
-  real(8) :: eps = 1d0*epsilon(1d0) ! accuracy (tolerance)
+  real(8), parameter :: tol = 10d0*EISCOR_DBL_EPS ! accuracy (tolerance)
+  real(8), parameter :: alpha = 1d-18 ! small perturbations
+  real(8), parameter :: eps = 1d0*EISCOR_DBL_EPS ! accuracy (tolerance)
+  real(8), parameter :: pi = EISCOR_DBL_PI
 
   ! compute variables
-  real(8) :: rp,rm,nrm,pi = 3.141592653589793239d0
-  real(8) :: a, b, c, d
-  real(8) :: Q(3)
-  integer :: info, ii
+  real(8) :: rp,rm,NRM
+  real(8) :: AR, AI, BR, BI
+  real(8) :: CR, CI, S
+  integer :: ii
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -83,107 +86,92 @@ program test_z_rot3_vec4gen
   ! check 1)
 
   ! set variables
-  a = 1d0
-  b = 0d0
-  c = 0d0
-  d = 0d0
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
-   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  AR = 1d0
+  AI = 0d0
+  BR = 0d0
+  BI = 0d0
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+
   ! check results
-  if (Q(1).NE.1d0) then
+  if (CR.NE.1d0) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(2).NE.0d0) then
+  if (CI.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(3).NE.0d0) then
+  if (S.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (nrm.NE.1d0) then
+  if (NRM.NE.1d0) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = 1d0
-  b = 0d0
-  c = alpha
-  d = alpha
+  AR = 1d0
+  AI = 0d0
+  BR = alpha
+  BI = alpha
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
   ! check results
-  if (abs(Q(1)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CR-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)+sqrt(2d0)/2d0)>tol) then
+  if (abs(CI+sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3))>tol) then
+  if (abs(S)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-1d0)>tol) then
+  if (abs(NRM-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = 1d0
-  b = -alpha
-  c = alpha
-  d = -alpha
+  AR = 1d0
+  AI = -alpha
+  BR = alpha
+  BI = -alpha
   
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
   ! check results
-  if (abs(Q(1)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CR-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CI-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3))>tol) then
+  if (abs(S)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-1d0)>tol) then
+  if (abs(NRM-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = 1d0
-  b = eps
-  c = -eps
-  d = eps
+  AR = 1d0
+  AI = eps
+  BR = -eps
+  BI = eps
   
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1)+sqrt(2d0)/2d0)>tol) then
+  if (abs(CR+sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)+sqrt(2d0)/2d0)>tol) then
+  if (abs(CI+sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3))>tol) then
-  print*, tol, Q(3)
+  if (abs(S)>tol) then
+  print*, tol, S
   
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-1d0)>tol) then
+  if (abs(NRM-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
@@ -191,80 +179,70 @@ program test_z_rot3_vec4gen
   ! check 2)
 
   ! set variables
-  a = 1d0
-  b = 1d0
-  c = 0d0
-  d = 0d0
+  AR = 1d0
+  AI = 1d0
+  BR = 0d0
+  BI = 0d0
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
 
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CR-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CI-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(3).NE.0d0) then
+  if (S.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = 1d0
-  b = 1d0
-  c = alpha
-  d = -alpha
+  AR = 1d0
+  AI = 1d0
+  BR = alpha
+  BI = -alpha
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
-      
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+   
   ! check results
-  if (abs(Q(1))>tol) then
+  if (abs(CR)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-1d0)>tol) then
+  if (abs(CI-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3))>tol) then
+  if (abs(S)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = 1d0
-  b = 1d0
-  c = -eps
-  d = eps
+  AR = 1d0
+  AI = 1d0
+  BR = -eps
+  BI = eps
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1))>tol) then
+  if (abs(CR)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)+1d0)>tol) then
+  if (abs(CI+1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3))>tol) then
+  if (abs(S)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
@@ -272,80 +250,71 @@ program test_z_rot3_vec4gen
   ! check 3)
 
   ! set variables
-  a = 1d0
-  b = 0d0
-  c = 1d0
-  d = 0d0
+  AR = 1d0
+  AI = 0d0
+  BR = 1d0
+  BI = 0d0
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CR-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(2).NE.0d0) then
+  if (CI.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-sqrt(2d0)/2d0)>tol) then
+  if (abs(S-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = 1d0
-  b = alpha
-  c = 1d0
-  d = alpha
+  AR = 1d0
+  AI = alpha
+  BR = 1d0
+  BI = alpha
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
 
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CR-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2))>tol) then
+  if (abs(CI)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-sqrt(2d0)/2d0)>tol) then
+  if (abs(S-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = 1d0
-  b = -eps
-  c = 1d0
-  d = eps
+  AR = 1d0
+  AI = -eps
+  BR = 1d0
+  BI = eps
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CR-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2))>tol) then
+  if (abs(CI)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-sqrt(2d0)/2d0)>tol) then
+  if (abs(S-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
@@ -353,28 +322,25 @@ program test_z_rot3_vec4gen
   ! check 4)
 
   ! set variables
-  a = 1d0
-  b = 1d0
-  c = 1d0
-  d = 0d0
+  AR = 1d0
+  AI = 1d0
+  BR = 1d0
+  BI = 0d0
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1)-1d0/sqrt(3d0))>tol) then
+  if (abs(CR-1d0/sqrt(3d0))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-1d0/sqrt(3d0))>tol) then
+  if (abs(CI-1d0/sqrt(3d0))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-1d0/sqrt(3d0))>tol) then
+  if (abs(S-1d0/sqrt(3d0))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(3d0))>tol) then
+  if (abs(NRM-sqrt(3d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
@@ -382,80 +348,70 @@ program test_z_rot3_vec4gen
   ! check 5)
 
   ! set variables
-  a = 0d0
-  b = 1d0
-  c = 1d0
-  d = 0d0
+  AR = 0d0
+  AI = 1d0
+  BR = 1d0
+  BI = 0d0
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (Q(1).NE.0d0) then
+  if (CR.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CI-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-sqrt(2d0)/2d0)>tol) then
+  if (abs(S-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
   
   ! set variables
-  a = alpha
-  b = 1d0
-  c = 1d0
-  d = -alpha
+  AR = alpha
+  AI = 1d0
+  BR = 1d0
+  BI = -alpha
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
-    
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+ 
   ! check results
-  if (abs(Q(1))>tol) then
+  if (abs(CR)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CI-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-sqrt(2d0)/2d0)>tol) then
+  if (abs(S-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = -eps
-  b = 1d0
-  c = 1d0
-  d = -eps
+  AR = -eps
+  AI = 1d0
+  BR = 1d0
+  BI = -eps
   
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1))>tol) then
+  if (abs(CR)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CI-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-sqrt(2d0)/2d0)>tol) then
+  if (abs(S-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(2d0))>tol) then
+  if (abs(NRM-sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
@@ -463,101 +419,91 @@ program test_z_rot3_vec4gen
   ! check 6)
 
   ! set variables
-  a = 0d0
-  b = 1d0
-  c = 0d0
-  d = 0d0
+  AR = 0d0
+  AI = 1d0
+  BR = 0d0
+  BI = 0d0
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
    
-  if (Q(1).NE.0d0) then
+  if (CR.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(2).NE.1d0) then
+  if (CI.NE.1d0) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(3).NE.0d0) then
+  if (S.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (nrm.NE.1d0) then
-    call u_test_failed(__LINE__)
-  end if
-
-  ! set variables
-  a = alpha
-  b = 1d0
-  c = 0d0
-  d = alpha
-
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  ! check results
-  if (abs(Q(1)-1d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(2))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(3))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(nrm-1d0)>tol) then
+  if (NRM.NE.1d0) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = -alpha
-  b = 1d0
-  c = alpha
-  d = alpha
+  AR = alpha
+  AI = 1d0
+  BR = 0d0
+  BI = alpha
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CR-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-sqrt(2d0)/2d0)>tol) then
+  if (abs(CI)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3))>tol) then
+  if (abs(S)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-1d0)>tol) then
+  if (abs(NRM-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = eps
-  b = 1d0
-  c = -eps
-  d = 0d0
+  AR = -alpha
+  AI = 1d0
+  BR = alpha
+  BI = alpha
+
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1))>tol) then
+  if (abs(CR-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-1d0)>tol) then
+  if (abs(CI-sqrt(2d0)/2d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3))>tol) then
+  if (abs(S)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-1d0)>tol) then
+  if (abs(NRM-1d0)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+
+  ! set variables
+  AR = -eps
+  AI = 1d0
+  BR = eps
+  BI = 0d0
+  
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+
+  ! check results
+  if (abs(CR)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(CI-1d0)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(S)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(NRM-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
@@ -565,129 +511,116 @@ program test_z_rot3_vec4gen
   ! check 7)
 
   ! set variables
-  a = 0d0
-  b = 0d0
-  c = 1d0
-  d = 0d0
+  AR = 0d0
+  AI = 0d0
+  BR = 1d0
+  BI = 0d0
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
    
-  if (Q(1).NE.0d0) then
+  if (CR.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(2).NE.0d0) then
+  if (CI.NE.0d0) then
     call u_test_failed(__LINE__)
   end if
-  if (Q(3).NE.1d0) then
+  if (S.NE.1d0) then
     call u_test_failed(__LINE__)
   end if
-  if (nrm.NE.1d0) then
-    call u_test_failed(__LINE__)
-  end if
-
-  ! set variables
-  a = alpha
-  b = 0d0
-  c = 1d0
-  d = alpha
-  
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  ! check results
-  if (abs(Q(1))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(2))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(3)-1d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(nrm-1d0)>tol) then
+  if (NRM.NE.1d0) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = -alpha
-  b = alpha
-  c = 1d0
-  d = alpha
-
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  AR = alpha
+  AI = 0d0
+  BR = 1d0
+  BI = alpha
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+  
+
   ! check results
-  if (abs(Q(1))>tol) then
+  if (abs(CR)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2))>tol) then
+  if (abs(CI)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-1d0)>tol) then
+  if (abs(S-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-1d0)>tol) then
+  if (abs(NRM-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
   ! set variables
-  a = eps
-  b = -eps
-  c = 1d0
-  d = eps
+  AR = -alpha
+  AI = alpha
+  BR = 1d0
+  BI = alpha
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+
   ! check results
-  if (abs(Q(1))>tol) then
+  if (abs(CR)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2))>tol) then
+  if (abs(CI)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-1d0)>tol) then
+  if (abs(S-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-1d0)>tol) then
+  if (abs(NRM-1d0)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+
+  ! set variables
+  AR = eps
+  AI = -eps
+  BR = 1d0
+  BI = eps
+
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+  
+
+  ! check results
+  if (abs(CR)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(CI)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(S-1d0)>tol) then
+    call u_test_failed(__LINE__)
+  end if
+  if (abs(NRM-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
   !!!!!!!!!!!!!!!!!!!!
   ! check 8)
   ! set variables
-  a = 3d0
-  b = 2d0
-  c = 1d0
-  d = -4d0
+  AR = 3d0
+  AI = 2d0
+  BR = 1d0
+  BI = -4d0
 
-  call z_rot3_vec4gen(a,b,c,d,Q(1),Q(2),Q(3),nrm,info)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
+
   ! check results
-  if (abs(Q(1)+sqrt(5d0/17d0/6d0))>tol) then
+  if (abs(CR+sqrt(5d0/17d0/6d0))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-sqrt(17d0/30d0)*2+sqrt(80d0/102d0))>tol) then
+  if (abs(CI-sqrt(17d0/30d0)*2+sqrt(80d0/102d0))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-sqrt(17d0/30d0))>tol) then
+  if (abs(S-sqrt(17d0/30d0))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(nrm-sqrt(30d0))>tol) then
+  if (abs(NRM-sqrt(30d0))>tol) then
     call u_test_failed(__LINE__)
   end if
 
