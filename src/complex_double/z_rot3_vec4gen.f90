@@ -1,177 +1,91 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_rot3_vec4gen
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the generator for a Givens rotation represented
-! by 3 real numbers: the real and imaginary parts of a complex cosine
-! and a scrictly real sine. The first column is constructed to be 
-! parallel with the complex vector [A,B]^T. The (4->3) refers to the 
-! 4 double inputs and 3 double outputs (excluding the norm).
+! This routine computes the generators for a complex rotation represented
+! by 3 real numbers: the real and imaginary parts of a complex cosine,
+! CR and CI, and a scrictly real sine, S. The CR, CI and S are 
+! constructed to be parallel with the vector [AR+iAI,BR+iBI]^T, where AR, 
+! AI, BR and BI are real and i = sqrt(-1).
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! If any part of the input vector [AR+iAI,BR+iBI]^T contains a NAN then
+! CR, CI, S and NRM are all set to NAN.
+!
+! If only one of AR, AI, BR or BI = +/-INF then the corresponding AR, AI, BR 
+! or BI is first set to +/-1 and the remaining terms are set to 0. Then the 
+! CR, CI and S are computed from the new vector containing +/-1 and 0. In 
+! this case NRM is always set to INF.
+!
+! If more than one of AR, AI, BR or BI = +/- INF then CR = CI = S = NAN and 
+! NRM = INF
+!
+! If AR = AI = BR = BI = 0 then CR = 1, CI = S = 0 and NRM = 0.
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! 
+! EXCEPTIONAL CASES
+!
+!    AR   |    AI   |    BR   |    BI   |    CR   |    CI   |    S    |   NRM 
+! ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
+!   0d0   |   0d0   |   0d0   |   0d0   |   1d0   |   0d0   |   0d0   |   0d0
+! ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
+! +-INF   |   XdX   |   XdX   |   XdX   | +-1d0   |   0d0   |   0d0   |   INF
+!   XdX   | +-INF   |   XdX   |   XdX   |   0d0   | +-1d0   |   0d0   |   INF
+!   XdX   |   XdX   | +-INF   |   XdX   |   0d0   |   0d0   | +-1d0   |   INF
+!   XdX   |   XdX   |   XdX   | +-INF   |   0d0   |   0d0   | +-1d0   |   INF
+!          at least two +-INFs          |   NAN   |   NAN   |   NAN   |   INF
+! ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
+!           at least one NANs           |   NAN   |   NAN   |   NAN   |   NAN
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  AR, AI          REAL(8) 
 !                    real and imaginary part of the first component 
-!                    of the complex vector [A,B]^T
+!                    of the complex vector [AR+iAI,BR+iBI]^T
 !
 !  BR, BI          REAL(8) 
-!                    real and imaginary part of the second component 
-!                    of the complex vector [A,B]^T
+!                    the second component 
+!                    of the complex vector [AR+iAI,BR+iBI]^T
 !
 ! OUTPUT VARIABLES:
 !
 !  CR, CI          REAL(8)
-!                    on exit contains the generators for the cosine
-!                    component of the Givens rotation
+!                    on exit CR = AR/NRM, CI = AI/NRM
 !
 !  S               REAL(8)
-!                    on exit contains the generators for the sine
-!                    component of the Givens rotation
+!                    on exit S = B/NRM
 !
 !  NRM             REAL(8)
-!                    on exit contains the norm of the vector [A,B]^T
+!                    on exit contains the norm 
+!                    of the complex vector [AR+iAI,BR+iBI]^T
 !
-!  INFO            INTEGER
-!                    INFO = 0 implies successful computation
-!                    INFO = -1 implies AR is invalid
-!                    INFO = -2 implies AI is invalid
-!                    INFO = -3 implies BR is invalid
-!                    INFO = -4 implies BI is invalid
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM,INFO)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
 
   implicit none
   
   ! input variables
-  integer, intent(inout) :: INFO
   real(8), intent(in) :: AR, AI, BR, BI
   real(8), intent(inout) :: CR, CI, S, NRM
   
   ! compute variables
-  real(8) :: sr, si, temp
+  real(8) :: pAr, pAi, pBr, pBi
   
-  ! initialize INFO
-  INFO = 0
+  ! compute phase of BR, BI
+  call d_rot2_vec2gen(BR,BI,pBr,pBi,S)
   
-  ! print error in debug mode
-  if (DEBUG) then
+  ! compute phase of AR, AI
+  call d_rot2_vec2gen(AR,AI,pAr,pAi,CR)
   
-    ! check AR
-    call d_scalar_nancheck(AR,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"AR is invalid",INFO,-1)
-      return
-    end if
-    call d_scalar_infcheck(AR,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"AR is invalid",INFO,-1)
-      return
-    end if   
-
-    ! check AI
-    call d_scalar_nancheck(AI,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"AI is invalid",INFO,-2)
-      return
-    end if
-    call d_scalar_infcheck(AI,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"AI is invalid",INFO,-2)
-      return
-    end if  
-
-    ! check BR
-    call d_scalar_nancheck(BR,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"BR is invalid",INFO,-3)
-      return
-    end if
-    call d_scalar_infcheck(BR,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"BR is invalid",INFO,-3)
-      return
-    end if
-    
-    ! check BI
-    call d_scalar_nancheck(BI,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"BI is invalid",INFO,-4)
-      return
-    end if
-    call d_scalar_infcheck(BI,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"BI is invalid",INFO,-4)
-      return
-    end if
-
-  end if 
+  ! adjust phase of AR, AI and BR, BI so that BR = sqrt(|BR|^2 + |BI|^2) and BI = 0 
+  call d_rot2_vec2gen(pAr*pBr + pAi*pBi,-pAr*pBi + pAi*pBr,pAr,pAi,CI)
   
-  ! compute NRM
-  CR = abs(AR)
-  CI = abs(AI)
-  sr = abs(BR)
-  si = abs(BI)
-  
-  ! exit if nrm is zero
-  if ((CR.EQ.0).AND.(CI.EQ.0).AND.(sr.EQ.0).AND.(si.EQ.0)) then
-    nrm = 0d0
-    CR = 1d0
-    CI = 0d0
-    S = 0d0
-    return
-  end if
-  
-  ! find maximum value
-  NRM = CR
-  if (CI > NRM) then
-    NRM = CI
-  end if
-  if (sr > NRM) then
-    NRM = sr
-  end if
-  if (si > NRM) then
-    NRM = si
-  end if
-  
-  ! scale
-  CR = CR/NRM
-  CI = CI/NRM
-  sr = sr/NRM
-  si = si/NRM
-  
-  ! NRM
-  NRM = NRM*sqrt(CR*CR + CI*CI + sr*sr + si*si)
-  
-  ! update Generators
-  CR = AR/NRM
-  CI = AI/NRM
-  sr = BR/NRM
-  si = BI/NRM
-  
-  ! check si
-  if (abs(si) .EQ. 0d0) then
-    S = sr
-    return
-  end if
-  
-  ! compute phase
-  if (abs(sr) > abs(si)) then
-    S = abs(sr)*sqrt(1d0+abs(si/sr)**2)
-  else
-    S = abs(si)*sqrt(1d0+abs(sr/si)**2)
-  end if
-  sr = sr/S
-  si = si/S
-  
-  ! update CR and CI
-  temp = CR*sr + CI*si
-  CI = -CR*si + CI*sr
-  CR = temp  
+  ! construct CR, CI, S
+  call z_rot3_vec3gen(CR*pAr,CR*pAi,S,CR,CI,S,NRM)
 
 end subroutine z_rot3_vec4gen
