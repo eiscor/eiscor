@@ -15,179 +15,103 @@ program benchmark_z_rot3_vec3gen
   implicit none
 
   ! parameter
-  integer, parameter :: time_trials = 10**1
-  integer, parameter :: error_trials = 10**6
+  integer, parameter :: num_trials = 10**9
 
   ! compute variables
-  integer :: ii
+  integer :: ii, n
+  integer, allocatable :: seed(:)
   real(8) :: AR, AI, B, CR, CI, S, NRM
-  real(8) :: XR, XI, Y, ERROR
+  real(8) :: base_time, total_time, ERROR
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
   
-  !!!!!!!!!!!!!!!!!!!
-  ! Configuration 0
-    ! set AR, AI, B
-    AR = 0d0; AI = 0d0; B = 0d0
-    
-    ! start timer
-    call system_clock(count_rate=c_rate)
-    call system_clock(count=c_start) 
-    
-    ! loop
-    do ii=1,time_trials
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-    end do  
-
-    ! stop timer
-    call system_clock(count=c_stop)
-    
-    ! set XR, XI, Y
-    XR = AR; XI = AI; Y = B
-    
-    ! set ERROR
-    ERROR = 0d0
-    
-    ! loop
-    do ii=1,error_trials
-      call z_rot3_vec3gen(XR,XI,Y,CR,CI,S,NRM)
-      XR = NRM*CR
-      XI = NRM*CI
-      Y = NRM*S
-      ERROR = max(ERROR,abs(XR-AR))
-      ERROR = max(ERROR,abs(XI-AI))
-      ERROR = max(ERROR,abs(Y-B))
-    end do  
-    
-    ! print time
-    print*, ""
-    print*, "Configuration 0"
-    print*, "  Average time:", (dble(c_stop-c_start)/dble(c_rate))/dble(time_trials)
-    print*, "  Worst error:", ERROR
-    print*, ""
+  ! print banner
+  call u_test_banner(__FILE__) 
   
-  !!!!!!!!!!!!!!!!!!!
-  ! Configuration 1
-    ! set AR, AI, B
-    AR = 1d0; AI = 100d0*sqrt(EISCOR_DBL_EPS); B = EISCOR_DBL_EPS
+  ! get size of seed        
+  call random_seed(size = n)
+  
+  ! allocate memory for seed
+  allocate(seed(n))
+  
+  ! set seed        
+  seed = 1
+  
+  ! set the generator
+  call random_seed(put = seed)
+  
+  ! free memory        
+  deallocate(seed)
+  
+  ! base line for random number generate and error calculation
+    ! set ERROR
+    ERROR = 0d0
+    
+    ! set generators
+    CR = 1d0; CI = 0d0; S = 0d0; NRM = 1d0
     
     ! start timer
     call system_clock(count_rate=c_rate)
     call system_clock(count=c_start) 
     
     ! loop
-    do ii=1,time_trials
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+    do ii=1,num_trials
+      
+      ! set AR, AI, B
+      call random_number(AR)
+      call random_number(AI)
+      call random_number(B)
+      
+      ! compute worse ERROR
+      ERROR = max(ERROR,abs(AR-NRM*CR))
+      ERROR = max(ERROR,abs(AI-NRM*CI))
+      ERROR = max(ERROR,abs(B-NRM*S))
+      
     end do  
 
     ! stop timer
     call system_clock(count=c_stop)
     
-    ! set XR, XI, Y
-    XR = AR; XI = AI; Y = B
+    ! set base time
+    base_time = dble(c_stop-c_start)/dble(c_rate)
     
-    ! set ERROR
+  ! total time for random number generate and error calculation
+    ! reset ERROR
     ERROR = 0d0
-    
-    ! loop
-    do ii=1,error_trials
-      call z_rot3_vec3gen(XR,XI,Y,CR,CI,S,NRM)
-      XR = NRM*CR
-      XI = NRM*CI
-      Y = NRM*S
-      ERROR = max(ERROR,abs(XR-AR))
-      ERROR = max(ERROR,abs(XI-AI))
-      ERROR = max(ERROR,abs(Y-B))
-    end do  
-    
-    ! print time
-    print*, ""
-    print*, "Configuration 1"
-    print*, "  Average time:", (dble(c_stop-c_start)/dble(c_rate))/dble(time_trials)
-    print*, "  Worst error:", ERROR
-    print*, ""
-    
-  !!!!!!!!!!!!!!!!!!!
-  ! Configuration 2
-    ! set AR, AI, B
-    AR = sqrt(EISCOR_DBL_EPS); AI = 1d0; B = EISCOR_DBL_EPS
     
     ! start timer
     call system_clock(count_rate=c_rate)
     call system_clock(count=c_start) 
     
     ! loop
-    do ii=1,time_trials
+    do ii=1,num_trials
+      
+      ! set AR, AI, B
+      call random_number(AR)
+      call random_number(AI)
+      call random_number(B)
+      
+      ! compute core transformation
       call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      
+      ! compute worse ERROR
+      ERROR = max(ERROR,abs(AR-NRM*CR))
+      ERROR = max(ERROR,abs(AI-NRM*CI))
+      ERROR = max(ERROR,abs(B-NRM*S))
+      
     end do  
 
     ! stop timer
     call system_clock(count=c_stop)
     
-    ! set XR, XI, Y
-    XR = AR; XI = AI; Y = B
+    ! set total time
+    total_time = dble(c_stop-c_start)/dble(c_rate)
     
-    ! set ERROR
-    ERROR = 0d0
+    ! subract off base time and average
+    total_time = (total_time - base_time)/dble(num_trials)
     
-    ! loop
-    do ii=1,error_trials
-      call z_rot3_vec3gen(XR,XI,Y,CR,CI,S,NRM)
-      XR = NRM*CR
-      XI = NRM*CI
-      Y = NRM*S
-      ERROR = max(ERROR,abs(XR-AR))
-      ERROR = max(ERROR,abs(XI-AI))
-      ERROR = max(ERROR,abs(Y-B))
-    end do  
-    
-    ! print time
-    print*, ""
-    print*, "Configuration 2"
-    print*, "  Average time:", (dble(c_stop-c_start)/dble(c_rate))/dble(time_trials)
-    print*, "  Worst error:", ERROR
-    print*, ""
-    
-  !!!!!!!!!!!!!!!!!!!
-  ! Configuration 3
-    ! set AR, AI, B
-    AR = sqrt(EISCOR_DBL_EPS); AI = EISCOR_DBL_EPS; B = 1d0
-    
-    ! start timer
-    call system_clock(count_rate=c_rate)
-    call system_clock(count=c_start) 
-    
-    ! loop
-    do ii=1,time_trials
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-    end do  
-
-    ! stop timer
-    call system_clock(count=c_stop)
-    
-    ! set XR, XI, Y
-    XR = AR; XI = AI; Y = B
-    
-    ! set ERROR
-    ERROR = 0d0
-    
-    ! loop
-    do ii=1,error_trials
-      call z_rot3_vec3gen(XR,XI,Y,CR,CI,S,NRM)
-      XR = NRM*CR
-      XI = NRM*CI
-      Y = NRM*S
-      ERROR = max(ERROR,abs(XR-AR))
-      ERROR = max(ERROR,abs(XI-AI))
-      ERROR = max(ERROR,abs(Y-B))
-    end do  
-    
-    ! print time
-    print*, ""
-    print*, "Configuration 3"
-    print*, "  Average time:", (dble(c_stop-c_start)/dble(c_rate))/dble(time_trials)
-    print*, "  Worst error:", ERROR
-    print*, ""
+    ! print results
+    call u_benchmark_print(total_time,ERROR)
 
 end program benchmark_z_rot3_vec3gen
