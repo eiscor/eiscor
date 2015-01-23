@@ -19,7 +19,7 @@
 ! and S are computed from the new vector containing +/-1 and 0. In 
 ! this case NRM is always set to INF.
 !
-! If more than one of AR, AI or B = +/- INF then CR = CI = S = NAN and NRM = INF
+! If more than one of AR, AI or B = +/- INF then CR = CI = S = NRM = NAN
 !
 ! If AR = AI = B = 0 then CR = 1, CI = S = 0 and NRM = 0.
 !
@@ -34,10 +34,10 @@
 ! +-INF   |   XdX   |   XdX   | +-1d0   |   0d0   |   0d0   |   INF
 !   XdX   | +-INF   |   XdX   |   0d0   | +-1d0   |   0d0   |   INF
 !   XdX   |   XdX   | +-INF   |   0d0   |   0d0   | +-1d0   |   INF
-! +-INF   | +-INF   |   XdX   |   NAN   |   NAN   |   NAN   |   INF
-! +-INF   |   XdX   | +-INF   |   NAN   |   NAN   |   NAN   |   INF
-!   XdX   | +-INF   | +-INF   |   NAN   |   NAN   |   NAN   |   INF
-! +-INF   | +-INF   | +-INF   |   NAN   |   NAN   |   NAN   |   INF
+! +-INF   | +-INF   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN   
+! +-INF   |   XdX   | +-INF   |   NAN   |   NAN   |   NAN   |   NAN   
+!   XdX   | +-INF   | +-INF   |   NAN   |   NAN   |   NAN   |   NAN   
+! +-INF   | +-INF   | +-INF   |   NAN   |   NAN   |   NAN   |   NAN   
 ! ------- | ------- | ------- | ------- | ------- | ------- | -------
 !   NAN   |   XdX   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN
 !   XdX   |   NAN   |   XdX   |   NAN   |   NAN   |   NAN   |   NAN
@@ -48,24 +48,6 @@
 !   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN   |   NAN
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! Examples:
-!
-! Standard case:
-!   AR = 1, AI = -2, B = 3. NRM = sqrt(AR^2 + AI^2 + B^2) = sqrt(14),
-!   CR = AR/NRM, CI = AI/NRM, S = B/NRM.
-!
-! Case with 1 INF:
-!   AR = 10, AI = 3, B = -INF. Set to CR = CI = 0, S = -1 and NRM = INF.
-!
-! Case with 2 INFs:
-!   AR = INF, AI = 3, B = -INF. Set to CR = CI = S = NAN and NRM = INF.
-!
-! Case with NANs:
-!   AR = NAN, AI = 1, B = 47.3.
-!   CR = CI = S = NRM = NAN.
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
@@ -111,12 +93,12 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
   ! 2 or more INFs
   if (((nar>EISCOR_DBL_INF).AND.((nai>EISCOR_DBL_INF).OR.(nb>EISCOR_DBL_INF))).OR.((nai>EISCOR_DBL_INF).AND.(nb>EISCOR_DBL_INF))) then
   
-    NRM = max(nar,nai)
     CR = 0d0
     CR = 0d0/CR
     CI = CR
     S = CR
-    
+    NRM = CR
+        
     return
   
   end if

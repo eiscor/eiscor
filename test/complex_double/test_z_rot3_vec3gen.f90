@@ -134,26 +134,26 @@ program test_z_rot3_vec3gen
     ! two INFs
     AR = inf; AI = inf; B = 1d0
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
       call u_test_failed(__LINE__)
     end if
     
     AR = 1d0; AI = inf; B = inf
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
       call u_test_failed(__LINE__)
     end if
     
     AR = inf; AI = 1d0; B = inf
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
       call u_test_failed(__LINE__)
     end if
     
     ! three INFs
     AR = inf; AI = inf; B = inf
     call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.NE.inf)) then
+    if ((CR.EQ.CR).OR.(CI.EQ.CI).OR.(S.EQ.S).OR.(NRM.EQ.NRM)) then
       call u_test_failed(__LINE__)
     end if
     

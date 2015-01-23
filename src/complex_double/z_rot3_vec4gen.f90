@@ -11,6 +11,8 @@
 ! constructed to be parallel with the vector [AR+iAI,BR+iBI]^T, where AR, 
 ! AI, BR and BI are real and i = sqrt(-1).
 !
+! This routine always adjusts the phase of [AR+iAI,BR+iBI]^T so that S >= 0.
+!
 ! If any part of the input vector [AR+iAI,BR+iBI]^T contains a NAN then
 ! CR, CI, S and NRM are all set to NAN.
 !
@@ -19,8 +21,7 @@
 ! CR, CI and S are computed from the new vector containing +/-1 and 0. In 
 ! this case NRM is always set to INF.
 !
-! If more than one of AR, AI, BR or BI = +/- INF then CR = CI = S = NAN and 
-! NRM = INF
+! If more than one of AR, AI, BR or BI = +/- INF then CR = CI = S = NRM = NAN
 !
 ! If AR = AI = BR = BI = 0 then CR = 1, CI = S = 0 and NRM = 0.
 !
@@ -34,11 +35,11 @@
 ! ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
 ! +-INF   |   XdX   |   XdX   |   XdX   | +-1d0   |   0d0   |   0d0   |   INF
 !   XdX   | +-INF   |   XdX   |   XdX   |   0d0   | +-1d0   |   0d0   |   INF
-!   XdX   |   XdX   | +-INF   |   XdX   |   0d0   |   0d0   | +-1d0   |   INF
-!   XdX   |   XdX   |   XdX   | +-INF   |   0d0   |   0d0   | +-1d0   |   INF
-!          at least two +-INFs          |   NAN   |   NAN   |   NAN   |   INF
+!   XdX   |   XdX   | +-INF   |   XdX   |   0d0   |   0d0   |   1d0   |   INF
+!   XdX   |   XdX   |   XdX   | +-INF   |   0d0   |   0d0   |   1d0   |   INF
+!          at least two +-INFs          |   NAN   |   NAN   |   NAN   |   NAN
 ! ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
-!           at least one NANs           |   NAN   |   NAN   |   NAN   |   NAN
+!           at least one NAN            |   NAN   |   NAN   |   NAN   |   NAN
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -74,27 +75,36 @@ subroutine z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   real(8), intent(inout) :: CR, CI, S, NRM
   
   ! compute variables
+  real(8), parameter :: inf = EISCOR_DBL_INF
   real(8) :: pAr, pAi, pBr, pBi
-  
-  ! all zeros
-  if ((AR.EQ.0).AND.(AI.EQ.0).AND.(BR.EQ.0).AND.(BI.EQ.0)) then
-    CR = 1d0
-    CI = 0d0
-    S = 0d0
-    NRM = 0d0
-    return
-  end if
   
   ! compute phase of BR, BI
   call d_rot2_vec2gen(BR,BI,pBr,pBi,S)
   
   ! compute phase of AR, AI
-  call d_rot2_vec2gen(AR,AI,pAr,pAi,CR)
+  call d_rot2_vec2gen(AR,AI,pAr,pAi,CR)  
   
-  ! adjust phase of AR, AI and BR, BI so that BR = sqrt(|BR|^2 + |BI|^2) and BI = 0 
-  call d_rot2_vec2gen(pAr*pBr + pAi*pBi,-pAr*pBi + pAi*pBr,pAr,pAi,CI) 
+  ! check if AR is the only INF 
+  if ((abs(S)<=inf).AND.(abs(CR)>inf).AND.(pAr.EQ.0)) then
   
-  ! construct CR, CI, S
-  call z_rot3_vec3gen(CR*pAr,CR*pAi,S,CR,CI,S,NRM)
+    ! construct CR, CI, S
+    call z_rot3_vec3gen(AR,AI,S,CR,CI,S,NRM)  
+      
+  ! check if AI is the only INF 
+  else if ((abs(S)<=inf).AND.(abs(CR)>inf).AND.(pAi.EQ.0)) then
+  
+    ! construct CR, CI, S
+    call z_rot3_vec3gen(AR,AI,S,CR,CI,S,NRM) 
+    
+  ! otherwise
+  else
+  
+    ! adjust phase of AR, AI and BR, BI so that BR = sqrt(|BR|^2 + |BI|^2) and BI = 0 
+    call d_rot2_vec2gen(pAr*pBr + pAi*pBi,-pAr*pBi + pAi*pBr,pAr,pAi,CI)  
+   
+    ! construct CR, CI, S
+    call z_rot3_vec3gen(CR*pAr,CR*pAi,S,CR,CI,S,NRM)
+    
+  end if
 
 end subroutine z_rot3_vec4gen
