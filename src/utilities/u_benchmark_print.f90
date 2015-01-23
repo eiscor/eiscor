@@ -1,5 +1,5 @@
 #include "eiscor.h"
-subroutine u_benchmark(TIME,ACC) 
+subroutine u_benchmark_print(TIME,ACC) 
 
   implicit none
 
@@ -9,4 +9,4 @@ subroutine u_benchmark(TIME,ACC)
   ! print failure
   write(STDERR,'(a,E10.5,a,E10.5,a)') 'TIME ',TIME,' secs, ACC ',ACC, ' points'
   
-end subroutine u_benchmark
+end subroutine u_benchmark_print

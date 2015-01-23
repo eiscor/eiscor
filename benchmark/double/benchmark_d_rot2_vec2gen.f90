@@ -70,6 +70,6 @@ program benchmark_d_rot2_vec2gen
   t2 = dble(c_stop-c_start)/dble(c_rate) - t1
 
   ! print success
-  call u_benchmark(t2/notests,0d0)
+  call u_benchmark_print(t2/notests,0d0)
 
 end program benchmark_d_rot2_vec2gen
