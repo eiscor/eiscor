@@ -183,7 +183,6 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     
   ! B /= 0, |B| >= |AR| and |B| >= |AI|     
   else
-  
     tar = AR/B
     tai = AI/B
     NRM = sqrt(1d0 + tai*tai + tar*tar)

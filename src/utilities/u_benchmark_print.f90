@@ -7,6 +7,6 @@ subroutine u_benchmark_print(TIME,ACC)
   real(8), intent(in) :: TIME, ACC
 
   ! print failure
-  write(STDERR,'(a,E10.5,a,E10.5,a)') 'TIME ',TIME,' secs, ACC ',ACC, ' points'
+  write(STDERR,'(a,E13.5,a,E13.5,a)') 'TIME ',TIME,' secs, ACC ',ACC, ' points'
   
 end subroutine u_benchmark_print

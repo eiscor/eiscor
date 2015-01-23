@@ -13,6 +13,9 @@
 ! 1) CR = 1; CI = 0; S = 0                
 !    and replace 0 by EISCOR_DBL_EPS 
 !
+! 2) CR = cos(t1)*cos(t2); CI = sin(t1)*cos(t2); S = sin(t2)                
+!    for t1, t2 uniform random in [0,2pi) 
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_rot3_check
 
@@ -20,11 +23,14 @@ program test_z_rot3_check
 
   ! parameter
   real(8), parameter :: tol = EISCOR_DBL_EPS ! accuracy (tolerance)
+  real(8), parameter :: two_pi = 2d0*EISCOR_DBL_PI
 
   ! compute variables
   logical :: FLAG
-  real(8) :: CR, CI, S
-  real(8) :: inf, nan
+  integer :: ii, n, num_tests = 10**6
+  integer, allocatable :: seed(:)
+  real(8) :: CR, CI, S, NRM
+  real(8) :: t1, t2, inf, nan
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -77,7 +83,43 @@ program test_z_rot3_check
     if (.NOT.FLAG) then
       call u_test_failed(__LINE__)
     end if
-   
+    
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 2)
+  
+    ! get size of see        
+    call random_seed(size = n)
+    
+    ! allocate memory for seed
+    allocate(seed(n))
+    
+    ! check allocation
+    if (.NOT.allocated(seed)) then
+      call u_test_failed(__LINE__)
+    end if 
+    
+    ! set seed        
+    seed = 1
+    
+    ! set the generator
+    call random_seed(put = seed)
+    
+    ! free memory        
+    deallocate(seed)
+    
+    ! random tests
+    do ii=1,num_tests
+      call random_number(t1)
+      call random_number(t2)
+      CR = cos(t1*two_pi)*cos(t2*two_pi)
+      CI = sin(t1*two_pi)*cos(t2*two_pi)
+      S = sin(t2*two_pi)
+      call z_rot3_vec3gen(CR,CI,S,CR,CI,S,NRM)
+      call z_rot3_check(CR,CI,S,FLAG)
+      if (.NOT.FLAG) then
+        call u_test_failed(__LINE__)
+      end if
+    end do
   
   ! stop timer
   call system_clock(count=c_stop)

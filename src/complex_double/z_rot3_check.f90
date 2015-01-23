@@ -39,7 +39,7 @@ subroutine z_rot3_check(CR,CI,S,FLAG)
   logical, intent(inout) :: FLAG
   
   ! compute variables
-  real(8), parameter :: tol = EISCOR_DBL_EPS
+  real(8), parameter :: tol = 3d0*EISCOR_DBL_EPS
   real(8) :: XR, XI, Y, NRM
 
   ! initialize FLAG to .FALSE.
@@ -50,9 +50,7 @@ subroutine z_rot3_check(CR,CI,S,FLAG)
   
   ! check for equality
   if ((abs(CR-XR)<tol).AND.(abs(CI-XI)<tol).AND.(abs(S-Y)<tol).AND.(abs(1d0-NRM)<tol)) then
-  
     FLAG = .TRUE.
-    
   end if
 
 end subroutine z_rot3_check

@@ -37,6 +37,11 @@ program benchmark_z_rot3_vec3gen
   ! allocate memory for seed
   allocate(seed(n))
   
+  ! check allocation
+  if (.NOT.allocated(seed)) then
+    call u_test_failed(__LINE__)
+  end if
+  
   ! set seed        
   seed = 1
   
@@ -65,7 +70,7 @@ program benchmark_z_rot3_vec3gen
       call random_number(AI)
       call random_number(B)
       
-      ! compute worse ERROR
+      ! compute worst ERROR
       ERROR = max(ERROR,abs(AR-NRM*CR))
       ERROR = max(ERROR,abs(AI-NRM*CI))
       ERROR = max(ERROR,abs(B-NRM*S))
@@ -97,10 +102,21 @@ program benchmark_z_rot3_vec3gen
       ! compute core transformation
       call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
       
-      ! compute worse ERROR
+      ! compute worst ERROR
       ERROR = max(ERROR,abs(AR-NRM*CR))
       ERROR = max(ERROR,abs(AI-NRM*CI))
       ERROR = max(ERROR,abs(B-NRM*S))
+      
+      ! 9 more times to build up the average
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
       
     end do  
 
@@ -111,7 +127,7 @@ program benchmark_z_rot3_vec3gen
     total_time = dble(c_stop-c_start)/dble(c_rate)
     
     ! subract off base time and average
-    total_time = (total_time - base_time)/dble(num_trials)
+    total_time = (total_time - base_time)/dble(num_trials)/10d0
     
     ! print results
     call u_benchmark_print(total_time,ERROR)
