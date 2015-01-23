@@ -8,6 +8,8 @@
 ! This program benchmarks the subroutine z_rot3_vec3gen. 
 ! The following benchmarks are run:
 !
+! 1) Compute one billion core transformations from uniformly generated 
+!    user input. The average compute time and the worst error are printed.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program benchmark_z_rot3_vec3gen
@@ -15,7 +17,7 @@ program benchmark_z_rot3_vec3gen
   implicit none
 
   ! parameter
-  integer, parameter :: num_trials = 10**9
+  integer, parameter :: num_trials = 10**9 ! one billion trials
 
   ! compute variables
   integer :: ii, n

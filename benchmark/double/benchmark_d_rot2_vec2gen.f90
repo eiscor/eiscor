@@ -10,16 +10,14 @@
 !
 ! 1) Time required for 1 billion runs.
 !
-!
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program benchmark_d_rot2_vec2gen
 
   implicit none
 
   ! parameter
-  !integer, parameter :: notests = 1000000000 ! 1 billion
-  integer, parameter :: notests = 10000000 ! 10 million
+  integer, parameter :: notests = 1000000000 ! 1 billion
+  !integer, parameter :: notests = 10000000 ! 10 million
   !integer, parameter :: notests = 1000000 ! 1 million
   
   ! compute variables
