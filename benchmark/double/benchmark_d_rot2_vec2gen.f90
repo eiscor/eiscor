@@ -8,7 +8,7 @@
 ! This program computes two benchmarks for subroutine d_rot2_vec2gen (generating
 ! rotations).  
 !
-! 1) Time required for 1 billion runs.
+! 1) Time required for 100 million runs.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program benchmark_d_rot2_vec2gen
@@ -16,7 +16,7 @@ program benchmark_d_rot2_vec2gen
   implicit none
 
   ! parameter
-  integer, parameter :: notests = 10**9 ! 1 billion
+  integer, parameter :: notests = 10**8 ! 100 million
   
   ! compute variables
   integer :: ii, n
