@@ -58,11 +58,10 @@ subroutine d_rot2_vec2gen(A,B,C,S,NRM)
   real(8), intent(inout) :: C,S,NRM
   
   ! compute variables
-  real(8) :: tA, tB
+  real(8) :: tB
   
   ! call DROTG from oenblas
-  tA = A; tB = B
-  call drotg(tA,tB,C,S)
-  NRM = tA  
+  NRM = A; tB = B
+  call drotg(NRM,tB,C,S)  
            
 end subroutine d_rot2_vec2gen
