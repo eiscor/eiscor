@@ -57,45 +57,12 @@ subroutine d_rot2_vec2gen(A,B,C,S,NRM)
   real(8), intent(in) :: A,B
   real(8), intent(inout) :: C,S,NRM
   
-  ! construct rotation
-  if (B.EQ.0d0) then
-     if (A.NE.A) then
-        C = A
-        S = A
-        NRM =A
-     else if (A.LT.0d0) then
-        C = -1d0
-        S = 0d0
-        NRM = -A
-     else
-        C = 1d0
-        S = 0d0
-        NRM = A
-     end if
-  else if (abs(A**2 + B**2 - 1d0) .LT. 3d0*EISCOR_DBL_EPS) then
-     C = A
-     S = B
-     NRM = 1d0
-  else if (abs(A).GE.abs(B)) then
-     S = B/A
-     if (A.LT.0) then
-        NRM = -sqrt(1.d0 + S**2)
-     else
-        NRM = sqrt(1.d0 + S**2)
-     end if
-     C =  1.d0/NRM
-     S =  S*C
-     NRM =  A*NRM
-  else
-     C = A/B;
-     if (B.LT.0) then
-        NRM = -sqrt(1.d0 + C**2)
-     else
-        NRM = sqrt(1.d0 + C**2)
-     end if
-     S =  1.d0/NRM
-     C =  C*S
-     NRM =  B*NRM
-  end if
+  ! compute variables
+  real(8) :: tA, tB
+  
+  ! call DROTG from oenblas
+  tA = A; tB = B
+  call drotg(tA,tB,C,S)
+  NRM = tA  
            
 end subroutine d_rot2_vec2gen
