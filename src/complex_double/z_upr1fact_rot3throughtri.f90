@@ -31,7 +31,7 @@
 !                    generator for rotation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
+subroutine z_upr1fact_rot3throughtri(FLAG,D,C,B,G)
 
   implicit none
   
@@ -43,7 +43,7 @@ subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
   if (FLAG) then
   
     ! through D
-    call z_rot3_swapdiag(DIR,D,G)
+    call z_rot3_swapdiag(FLAG,D,G)
     
     ! though C
     call z_rot3_turnover(C(1:3),C(4:6),G)
@@ -61,7 +61,7 @@ subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
     call z_rot3_turnover(C(4:6),C(1:3),G)
     
     ! through D
-    call z_rot3_swapdiag(DIR,D,G)
+    call z_rot3_swapdiag(FLAG,D,G)
   
   end if
 
