@@ -19,7 +19,7 @@ program test_z_rot3_swapdiag
   implicit none
 
   ! parameter
-  real(8) :: tol = 2d0*epsilon(1d0) ! accuracy (tolerance)
+  real(8) :: tol = 2d0*EISCOR_DBL_EPS ! accuracy (tolerance)
 
   ! compute variables
   logical :: flag

@@ -52,7 +52,7 @@ program test_z_rot3_turnover
   integer :: histo(7), histo2(7,8), histot(7,8), h2, ht
 
   ! tol depending on accum
-  tol = 2d0*accum*epsilon(1d0) ! accuracy of turnover
+  tol = 2d0*accum*EISCOR_DBL_EPS ! accuracy of turnover
 
   ! fix seed
   
