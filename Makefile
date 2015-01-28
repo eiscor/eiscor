@@ -32,6 +32,6 @@ clean:
 	@$(MAKE) clean -C ./example
 	@$(MAKE) clean -C ./test
 	@$(MAKE) clean -C ./benchmark
-	@rm -f lib$(LIBNAME).so.$(VERSION)
+	@rm -f lib$(LIBNAME).$(SLIB).$(VERSION)
 
 
