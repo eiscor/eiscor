@@ -73,6 +73,14 @@ subroutine d_rot2_vec2gen(A,B,C,S,NRM,INFO)
     end if 
     
   end if 
+
+  NRM = A**2 + B**2
+  if (abs(nrm - 1)<tol) then
+     C = A
+     S = B
+     NRM = 1d0
+     return 
+  end if
   
   ! construct rotation
   NRM = 1d0  

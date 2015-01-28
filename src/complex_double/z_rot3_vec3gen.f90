@@ -99,6 +99,16 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM,INFO)
 
   end if
 
+
+  NRM = AR**2 + AI**2 + B**2
+  if (abs(nrm - 1)<tol) then
+     CR = AR
+     CI = AI
+     S = B
+     NRM = 1d0
+     return 
+  end if
+
   ! set local variables
   nar = abs(AR)
   nai = abs(AI)
