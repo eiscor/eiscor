@@ -20,7 +20,7 @@ run: $(DBMRKS)
 	@$(foreach benchmark,$(DBMRKS),./$(benchmark) &&) echo 'End of double benchmarks!'
 
 %:: %.f90
-	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).so.$(VERSION)  $(LIBS)
+	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).$(SLIB).$(VERSION)  $(LIBS)
 
 clean:
 	@rm -f $(DBMRKS)	
