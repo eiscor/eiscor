@@ -108,7 +108,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D1,C1,B1,D2,C2,B2,V
   integer :: ii
   logical :: final_flag
   real(8) :: G1(3), G2(3), G3(3)
-  complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2)
+  complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2), E(2)
   
   ! initialize INFO
   INFO = 0
@@ -201,50 +201,85 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D1,C1,B1,D2,C2,B2,V
           
   ! wilkinson shift
   else
-  
-    ! get 2x2 blocks
-    call z_upr1fact_2x2diagblocks('H',ALG,N,STP,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
-      
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-    
-    ! store bottom right entries
-    shift = A(2,2)
-    rho = B(2,2)
+     
+     if (ALG.EQ.'QR') then
+        ! get 2x2 blocks
+        call z_upr1fact_2x2diagblocks('H',ALG,N,STP,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
         
-    ! compute eigenvalues and eigenvectors
-    call z_2x2array_geneig('G',A,B,Wt,Vt,INFO)
-      
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-          
-    ! choose wikinson shift
-    ! complex abs does not matter here
-    if(abs(A(2,2)-shift)+abs(B(2,2)-rho) < abs(A(1,1)-shift)+abs(B(1,1)-rho))then
-      shift = A(2,2)
-      rho = B(2,2)
-    else
-      shift = A(1,1)
-      rho = B(1,1)
-    end if
-    
-    ! avoid zero division
-    if ((dble(rho).EQ.0).AND.(aimag(rho).EQ.0)) then
-      shift = 1d16 ! not sure if this is a good idea?
-    else
-      shift = shift/rho
-    end if
-
+        ! check INFO in debug mode
+        if (DEBUG) then
+           call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
+           if (INFO.NE.0) then 
+              return 
+           end if
+        end if
+        
+        ! store bottom right entries
+        shift = A(2,2)
+        
+        ! compute eigenvalues and eigenvectors
+        call z_2x2array_eig(A,E,Vt,INFO)
+        
+        ! check INFO in debug mode
+        if (DEBUG) then
+           call u_infocode_check(__FILE__,__LINE__,"z_2x2array_eig failed",INFO,INFO)
+           if (INFO.NE.0) then 
+              return 
+           end if
+        end if
+        
+        ! choose wikinson shift
+        ! complex abs does not matter here
+        if(abs(E(1)-shift) < abs(E(2)-shift)) then
+           shift = E(1)
+        else
+           shift = E(2)
+        end if
+        
+     else     
+        ! get 2x2 blocks
+        call z_upr1fact_2x2diagblocks('H',ALG,N,STP,P,Q,D1,C1,B1,D2,C2,B2,A,B,INFO)
+        
+        ! check INFO in debug mode
+        if (DEBUG) then
+           call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
+           if (INFO.NE.0) then 
+              return 
+           end if
+        end if
+        
+        ! store bottom right entries
+        shift = A(2,2)
+        rho = B(2,2)
+        
+        ! compute eigenvalues and eigenvectors
+        call z_2x2array_geneig('G',A,B,Wt,Vt,INFO)
+        
+        ! check INFO in debug mode
+        if (DEBUG) then
+           call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,INFO)
+           if (INFO.NE.0) then 
+              return 
+           end if
+        end if
+        
+        ! choose wikinson shift
+        ! complex abs does not matter here
+        if(abs(A(2,2)-shift)+abs(B(2,2)-rho) < abs(A(1,1)-shift)+abs(B(1,1)-rho))then
+           shift = A(2,2)
+           rho = B(2,2)
+        else
+           shift = A(1,1)
+           rho = B(1,1)
+        end if
+        
+        ! avoid zero division
+        if ((dble(rho).EQ.0).AND.(aimag(rho).EQ.0)) then
+           shift = 1d16 ! not sure if this is a good idea?
+        else
+           shift = shift/rho
+        end if
+     end if
   end if
 
   ! build bulge
