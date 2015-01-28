@@ -22,7 +22,7 @@ program test_z_rot3_swapdiag
   real(8) :: tol = 2d0*EISCOR_DBL_EPS ! accuracy (tolerance)
 
   ! compute variables
-  logical :: flag
+  logical :: dir
   real(8) :: D(4), B(3), a, c, e, nrm
   complex(8) :: H(2,2)
 
@@ -40,7 +40,7 @@ program test_z_rot3_swapdiag
   ! check 1)
 
   ! set variables
-  flag = .TRUE.
+  dir = .TRUE.
   D(1) = 1d0
   D(2) = 0d0
   D(3) = 1d0
@@ -56,7 +56,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -72,7 +72,7 @@ program test_z_rot3_swapdiag
   end if
 
   ! set variables
-  flag = .FALSE.
+  dir = .FALSE.
   D(1) = 1d0
   D(2) = 0d0
   D(3) = 1d0
@@ -87,7 +87,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -106,7 +106,7 @@ program test_z_rot3_swapdiag
   ! check 2)
 
   ! set variables
-  flag = .TRUE.
+  dir = .TRUE.
   D(1) = -1d0
   D(2) = 0d0
   D(3) = 1d0
@@ -122,7 +122,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -138,7 +138,7 @@ program test_z_rot3_swapdiag
   end if
 
   ! set variables
-  flag = .FALSE.
+  dir = .FALSE.
   D(1) = -1d0
   D(2) = 0d0
   D(3) = 1d0
@@ -154,7 +154,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -173,7 +173,7 @@ program test_z_rot3_swapdiag
   ! check 3)
 
   ! set variables
-  flag = .TRUE.
+  dir = .TRUE.
   D(1) = 1d0
   D(2) = 0d0
   D(3) = -1d0
@@ -189,7 +189,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -205,7 +205,7 @@ program test_z_rot3_swapdiag
   end if
 
   ! set variables
-  flag = .FALSE.
+  dir = .FALSE.
   D(1) = 1d0
   D(2) = 0d0
   D(3) = -1d0
@@ -221,7 +221,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -241,7 +241,7 @@ program test_z_rot3_swapdiag
   ! check 4)
 
   ! set variables
-  flag = .TRUE.
+  dir = .TRUE.
   D(1) = -1d0
   D(2) = 0d0
   D(3) = -1d0
@@ -257,7 +257,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -273,7 +273,7 @@ program test_z_rot3_swapdiag
   end if
 
   ! set variables
-  flag = .FALSE.
+  dir = .FALSE.
   D(1) = -1d0
   D(2) = 0d0
   D(3) = -1d0
@@ -289,7 +289,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(flag,D,B)
+  call z_rot3_swapdiag(dir,D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)

@@ -14,7 +14,7 @@
 !
 ! INPUT VARIABLES:
 !
-!  FLAG            LOGICAL
+!  DIR             LOGICAL
 !                    .TRUE.: pass rotation from left to right
 !                    .FALSE.: pass rotation from right to left
 !
@@ -25,12 +25,12 @@
 !                    generator for a Givens rotation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_rot3_swapdiag(FLAG,D,G)
+subroutine z_rot3_swapdiag(DIR,D,G)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: FLAG
+  logical, intent(in) :: DIR
   real(8), intent(inout) :: D(4), G(3)
   
   ! compute variables
@@ -51,7 +51,7 @@ subroutine z_rot3_swapdiag(FLAG,D,G)
   d2i = D(4)  
   
   ! from left to right
-  if (FLAG)then
+  if (DIR)then
   
     ! pass through diagonal
     nrm = (d1r*d2r + d1i*d2i)*c1r - (-d1r*d2i + d1i*d2r)*c1i
