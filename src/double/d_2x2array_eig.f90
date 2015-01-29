@@ -55,23 +55,29 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
     
     ! imaginary roots
     if (temp < 0) then
-    
+      
+      ! move A to standard form (A(1,1) = A(2,2))
       ! real part of lambda
       trace = trace/2d0
     
       ! imaginary part of lambda 
       disc = sqrt(-temp)/2d0
-    
-      ! compute Schur vectors
-      call d_rot2_vec2gen(A(1,2)+disc,trace-A(1,1),Q(1,1),Q(2,1),temp)
+   
+      ! compute Q
+      temp = (A(2,2)-A(1,1))
+      if ((temp.NE.0).AND.(abs(temp)>1)) then
+        temp = (A(1,2)+A(2,1))/temp
+        temp = temp*(1d0-sqrt(1d0+1d0/temp/temp))
+      else if (temp.NE.0) then 
+        temp = (A(1,2)+A(2,1))/temp
+        temp = temp-sqrt(1d0+temp*temp)
+      end if
+      call d_rot2_vec2gen(1d0,temp,Q(1,1),Q(2,1),temp)
       Q(2,2) = Q(1,1)
       Q(1,2) = -Q(2,1)
     
       ! update A
-      A(1,1) = trace
-      A(2,1) = disc
-      A(2,2) = A(1,1)
-      A(1,2) = -A(2,1)
+      A = matmul(transpose(Q),matmul(A,Q))
 
     ! real roots
     else
@@ -85,7 +91,7 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
       else
         temp = (trace-disc)/2d0
       end if
-      
+
       ! compute Schur vectors
       call d_rot2_vec2gen(A(1,2),temp-A(1,1),Q(1,1),Q(2,1),trace)
       Q(2,2) = Q(1,1)

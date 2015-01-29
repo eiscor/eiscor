@@ -46,30 +46,8 @@ program test_d_2x2array_eig
     
     call d_2x2array_eig(.FALSE.,A,B,Q,Z)
     
-print*,""
-print*,"Aold"
-print*,Aold(1,:)
-print*,Aold(2,:)
-print*,""
-
-print*,"A"
-print*,A(1,:)
-print*,A(2,:)
-print*,""
-
-print*,"Q"
-print*,Q(1,:)
-print*,Q(2,:)
-print*,""
-    
     ! check results
-    Aold = A - matmul(transpose(Q),matmul(Aold,Q))
-    
-print*,"Aold"
-print*,Aold(1,:)
-print*,Aold(2,:)
-print*,""
-    
+    Aold = matmul(Q,A) - matmul(Aold,Q)
     if (maxval(abs(Aold))>tol) then
       call u_test_failed(__LINE__)
     end if
@@ -86,36 +64,8 @@ print*,""
     
     call d_2x2array_eig(.FALSE.,A,B,Q,Z)
     
-print*,""
-print*,"Aold"
-print*,Aold(1,:)
-print*,Aold(2,:)
-print*,""
-
-print*,"A"
-print*,A(1,:)
-print*,A(2,:)
-print*,""
-
-print*,"Q"
-print*,Q(1,:)
-print*,Q(2,:)
-print*,""
-    
     ! check results
-    Aold = matmul(Aold,Q) 
-    A = matmul(Q,A)
-    
-print*,"Aold"
-print*,Aold(1,:)
-print*,Aold(2,:)
-print*,""
-
-print*,"A"
-print*,A(1,:)
-print*,A(2,:)
-print*,""
-    
+    Aold = matmul(Q,A) - matmul(Aold,Q) 
     if (maxval(abs(Aold))>tol) then
       call u_test_failed(__LINE__)
     end if
