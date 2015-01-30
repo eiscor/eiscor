@@ -80,7 +80,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   end interface
   
   ! compute variables
-  integer :: ii
+  integer :: ii, ir1, ir2, id1, id2
   logical :: final_flag
   real(8) :: G1(3), G2(3), G3(3)
   complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2)
@@ -99,14 +99,17 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   else
   
     ! get 2x2 blocks
-    call z_upr1fact_2x2diagblocks('H',QZ,N,N,P,Q,D1,C1,B1,D2,C2,B2,A,B)
+    ir2 = 3*(N-1); ir1 = ir2-5
+    id2 = 2*N; id1 = id2-3
+    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2),Q((ir1-3):(ir2-3)) &
+    ,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
       
     ! store bottom right entries
     shift = A(2,2)
     rho = B(2,2)
         
     ! compute eigenvalues and eigenvectors
-    call z_2x2array_eig('G',A,B,Wt,Vt)
+    call z_2x2array_eig(QZ,A,B,Vt,Wt)
           
     ! choose wikinson shift
     ! complex abs does not matter here
