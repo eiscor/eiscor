@@ -131,7 +131,8 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   end if
 
   ! build bulge
-  call z_upr1fact_buildbulge(QZ,N,1,P,Q,D1,C1,B1,D2,C2,B2,shift,G2)
+  call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
+  ,D2(1:4),C2(1:6),B2(1:6),shift,G2)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -148,7 +149,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! iteration for QZ
+! iteration for QR
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   else
