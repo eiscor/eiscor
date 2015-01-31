@@ -25,7 +25,7 @@
 !
 !  Q, Z           COMPLEX(8) array of dimension (2,2)
 !                   On exit unitary transformations such that Q*(A,B)Z is 
-!                   upper-triangular. If FALG = .FALSE., Z is unused.
+!                   upper-triangular. If FLAG = .FALSE., Z is unused.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
