@@ -39,10 +39,10 @@
 !
 !  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
 !                    array of generators for upper-triangular parts of the pencil
-!                    If QZ = .FALSE., C2 and B2 are  unused.
+!                    If QZ = .FALSE., C2 and B2 are unused.
 !
 !  M               INTEGER
-!                    leading dimesnion  of V and W
+!                    leading dimesnion of V and W
 !
 !  V               COMPLEX(8) array of dimension (M,N)
 !                    right schur vectors
@@ -51,9 +51,9 @@
 !
 !  W               COMPLEX(8) array of dimension (M,N)
 !                    left schur vectors
+!                    if QZ = .FALSE. unused
 !                    if VEC = .FALSE. unused
 !                    if VEC = .TRUE. update W to store left schurvectors
-!                    if QZ = .FALSE. unused
 !
 !  ITCNT           INTEGER
 !                   Contains the number of iterations since last deflation
@@ -175,7 +175,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     if (.NOT.P(1)) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('L',N,1,N,1,P,Q,D1,G1)
+      call z_upr1fact_mergebulge(.TRUE.,P,Q,D1(1:(2*N)),G1)
       
       ! set G1 for turnover
       G1(1) = Q(1)
@@ -194,7 +194,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     if (P(1).EQV..TRUE.) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('R',N,1,N,1,P,Q,D1,G2)
+      call z_upr1fact_mergebulge(.TRUE.,P,Q,D1(1:(2*N)),G2)
       
       ! set G3 for turnover
       G3(1) = Q(1)
@@ -328,7 +328,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       call z_upr1fact_rot3throughtri(.FALSE.,N,N,D1,C1,B1,G3)
         
       ! merge bulge 
-      call z_upr1fact_mergebulge('R',N,1,N,N,P,Q,D1,G3)
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G3)
       
     ! inverse hess
     else
@@ -359,7 +359,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       end if  
       
       ! merge bulge 
-      call z_upr1fact_mergebulge('L',N,1,N,N,P,Q,D1,G2)
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
       
     end if
     
