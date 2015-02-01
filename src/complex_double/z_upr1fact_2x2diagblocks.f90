@@ -31,12 +31,12 @@
 !                    array of generators for first sequence of rotations
 !                    if HESS = .FALSE., unused
 !
-!  D1,D2           REAL(8) arrays of dimension (2*(N+1))
+!  D1,D2           REAL(8) arrays of dimension (4)
 !                    array of generators for complex diagonal matrices
 !                    in the upper-triangular factors
 !                    if QZ = .FALSE., D2 is unused
 !
-!  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
+!  C1,B1,C2,B2     REAL(8) arrays of dimension (6)
 !                    array of generators for upper-triangular parts of the pencil
 !                    if QZ = .FALSE., C2 and B2 are unused
 !
