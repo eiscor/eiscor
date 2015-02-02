@@ -19,7 +19,7 @@
 !                    .TRUE.: schurvectors, assume V and W already initialized
 !                    .FALSE.: no schurvectors
 !
-!  Q               REAL(8) array of dimension (6)
+!  Q               REAL(8) array of dimension (3)
 !                    array of generators for first sequence of rotations
 !
 !  D1,D2           REAL(8) arrays of dimension (4)
@@ -54,17 +54,18 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
   
   ! input variables
   logical, intent(in) :: QZ, VEC
-  real(8), intent(inout) :: Q(6), D1(4), C1(6), B1(6)
+  real(8), intent(inout) :: Q(3), D1(4), C1(6), B1(6)
   real(8), intent(inout) :: D2(4), C2(6), B2(6)
   integer, intent(in) :: M 
   complex(8), intent(inout) :: V(M,2), W(M,2)
   
   ! compute variables
-  real(8) :: nrm, G1(3), G2(3), G3(3)
+  real(8) :: nrm, G1(3), G2(3), G3(3), Qt(6)
   complex(8) :: A(2,2), B(2,2), Vt(2,2), Wt(2,2)
   
   ! compute 2x2 blocks
-  call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Q,D1,C1,B1,D2,C2,B2,A,B)
+  Qt = 0d0; Qt(1:3) = Q; Qt(4) = 1d0
+  call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Qt,D1,C1,B1,D2,C2,B2,A,B)
    
   ! compute standard Schur decomposition
   if (.NOT.QZ) then

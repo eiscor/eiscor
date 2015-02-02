@@ -17,7 +17,7 @@ program test_z_upr1fact_2x2deflation
   
   ! compute variables
   real(8), parameter :: tol = 1d1*EISCOR_DBL_EPS
-  real(8) :: Q(6), D1(4), C1(6), B1(6)
+  real(8) :: Q(3), D1(4), C1(6), B1(6)
   real(8) :: D2(4), C2(6), B2(6)
   complex(8) :: V(2,2), W(2,2)
   complex(8) :: temp(2,2), A(2,2), B(2,2)
@@ -35,7 +35,7 @@ program test_z_upr1fact_2x2deflation
   ! check 1)
     ! set valid Q
     Q = 0d0
-    Q(3) = 1d0; Q(4) = 1d0   
+    Q(3) = 1d0
     temp(1,1) = cmplx(Q(1),Q(2),kind=8)
     temp(2,1) = cmplx(Q(3),0d0,kind=8)
     temp(1,2) = -temp(2,1)
