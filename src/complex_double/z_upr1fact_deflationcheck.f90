@@ -56,34 +56,33 @@ subroutine z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
     ! deflate if subdiagonal is small enough
     nrm = abs(Q(3*(N-ii)))
     if(nrm < tol)then
-      
+
       ! set ZERO
       ZERO = max(0,N-ii)
       
       ! extract diagonal
-      qr = Q(3*(N-ii)-2)
-      qi = Q(3*(N-ii)-1)
+      qr = Q(3*ZERO-2)
+      qi = Q(3*ZERO-1)
                 
       ! set rotation to identity
-      Q(3*(N-ii)-2) = 1d0
-      Q(3*(N-ii)-1) = 0d0
-      Q(3*(N-ii)) = 0d0
+      Q(3*ZERO-2) = 1d0
+      Q(3*ZERO-1) = 0d0
+      Q(3*ZERO) = 0d0
       
       ! initialize up
-      up = N-ii
+      up = ZERO
         
       ! deflate upward
-      do jj = 1,(N-1-ii)
-        
-        ! set upward index
-        up = N-ii-jj
+      do jj = 1,(ZERO-1)
         
         ! exit loop if P == .FALSE.
-        if (.NOT.P(up)) then
-          up = up + 1
+        if (.NOT.P(up-1)) then
           exit    
         end if
    
+        ! set upward index
+        up = ZERO-jj
+        
         ! update Q
         cr = Q(3*up-2)
         ci = Q(3*up-1)
@@ -108,10 +107,10 @@ subroutine z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
       call d_rot2_vec2gen(dr,di,D(2*up-1),D(2*up),nrm)
 
       ! initialize downward index
-      down = N-ii
+      down = ZERO
         
       ! deflate downward
-      do jj = 1,(ii-1)
+      do jj = 1,(N-1-ZERO)
         
         ! exit if P == .TRUE.
         if (P(down)) then
@@ -119,7 +118,7 @@ subroutine z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
         end if
                 
         ! set downward index
-        down = N-ii+jj
+        down = ZERO+jj
         
         ! update Q
         cr = Q(3*down-2)

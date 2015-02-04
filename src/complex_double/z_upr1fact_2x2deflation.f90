@@ -66,12 +66,12 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
   ! compute 2x2 blocks
   Qt = 0d0; Qt(1:3) = Q; Qt(4) = 1d0
   call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Qt,D1,C1,B1,D2,C2,B2,A,B)
-   
+
   ! compute standard Schur decomposition
   if (.NOT.QZ) then
   
     ! standard schur decomposition
-    call z_2x2array_eig(QZ,A,B,Wt,Vt)
+    call z_2x2array_eig(QZ,A,B,Vt,Wt)
 
     ! replace Vt with rotation G1
     call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)),aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm)
@@ -106,7 +106,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     end if
 
     B(1,1) = cmplx(G1(1),-G1(2),kind=8)
-    B(2,1) = cmplx(G1(3),0d0,kind=8)
+    B(2,1) = cmplx(-G1(3),0d0,kind=8)
     B(1,2) = -B(2,1)
     B(2,2) = conjg(B(1,1))    
 

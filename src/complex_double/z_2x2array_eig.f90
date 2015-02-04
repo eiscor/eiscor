@@ -197,7 +197,7 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
 
     ! compute Q
     lambda = lambda-A(1,1)
-    call z_rot3_vec4gen(dble(A(1,2)),-aimag(A(1,2)),dble(lambda),-aimag(lambda),cr,ci,s,nrm)
+    call z_rot3_vec4gen(dble(A(1,2)),aimag(A(1,2)),dble(lambda),aimag(lambda),cr,ci,s,nrm)
     Q(1,1) = cmplx(cr,ci,kind=8)
     Q(2,1) = cmplx(s,0d0,kind=8)
     Q(2,2) = conjg(Q(1,1))

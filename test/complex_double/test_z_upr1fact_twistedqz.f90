@@ -16,12 +16,13 @@ program test_z_upr1fact_twistedqz
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**2
+  real(8), parameter :: tol = 1d1*EISCOR_DBL_EPS
+  integer, parameter :: N = 2**5
   integer :: ii, INFO, ITS(N-1)
   logical :: P(N-2)
   real(8) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
   real(8) :: D2(2*(N+1)), C2(3*N), B2(3*N)
-  complex(8) :: V(N,N), W(N,N)
+  complex(8) :: temp,V(N,N), W(N,N)
   interface
     function l_upr1fact_upperhess(m,flags)
       logical :: l_upr1fact_upperhess
@@ -76,21 +77,16 @@ program test_z_upr1fact_twistedqz
     if (INFO.NE.0) then
       call u_test_failed(__LINE__)
     end if
+
+    do ii=1,(N)
+      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
+      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) < tol) then
+        call u_test_failed(__LINE__)
+      end if
+    end do
+
   ! end check 1)
 
-print*,""
-print*,"Q"
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-
-print*,"D1"
-do ii=1,(N+1)
-print*,D1(2*ii-1),D1(2*ii)
-end do
-print*,""
-  
   ! stop timer
   call system_clock(count=c_stop)
   

@@ -128,21 +128,6 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   ! iteration loop
   do kk=1,ITMAX
 
-print*,""
-print*,"Inside twisted QZ"
-print*,"before deflation check"
-print*,"Q"
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-
-print*,"D1"
-do ii=1,(N+1)
-print*,D1(2*ii-1),D1(2*ii)
-end do
-print*,""
-  
     ! check for completion
     if(STP <= 0)then    
       exit
@@ -152,32 +137,18 @@ print*,""
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
     ,D1((2*STR-1):(2*STP+2)),ZERO)
     
-print*,"after deflation check"
-print*,"ZERO:",ZERO
-print*,"Q"
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-
-print*,"D1"
-do ii=1,(N+1)
-print*,D1(2*ii-1),D1(2*ii)
-end do
-print*,""
-  
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
     
       ! update indices
-      ITS(STP) = ITCNT
+      ITS(STR+STP-1) = ITCNT
       ITCNT = 0
       STP = STP - 1
       ZERO = 0
       STR = 1
     
     ! if 2x2 block remove and check again
-    else if(STP-1 == (STR+ZERO-1))then
+    else if(STP == (STR+ZERO))then
     
       ! call 2x2 deflation
       call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)),D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
@@ -185,7 +156,7 @@ print*,""
       ,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
     
       ! update indices
-      ITS(STP) = ITCNT
+      ITS(STR+STP-1) = ITCNT
       ITCNT = 0
       STP = STP - 2
       ZERO = 0
@@ -194,24 +165,16 @@ print*,""
     ! if greater than 2x2 chase a bulge
     else
 
+      ! check STR
+      if (STR <= ZERO) then
+        STR = ZERO+1
+      end if
+
       ! perform singleshift iteration
       call z_upr1fact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &
       ,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)) &
       ,B2((3*STR-2):(3*STP+3)),N,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
      
-print*,"after bulge chase"
-print*,"Q"
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-
-print*,"D1"
-do ii=1,(N+1)
-print*,D1(2*ii-1),D1(2*ii)
-end do
-print*,""
-  
       ! update indices
       ITCNT = ITCNT + 1
  
@@ -220,7 +183,7 @@ print*,""
     ! if ITMAX hit
     if (kk == ITMAX) then
       INFO = 1
-      ITS(STP) = ITCNT
+      ITS(STR+STP-1) = ITCNT
     end if
     
   end do

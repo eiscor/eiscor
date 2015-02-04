@@ -140,11 +140,6 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
   ,D2(1:4),C2(1:6),B2(1:6),shift,G2)
 
-print*,"shift:",shift
-print*,"bulge:",G2
-
-
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! iteration for QZ
@@ -194,7 +189,6 @@ print*,"bulge:",G2
       G1(3) = Q(3)
 
     end if
-print*,"made it here!"
     
     ! pass G2 through triangular part
     call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D1(1:4),C1(1:6),B1(1:6),G2)
