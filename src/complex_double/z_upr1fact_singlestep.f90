@@ -191,7 +191,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     end if
     
     ! pass G2 through triangular part
-    call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D1(1:4),C1(1:6),B1(1:6),G2)
+    call z_upr1fact_rot3throughtri(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G2)
     
     ! set G3 for turnover
     G3 = G2
@@ -258,7 +258,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
         end if
         
         ! pass G3 through upper triangular part
-        call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        call z_upr1fact_rot3throughtri(.FALSE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
         ,B1((3*ii+1):(3*ii+6)),G3)
         
       ! inverse hess
@@ -273,7 +273,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
         Q(3*ii+3) = G3(3)  
         
         ! pass G2 through upper triangular part
-        call z_upr1fact_rot3throughtri(.TRUE.,.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        call z_upr1fact_rot3throughtri(.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
         ,B1((3*ii+1):(3*ii+6)),G2)
         
         ! update V
@@ -333,7 +333,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       end if    
     
       ! pass G3 through upper triangular part
-      call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      call z_upr1fact_rot3throughtri(.FALSE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
       ,B1((3*N-5):(3*N)),G3)
         
       ! merge bulge 
@@ -353,7 +353,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       Q(3*(N-1)) = G3(3)  
       
       ! pass G2 through upper triangular part
-      call z_upr1fact_rot3throughtri(.TRUE.,.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      call z_upr1fact_rot3throughtri(.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
       ,B1((3*N-5):(3*N)),G2)
         
       ! update V

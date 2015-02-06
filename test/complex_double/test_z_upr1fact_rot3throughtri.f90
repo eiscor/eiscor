@@ -60,10 +60,10 @@ program test_z_upr1fact_rot3throughtri
     Gold = G
     
     ! call 
-    call z_upr1fact_rot3throughtri(.TRUE.,.TRUE.,D,C,B,G)
+    call z_upr1fact_rot3throughtri(.TRUE.,D,C,B,G)
     
     ! call 
-    call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D,C,B,G)
+    call z_upr1fact_rot3throughtri(.FALSE.,D,C,B,G)
 
     ! check results
     if (maxval(abs(Dold-D)) > tol) then

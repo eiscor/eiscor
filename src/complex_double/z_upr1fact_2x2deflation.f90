@@ -78,7 +78,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
     ! pass G1 through triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D1,C1,B1,G3)
+    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G3)
     
     ! similarity transform of Q
     A(1,1) = cmplx(Q(1),Q(2),kind=8)
@@ -137,7 +137,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
     ! pass G1 through right triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D2,C2,B2,G3)
+    call z_upr1fact_rot3throughtri(.FALSE.,D2,C2,B2,G3)
     
     ! equivalence transform
     A(1,1) = cmplx(G2(1),G2(2),kind=8)
@@ -161,7 +161,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
     ! pass G1 through left triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,.TRUE.,D1,C1,B1,G3)
+    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G3)
     
     ! equivalence transform of Q
     A(1,1) = cmplx(Q(1),Q(2),kind=8)
