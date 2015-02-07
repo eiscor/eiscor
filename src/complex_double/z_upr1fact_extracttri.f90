@@ -1,6 +1,6 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZPFFET (Zomplex unitary Plus rank 1 hessenberg Factored Extract Triangular part)
+! z_upr1fact_extracttri
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -51,7 +51,7 @@
 !                   an improper value, i.e. INFO=-2 => N is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZPFFET(JOB,N,Q,D,C,B,T,INFO)
+subroutine z_upr1fact_extracttri(JOB,N,Q,D,C,B,T,INFO)
 
   implicit none
   
@@ -68,24 +68,6 @@ subroutine ZPFFET(JOB,N,Q,D,C,B,T,INFO)
   
   ! initialize info
   INFO = 0
-  
-  ! check JOB
-  if ((JOB.NE.'E').AND.(JOB.NE.'T')) then
-    INFO = -1
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "JOB must be 'E' or 'T'"
-    write(*,*) ""
-    return
-  end if
-  
-  ! check factorization
-  call ZPFCHF(N,Q,D,C,B,INFO)
-  if (INFO.NE.0) then
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "Invalid factorization."
-    write(*,*) ""
-    return
-  end if  
   
   ! if JOB == T
   if (JOB.EQ.'T') then
@@ -150,4 +132,4 @@ subroutine ZPFFET(JOB,N,Q,D,C,B,T,INFO)
     D(ind+2) = aimag(p)
   end do
   
-end subroutine ZPFFET
+end subroutine z_upr1fact_extracttri

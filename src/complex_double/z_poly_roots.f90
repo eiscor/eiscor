@@ -1,13 +1,11 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! ZMBFRF (Zomplex Monomial Basis Fast Root Finder)
+! z_poly_roots 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes the roots of a polynomial expressed in the 
 ! monomial basis using the fast algorithm described in:
-!
-!
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -46,7 +44,7 @@
 !                    an improper value, i.e. INFO=-2 => COEFFS is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine ZMBFRF(N,COEFFS,ROOTS,WORK,ITS,INFO)
+subroutine z_poly_roots(N,COEFFS,ROOTS,WORK,ITS,INFO)
 
   implicit none
   
@@ -64,48 +62,6 @@ subroutine ZMBFRF(N,COEFFS,ROOTS,WORK,ITS,INFO)
   
   ! initialize INFO
   INFO = 0
-  
-  ! check N
-  call IARNAN(N,INFO)
-  if (INFO.NE.0) then
-    INFO = -1
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "N contains a NAN."
-    write(*,*) ""
-    return
-  end if
-  call IARINF(N,INFO)
-  if (INFO.NE.0) then
-    INFO = -1
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "N contains an INF."
-    write(*,*) ""
-    return
-  end if
-  if (N < 1) then
-    INFO = 1
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "N must be at least 1."
-    write(*,*) ""
-    return
-  end if
-  
-	! check COEFFS
-  call ZARACH1(N+1,COEFFS,INFO)
-  if (INFO.NE.0) then
-    INFO = -2
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "COEFFS contains an INF or NAN"
-    write(*,*) ""
-    return
-  end if 
-  if (abs(COEFFS(1)).EQ.0d0) then
-    INFO = 2
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "Polynomial represented by COEFFS has degree less than N."
-    write(*,*) ""
-    return
-  end if 
   
   ! prune zero roots
   ITS = 0
@@ -138,7 +94,7 @@ subroutine ZMBFRF(N,COEFFS,ROOTS,WORK,ITS,INFO)
 ! start timer
 call cpu_time(t_str)    
     ! factor companion matrix
-    call ZMBCQR('N',ntmp,COEFFS(2:(ntmp+1))/COEFFS(1),WORK(:,1),WORK(:,2), &
+    call z_poly_factorcomp('N',ntmp,COEFFS(2:(ntmp+1))/COEFFS(1),WORK(:,1),WORK(:,2), &
       WORK(:,3),WORK(:,4),Z,INFO)  
     
     ! check INFO
@@ -156,7 +112,7 @@ print*,"time to factor (sec):",t_stp-t_str
 ! start timer
 call cpu_time(t_str)     
     ! call ZPFFQR
-    call ZPFFQR('N',ntmp,WORK(:,1),WORK(:,2),WORK(:,3),WORK(:,4),Z,ITS,INFO)
+    call z_upr1fact_twistedqz('N',ntmp,WORK(:,1),WORK(:,2),WORK(:,3),WORK(:,4),Z,ITS,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
@@ -173,7 +129,7 @@ print*,"time to solve (sec):",t_stp-t_str
 ! start timer
 call cpu_time(t_str)     
     ! extract roots
-    call ZPFFET('E',ntmp,WORK(:,1),WORK(:,2),WORK(:,3),WORK(:,4),Z,INFO)
+    call z_upr1fact_extracttri('E',ntmp,WORK(:,1),WORK(:,2),WORK(:,3),WORK(:,4),Z,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
@@ -208,4 +164,4 @@ print*,"time to extract (sec):",t_stp-t_str
   
   end if   
 
-end subroutine ZMBFRF
+end subroutine z_poly_roots
