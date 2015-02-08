@@ -24,7 +24,7 @@
 !                    computed roots
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_poly_roots(N,COEFFS,ROOTS)
+subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
 
   implicit none
   
@@ -32,6 +32,7 @@ subroutine z_poly_roots(N,COEFFS,ROOTS)
   integer, intent(in) :: N
   complex(8), intent(in) :: COEFFS(N+1)
   complex(8), intent(inout) :: ROOTS(N)
+  real(8), intent(inout) :: RESIDUALS(N)
   
   ! compute variables
   integer :: ii, INFO
@@ -64,6 +65,9 @@ subroutine z_poly_roots(N,COEFFS,ROOTS)
     
   ! extract roots
   call z_upr1fact_extracttri(.TRUE.,N,D,C,B,ROOTS)
+    
+  ! compute residuals
+  call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
     
   ! free memory
   deallocate(P,ITS,Q,D,C,B)

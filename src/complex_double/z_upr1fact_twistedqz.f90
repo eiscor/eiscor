@@ -136,7 +136,9 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     ! check for deflation
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
     ,D1((2*STR-1):(2*STP+2)),ZERO)
+   
     
+ 
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
     
@@ -167,7 +169,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
 
       ! check STR
       if (STR <= ZERO) then
-        STR = ZERO+1
+        STR = STR+ZERO
       end if
 
       ! perform singleshift iteration
