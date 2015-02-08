@@ -95,41 +95,34 @@ subroutine z_poly_factorcomp(QZ,VEC,ID,N,COEFFS,P,Q,D1,C1,B1,D2,C2,B2,V,W)
     end if
   
     ! set Q
+    Q = 0d0
     do ii=1,(N-1)
-      ind = 3*(ii-1)
-      Q(ind+1) = 0d0
-      Q(ind+2) = 0d0
-      Q(ind+3) = 1d0
+      Q(3*ii) = 1d0
     end do
-    ind = 3*(N-1)
-    Q(ind+1) = 1d0
-    Q(ind+2) = 0d0
-    Q(ind+3) = 0d0
   
     ! set D1
+    D1 = 0d0
     do ii=1,(N+1)
-      ind = 2*(ii-1)
-      D1(ind+1) = 1d0
-      D1(ind+2) = 0d0
+      D1(2*ii-1) = 1d0
     end do
     ind = 2*(N-2)
     D1(ind+1) = phr
     D1(ind+2) = phi
   
     ! initialize B1 and C1
+    C1 = 0d0
+    B1 = 0d0
     t1 = cmplx(nrm*(-1d0)**(N),0d0,kind=8)
     t2 = cmplx((-1d0)**(N-1),0d0,kind=8)
     ind = 3*(N-1)
     call d_rot2_vec2gen(nrm*(-1d0)**(N),(-1d0)**(N-1),C1(ind+1),C1(ind+3),nrm)
-    C1(ind+2) = 0d0
     B1(ind+1) = C1(ind+3)*(-1d0)**(N)
-    B1(ind+2) = 0d0
     B1(ind+3) = C1(ind+1)*(-1d0)**(N)
   
     do ii=2,N
       ind = 3*(N-ii+1)
       t2 = cmplx(C1(ind+1),-C1(ind+2),kind=8)*t1 + cmplx(C1(ind+3),0d0,kind=8)*t2
-      t1 = -COEFFS(ii)*conjg(phase)/COEFFS(1)
+      t1 = -COEFFS(ii)*cmplx(phr,-phi,kind=8)/COEFFS(1)
       ind = 3*(N-ii)
       call z_rot3_vec4gen(dble(t1),aimag(t1),dble(t2),aimag(t2),C1(ind+1),C1(ind+2),C1(ind+3),nrm)
       B1(ind+1) = C1(ind+1)

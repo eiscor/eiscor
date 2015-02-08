@@ -18,33 +18,13 @@
 !                    coefficients of polynomial ordered from highest
 !                    degree coefficient to lowest degree
 !
-!  WORK            REAL(8) array of dimension (3*N,4)
-!                    array of generators for first sequence of Givens' 
-!                    rotations
-!
-!  ITS             INTEGER array of dimension (N-1)
-!                    array that stores the number of iterations per 
-!                    computed root
-!
 ! OUTPUT VARIABLES:
 !
 !  ROOTS           COMPLEX(8) array of dimension (N)
 !                    computed roots
 !
-!  INFO            INTEGER
-!                    INFO = 7 sort failed
-!                    INFO = 6 root extraction failed
-!                    INFO = 5 eigensolver failed
-!                    INFO = 4 factorization failed
-!                    INFO = 3 implies constant function with no roots
-!                    INFO = 2 implies degree is less than N
-!                    INFO = 1 implies degree is less than 1
-!                    INFO = 0 implies successful computation.
-!                    INFO negative implies that an input variable has
-!                    an improper value, i.e. INFO=-2 => COEFFS is invalid
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_poly_roots(N,COEFFS,ROOTS,WORK,ITS,INFO)
+subroutine z_poly_roots(N,COEFFS,ROOTS)
 
   implicit none
   
@@ -52,116 +32,40 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,WORK,ITS,INFO)
   integer, intent(in) :: N
   complex(8), intent(in) :: COEFFS(N+1)
   complex(8), intent(inout) :: ROOTS(N)
-  real(8), intent(inout) :: WORK(3*N,4)
-  integer, intent(inout) :: ITS(N-1), INFO
   
   ! compute variables
-  integer :: ii, ntmp
-  real(8) :: t_stp, t_str
-  complex(8) :: Z(1,1)
+  integer :: ii, INFO
+  logical :: QZ, VEC, ID
+  logical, allocatable :: P(:)
+  integer, allocatable :: ITS(:)
+  real(8), allocatable :: Q(:),D(:),C(:),B(:)
+  complex(8) :: V
+  interface
+    function l_upr1fact_upperhess(m,flags)
+      logical :: l_upr1fact_upperhess
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_upperhess
+  end interface
   
-  ! initialize INFO
-  INFO = 0
-  
-  ! prune zero roots
-  ITS = 0
-  ntmp = N
-  do ii=1,N
-    if (abs(COEFFS(N+2-ii)).NE.0d0) then
-      exit
-    end if
-    ROOTS(N+1-ii) = cmplx(0d0,0d0,kind=8)
-    ntmp = ntmp-1
-  end do
+  ! set variables
+  QZ = .FALSE.
+  VEC = .FALSE.
+  ID = .FALSE.
 
-  ! return if the constant polynomial
-  if (ntmp.EQ.0) then
-    INFO = 3
-    write(*,*) "Error in "//__FILE__//" line:",__LINE__
-    write(*,*) "Polynomial is a non-zero constant with no roots."
-    write(*,*) ""
-    return
-    
-  ! if linear factor remains
-  else if (ntmp.EQ.1) then
-    ROOTS(1) = -COEFFS(2)/COEFFS(1) 
-    
-  ! use companion QR
-  else
-  
-    ! balance
+  ! allocate memory
+  allocate(P(N-2),ITS(N-1),Q(3*(N-1)),D(2*(N+1)),C(3*N),B(3*N))    
 
-! start timer
-call cpu_time(t_str)    
-    ! factor companion matrix
-    call z_poly_factorcomp('N',ntmp,COEFFS(2:(ntmp+1))/COEFFS(1),WORK(:,1),WORK(:,2), &
-      WORK(:,3),WORK(:,4),Z,INFO)  
+  ! factor companion matrix
+  call z_poly_factorcomp(QZ,VEC,ID,N,COEFFS,P,Q,D,C,B,D,C,B,V,V)  
     
-    ! check INFO
-    if (INFO.NE.0) then
-      INFO = 4
-      write(*,*) "Error in "//__FILE__//" line:",__LINE__
-      write(*,*) "ZMBCQR failed."
-      write(*,*) ""
-      return
-    end if
-! stop timer
-call cpu_time(t_stp)
-print*,"time to factor (sec):",t_stp-t_str
-
-! start timer
-call cpu_time(t_str)     
-    ! call ZPFFQR
-    call z_upr1fact_twistedqz('N',ntmp,WORK(:,1),WORK(:,2),WORK(:,3),WORK(:,4),Z,ITS,INFO)
+  ! call z_upr1fact_twistedqz
+  call z_upr1fact_twistedqz(QZ,VEC,ID,l_upr1fact_upperhess,N,P,Q,D,C,B,D,C,B,V,V,ITS,INFO)
     
-    ! check INFO
-    if (INFO.NE.0) then
-      INFO = 5
-      write(*,*) "Error in "//__FILE__//" line:",__LINE__
-      write(*,*) "ZPFFQR failed."
-      write(*,*) ""
-      return
-    end if
-! stop timer
-call cpu_time(t_stp)
-print*,"time to solve (sec):",t_stp-t_str
-
-! start timer
-call cpu_time(t_str)     
-    ! extract roots
-    call z_upr1fact_extracttri('E',ntmp,WORK(:,1),WORK(:,2),WORK(:,3),WORK(:,4),Z,INFO)
+  ! extract roots
+  call z_upr1fact_extracttri(.TRUE.,N,D,C,B,ROOTS)
     
-    ! check INFO
-    if (INFO.NE.0) then
-      INFO = 6
-      write(*,*) "Error in "//__FILE__//" line:",__LINE__
-      write(*,*) "ZPFFET failed."
-      write(*,*) ""
-      return
-    end if
-! stop timer
-call cpu_time(t_stp)
-print*,"time to extract (sec):",t_stp-t_str
-    
-    ! sort roots by argument
-!    call ZARSUE('E',ntmp,WORK(:,2),Z,INFO)
-    
-    ! check INFO
-!    if (INFO.NE.0) then
-!      INFO = 7
-!      write(*,*) "Error in "//__FILE__//" line:",__LINE__
-!      write(*,*) "ZARSUE failed."
-!      write(*,*) ""
-!      return
-!    end if
-    
-    ! update ROOTS
-    do ii=1,ntmp
-      ROOTS(ii) = cmplx(WORK(2*(ii-1)+1,2),WORK(2*(ii-1)+2,2),kind=8)
-    end do
-    
-    ! adjust for balancing
-  
-  end if   
+  ! free memory
+  deallocate(P,ITS,Q,D,C,B)
 
 end subroutine z_poly_roots
