@@ -62,13 +62,35 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
     
   ! call z_upr1fact_twistedqz
   call z_upr1fact_twistedqz(QZ,VEC,ID,l_upr1fact_upperhess,N,P,Q,D,C,B,D,C,B,V,V,ITS,INFO)
-    
+  
   ! extract roots
   call z_upr1fact_extracttri(.TRUE.,N,D,C,B,ROOTS)
     
   ! compute residuals
   call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
     
+print*,""
+print*,""
+print*,"Inside Roots"
+print*,""
+print*,"INFO:",INFO
+print*,""
+print*,"Roots residuals and iterations"
+print*,ROOTS(1),RESIDUALS(1)
+do ii=1,(N-1)
+print*,ROOTS(ii+1),RESIDUALS(ii+1),ITS(ii)
+end do
+print*,""
+
+open(unit=7,file="/Users/jared/badpoly.txt",status="unknown")
+if (maxval(abs(RESIDUALS)) > 1d-3) then
+  write(7,*) N
+  do ii=1,(N+1)
+    write(7,*) COEFFS(ii)
+  end do
+end if
+close(7)
+  
   ! free memory
   deallocate(P,ITS,Q,D,C,B)
 

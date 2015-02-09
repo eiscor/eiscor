@@ -1,25 +1,25 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! test_z_poly_roots
+! test_z_poly_badpoly
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine z_poly_roots. 
+! This program tests the subroutine z_poly_badpoly. 
 ! The following tests are run:
 !
 ! 1) check roots of unity with upperhess QR
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program test_z_poly_roots
+program test_z_poly_badpoly
 
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**6
-  real(8) :: tol, a, b,  RESIDUALS(N)
-  integer :: ii
-  complex(8) :: COEFFS(N+1), ROOTS(N)
+  integer :: ii, N
+  real(8) :: tol, a, b
+  real(8), allocatable :: RESIDUALS(:)
+  complex(8), allocatable :: COEFFS(:), ROOTS(:)
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -35,22 +35,25 @@ program test_z_poly_roots
   call u_test_banner(__FILE__)
   
   ! check 1)
-  
-    ! set valid COEFFS
-!    COEFFS = cmplx(0d0,0d0,kind=8)
-!    COEFFS(1) = cmplx(1d0,0d0,kind=8)
-!    COEFFS(N+1) = cmplx(-1d0,0d0,kind=8)
 
-!    COEFFS = cmplx(1d0,0d0,kind=8)
+    ! open file
+    open(unit=10, file='/Users/jared/badpoly.txt', status='unknown')
 
-    call u_randomseed_initialize()
+    ! read in degree
+    read(10,*) N
+
+    ! allocate memory
+    allocate(RESIDUALS(N),ROOTS(N),COEFFS(N+1))
+
+    ! read in coefficients
     do ii=1,(N+1)
-      call random_number(a)
-      call random_number(b)
-      COEFFS(ii) = cmplx(a,b,kind=8)
+      read(10,*) COEFFS(ii)
     end do
 
-    ! extract diagonal
+    ! close file 
+    close(10)
+  
+    ! compute roots
     call z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
    
 !    print*,""
@@ -60,10 +63,8 @@ program test_z_poly_roots
 !    end do
 !    print*,""
 
-!    print*,""
-!    print*,"worst residual"
-!    print*,maxval(RESIDUALS)
-!    print*,""
+  ! free memory
+  deallocate(RESIDUALS,ROOTS,COEFFS)
 
   ! end check 1)
 
@@ -74,4 +75,4 @@ program test_z_poly_roots
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
   
      
-end program test_z_poly_roots
+end program test_z_poly_badpoly

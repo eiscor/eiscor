@@ -63,36 +63,33 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
   real(8) :: nrm, G1(3), G2(3), G3(3), Qt(6)
   complex(8) :: A(2,2), B(2,2), Vt(2,2), Wt(2,2)
   
-  ! compute 2x2 blocks
-  Qt = 0d0; Qt(1:3) = Q; Qt(4) = 1d0
-  call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Qt,D1,C1,B1,D2,C2,B2,A,B)
-
   ! compute standard Schur decomposition
   if (.NOT.QZ) then
-  
+
+    ! compute 2x2 blocks
+    Qt = 0d0; Qt(1:3) = Q; Qt(4) = 1d0
+    call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Qt,D1,C1,B1,D2,C2,B2,A,B)
+
+    ! store block
+    B = A
+
     ! standard schur decomposition
     call z_2x2array_eig(QZ,A,B,Vt,Wt)
+    
+    ! create bulge
+    B(1,1) = B(1,1) - A(1,1)
+    call z_rot3_vec4gen(dble(B(1,1)),aimag(B(1,1)),dble(B(2,1)),aimag(B(2,1)),G1(1),G1(2),G1(3),nrm)
+    
+    ! merge bulge 
+    G3(1) = G1(1); G3(2) = -G1(2); G3(3) = -G1(3)
+    call z_upr1fact_mergebulge(.TRUE.,2,.FALSE.,Q,D1,G3)
 
-    ! replace Vt with rotation G1
-    call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)),aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm)
-    
     ! pass G1 through triangular factor
-    G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G3)
+    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G1)
     
-    ! similarity transform of Q
-    A(1,1) = cmplx(Q(1),Q(2),kind=8)
-    A(2,1) = cmplx(Q(3),0d0,kind=8)
-    A(1,2) = -A(2,1)
-    A(2,2) = conjg(A(1,1))
-    
-    B(1,1) = cmplx(G3(1),G3(2),kind=8)
-    B(2,1) = cmplx(G3(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))
-    
-    A = matmul(A,B)
-    
+    ! merge bulge 
+    call z_upr1fact_mergebulge(.FALSE.,2,.FALSE.,Q,D1,G1)
+
     ! update V
     if (VEC) then
     
@@ -104,24 +101,6 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
       V = matmul(V,B)
     
     end if
-
-    B(1,1) = cmplx(G1(1),-G1(2),kind=8)
-    B(2,1) = cmplx(-G1(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))    
-
-    A = matmul(B,A)
-    
-    Q(1) = 1d0
-    Q(2) = 0d0
-    Q(3) = 0d0
-        
-    ! deflate into D1
-    A(1,1) = A(1,1)*cmplx(D1(1),D1(2),kind=8)
-    call d_rot2_vec2gen(dble(A(1,1)),aimag(A(1,1)),D1(1),D1(2),nrm)
-    
-    A(2,2) = A(2,2)*cmplx(D1(3),D1(4),kind=8)
-    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D1(3),D1(4),nrm)
     
   ! compute generalized Schur decomposition
   else
