@@ -72,7 +72,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
 
     ! store block
     B = A
-
+    
     ! standard schur decomposition
     call z_2x2array_eig(QZ,A,B,Vt,Wt)
     
@@ -88,7 +88,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G1)
     
     ! merge bulge 
-    call z_upr1fact_mergebulge(.FALSE.,2,.FALSE.,Q,D1,G1)
+    call z_upr1fact_mergebulge(.TRUE.,2,.TRUE.,Q,D1,G1)
 
     ! update V
     if (VEC) then

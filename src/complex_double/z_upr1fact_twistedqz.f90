@@ -133,59 +133,10 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       exit
     end if
    
-print*,""
-print*,""
-print*,"before and after deflation"
-print*,"(ZERO,STR,STP) =",ZERO,STR,STP
-if (STP < 4) then
-print*,"Q"
-print*,Q(1:3)
-print*,Q(4:6)
-print*,Q(7:9)
-print*,"D"
-print*,D1(1:2)
-print*,D1(3:4)
-print*,D1(5:6)
-print*,D1(7:8)
-print*,"C"
-print*,C1(1:3)
-print*,C1(4:6)
-print*,C1(7:9)
-print*,C1(10:12)
-print*,"B"
-print*,B1(1:3)
-print*,B1(4:6)
-print*,B1(7:9)
-print*,B1(10:12)
-end if
     ! check for deflation
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
     ,D1((2*STR-1):(2*STP+2)),ZERO)
   
-print*,"(ZERO,STR,STP) =",ZERO,STR,STP
-if (STP < 4) then
-print*,"Q"
-print*,Q(1:3)
-print*,Q(4:6)
-print*,Q(7:9)
-print*,"D"
-print*,D1(1:2)
-print*,D1(3:4)
-print*,D1(5:6)
-print*,D1(7:8)
-print*,"C"
-print*,C1(1:3)
-print*,C1(4:6)
-print*,C1(7:9)
-print*,C1(10:12)
-print*,"B"
-print*,B1(1:3)
-print*,B1(4:6)
-print*,B1(7:9)
-print*,B1(10:12)
-end if
-!pause
-
     ! update ITCNT
     if (ZERO > 0) then
       ITS(STR+STP-1) = ITCNT
@@ -202,12 +153,7 @@ end if
     
     ! if 2x2 block remove and check again
     else if(STP == (STR+ZERO))then
-    !else if(.FALSE.) then
     
-print*,""
-print*,"before 2x2 deflation"
-print*,"(ZERO,STR,STP) =",ZERO,STR,STP
- 
       ! call 2x2 deflation
       call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)),D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
       ,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)),C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)),N &
