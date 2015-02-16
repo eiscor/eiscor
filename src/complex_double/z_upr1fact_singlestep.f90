@@ -163,6 +163,8 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     ! update V
     if (VEC) then
       
+      !!!!! G1 is not defined here. Is G2 meant or should the update be later?
+      
       A(1,1) = cmplx(G1(1),G1(2),kind=8)
       A(2,1) = cmplx(G1(3),0d0,kind=8)
       A(1,2) = -A(2,1)
