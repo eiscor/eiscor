@@ -68,8 +68,7 @@
 !  INFO           INTEGER
 !                   INFO = 1 implies no convergence 
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies QZ, N, Q, D or R is invalid
-!                   INFO = -2 implies VEC is invalid
+!                   INFO = -1 implies N, Q, D1, C1, B1, D2, C2 or B2 is invalid
 !                   INFO = -9 implies V is invalid
 !                   INFO = -10 implies W is invalid
 !
