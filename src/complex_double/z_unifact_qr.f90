@@ -66,10 +66,10 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   complex(8), intent(inout) :: Z(M,N)
   
   ! compute variables
+  logical :: flg
   integer :: ii, jj, kk, ind1, ind2, ll, strt, k
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   real(8) :: nrm
-  complex(8) :: block(2,2), eigs(2), temp(2,2)
   
   ! initialize info
   INFO = 0
@@ -97,8 +97,8 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   
   ! check Z
   if (VEC.AND..NOT.ID) then
-    call z_2Darray_check(M,N,Z,INFO)
-    if (INFO.NE.0) then
+    call z_2Darray_check(M,N,Z,flg)
+    if (.NOT.flg) then
       INFO = -7
       ! print error message in debug mode
       if (DEBUG) then
