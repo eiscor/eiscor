@@ -90,17 +90,17 @@ subroutine z_unifact_deflationcheck(N,Q,D,ZERO)
         dr = nrm
 
         call z_rot3_vec3gen(dr,di,s,Q(3*down-2),Q(3*down-1),Q(3*down),nrm) 
-         
+      
       end do
            
       ! update second diagonal
-      dr = D(2*down+1)
-      di = D(2*down+2)
+      dr = D(2*N-1)
+      di = D(2*N)
            
       nrm = qr*dr + qi*di
       di = qr*di - qi*dr
       dr = nrm
-      call d_rot2_vec2gen(dr,di,D(2*down+1),D(2*down+2),nrm)
+      call d_rot2_vec2gen(dr,di,D(2*N-1),D(2*N),nrm)
         
       ! exit loop  
       exit
