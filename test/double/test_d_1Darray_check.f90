@@ -24,7 +24,7 @@ program test_d_1Darray_check
   ! compute variables
   real(8) :: num,nul
   real(8) :: A(3)
-  integer :: info
+  logical :: flag
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -43,9 +43,9 @@ program test_d_1Darray_check
   A(1) = 0d0
   A(2) = 1.5d1
   A(3) = -2.42d24
-  call d_1Darray_check(3,A,INFO)
-  ! check info
-  if (info.NE.0) then
+  call d_1Darray_check(3,A,flag)
+  ! check flag
+  if (.NOT.flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -57,9 +57,9 @@ program test_d_1Darray_check
   A(3) = -2.42d24
   num = +huge(1d0)
   A(1) = num+huge(1d0)
-  call d_1Darray_check(3,A,INFO)
-  ! check info
-  if (info.NE.1) then
+  call d_1Darray_check(3,A,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -71,9 +71,9 @@ program test_d_1Darray_check
   A(3) = -2.42d24
   num = -huge(1d0)
   A(2) = num-huge(1d0)
-  call d_1Darray_check(3,A,INFO)
-  ! check info
-  if (info.NE.1) then
+  call d_1Darray_check(3,A,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -85,9 +85,9 @@ program test_d_1Darray_check
   A(2) = 1.5d1
   nul = 0d0
   A(3) = nul/nul
-  call d_1Darray_check(3,A,INFO)
-  ! check info
-  if (info.NE.1) then
+  call d_1Darray_check(3,A,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 

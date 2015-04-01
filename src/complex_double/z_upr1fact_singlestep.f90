@@ -12,85 +12,65 @@
 !
 ! INPUT VARIABLES:
 !
-!  ALG             CHARACTER(2)
-!                    'QR': second triangular factor is assumed to be identity
-!                    'QZ': second triangular factor is assumed nonzero
+!  QZ              LOGICAL
+!                    .TRUE. second triangular factor is assumed nonzero
+!                    .FALSE. second triangular factor is assumed to be identity
 !
-!  COMPZ           CHARACTER
-!                    'N': no schurvectors
-!                    'I' or 'V': update schurvectors
-!
-!  N               INTEGER
-!                    dimension of matrix
-!
-!  STR             INTEGER
-!                    index of the top most givens rotation where 
-!                    the iteration begins
-!
-!  STP             INTEGER
-!                    index of the bottom most givens rotation where 
-!                    the iteration ends
-!
-!  P               LOGICAL array of dimension (N-2)
-!                    array of position flags for Q
+!  VEC             LOGICAL
+!                    .TRUE. update schurvectors
+!                    .FALSE. no schurvectors
 !
 !  FUN             LOGICAL FUNCTION FUN(N,P)
 !                    takes integer N and logical array P of 
 !                    dimension N-2 and outputs a logical 
 !
+!  N               INTEGER
+!                    dimension of matrix
+!
+!  P               LOGICAL array of dimension (N-2)
+!                    array of position flags for Q
+!
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
 !
-!  D               REAL(8) array of dimension (2*(N+1))
+!  D1,D2           REAL(8) arrays of dimension (2*(N+1))
 !                    array of generators for complex diagonal matrices
+!                    If QZ = .FALSE., D2 is unused.
 !
-!  R               REAL(8) array of dimension (4,3*N)
-!                    array of generators for upper-triangular parts
-!                    of the pencil
+!  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
+!                    array of generators for upper-triangular parts of the pencil
+!                    If QZ = .FALSE., C2 and B2 are unused.
 !
-!  V              COMPLEX(8) array of dimension (N,N)
-!                   right schur vectors
-!                   if COMPZ = 'N' unused
-!                   if COMPZ = 'I' or 'V' update V to store right schurvectors 
+!  M               INTEGER
+!                    leading dimesnion of V and W
 !
-!  W              COMPLEX(8) array of dimension (N,N)
-!                   left schur vectors
-!                   if COMPZ = 'N' unused
-!                   if COMPZ = 'I' or 'V' update W to store left schurvectors
-!                   if ALG = 'QR' unused
+!  V               COMPLEX(8) array of dimension (M,N)
+!                    right schur vectors
+!                    if VEC = .FALSE. unused
+!                    if VEC = .TRUE. update V to store right schurvectors 
+!
+!  W               COMPLEX(8) array of dimension (M,N)
+!                    left schur vectors
+!                    if QZ = .FALSE. unused
+!                    if VEC = .FALSE. unused
+!                    if VEC = .TRUE. update W to store left schurvectors
 !
 !  ITCNT           INTEGER
 !                   Contains the number of iterations since last deflation
 !
-! OUTPUT VARIABLES:
-!
-!  INFO            INTEGER
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies ALG is invalid
-!                   INFO = -2 implies COMPZ is invalid
-!                   INFO = -3 implies N is invalid
-!                   INFO = -4 implies STR is invalid
-!                   INFO = -5 implies STP is invalid
-!                   INFO = -8 implies Q is invalid
-!                   INFO = -9 implies D is invalid
-!                   INFO = -10 implies R is invalid
-!                   INFO = -11 implies V is invalid
-!                   INFO = -12 implies W is invalid
-!                   INFO = -13 implies ITCNT is invalid
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
+subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
 
   implicit none
   
   ! input variables
-  character(2), intent(in) :: ALG
-  character, intent(in) :: COMPZ
-  integer, intent(in) :: N, STR, STP
+  logical, intent(in) :: QZ, VEC
+  integer, intent(in) :: M, N
   logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N)
-  complex(8), intent(inout) :: V(N,N), W(N,N)
-  integer, intent(inout) :: INFO, ITCNT
+  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
+  real(8), intent(inout) :: D2(2*(N+1)), C2(3*N), B2(3*N)
+  complex(8), intent(inout) :: V(M,N), W(M,N)
+  integer, intent(in) :: ITCNT
   interface
     function FUN(m,flags)
       logical :: FUN
@@ -100,89 +80,10 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   end interface
   
   ! compute variables
-  integer :: ii
+  integer :: ii, ir1, ir2, id1, id2
   logical :: final_flag
   real(8) :: G1(3), G2(3), G3(3)
   complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2)
-  
-  ! initialize INFO
-  INFO = 0
-  
-  ! check input in debug mode
-  if (DEBUG) then
-  
-    ! check factorization
-    call z_upr1fact_factorcheck(ALG,N,Q,D,R,INFO)
-    if (INFO.EQ.-1) then
-      call u_infocode_check(__FILE__,__LINE__,"ALG must be 'QR' or 'QZ'",INFO,-1)
-      return
-    end if
-    if (INFO.EQ.-2) then
-      call u_infocode_check(__FILE__,__LINE__,"N is invalid",INFO,-3)
-      return
-    end if
-    if (INFO.EQ.-3) then
-      call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,-8)
-      return
-    end if
-    if (INFO.EQ.-4) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-9)
-      return
-    end if
-    if (INFO.EQ.-5) then
-      call u_infocode_check(__FILE__,__LINE__,"R is invalid",INFO,-10)
-      return
-    end if
-  
-    ! check COMPZ
-    if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
-      INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
-      return
-    end if
-    
-    ! check STR
-    if ((STR < 1).OR.(STR > N-1)) then
-      INFO = -4
-      call u_infocode_check(__FILE__,__LINE__,"STR must 1 <= STR <= N-1",INFO,INFO)
-      return
-    end if 
-    
-    ! check STP
-    if ((STP < STR).OR.(STP > N-1)) then
-      INFO = -5
-      call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
-      return
-    end if  
-    
-    ! check V
-    if ((COMPZ.EQ.'I').OR.(COMPZ.EQ.'V')) then
-      call z_2Darray_check(N,N,V,INFO)
-      if (INFO.NE.0) then
-        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,-11)
-        return
-      end if 
-    end if 
-    
-    ! check W
-    if (ALG.EQ.'QZ') then
-      if ((COMPZ.EQ.'I').OR.(COMPZ.EQ.'V')) then
-        call z_2Darray_check(N,N,W,INFO)
-        if (INFO.NE.0) then
-          call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,-12)
-          return
-        end if 
-      end if
-    end if 
-    
-    ! check ITCNT
-    if (ITCNT < 0) then
-      INFO = -13
-      call u_infocode_check(__FILE__,__LINE__,"ITCNT must be non-negative",INFO,INFO)
-      return
-    end if 
-
-  end if
   
   ! compute final_flag
   final_flag = FUN(N,P)
@@ -198,14 +99,15 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   else
   
     ! get 2x2 blocks
-    call z_upr1fact_2x2diagblocks('H',ALG,N,STP,P,Q,D,R,A,B,INFO)
-      
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_2x2diagblocks failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+    ir2 = 3*N; ir1 = ir2-5
+    id2 = 2*N; id1 = id2-3
+    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2),Q((ir1-3):(ir2-3)) &
+    ,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+  
+    ! if not QZ
+    if (.NOT.QZ) then
+      B = cmplx(0d0,0d0,kind=8)
+      B(1,1) = cmplx(1d0,0d0,kind=8); B(2,2) = B(1,1)
     end if
     
     ! store bottom right entries
@@ -213,15 +115,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     rho = B(2,2)
         
     ! compute eigenvalues and eigenvectors
-    call z_2x2array_geneig('G',A,B,Wt,Vt,INFO)
-      
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_geneig failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
+    call z_2x2array_eig(QZ,A,B,Vt,Wt)
           
     ! choose wikinson shift
     ! complex abs does not matter here
@@ -243,32 +137,38 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
   end if
 
   ! build bulge
-  call z_upr1fact_buildbulge(ALG,N,STR,P,Q,D,R,shift,G2,INFO)
-        
-  ! check INFO in debug mode
-  if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_buildbulge failed",INFO,INFO)
-    if (INFO.NE.0) then 
-      return 
-    end if 
-  end if
+  call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
+  ,D2(1:4),C2(1:6),B2(1:6),shift,G2)
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! iteration for QZ
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if (QZ) then
+  
+    ! chase bulge
+    do ii=1,(N-1)
+    
+
+    end do  
+  
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! iteration for QR
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if (ALG.EQ.'QR') then
+  else
   
     ! update V
-    if (COMPZ.NE.'N') then
+    if (VEC) then
       
       A(1,1) = cmplx(G1(1),G1(2),kind=8)
       A(2,1) = cmplx(G1(3),0d0,kind=8)
       A(1,2) = -A(2,1)
       A(2,2) = conjg(A(1,1))
       
-      V(:,STR:(STR+1)) = matmul(V(:,STR:(STR+1)),A)
+      V(:,1:2) = matmul(V(:,1:2),A)
       
     end if
     
@@ -278,79 +178,47 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     G1(3) = -G2(3)
     
     ! merge with Q if necessary
-    if (P(STR).EQV..FALSE.) then
+    if (.NOT.P(1)) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('L',N,STR,STP,STR,P,Q,D(1,:),G1,INFO)
-      
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_mergebulge failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if
+      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G1)
       
       ! set G1 for turnover
-      G1(1) = Q(3*STR-2)
-      G1(2) = Q(3*STR-1)
-      G1(3) = Q(3*STR)
+      G1(1) = Q(1)
+      G1(2) = Q(2)
+      G1(3) = Q(3)
 
     end if
     
     ! pass G2 through triangular part
-    call z_upr1fact_rot3throughtri('R2L',N,STR,D(1,:),R(1,:),R(2,:),G2,INFO)
-    
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
+    call z_upr1fact_rot3throughtri(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G2)
     
     ! set G3 for turnover
     G3 = G2
     
     ! merge with Q if necessary
-    if (P(STR).EQV..TRUE.) then
+    if (P(1)) then
     
       ! merge from left
-      call z_upr1fact_mergebulge('R',N,STR,STP,STR,P,Q,D(1,:),G2,INFO)
-      
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_mergebulge failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if
+      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G2)
       
       ! set G3 for turnover
-      G3(1) = Q(3*STR-2)
-      G3(2) = Q(3*STR-1)
-      G3(3) = Q(3*STR)
+      G3(1) = Q(1)
+      G3(2) = Q(2)
+      G3(3) = Q(3)
 
     end if
     
     ! set G2 for turnover
-    G2(1) = Q(3*STR+1)
-    G2(2) = Q(3*STR+2)
-    G2(3) = Q(3*STR+3)    
+    G2(1) = Q(4)
+    G2(2) = Q(5)
+    G2(3) = Q(6)    
   
     ! chase bulge
-    do ii=STR,(STP-2)
+    do ii=1,(N-3)
     
       ! execute turnover of G1G2G3
-      call z_rot3_turnover(G1,G2,G3,INFO)
-      
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if
+      call z_rot3_turnover(G1,G2,G3)
       
       ! set Q(ii)
       Q(3*ii-2) = G1(1)
@@ -359,7 +227,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
       
       ! prepare for next turnover based on P(ii+1)
       ! hess
-      if (P(ii+1).EQV..FALSE.) then
+      if (.NOT.P(ii+1)) then
       
         ! set P(ii)
         P(ii) = P(ii+1)
@@ -378,7 +246,7 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
         G2(3) = Q(3*ii+6)
         
         ! update V
-        if (COMPZ.NE.'N') then
+        if (VEC) then
           
           A(1,1) = cmplx(G3(1),G3(2),kind=8)
           A(2,1) = cmplx(G3(3),0d0,kind=8)
@@ -390,16 +258,9 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
         end if
         
         ! pass G3 through upper triangular part
-        call z_upr1fact_rot3throughtri('R2L',N,ii+1,D(1,:),R(1,:),R(2,:),G3,INFO)
+        call z_upr1fact_rot3throughtri(.FALSE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        ,B1((3*ii+1):(3*ii+6)),G3)
         
-        ! check INFO in debug mode
-        if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri failed",INFO,INFO)
-          if (INFO.NE.0) then 
-            return 
-          end if 
-        end if        
-      
       ! inverse hess
       else
       
@@ -412,18 +273,11 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
         Q(3*ii+3) = G3(3)  
         
         ! pass G2 through upper triangular part
-        call z_upr1fact_rot3throughtri('L2R',N,ii+1,D(1,:),R(1,:),R(2,:),G2,INFO)
-        
-        ! check INFO in debug mode
-        if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri failed",INFO,INFO)
-          if (INFO.NE.0) then 
-            return 
-          end if 
-        end if  
+        call z_upr1fact_rot3throughtri(.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        ,B1((3*ii+1):(3*ii+6)),G2)
         
         ! update V
-        if (COMPZ.NE.'N') then
+        if (VEC) then
           
           A(1,1) = cmplx(G2(1),-G2(2),kind=8)
           A(2,1) = cmplx(-G2(3),0d0,kind=8)
@@ -447,132 +301,78 @@ subroutine z_upr1fact_singlestep(ALG,COMPZ,N,STR,STP,P,FUN,Q,D,R,V,W,ITCNT,INFO)
     end do
     
     ! final turnover
-    call z_rot3_turnover(G1,G2,G3,INFO)
+    call z_rot3_turnover(G1,G2,G3)
       
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
+    ! set P(N-1)
+    P(N-2) = final_flag
     
-    ! set P(STP-1)
-    P(STP-1) = final_flag
-    
-    ! finish transformation based on P(STP-1)
+    ! finish transformation based on P(N-1)
     ! hess
-    if (P(STP-1).EQV..FALSE.) then
+    if (.NOT.P(N-2)) then
     
-      ! set Q(STP-1)
-      Q(3*(STP-1)-2) = G1(1)
-      Q(3*(STP-1)-1) = G1(2)
-      Q(3*(STP-1)) = G1(3)   
+      ! set Q(N-2)
+      Q(3*(N-2)-2) = G1(1)
+      Q(3*(N-2)-1) = G1(2)
+      Q(3*(N-2)) = G1(3)   
       
-      ! set Q(STP)
-      Q(3*STP-2) = G2(1)
-      Q(3*STP-1) = G2(2)
-      Q(3*STP) = G2(3)  
+      ! set Q(N-1)
+      Q(3*(N-1)-2) = G2(1)
+      Q(3*(N-1)-1) = G2(2)
+      Q(3*(N-1)) = G2(3)  
       
       ! update V
-      if (COMPZ.NE.'N') then
+      if (VEC) then
           
         A(1,1) = cmplx(G3(1),G3(2),kind=8)
         A(2,1) = cmplx(G3(3),0d0,kind=8)
         A(1,2) = -A(2,1)
         A(2,2) = conjg(A(1,1))
           
-        V(:,(STP):(STP+1)) = matmul(V(:,(STP):(STP+1)),A)
+        V(:,(N-1):N) = matmul(V(:,(N-1):N),A)
          
       end if    
     
       ! pass G3 through upper triangular part
-      call z_upr1fact_rot3throughtri('R2L',N,STP,D(1,:),R(1,:),R(2,:),G3,INFO)
+      call z_upr1fact_rot3throughtri(.FALSE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      ,B1((3*N-5):(3*N)),G3)
         
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if  
-      
       ! merge bulge 
-      call z_upr1fact_mergebulge('R',N,STR,STP,STP,P,Q,D(1,:),G3,INFO)
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G3)
       
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_mergebulge failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if     
-    
     ! inverse hess
     else
     
-      ! set Q(STP-1)
-      Q(3*(STP-1)-2) = G1(1)
-      Q(3*(STP-1)-1) = G1(2)
-      Q(3*(STP-1)) = G1(3)   
+      ! set Q(N-2)
+      Q(3*(N-2)-2) = G1(1)
+      Q(3*(N-2)-1) = G1(2)
+      Q(3*(N-2)) = G1(3)   
       
-      ! set Q(STP)
-      Q(3*STP-2) = G3(1)
-      Q(3*STP-1) = G3(2)
-      Q(3*STP) = G3(3)  
+      ! set Q(N-1)
+      Q(3*(N-1)-2) = G3(1)
+      Q(3*(N-1)-1) = G3(2)
+      Q(3*(N-1)) = G3(3)  
       
       ! pass G2 through upper triangular part
-      call z_upr1fact_rot3throughtri('L2R',N,STP,D(1,:),R(1,:),R(2,:),G2,INFO)
+      call z_upr1fact_rot3throughtri(.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      ,B1((3*N-5):(3*N)),G2)
         
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_rot3throughtri failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if 
-      
       ! update V
-      if (COMPZ.NE.'N') then
+      if (VEC) then
           
         A(1,1) = cmplx(G2(1),-G2(2),kind=8)
         A(2,1) = cmplx(-G2(3),0d0,kind=8)
         A(1,2) = -A(2,1)
         A(2,2) = conjg(A(1,1))
           
-        V(:,(STP):(STP+1)) = matmul(V(:,(STP):(STP+1)),A)
+        V(:,N:(N+1)) = matmul(V(:,N:(N+1)),A)
          
       end if  
       
       ! merge bulge 
-      call z_upr1fact_mergebulge('L',N,STR,STP,STP,P,Q,D(1,:),G2,INFO)
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
       
-      ! check INFO in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_upr1fact_mergebulge failed",INFO,INFO)
-        if (INFO.NE.0) then 
-          return 
-        end if 
-      end if 
-    
     end if
     
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! iteration for QZ
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  else
-  
-    ! chase bulge
-    do ii=STR,(STP-1)
-    
-
-    end do  
-  
   end if
   
-  ! update ITCNT
-  ITCNT = ITCNT + 1
-
 end subroutine z_upr1fact_singlestep

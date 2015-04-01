@@ -25,7 +25,7 @@ program test_z_unihess_factor
   implicit none
   
   ! parameter
-  real(8) :: tol = 1d1*epsilon(1d0) ! accuracy (tolerance)
+  real(8), parameter :: tol = 1d1*EISCOR_DBL_EPS ! accuracy (tolerance)
   integer, parameter :: MMAX = 12
   integer, parameter :: NMAX = 2**12
   
@@ -109,22 +109,22 @@ program test_z_unihess_factor
   end do
   D(33) = 1d0
   
-  call z_rot3_vec3gen(1d0,2d0,4d0,Q(1),Q(2),Q(3),nrm,info)
-  call z_rot3_vec3gen(2d0,1d0,3d0,Q(4),Q(5),Q(6),nrm,info)
-  call z_rot3_vec3gen(3d0,-5d0,2d0,Q(7),Q(8),Q(9),nrm,info)
-  call z_rot3_vec3gen(-1d0,6d0,1d0,Q(10),Q(11),Q(12),nrm,info)
-  call z_rot3_vec3gen(2d0,2d0,4d0,Q(13),Q(14),Q(15),nrm,info)
-  call z_rot3_vec3gen(3d0,-1d0,3d0,Q(16),Q(17),Q(18),nrm,info)
-  call z_rot3_vec3gen(1d0,5d0,2d0,Q(19),Q(20),Q(21),nrm,info)
-  call z_rot3_vec3gen(-2d0,6d0,1d0,Q(22),Q(23),Q(24),nrm,info)
-  call z_rot3_vec3gen(3d0,-2d0,4d0,Q(25),Q(26),Q(27),nrm,info)
-  call z_rot3_vec3gen(9d0,1d0,3d0,Q(28),Q(29),Q(30),nrm,info)
-  call z_rot3_vec3gen(8d0,5d0,2d0,Q(31),Q(32),Q(33),nrm,info)
-  call z_rot3_vec3gen(-7d0,-6d0,1d0,Q(34),Q(35),Q(36),nrm,info)
-  call z_rot3_vec3gen(6d0,2d0,4d0,Q(37),Q(38),Q(39),nrm,info)
-  call z_rot3_vec3gen(5d0,1d0,3d0,Q(40),Q(41),Q(42),nrm,info)
-  call z_rot3_vec3gen(4d0,-5d0,2d0,Q(43),Q(44),Q(45),nrm,info)
-  call z_rot3_vec3gen(-3d0,6d0,1d0,Q(46),Q(47),Q(48),nrm,info)
+  call z_rot3_vec3gen(1d0,2d0,4d0,Q(1),Q(2),Q(3),nrm)
+  call z_rot3_vec3gen(2d0,1d0,3d0,Q(4),Q(5),Q(6),nrm)
+  call z_rot3_vec3gen(3d0,-5d0,2d0,Q(7),Q(8),Q(9),nrm)
+  call z_rot3_vec3gen(-1d0,6d0,1d0,Q(10),Q(11),Q(12),nrm)
+  call z_rot3_vec3gen(2d0,2d0,4d0,Q(13),Q(14),Q(15),nrm)
+  call z_rot3_vec3gen(3d0,-1d0,3d0,Q(16),Q(17),Q(18),nrm)
+  call z_rot3_vec3gen(1d0,5d0,2d0,Q(19),Q(20),Q(21),nrm)
+  call z_rot3_vec3gen(-2d0,6d0,1d0,Q(22),Q(23),Q(24),nrm)
+  call z_rot3_vec3gen(3d0,-2d0,4d0,Q(25),Q(26),Q(27),nrm)
+  call z_rot3_vec3gen(9d0,1d0,3d0,Q(28),Q(29),Q(30),nrm)
+  call z_rot3_vec3gen(8d0,5d0,2d0,Q(31),Q(32),Q(33),nrm)
+  call z_rot3_vec3gen(-7d0,-6d0,1d0,Q(34),Q(35),Q(36),nrm)
+  call z_rot3_vec3gen(6d0,2d0,4d0,Q(37),Q(38),Q(39),nrm)
+  call z_rot3_vec3gen(5d0,1d0,3d0,Q(40),Q(41),Q(42),nrm)
+  call z_rot3_vec3gen(4d0,-5d0,2d0,Q(43),Q(44),Q(45),nrm)
+  call z_rot3_vec3gen(-3d0,6d0,1d0,Q(46),Q(47),Q(48),nrm)
   do jj=1,N-1
      B = A
      B(jj,jj) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)

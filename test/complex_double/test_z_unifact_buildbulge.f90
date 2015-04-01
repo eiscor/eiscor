@@ -13,13 +13,7 @@
 ! Q3=[-1/sqrt(3),1/sqrt(3), 1/sqrt(3)]
 ! D = diag([1, 0.8+i0,6, 1/sqrt(2)+i/sqrt(2), 1])
 !
-! 1) K = 1, shift = 0, shift = 0.8-1/sqrt(2) + i(0.6-1/sqrt(2))
-! 2) K = 2, shift = 0, shift = 0.7 + i0.7
-!
-! in DEBUG mode additionally the check of the input data is checked
-! A) N = 1
-! B) k = 0, K = 4
-! C) SHIFT contains nan and inf
+! 1) shift = 0, shift = 0.8-1/sqrt(2) + i(0.6-1/sqrt(2))
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unifact_buildbulge
@@ -27,10 +21,9 @@ program test_z_unifact_buildbulge
   implicit none
   
   ! parameter
-  real(8) :: tol = 1d1*epsilon(1d0) ! accuracy (tolerance)
+  real(8) :: tol = 1d1*EISCOR_DBL_EPS ! accuracy (tolerance)
   
   ! compute variables
-  integer :: N = 4, K, info
   real(8) :: Q(9), D(8), B(3), B2(3), nul
   complex(8) :: H(2,2), shift
   
@@ -65,16 +58,9 @@ program test_z_unifact_buildbulge
   D(7) = 1d0
   D(8) = 0d0
   
-  K = 1
-
   SHIFT = cmplx(0d0,0d0,kind=8)
 
-  call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_unifact_buildbulge(Q(1:6),D(1:4),SHIFT,B)
 
   if (abs(B(1)-0.8d0)>tol) then
     call u_test_failed(__LINE__)
@@ -88,12 +74,7 @@ program test_z_unifact_buildbulge
 
   SHIFT = cmplx(+0.8d0-1d0/sqrt(2d0),+0.6d0-1d0/sqrt(2d0),kind=8)
 
-  call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_unifact_buildbulge(Q(1:6),D(1:4),SHIFT,B)
 
   if (abs(B(1)-1d0/sqrt(2d0))>tol) then
     call u_test_failed(__LINE__)
@@ -103,117 +84,6 @@ program test_z_unifact_buildbulge
   end if
   if (abs(B(3))>tol) then
     call u_test_failed(__LINE__)
-  end if
-
-  !!!!!!!!!!!!!!!!!!!!
-  ! check 2)
-  K = 2
-
-  SHIFT = cmplx(0d0,0d0,kind=8)
-
-  call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-
-  if (abs(B(1)+0.48d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(B(2)+0.14d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(B(3)-sqrt(3d0)/2d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-
-  SHIFT = cmplx(+0.7d0,+0.7d0,kind=8)
-
-  call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-
-  if (abs(B(1)-0.5d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(B(2))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(B(3)-sqrt(0.75d0))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-
-  if (DEBUG) then
-     !!!!!!!!!!!!!!!!!!!!
-     ! check A)
-     ! N = 1
-     call z_unifact_buildbulge(1,K,Q,D,SHIFT,B,INFO)
-     ! check info
-     if (info.NE.-1) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check B)
-     K = 0
-     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-     ! check info
-     if (info.NE.-2) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     K = 4
-     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-     ! check info
-     if (info.NE.-2) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check C)
-     K = 1
-     nul = 0d0
-
-     SHIFT = cmplx(1d0/nul,0d0,kind=8)
-     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-     ! check info
-     if (info.NE.-5) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     SHIFT = cmplx(0d0,1d0/nul,kind=8)
-     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-     ! check info
-     if (info.NE.-5) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     SHIFT = cmplx(nul/nul,0d0,kind=8)
-     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-     ! check info
-     if (info.NE.-5) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-
-     SHIFT = cmplx(0d0,nul/nul,kind=8)
-     call z_unifact_buildbulge(N,K,Q,D,SHIFT,B,INFO)
-     ! check info
-     if (info.NE.-5) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
   end if
 
   ! stop timer

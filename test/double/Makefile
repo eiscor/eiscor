@@ -20,7 +20,7 @@ run: $(DTESTS)
 	@$(foreach test,$(DTESTS),./$(test) &&) echo 'End of double tests!'
 
 %:: %.f90
-	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).so.$(VERSION)  $(LIBS)
+	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).$(SLIB).$(VERSION)  $(LIBS)
 
 clean:
 	@rm -f $(DTESTS)	

@@ -12,10 +12,13 @@
 !
 ! INPUT VARIABLES:
 !
-!  COMPZ           CHARACTER
-!                    'N': do not compute eigenvectors
-!                    'I': stores eigenvectors, initializing Z to the identity
-!                    'V': stores eigenvectors, assume Z already initialized
+!  VEC             LOGICAL
+!                    .TRUE.: compute eigenvectors
+!                    .FALSE.: no eigenvectors
+!
+!  ID              LOGICAL
+!                    .TRUE.: initialize to Z to identity
+!                    .FALSE.: assume Z is already initialized
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -28,12 +31,15 @@
 !  WORK            REAL(8) array of dimension (5*N)
 !                    work space for eigensolver
 !
+!  M               INTEGER
+!                    leading dimension of Z
+!
 ! OUTPUT VARIABLES:
 !
-!  Z              COMPLEX(8) array of dimension (N,N)
-!                   if COMPZ = 'N' unused
-!                   if COMPZ = 'I' stores eigenvectors, initializing to identity 
-!                   if COMPZ = 'V' stores eigenvectors, assume Z already initialized
+!  Z              COMPLEX(8) array of dimension (M,N)
+!                   if VEC = .FALSE. unused
+!                   if VEC = .TRUE. and ID = .TRUE. initializes Z to I 
+!                   if VEC = .TRUE. and ID = .FALSE. assumes Z initialized
 !
 !  ITS            INTEGER array of dimension (N-1)
 !                   Contains the number of iterations per deflation
@@ -42,19 +48,15 @@
 !                   INFO = 2 implies z_unifact_qr failed
 !                   INFO = 1 implies z_unihess_factor failed
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies COMPZ is invalid
-!                   INFO = -2 implies N is invalid
-!                   INFO = -3 implies H is invalid
-!                   INFO = -4 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_unihess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
+subroutine z_unihess_qr(VEC,ID,N,H,WORK,M,Z,ITS,INFO)
 
   implicit none
   
   ! input variables
-  character, intent(in) :: COMPZ
-  integer, intent(in) :: N
+  logical, intent(in) :: VEC, ID
+  integer, intent(in) :: N, M
   real(8), intent(inout) :: WORK(5*N)
   integer, intent(inout) :: ITS(N-1), INFO
   complex(8), intent(inout) :: H(N,N), Z(N,N)
@@ -64,50 +66,6 @@ subroutine z_unihess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
   
   ! initialize INFO
   INFO = 0
-  
-  ! check COMPZ
-  if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
-    INFO = -1
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
-    end if
-    return
-  end if
-  
-  ! check N
-  if (N < 2) then
-    INFO = -2
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
-    end if
-    return
-  end if
-  
-  ! check H
-  call z_2Darray_check(N,N,H,INFO)
-  if (INFO.NE.0) then
-    ! print error in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,INFO)
-    end if
-    INFO = -3 
-    return
-  end if  
-  
-  ! check Z
-  if (COMPZ.EQ.'V') then
-    call z_2Darray_check(N,N,Z,INFO)
-    if (INFO.NE.0) then
-      ! print error in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
-      end if
-      INFO = -4 
-      return
-    end if 
-  end if
   
   ! compress H
   call z_unihess_factor(N,H,WORK(1:(3*N)),WORK((3*N+1):(5*N)),INFO)
@@ -123,7 +81,7 @@ subroutine z_unihess_qr(COMPZ,N,H,Z,ITS,WORK,INFO)
   end if
   
   ! compute eigenvalues
-  call z_unifact_qr(COMPZ,N,WORK(1:(3*N)),WORK((3*N+1):(5*N)),Z,ITS,INFO) 
+  call z_unifact_qr(VEC,ID,N,WORK(1:(3*N)),WORK((3*N+1):(5*N)),M,Z,ITS,INFO) 
 
   ! check info
   if (INFO.NE.0) then 

@@ -19,7 +19,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! If DEBUG mode is activated a histogram of the accuracy of the turnover is 
+! If VERBOSE mode is activated a histogram of the accuracy of the turnover is 
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
 ! 
@@ -39,7 +39,7 @@ program test_z_rot3_turnover
   ! compute variables
   logical :: pass_all = .TRUE.
   logical :: pass_cur
-  integer :: ii, n, jj, INFO
+  integer :: ii, n, jj
   integer, allocatable :: seed(:)
   real(8) :: Q1(3), Q2(3), Q3(3)
   real(8) :: time
@@ -48,14 +48,14 @@ program test_z_rot3_turnover
   ! timing variables
   integer:: c_start, c_stop, c_rate
 
-  ! debug
+  ! VERBOSE
   integer :: histo(7), histo2(7,8), histot(7,8), h2, ht
 
   ! tol depending on accum
-  tol = 2d0*accum*epsilon(1d0) ! accuracy of turnover
+  tol = 2d0*accum*EISCOR_DBL_EPS ! accuracy of turnover
 
   ! fix seed
-  INFO = 0
+  
   ! get size of see        
   call random_seed(size = n)
   ! allocate memory for seed
@@ -105,21 +105,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,1)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -148,17 +148,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -166,17 +166,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -184,21 +184,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,2)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "One close to diagonal"
@@ -227,17 +227,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -245,17 +245,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -263,21 +263,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,3)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "two close to diagonal"
@@ -306,21 +306,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do 
   histo2(1:7,4)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "three close to diagonal"
@@ -349,17 +349,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -367,17 +367,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -385,21 +385,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,5)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "one close to anti-diagonal"
@@ -428,17 +428,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -446,17 +446,17 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   do ii=1,nt/3
@@ -464,21 +464,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,6)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "two close to anti-diagonal"
@@ -507,21 +507,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm)*1e-18,sin(rp)*cos(rm)*1e-18,sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,7)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "three close to anti-diagonal"
@@ -550,20 +550,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -573,20 +573,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -596,20 +596,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -619,20 +619,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -642,20 +642,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -665,20 +665,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -688,20 +688,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -711,20 +711,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -734,20 +734,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -757,20 +757,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -780,20 +780,20 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
-  if (.NOT. DEBUG) then
+  if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
         call u_test_failed(__LINE__)
      end if
@@ -803,21 +803,21 @@ program test_z_rot3_turnover
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q1(1),Q1(2),Q1(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q1(1),Q1(2),Q1(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm,INFO)
+     call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q2(1),Q2(2),Q2(3),nrm)
      call random_number(rp)
      rp = 2d0*pi*rp
      call random_number(rm)
      rm = 2d0*pi*rm
-     call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm,INFO)
+     call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,8)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "exact to (anti-)diagonal"
@@ -838,7 +838,7 @@ program test_z_rot3_turnover
      end if
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      ! print histogram
      write(*,*) ""
      write(*,*) "<1e-17",histo2(1,:)
@@ -865,7 +865,7 @@ program test_z_rot3_turnover
      ht = histot(7,jj)
      do ii=7,1,-1
         if (h2>ht*1.002) then
-           if (DEBUG) then
+           if (VERBOSE) then
               pass_all = .FALSE.
            else
               call u_test_failed(__LINE__)           
@@ -878,7 +878,7 @@ program test_z_rot3_turnover
      end do
   end do
  
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT. pass_all) then
         write(*,*) "At least one turnover test FAILED."
      end if
@@ -974,7 +974,7 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   Hs = matmul(A1,matmul(A2,A3))
 
   ! first turnover
-  call z_rot3_turnover(Q1,Q2,Q3,INFO)
+  call z_rot3_turnover(Q1,Q2,Q3)
   ! check INFO
   if (INFO.NE.0) then
      call u_test_failed(__LINE__)
@@ -1015,7 +1015,7 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   ! accum-1 turnovers
   do jj=2,accum
 
-     call z_rot3_turnover(Q1,Q2,Q3,INFO)
+     call z_rot3_turnover(Q1,Q2,Q3)
      ! check INFO
      if (INFO.NE.0) then
         call u_test_failed(__LINE__)

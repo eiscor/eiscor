@@ -1,152 +1,110 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! d_2x2array_eig 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the Schur decomposition of a general
-! 2x2 real matrix.
+! This routine computes the real Schur decomposition of a general
+! 2x2 double matrix pencil.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
-!  H              REAL(8) array of dimension (2,2)
-!                   Contains the 2x2 matrix.
+!  FLAG            LOGICAL
+!                    .TRUE. implies B is not the identity
+!                    .FALSE. implies B is the identity matrix
+!
+!  A,B             REAL(8) array of dimension (2,2)
+!                    Contains the 2x2 matrix. On exit (A,B) are real and
+!                    quasi-uppertriangular. If FLAG=.FALSE. B is
+!                    unused.
 !
 ! OUTPUT VARIABLES:
 !
-!  E              COMPLEX(8) array of dimension (2)
-!                   On exit contains the eigenvalues of H.
+!  Q,Z             COMPLEX(8) array of dimension (2,2)
+!                    On exit the columns of Q and Z contain the left and right
+!                    Schur vectors of the pencil (A,B). If FLAG=.FALSE. Z is
+!                    unused.
 !
-!  Z              COMPLEX(8) array of dimension (2,2)
-!                   On exit the columns of Z contain the Schur vectors 
-!                   of H sorted to match the array E.
-!
-! INFO            INTEGER
-!                    INFO = 0 implies successful computation
-!                    INFO = -1 implies H is invalid
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_2x2array_eig(H,E,Z,INFO)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
   
   implicit none
   
   ! input variables
-  integer, intent(inout) :: INFO
-  real(8), intent(in) :: H(2,2)
-  complex(8), intent(inout) :: E(2), Z(2,2)
+  logical, intent(inout) :: FLAG
+  real(8), intent(inout) :: A(2,2), B(2,2), Q(2,2), Z(2,2)
   
   ! compute variables
   integer :: ii, id
-  real(8) :: trace, disc, detm, temp, nrm1, nrm2
-  complex(8) :: WORK(4), swap
+  real(8) :: trace, disc, detm, temp
   
-  ! initialize info
-  INFO = 0
- 
-  ! print error in debug mode
-  if (DEBUG) then
+  ! B not identity
+  if (FLAG) then
   
-    ! check H
-    call d_2Darray_check(2,2,H,INFO)
-    call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-1)
-    if (INFO.NE.0) then
-      return
-    end if 
+  
+  ! B identity
+  else  
 
-  end if  
-
-  ! compute intermediate values
-  trace = H(1,1) + H(2,2)
-  detm = H(1,1)*H(2,2) - H(2,1)*H(1,2)
-  temp = (H(1,1)-H(2,2))**2 + 4d0*H(1,2)*H(2,1)
-  
-  ! zero roots
-  if (abs(detm).EQ.0d0) then
-    E(1) = cmplx(0d0,0d0,kind=8)
-    E(2) = cmplx(0d0,0d0,kind=8)   
-  
-  ! imaginary roots
-  else if (temp < 0) then
-    disc = sqrt(-temp)
-    E(1) = cmplx(trace,disc,kind=8)/2d0
-    E(2) = cmplx(trace,-disc,kind=8)/2d0    
-
-  ! real roots
-  else
-    disc = sqrt(temp)
+    ! compute intermediate values
+    trace = A(1,1) + A(2,2)
+    detm = A(1,1)*A(2,2) - A(2,1)*A(1,2)
+    temp = (A(1,1)-A(2,2))**2 + 4d0*A(1,2)*A(2,1)
     
-    ! compute E
-    if(abs(trace+disc) > abs(trace-disc))then
-      E(1) = cmplx((trace+disc)/2d0,0d0,kind=8)
-      E(2) = cmplx(detm,0d0,kind=8)/E(1)
+    ! imaginary roots
+    if (temp < 0) then
+      
+      ! move A to standard form (A(1,1) = A(2,2))
+      ! real part of lambda
+      trace = trace/2d0
+    
+      ! imaginary part of lambda 
+      disc = sqrt(-temp)/2d0
+   
+      ! compute Q
+      temp = (A(2,2)-A(1,1))
+      if ((temp.NE.0).AND.(abs(temp)>1)) then
+        temp = (A(1,2)+A(2,1))/temp
+        temp = temp*(1d0-sqrt(1d0+1d0/temp/temp))
+      else if (temp.NE.0) then 
+        temp = (A(1,2)+A(2,1))/temp
+        temp = temp-sqrt(1d0+temp*temp)
+      end if
+      call d_rot2_vec2gen(1d0,temp,Q(1,1),Q(2,1),temp)
+      Q(2,2) = Q(1,1)
+      Q(1,2) = -Q(2,1)
+    
+      ! update A
+      A = matmul(transpose(Q),matmul(A,Q))
+
+    ! real roots
     else
-      E(1) = cmplx((trace-disc)/2d0,0d0,kind=8)
-      E(2) = cmplx(detm,0d0,kind=8)/E(1)
-    end if
-    
-  end if
-  
-  ! compute diagonal with least cancellation
-  WORK(1) = H(1,1) - E(1)
-  WORK(2) = H(2,2) - E(1)
-  WORK(3) = H(1,1) - E(2)
-  WORK(4) = H(2,2) - E(2)
-  
-  id = 1
-  ! complex abs does not matter here
-  temp = abs(WORK(1))
-  do ii=1,3
-    if(abs(WORK(ii+1)) > temp) then
-        id = ii+1
-        temp = abs(WORK(id))
-    end if
-  end do
-  
-  ! initialize first column of Z
-  ! swap eigenvalues if necessary
-  if (temp .EQ. 0d0) then
-    Z(1,1) = cmplx(1d0,0d0,kind=8)
-    Z(2,1) = cmplx(0d0,0d0,kind=8)
-  else if (id .EQ. 1) then
-    Z(1,1) = H(1,2)
-    Z(2,1) = -WORK(1)
-  else if (id .EQ. 2) then
-    Z(1,1) = -WORK(2)
-    Z(2,1) = H(2,1)
-  else if (id .EQ. 3) then
-    Z(1,1) = H(1,2)
-    Z(2,1) = -WORK(3)
-    swap = E(1)
-    E(1) = E(2)
-    E(2) = swap
-  else
-    Z(1,1) = -WORK(4)
-    Z(2,1) = H(2,1)
-    swap = E(1)
-    E(1) = E(2)
-    E(2) = swap
-  end if
+     
+      ! sqrt of discriminant 
+      disc = sqrt(temp)
+      
+      ! compute most accurate eigenvalue
+      if(abs(trace+disc) > abs(trace-disc))then
+        temp = (trace+disc)/2d0
+      else
+        temp = (trace-disc)/2d0
+      end if
 
-  ! normalize first column of Z
-  nrm1 = abs(Z(1,1)) 
-  nrm2 = abs(Z(2,1))
-  ! complex abs does not matter here, since nrm2 < eps_single 
-  ! => nrm2**2 < eps_double
-  if (nrm1 > nrm2) then
-    nrm2 = nrm2/nrm1
-    temp = nrm1*sqrt(1d0 + nrm2*nrm2)
-  else
-    nrm1 = nrm1/nrm2
-    temp = nrm2*sqrt(1d0 + nrm1*nrm1)
-  end if
-  Z(1,1) = Z(1,1)/temp
-  Z(2,1) = Z(2,1)/temp
+      ! compute Schur vectors
+      call d_rot2_vec2gen(A(1,2),temp-A(1,1),Q(1,1),Q(2,1),trace)
+      Q(2,2) = Q(1,1)
+      Q(1,2) = -Q(2,1)
+      
+      ! update A
+      A(1,1) = temp
+      A(1,2) = 0d0
+      A(2,2) = detm/temp
+      A(2,1) = 0d0
+      
+    end if
   
-  ! store second column of Z
-  Z(1,2) = -conjg(Z(2,1))
-  Z(2,2) = conjg(Z(1,1))
+  end if
   
 end subroutine d_2x2array_eig

@@ -40,9 +40,10 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
   integer, intent(in) :: N
   real(8), intent(inout) :: Q(3*(N-1)), D(2*N)
   integer, intent(inout) :: INFO
-  complex(kind=8), intent(inout) :: H(N,N)
+  complex(8), intent(inout) :: H(N,N)
   
   ! compute variables
+  logical :: flg
   integer :: ii, ind
   real(8) :: nrm, tol 
   real(8) :: cr, ci, s 
@@ -61,35 +62,26 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
   end if
   
   ! check H
-  call z_2Darray_check(N,N,H,INFO)
-  if (INFO.NE.0) then
+  call z_2Darray_check(N,N,H,flg)
+  if (.NOT.flg) then
+    INFO = -2
     ! print error in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,INFO)
     end if
-    INFO = -2 
     return
   end if  
   
   ! set tol
-  tol = max(10d0,dble(N))*epsilon(1d0)
+  tol = max(10d0,dble(N))*EISCOR_DBL_EPS
   
   ! loop for reduction
   ! ii is the column being reduced
   do ii=1,(N-1)
             
     ! reduce to block diagonal
-    call z_rot3_vec4gen(dble(H(ii,ii)),aimag(H(ii,ii)),dble(H(ii+1,ii)),aimag(H(ii+1,ii)),cr,ci,s,nrm,INFO)
+    call z_rot3_vec4gen(dble(H(ii,ii)),aimag(H(ii,ii)),dble(H(ii+1,ii)),aimag(H(ii+1,ii)),cr,ci,s,nrm)
     
-    ! check info
-    if (INFO.NE.0) then 
-      ! print error in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"z_rot3_vec4gen failed",INFO,INFO)
-      end if 
-      return
-    end if 
-        
     ! check for unitarity       
     if (abs(nrm-1d0) >= tol) then
       INFO = -2
@@ -110,28 +102,12 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
     Q(3*(ii-1)+3) = s
           
     ! store in D
-    call d_rot2_vec2gen(dble(H(ii,ii)),aimag(H(ii,ii)),D(2*(ii-1)+1),D(2*(ii-1)+2),nrm,INFO)
+    call d_rot2_vec2gen(dble(H(ii,ii)),aimag(H(ii,ii)),D(2*(ii-1)+1),D(2*(ii-1)+2),nrm)
    
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-
   end do
   
   ! store in D
-  call d_rot2_vec2gen(dble(H(N,N)),aimag(H(N,N)),D(2*(N-1)+1),D(2*(N-1)+2),nrm,INFO)
-  
-  ! check INFO in debug mode
-  if (DEBUG) then
-     call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
-     if (INFO.NE.0) then 
-        return 
-     end if
-  end if
+  call d_rot2_vec2gen(dble(H(N,N)),aimag(H(N,N)),D(2*(N-1)+1),D(2*(N-1)+2),nrm)
   
   ! check for unitarity       
   if (abs(nrm-1d0) >= tol) then

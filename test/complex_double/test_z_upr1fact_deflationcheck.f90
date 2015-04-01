@@ -20,13 +20,13 @@ program test_z_upr1fact_deflationcheck
   
   ! compute variables
   integer, parameter :: N = 6
-  integer :: ii, ind, INFO, ITCNT, STR, STP, ZERO, ITS(N-1)
+  integer :: ii, ind, ZERO
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D(2*(N+1))
-  complex(8) :: H1(N+1,N+1), H2(N+1,N+1)
+  real(8) :: Q(3*(N-1)), D(2*N)
+  complex(8) :: H1(N,N), H2(N,N)
   
   ! tolerance
-  real(8), parameter :: tol = 10d0*epsilon(1d0)
+  real(8), parameter :: tol = 10d0*EISCOR_DBL_EPS
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -34,12 +34,6 @@ program test_z_upr1fact_deflationcheck
   ! start timer
   call system_clock(count_rate=c_rate)
   call system_clock(count=c_start)
-  
-  ! initialize INFO
-  INFO = 0
-  
-  ! initialize ITS
-  ITS = 0
   
   ! print banner
   call u_test_banner(__FILE__)
@@ -61,28 +55,18 @@ program test_z_upr1fact_deflationcheck
     
     ! initialize D
     D = 0d0
-    do ii=1,(N+1)
+    do ii=1,N
       D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
     
-    ! set ITCNT
-    ITCNT = 10
-    
-    ! set STR, STP, ZERO
-    STR = 1
-    STP = N-1
+    ! set ZERO
     ZERO = 0
     
     ! call z_upr1fact_deflationcheck
-    call z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
+    call z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
     
     ! initialize H2
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
@@ -96,21 +80,6 @@ program test_z_upr1fact_deflationcheck
     if (ZERO.NE.ind) then
       call u_test_failed(__LINE__)
     end if   
-    
-    ! check STR
-    if (STR.NE.(ind+1)) then
-      call u_test_failed(__LINE__)
-    end if  
-    
-    ! check ITCNT
-    if (ITCNT.NE.0) then
-      call u_test_failed(__LINE__)
-    end if  
-
-    ! check ITS
-    if (ITS(ind).NE.10) then
-      call u_test_failed(__LINE__)
-    end if
 
   ! check 2)
     ! initialize P
@@ -129,28 +98,18 @@ program test_z_upr1fact_deflationcheck
     
     ! initialize D
     D = 0d0
-    do ii=1,(N+1)
+    do ii=1,N
       D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
     
-    ! set ITCNT
-    ITCNT = 10
-    
-    ! set STR, STP, ZERO
-    STR = 1
-    STP = N-1
+    ! set ZERO
     ZERO = 0
     
     ! call z_upr1fact_deflationcheck
-    call z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
+    call z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
     
     ! initialize H2
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
@@ -164,22 +123,6 @@ program test_z_upr1fact_deflationcheck
     if (ZERO.NE.ind) then
       call u_test_failed(__LINE__)
     end if   
-    
-    ! check STR
-    if (STR.NE.(ind+1)) then
-      call u_test_failed(__LINE__)
-    end if  
-    
-    ! check ITCNT
-    if (ITCNT.NE.0) then
-      call u_test_failed(__LINE__)
-    end if  
-
-    ! check ITS
-    if (ITS(ind).NE.10) then
-      call u_test_failed(__LINE__)
- 
-    end if
     
   ! check 3)
     ! initialize P
@@ -203,28 +146,18 @@ program test_z_upr1fact_deflationcheck
     
     ! initialize D
     D = 0d0
-    do ii=1,(N+1)
+    do ii=1,N
       D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
     
-    ! set ITCNT
-    ITCNT = 10
-    
-    ! set STR, STP, ZERO
-    STR = 1
-    STP = N-1
+    ! set ZERO
     ZERO = 0
     
     ! call z_upr1fact_deflationcheck
-    call z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
+    call z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
     
     ! initialize H2
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
@@ -238,21 +171,6 @@ program test_z_upr1fact_deflationcheck
     if (ZERO.NE.ind) then
       call u_test_failed(__LINE__)
     end if   
-    
-    ! check STR
-    if (STR.NE.(ind+1)) then
-      call u_test_failed(__LINE__)
-    end if  
-    
-    ! check ITCNT
-    if (ITCNT.NE.0) then
-      call u_test_failed(__LINE__)
-    end if  
-
-    ! check ITS
-    if (ITS(ind).NE.10) then
-      call u_test_failed(__LINE__)
-    end if
     
   ! check 4)
     ! initialize P
@@ -276,28 +194,18 @@ program test_z_upr1fact_deflationcheck
     
     ! initialize D
     D = 0d0
-    do ii=1,(N+1)
+    do ii=1,N
       D(2*ii-1) = 1d0
     end do
         
     ! initialize H1
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H1)
     
-    ! set ITCNT
-    ITCNT = 10
-    
-    ! set STR, STP, ZERO
-    STR = 1
-    STP = N-1
+    ! set ZERO
     ZERO = 0
     
     ! call z_upr1fact_deflationcheck
-    call z_upr1fact_deflationcheck(N,STR,STP,ZERO,P,Q,D,ITCNT,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
+    call z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
     
     ! initialize H2
     call z_upr1fact_form_hess_matrix(N,P,Q,D,H2)
@@ -311,21 +219,6 @@ program test_z_upr1fact_deflationcheck
     if (ZERO.NE.ind) then
       call u_test_failed(__LINE__)
     end if   
-    
-    ! check STR
-    if (STR.NE.(ind+1)) then
-      call u_test_failed(__LINE__)
-    end if  
-    
-    ! check ITCNT
-    if (ITCNT.NE.0) then
-      call u_test_failed(__LINE__)
-    end if  
-
-    ! check ITS
-    if (ITS(ind).NE.10) then
-      call u_test_failed(__LINE__)
-    end if
  
   ! stop timer
   call system_clock(count=c_stop)
@@ -337,7 +230,7 @@ end program test_z_upr1fact_deflationcheck
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This subroutine computes the (N+1)x(N+1) extended hessenberg matrix defined
+! This subroutine computes the NxN extended hessenberg matrix defined
 ! by Given's rotations stored in Q whose order is described by P and the
 ! diagonal matrix D. The output is stored in H.
 !
@@ -349,16 +242,16 @@ subroutine z_upr1fact_form_hess_matrix(N,P,Q,D,H)
   ! input variables
   integer, intent(in) :: N
   logical, intent(in) :: P(N-2)
-  real(8), intent(in) :: Q(3*(N-1)), D(2*(N+1))
-  complex(8), intent(inout) :: H(N+1,N+1)
+  real(8), intent(in) :: Q(3*(N-1)), D(2*N)
+  complex(8), intent(inout) :: H(N,N)
   
   ! compute variables
   integer :: ii
-  complex :: temp(2,2)
+  complex(8) :: temp(2,2)
   
   ! initialize H
   H = cmplx(0d0,0d0,kind=8)
-  do ii=1,(N+1)
+  do ii=1,N
     H(ii,ii) = cmplx(1d0,0d0,kind=8)
   end do
   H(1,1) = cmplx(Q(1),Q(2),kind=8)
@@ -382,7 +275,7 @@ subroutine z_upr1fact_form_hess_matrix(N,P,Q,D,H)
   end do
   
   ! apply D
-  do ii=1,(N+1)
+  do ii=1,N
     H(:,ii) = H(:,ii)*cmplx(D(2*ii-1),D(2*ii),kind=8)
   end do
   

@@ -26,7 +26,7 @@ program test_z_2Darray_check
   ! compute variables
   real(8) :: a,b,nul, num
   complex(8) :: C(3,2), C2(3,2)
-  integer :: info
+  logical :: flag
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -59,9 +59,9 @@ program test_z_2Darray_check
   b = -2.42d24
   C(3,2) = cmplx(a,b,kind=8)
   C2 = C
-  call z_2Darray_check(3,2,C,INFO)
-  ! check info
-  if (info.NE.0) then
+  call z_2Darray_check(3,2,C,flag)
+  ! check flag
+  if (.NOT.flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -72,17 +72,17 @@ program test_z_2Darray_check
   C = C2
   num = +huge(1d0)
   C(1,1) = cmplx(num+huge(1d0),0d0,kind=8)
-  call z_2Darray_check(3,2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_2Darray_check(3,2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
   C = C2
   C(2,1) = cmplx(0d0,num+huge(1d0),kind=8)
-  call z_2Darray_check(3,2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_2Darray_check(3,2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -93,17 +93,17 @@ program test_z_2Darray_check
   C = C2
   num = -huge(1d0)
   C(2,2) = cmplx(num-huge(1d0),0d0,kind=8)
-  call z_2Darray_check(3,2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_2Darray_check(3,2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
   C = C2
   C(1,2) = cmplx(0d0,num-huge(1d0),kind=8)
-  call z_2Darray_check(3,2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_2Darray_check(3,2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -114,17 +114,17 @@ program test_z_2Darray_check
   C = C2
   nul = 0d0
   C(3,2) = cmplx(nul/nul,0d0,kind=8)
-  call z_2Darray_check(3,2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_2Darray_check(3,2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
   C = C2
   C(2,1) = cmplx(0d0,nul/nul,kind=8)
-  call d_1Darray_check(3,2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_2Darray_check(3,2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 

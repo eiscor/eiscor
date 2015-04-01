@@ -1,12 +1,13 @@
 #include "eiscor.h"
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! d_1Darray_check
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks a one dimensional complex array for INFs and NANs.
+! This routine checks a one dimensional double array for INFs and NANs.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
@@ -18,37 +19,38 @@
 !
 ! OUTPUT VARIABLES:
 !
-!  INFO            INTEGER
-!                    INFO equal to -1 implies A contains an INF or NAN.
+!  FLAG            LOGICAL
+!                    .TRUE. implies A contains valid numbers
+!                    .FALSE. implies N < 1 or A contains at least one invalid 
+!                            number
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_1Darray_check(N,A,INFO)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine d_1Darray_check(N,A,FLAG)
 
   implicit none
   
   ! input variables
   integer, intent(in) :: N
   real(8), intent(in) :: A(N)
-  integer, intent(inout) :: INFO
+  logical, intent(inout) :: FLAG
   
   ! compute variables
   integer :: ii
   
-  ! initialize INFO
-  INFO = 0
+  ! initialize FLAG
+  FLAG = .FALSE.
+  
+  ! check N
+  if (N < 1) then
+    return
+  end if
   
   ! check array
   do ii = 1,N
   
-    ! check for NAN
-    call d_scalar_nancheck(A(ii),INFO)
-    if (INFO.NE.0) then
-      return
-    end if
-    
-    ! check for INF
-    call d_scalar_infcheck(A(ii),INFO)
-    if (INFO.NE.0) then
+    ! check for INF or NAN
+    call d_scalar_check(A(ii),FLAG)
+    if (.NOT.FLAG) then
       return
     end if
     

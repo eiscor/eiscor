@@ -16,27 +16,18 @@
 !
 ! 2) set Q2 = [5/sqrt(60), -7/sqrt(60), 0], STR = 2
 !
-!
-! in DEBUG mode additionally the check of the input data is checked
-! A) N = 1
-! B) STR = 0, STR = 4 
-! C) STP = 0, STP = 4
-! D) ZERO = -1, ZERO = 2
-! E) ITCNT = -1
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unifact_deflationcheck
 
   implicit none
   
   ! parameter
-  real(8) :: tol = 1d1*epsilon(1d0) ! accuracy (tolerance)
+  real(8) :: tol = 1d1*EISCOR_DBL_EPS ! accuracy (tolerance)
   
   ! compute variables
-  integer :: info, ITS(3), ITCNT, STR, STP, ZERO
+  integer :: ZERO
   real(8) :: Q(9) ! N = 4
   real(8) :: D(8)
-  complex(8) :: H(2,2)
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -69,18 +60,9 @@ program test_z_unifact_deflationcheck
   D(7) = 1d0
   D(8) = 0d0
   
-  ITS = 0
-  STR = 1
-  STP = 3
   ZERO = 0
-  ITCNT = 42
 
-  call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_unifact_deflationcheck(4,Q,D,ZERO)
 
   ! check Q
   if (abs(Q(1)-1d0)>tol) then
@@ -138,25 +120,7 @@ program test_z_unifact_deflationcheck
   end if
 
   ! check integers
-  if (str.NE.2) then
-     call u_test_failed(__LINE__)
-  end if
-  if (stp.NE.3) then
-     call u_test_failed(__LINE__)
-  end if
   if (zero.NE.1) then
-     call u_test_failed(__LINE__)
-  end if
-  if (itcnt.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(1).NE.42) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(2).NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(3).NE.0) then
      call u_test_failed(__LINE__)
   end if
 
@@ -181,18 +145,9 @@ program test_z_unifact_deflationcheck
   D(7) = 1d0
   D(8) = 0d0
   
-  ITS = 0
-  STR = 2
-  STP = 3
-  ZERO = 1
-  ITCNT = 42
+  ZERO = 0
 
-  call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_unifact_deflationcheck(3,Q(4:9),D(3:8),ZERO)
 
   ! check Q
   if (abs(Q(1)-8d-1)>tol) then
@@ -250,25 +205,7 @@ program test_z_unifact_deflationcheck
   end if
 
   ! check integers
-  if (str.NE.2) then
-     call u_test_failed(__LINE__)
-  end if
-  if (stp.NE.3) then
-     call u_test_failed(__LINE__)
-  end if
-  if (zero.NE.1) then
-     call u_test_failed(__LINE__)
-  end if
-  if (itcnt.NE.42) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(1).NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(2).NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(3).NE.0) then
+  if (zero.NE.0) then
      call u_test_failed(__LINE__)
   end if
 
@@ -293,18 +230,9 @@ program test_z_unifact_deflationcheck
   D(7) = 1d0
   D(8) = 0d0
   
-  ITS = 0
-  STR = 2
-  STP = 3
-  ZERO = 1
-  ITCNT = 42
+  ZERO = 0
 
-  call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
+  call z_unifact_deflationcheck(3,Q(4:9),D(3:8),ZERO)
 
   ! check Q
   if (abs(Q(1)-8d-1)>tol) then
@@ -362,109 +290,8 @@ program test_z_unifact_deflationcheck
   end if
 
   ! check integers
-  if (str.NE.3) then
+  if (zero.NE.1) then
      call u_test_failed(__LINE__)
-  end if
-  if (stp.NE.3) then
-     call u_test_failed(__LINE__)
-  end if
-  if (zero.NE.2) then
-     call u_test_failed(__LINE__)
-  end if
-  if (itcnt.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(1).NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(2).NE.42) then
-     call u_test_failed(__LINE__)
-  end if
-  if (its(3).NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-
-
-
-  if (DEBUG) then
-     !!!!!!!!!!!!!!!!!!!!
-     ! check A)
-     ! N = 1
-     call z_unifact_deflationcheck(1,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-1) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check B)
-     STR = 0
-     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-2) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     STR = 4
-     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-2) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check C)
-     STR = 1
-     STP = 0
-     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-3) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     STP = 4
-     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-3) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check D)
-     STP = 3
-     ZERO = -1
-     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-4) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     ZERO = 2
-     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-4) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check E)
-     ZERO = 0
-     ITCNT = -1
-     call z_unifact_deflationcheck(4,STR,STP,ZERO,Q,D,ITCNT,ITS,INFO)
-     ! check info
-     if (info.NE.-7) then
-        print*, info
-        call u_test_failed(__LINE__)
-     end if
-
-
   end if
 
   ! stop timer

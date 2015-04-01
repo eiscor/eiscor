@@ -39,7 +39,7 @@ program test_z_1Darray_check
   real(8) :: a,b,nul
   complex(8) :: C(2)
   complex(8) :: num
-  integer :: info
+  logical :: flag
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -59,9 +59,9 @@ program test_z_1Darray_check
   b = 0d0
   C(1) = cmplx(a,b,kind=8)
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.0) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (.NOT.flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -75,9 +75,9 @@ program test_z_1Darray_check
   a = 0d0
   b = 1.5d1
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.0) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (.NOT.flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -91,9 +91,9 @@ program test_z_1Darray_check
   a = 1d0
   b = -2.42d24
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.0) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (.NOT.flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -108,9 +108,9 @@ program test_z_1Darray_check
   a = 0d0
   b = 0d0
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -125,9 +125,9 @@ program test_z_1Darray_check
   a = 0d0
   b = 0d0
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -142,9 +142,9 @@ program test_z_1Darray_check
   a = a-huge(1d0)
   b = 0d0
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -159,9 +159,9 @@ program test_z_1Darray_check
   b = -huge(1d0)
   b = b-huge(1d0)
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -176,9 +176,9 @@ program test_z_1Darray_check
   a = nul/nul
   b = 0d0
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -193,9 +193,9 @@ program test_z_1Darray_check
   a = 0d0
   b = 0d0
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.1) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -209,9 +209,9 @@ program test_z_1Darray_check
   a = huge(1d0)
   b = 0d0
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.0) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (.NOT.flag) then
      call u_test_failed(__LINE__)
   end if
 
@@ -225,9 +225,9 @@ program test_z_1Darray_check
   a = 0d0
   b = 0d0
   C(2) = cmplx(a,b,kind=8)
-  call z_1Darray_check(2,C,INFO)
-  ! check info
-  if (info.NE.0) then
+  call z_1Darray_check(2,C,flag)
+  ! check flag
+  if (.NOT.flag) then
      call u_test_failed(__LINE__)
   end if
 

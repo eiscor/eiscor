@@ -13,17 +13,15 @@
 !
 ! INPUT VARIABLES:
 !
-!  N               INTEGER
-!                    dimension of matrix
+!  TOP             LOGICAL
+!                    .TRUE.: top block is computed
+!                    .FALSE.: bottom block is computed
 !
-!  K               INTEGER
-!                    index of the diagonal block
-!
-!  Q               REAL(8) array of dimension (3*(N-1))
+!  Q               REAL(8) array of dimension (6)
 !                    array of generators for givens rotations
 !                    generators must be orthogonal to working precision
 !
-!  D               REAL(8) array of dimension (2*N)
+!  D               REAL(8) array of dimension (4)
 !                    array of generators for complex diagonal matrix
 !                    on output contains the eigenvalues
 !
@@ -32,69 +30,44 @@
 !  H              COMPLEX(8) array of dimension (2,2)
 !                   on exit contains the desired 2x2 block
 !
-!  INFO           INTEGER
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies N is invalid
-!                   INFO = -2 implies K is invalid
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_unifact_2x2diagblock(N,K,Q,D,H,INFO)
+subroutine z_unifact_2x2diagblock(TOP,Q,D,H)
   
   implicit none
   
   ! input variables
-  integer, intent(in) :: N, K
-  integer, intent(inout) :: INFO
-  real(8), intent(in) :: Q(3*(N-1)), D(2*N)
+  logical, intent(in) :: TOP
+  real(8), intent(in) :: Q(6), D(4)
   complex(8), intent(inout) :: H(2,2)
-  
-  ! compute variables
-  integer :: strt
-  
-  ! initialize INFO
-  INFO = 0
-  
-  ! check input in debug mode
-  if (DEBUG) then
-    
-    ! check N
-    if (N < 2) then
-      INFO = -1
-      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
-      return
-    end if
-    
-    ! check K
-    if ((K < 1).OR.(K > N-1)) then
-      INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"K must 1 <= K <= N-1",INFO,INFO)
-      return
-    end if 
+ 
+  ! TOP == .TRUE.
+  if (TOP) then
+ 
+    ! initialize H
+    H(1,1) = cmplx(Q(1),Q(2),kind=8)
+    H(2,1) = cmplx(Q(3),0d0,kind=8)
+    H(1,2) = -H(2,1)
+    H(2,2) = conjg(H(1,1))
+   
+    ! second rotation 
+    H(:,2) = H(:,2)*cmplx(Q(4),Q(5),kind=8)
 
+  ! TOP == .FALSE.
+  else
+ 
+    ! initialize H
+    H(1,1) = cmplx(Q(4),Q(5),kind=8)
+    H(2,1) = cmplx(Q(6),0d0,kind=8)
+    H(1,2) = -H(2,1)
+    H(2,2) = conjg(H(1,1))
+   
+    ! second rotation
+    H(1,:) = H(1,:)*cmplx(Q(1),-Q(2),kind=8)
+    
   end if
-  
-  ! set index
-  strt = 3*(K-1)
-  
-  ! initialize H
-  H(1,1) = cmplx(Q(strt+1),Q(strt+2),kind=8)
-  H(2,1) = cmplx(Q(strt+3),0d0,kind=8)
-  H(1,2) = -H(2,1)
-  H(2,2) = conjg(H(1,1))
-    
-  ! apply upper rotation
-  if (K > 1) then
-    H(1,:) = H(1,:)*cmplx(Q(strt-2),-Q(strt-1),kind=8)
-    end if
-    
-  ! apply lower rotation
-  if (K < (N-1)) then
-    H(:,2) = H(:,2)*cmplx(Q(strt+4),Q(strt+5),kind=8)
-  end if
-    
-  ! apply diagonal
-  strt = 2*(k-1)
-  H(:,1) = H(:,1)*cmplx(D(strt+1),D(strt+2),kind=8)
-  H(:,2) = H(:,2)*cmplx(D(strt+3),D(strt+4),kind=8)
 
+  ! diagaonal
+  H(:,1) = H(:,1)*cmplx(D(1),D(2),kind=8)
+  H(:,2) = H(:,2)*cmplx(D(3),D(4),kind=8)
+  
 end subroutine z_unifact_2x2diagblock

@@ -9,10 +9,10 @@
 ! The following tests are run:
 !
 ! 1) 1st factor in Q is [0, -1; 1, 0], both triangular parts are I,
-!    SHFT = 1 and P(1) = FALSE
+!    SHFT = 1 and P = FALSE
 !
-! 1) 1st factor in Q is [0, -1; 1, 0], both triangular parts are I,
-!    SHFT = 1 and P(1) = TRUE
+! 2) 1st factor in Q is [0, -1; 1, 0], both triangular parts are I,
+!    SHFT = 1 and P = TRUE
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_upr1fact_buildbulge
@@ -20,11 +20,10 @@ program test_z_upr1fact_buildbulge
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 3
-  real(8), parameter :: tol = 1d1*epsilon(1d0)
-  integer :: ii, INFO
-  logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D(2,2*(N+1)), R(4,3*N), G(3)
+  real(8), parameter :: tol = 1d1*EISCOR_DBL_EPS
+  logical :: P
+  real(8) :: Q(6), D1(4), C1(6), B1(6)
+  real(8) :: G(3), D2(4), C2(6), B2(6)
   complex(8) :: SHFT
   
   ! timing variables
@@ -38,46 +37,30 @@ program test_z_upr1fact_buildbulge
   call u_test_banner(__FILE__)
   
   ! check 1)
-    ! set INFO
-    INFO = 0
-    
     ! set P
     P = .FALSE.
     
     ! set valid Q
     Q = 0d0
-    do ii=1,(N-1)
-      Q(3*ii-2) = 1d0
-    end do
-    Q(1) = 0d0
-    Q(2) = 0d0
-    Q(3) = 1d0     
+    Q(3) = 1d0
+    Q(4) = 1d0     
   
-    ! set valid D
-    D = 0d0
-    do ii=1,(N+1)
-      D(:,2*ii-1) = 1d0
-    end do
+    ! set valid D1 and D2
+    D1 = 0d0
+    D1(1) = 1d0
+    D1(3) = 1d0
+    D2 = D1
 
-    ! set valid R
-    R = 0d0
-    do ii=1,N
-      R(1,3*ii) = -1d0
-      R(2,3*ii) = 1d0
-      R(3,3*ii) = -1d0
-      R(4,3*ii) = 1d0
-    end do
-    
+    ! set valid C1, B1, C2, B2
+    C1 = 0d0
+    C1(3) = 1d0; C1(6) = 1d0
+    C2 = C1; B1 = -C1; B2 = B1
+
     ! set valid SHFT
     SHFT = cmplx(1d0,0d0,kind=8)
     
     ! call build bulge
-    call z_upr1fact_buildbulge('QZ',N,1,P,Q,D,R,SHFT,G,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
+    call z_upr1fact_buildbulge(.TRUE.,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
     
     ! check results    
     if (abs(G(1)+1d0/sqrt(2d0)) > tol) then
@@ -92,46 +75,30 @@ program test_z_upr1fact_buildbulge
   ! end check 1)
   
   ! check 2)
-    ! set INFO
-    INFO = 0
-    
     ! set P
     P = .TRUE.
     
     ! set valid Q
     Q = 0d0
-    do ii=1,(N-1)
-      Q(3*ii-2) = 1d0
-    end do
-    Q(1) = 0d0
-    Q(2) = 0d0
-    Q(3) = 1d0     
+    Q(3) = 1d0
+    Q(4) = 1d0     
   
-    ! set valid D
-    D = 0d0
-    do ii=1,(N+1)
-      D(:,2*ii-1) = 1d0
-    end do
+    ! set valid D1 and D2
+    D1 = 0d0
+    D1(1) = 1d0
+    D1(3) = 1d0
+    D2 = D1
 
-    ! set valid R
-    R = 0d0
-    do ii=1,N
-      R(1,3*ii) = -1d0
-      R(2,3*ii) = 1d0
-      R(3,3*ii) = -1d0
-      R(4,3*ii) = 1d0
-    end do
-    
+    ! set valid C1, B1, C2, B2
+    C1 = 0d0
+    C1(3) = 1d0; C1(6) = 1d0
+    C2 = C1; B1 = -C1; B2 = B1
+
     ! set valid SHFT
     SHFT = cmplx(1d0,0d0,kind=8)
     
     ! call build bulge
-    call z_upr1fact_buildbulge('QZ',N,1,P,Q,D,R,SHFT,G,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
+    call z_upr1fact_buildbulge(.TRUE.,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
     
     ! check results    
     if (abs(G(1)-1d0/sqrt(2d0)) > tol) then

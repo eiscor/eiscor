@@ -41,9 +41,7 @@ subroutine z_unifact_factorcheck(N,Q,D,INFO)
   integer, intent(inout) :: INFO
   
   ! compute variables
-  integer :: ii
-  real(8),parameter :: tol = 10d0*epsilon(1d0) 
-  real(8) :: nrm
+  logical :: flg
   
   ! initialize INFO
   INFO = 0
@@ -58,52 +56,26 @@ subroutine z_unifact_factorcheck(N,Q,D,INFO)
     return
   end if
   
-  ! check Q for NANs and INFs
-  call d_1Darray_check(3*(N-1),Q,INFO)
-  if (INFO.NE.0) then
+  ! check Q 
+  call z_rot3array_check(N-1,Q,flg)
+  if (.NOT.flg) then
+    INFO = -2
     ! print error in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"Q is invalid",INFO,INFO)
     end if
-    INFO = -2
     return
   end if
   
-  ! check Q for orthogonality
-  do ii=1,(N-1)
-    nrm = sqrt(Q(3*ii-2)**2 + Q(3*ii-1)**2 + Q(3*ii)**2)
-    if (abs(nrm-1d0) > tol) then
-      INFO = -2
-      ! print error in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"Q is not unitary",INFO,INFO)
-      end if
-      return
-   end if
-  end do
-  
-  ! check D
-  call d_1Darray_check(2*N,D,INFO)
-  if (INFO.NE.0) then
+  ! check D 
+  call d_rot2array_check(N,D,flg)
+  if (.NOT.flg) then
+    INFO = -3
     ! print error in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,INFO)
     end if
-    INFO = -3
     return
   end if
-  
-  ! check D for orthogonality
-  do ii=1,N
-    nrm = sqrt(D(2*ii-1)**2 + D(2*ii)**2)
-    if (abs(nrm-1d0) > tol) then
-      INFO = -3
-      ! print error in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"D is not unitary",INFO,INFO)
-      end if
-      return
-   end if
-  end do
   
 end subroutine z_unifact_factorcheck

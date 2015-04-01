@@ -13,191 +13,111 @@
 !
 ! INPUT VARIABLES:
 !
-!  DIR             CHARACTER(3)
-!                    'L2R': pass rotation from left to right
-!                    'R2L': pass rotation from right to left
+!  DIR             LOGICAL
+!                    .TRUE.: pass rotation from left to right
+!                    .FALSE.: pass rotation from right to left
 !
-!  N               INTEGER
-!                    dimension of matrix
-!
-!  K               INTEGER
-!                    index where rotation is passed through
-!
-!  D               REAL(8) array of dimension (2*(N+1))
+!  D               REAL(8) array of dimension (4)
 !                    array of generators for complex diagonal matrices
 !                    in the upper-triangular factors
 !
-!  C               REAL(8) array of dimension (3*N)
+!  C               REAL(8) array of dimension (6)
 !                    array of generators for upper-triangular parts
 !
-!  B               REAL(8) array of dimension (3*N)
+!  B               REAL(8) array of dimension (6)
 !                    array of generators for upper-triangular parts
 !
 !  G               REAL(8) array of dimension (3)
 !                    generator for rotation
 !
-! OUTPUT VARIABLES:
-!
-!  INFO           INTEGER
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies DIR is invalid
-!                   INFO = -2 implies N is invalid
-!                   INFO = -3 implies K is invalid
-!                   INFO = -4 implies D is invalid
-!                   INFO = -5 implies C is invalid
-!                   INFO = -6 implies B is invalid
-!                   INFO = -7 implies G is invalid
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_rot3throughtri(DIR,N,K,D,C,B,G,INFO)
+subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
 
   implicit none
   
   ! input variables
-  character(3), intent(in) :: DIR
-  integer, intent(in) :: N, K
-  real(8), intent(inout) :: D(2*(N+1)), C(3*N), B(3*N), G(3)
-  integer, intent(inout) :: INFO
-  
+  logical, intent(in) :: DIR
+  real(8), intent(inout) :: D(4), C(6), B(6), G(3)
+ 
   ! compute variables
-  integer :: ind1, ind2, ii
-  
-  ! initialize info
-  INFO = 0
-  
-  ! check input in debug mode
-  if (DEBUG) then
-  
-    ! check DIR
-    if ((DIR.NE.'L2R').AND.(DIR.NE.'R2L')) then
-      INFO = -1
-      call u_infocode_check(__FILE__,__LINE__,"DIR must be 'L2R' or 'R2L'",INFO,INFO)
-      return
-    end if
-    
-    ! check N
-    if (N < 2) then
-      INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
-      return
-    end if 
-  
-    ! check K
-    if ((K < 1).OR.(K > N-1)) then
-      INFO = -3
-      call u_infocode_check(__FILE__,__LINE__,"K must 1 <= K <= N-1",INFO,INFO)
-      return
-    end if 
-    
-    ! check D
-    call z_1Darray_check(2*(N+1),D,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"D is invalid",INFO,-4)
-      return
-    end if
-  
-    ! check C
-    call z_1Darray_check(3*N,C,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"C is invalid",INFO,-5)
-      return
-    end if
-    
-    ! check B
-    call z_1Darray_check(3*N,B,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-6)
-      return
-    end if
-    
-    ! check G
-    call z_1Darray_check(3,G,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"G is invalid",INFO,-7)
-      return
-    end if
+  logical :: SYM
+  real(8) :: T(3)
 
-  end if
-  
+  ! initialize SYM
+  if ((C(1).EQ.B(1)).AND.(C(2).EQ.-B(2)).AND.(C(3).EQ.-B(3)).AND. &
+             (C(4).EQ.B(4)).AND.(C(5).EQ.-B(5)).AND.(C(6).EQ.-B(6))) then
+    SYM = .TRUE.
+  else
+    SYM = .FALSE.
+  end if 
+
   ! L2R
-  if (DIR.EQ.'L2R') then
+  if (DIR) then
   
     ! through D
-    ind1 = 2*K-1
-    ind2 = ind1+3
-    call z_rot3_swapdiag('L',D(ind1:ind2),G,INFO)
+    call z_rot3_swapdiag(DIR,D,G)
+ 
+    ! through C and B, symmetric case
+    if (SYM) then
     
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_swapdiag failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
+      ! store G
+      T = G
+
+      ! through C
+      call z_rot3_turnover(C(1:3),C(4:6),T)
+
+      ! update B
+      B(1) = C(1)
+      B(2) = -C(2)
+      B(3) = -C(3)
+      B(4) = C(4)
+      B(5) = -C(5)
+      B(6) = -C(6)
+
+    ! general case
+    else
+
+      ! though C
+      call z_rot3_turnover(C(1:3),C(4:6),G)
+      
+      ! through B
+      call z_rot3_turnover(B(4:6),B(1:3),G)
     
-    ! though C
-    ind1 = 3*K-2
-    ind2 = ind1+2
-    call z_rot3_turnover(C(ind1:ind2),C((ind1+3):(ind2+3)),G,INFO)
-    
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-    
-    ! through B
-    call z_rot3_turnover(B((ind1+3):(ind2+3)),B(ind1:ind2),G,INFO)
-    
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
     end if
   
   ! R2L
   else
   
-    ! through B
-    ind1 = 3*K-2
-    ind2 = ind1+2
-    call z_rot3_turnover(B(ind1:ind2),B((ind1+3):(ind2+3)),G,INFO)
+    ! through C and B, symmetric case
+    if (SYM) then
     
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-    
-    ! through C
-    call z_rot3_turnover(C((ind1+3):(ind2+3)),C(ind1:ind2),G,INFO)
-    
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
+      ! store G
+      T = G
+
+      ! through B
+      call z_rot3_turnover(B(1:3),B(4:6),T)
+
+      ! update B
+      C(1) = B(1)
+      C(2) = -B(2)
+      C(3) = -B(3)
+      C(4) = B(4)
+      C(5) = -B(5)
+      C(6) = -B(6)
+
+    ! general case
+    else
+  
+      ! through B
+      call z_rot3_turnover(B(1:3),B(4:6),G)
+      
+      ! through C
+      call z_rot3_turnover(C(4:6),C(1:3),G)
+      
     end if
     
     ! through D
-    ind1 = 2*K-1
-    ind2 = ind1+3
-    call z_rot3_swapdiag('R',D(ind1:ind2),G,INFO)
-    
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_swapdiag failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
+    call z_rot3_swapdiag(DIR,D,G)
   
   end if
 

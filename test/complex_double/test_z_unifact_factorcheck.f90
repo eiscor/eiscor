@@ -26,7 +26,7 @@ program test_z_unifact_factorcheck
   implicit none
   
   ! parameter
-  real(8) :: tol = 1d1*epsilon(1d0) ! accuracy (tolerance)
+  real(8) :: tol = 1d1*EISCOR_DBL_EPS ! accuracy (tolerance)
   
   ! compute variables
   integer :: N = 4, info

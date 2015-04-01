@@ -18,23 +18,16 @@
 ! 2) merge at bottom
 !    Note: some results are not know exact
 !
-! Additionally in DEBUG mode the following tests are performed
-! A) incorrect jobname
-! B) N too small
-! C) STR out of range
-! D) STP out of range
-! E) B contrains inf or nan
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_unifact_mergebulge
 
   implicit none
   
   ! parameter
-  real(8) :: tol = 1d1*epsilon(1d0) ! accuracy (tolerance)
+  real(8) :: tol = 1d1*EISCOR_DBL_EPS ! accuracy (tolerance)
   
   ! compute variables
-  integer :: N = 4, info, str, stp
+  integer :: N = 4
   real(8) :: Q(9), Qs(9), D(8), Ds(8), B(3), C(3), nul
   
   ! timing variables
@@ -72,20 +65,12 @@ program test_z_unifact_mergebulge
 
   nul = 0d0
  
-  STR = 1
-  STP = 3
-
   B(1) = 1/sqrt(3d0)
   B(2) = -1/sqrt(3d0)
   B(3) = -1/sqrt(3d0)
 
-  call z_unifact_mergebulge('T',N,STR,STP,Q,D,B,INFO)
+  call z_unifact_mergebulge(.TRUE.,N,Q,D,B)
 
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  
   if (abs(Q(1)+1d0/sqrt(3d0))>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -143,13 +128,8 @@ program test_z_unifact_mergebulge
   ! check 2)
   Q = Qs
   D = Ds
-  call z_unifact_mergebulge('B',N,STR,STP,Q,D,B,INFO)
+  call z_unifact_mergebulge(.FALSE.,N,Q,D,B)
 
-  ! check info
-  if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
-  end if
-  
   if (abs(Q(1)-0.8d0)>tol) then
     call u_test_failed(__LINE__)
   end if
@@ -201,87 +181,6 @@ program test_z_unifact_mergebulge
   end if
   if (abs(D(8)+0.86339266251595492d0)>tol) then
     call u_test_failed(__LINE__)
-  end if
-
-  if (DEBUG) then
-     
-     !!!!!!!!!!!!!!!!!!!!
-     ! check A)
-     call z_unifact_mergebulge('M',N,STR,STP,Q,D,B,INFO)
-     
-     ! check info
-     if (INFO.NE.-1) then
-        call u_test_failed(__LINE__)
-     end if
-     
-     !!!!!!!!!!!!!!!!!!!!
-     ! check B)
-     call z_unifact_mergebulge('T',1,STR,STP,Q,D,B,INFO)
-     
-     ! check info
-     if (INFO.NE.-2) then
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check C)
-     call z_unifact_mergebulge('T',N,0,STP,Q,D,B,INFO)
-     
-     ! check info
-     if (INFO.NE.-3) then
-        call u_test_failed(__LINE__)
-     end if
-
-     call z_unifact_mergebulge('T',N,4,STP,Q,D,B,INFO)
-     
-     ! check info
-     if (INFO.NE.-3) then
-        call u_test_failed(__LINE__)
-     end if
-
-     !!!!!!!!!!!!!!!!!!!!
-     ! check D)
-     call z_unifact_mergebulge('T',N,STP,0,Q,D,B,INFO)
-     
-     ! check info
-     if (INFO.NE.-4) then
-        call u_test_failed(__LINE__)
-     end if
-
-     call z_unifact_mergebulge('T',N,STR,4,Q,D,B,INFO)
-     
-     ! check info
-     if (INFO.NE.-4) then
-        call u_test_failed(__LINE__)
-     end if
-     
-     !!!!!!!!!!!!!!!!!!!!
-     ! check E)
-     B(1) = 1d0/nul     
-     call z_unifact_mergebulge('T',N,STR,STP,Q,D,B,INFO)
-
-     ! check info
-     if (INFO.NE.-7) then
-        call u_test_failed(__LINE__)
-     end if
-
-     B(1) = -1d0/nul    
-     call z_unifact_mergebulge('T',N,STR,STP,Q,D,B,INFO)
-
-     ! check info
-     if (INFO.NE.-7) then
-        call u_test_failed(__LINE__)
-     end if
-
-     B(1) = nul/nul
-     
-     call z_unifact_mergebulge('T',N,STR,STP,Q,D,B,INFO)
-     ! check info
-     if (INFO.NE.-7) then
-        call u_test_failed(__LINE__)
-     end if
-
-     
   end if
 
   ! stop timer

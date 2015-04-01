@@ -48,7 +48,7 @@ program test_z_unihess_qr
     Hold = H
     
     ! call dohfqr
-    call z_unihess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
+    call z_unihess_qr(.TRUE.,.TRUE.,M,H(1:M,1:M),WORK,M,Z(1:M,1:M),ITS,INFO)
     
     ! check INFO
     if (INFO.NE.0) then

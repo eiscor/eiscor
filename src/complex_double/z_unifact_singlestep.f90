@@ -13,21 +13,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  COMPZ           CHARACTER
-!                    'N': no eigenvectors
-!                    'I': eigenvectors, initializing Z to the identity
-!                    'V': eigenvectors, assume Z already initialized
+!  VEC             LOGICAL
+!                    .TRUE.: update eigenvectors
+!                    .FALSE.: no eigenvectors
 !
 !  N               INTEGER
 !                    dimension of matrix
-!
-!  STR             INTEGER
-!                    index of the top most givens rotation where 
-!                    the iteration begins
-!
-!  STP             INTEGER
-!                    index of the bottom most givens rotation where 
-!                    the iteration ends
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
@@ -35,95 +26,34 @@
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
 !
-!  Z               COMPLEX(8) array of dimension (N,N)
-!                    if COMPZ = 'N' unused
-!                    if COMPZ = 'I' stores eigenvectors in Z 
-!                    if COMPZ = 'V' update Z to store eigenvectors 
+!  M               INTEGER
+!                    leading dimension of Z
+!
+!  Z               COMPLEX(8) array of dimension (M,N)
+!                    if VEC = .TRUE. updated
+!                    if VEC = .FALSE. unused
 !
 !  ITCNT           INTEGER
 !                   Contains the number of iterations since last deflation
 !
-! OUTPUT VARIABLES:
-!
-!  INFO            INTEGER
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies COMPZ is invalid
-!                   INFO = -2 implies N is invalid
-!                   INFO = -3 implies STR is invalid
-!                   INFO = -4 implies STP is invalid
-!                   INFO = -7 implies Z is invalid
-!                   INFO = -8 implies ITCNT is invalid
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
+subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
 
   implicit none
   
   ! input variables
-  character, intent(in) :: COMPZ
-  integer, intent(in) :: N, STR, STP
-  integer, intent(inout) :: ITCNT, INFO
+  logical, intent(in) :: VEC
+  integer, intent(in) :: N, M
+  integer, intent(inout) :: ITCNT
   real(8), intent(inout) :: Q(3*(N-1)), D(2*N)
-  complex(8), intent(inout) :: Z(N,N)
+  complex(8), intent(inout) :: Z(M,N)
   
   ! compute variables
   integer :: ii, ind1, ind2
   real(8) :: s1, s2, ar, ai, br, bi, nrm
   real(8) :: bulge(3),binv(3)
   complex(8) :: shift
-  complex(8) :: block(2,2), temp(2,2), eigs(2)
-  
-  ! initialize INFO
-  INFO = 0
-  
-  ! check input in debug mode
-  if (DEBUG) then
-  
-    ! check COMPZ
-    if ((COMPZ.NE.'N').AND.(COMPZ.NE.'I').AND.(COMPZ.NE.'V')) then
-      INFO = -1
-      call u_infocode_check(__FILE__,__LINE__,"COMPZ must be 'N', 'I' or 'V'",INFO,INFO)
-      return
-    end if
-    
-    ! check N
-    if (N < 2) then
-      INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
-      return
-    end if
-    
-    ! check STR
-    if ((STR < 1).OR.(STR > N-1)) then
-      INFO = -3
-      call u_infocode_check(__FILE__,__LINE__,"STR must 1 <= STR <= N-1",INFO,INFO)
-      return
-    end if 
-    
-    ! check STP
-    if ((STP < STR).OR.(STP > N-1)) then
-      INFO = -4
-      call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
-      return
-    end if  
-    
-    ! check Z
-    if (COMPZ.EQ.'V') then
-      call z_2Darray_check(N,N,Z,INFO)
-      if (INFO.NE.0) then
-        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,-7)
-        return
-      end if 
-    end if 
-    
-    ! check ITCNT
-    if (ITCNT < 0) then
-      INFO = -8
-      call u_infocode_check(__FILE__,__LINE__,"ITCNT must be non-negative",INFO,INFO)
-      return
-    end if 
-
-  end if
+  complex(8) :: block(2,2), t1(2,2), t2(2,2)
   
   ! compute a nonzero shift
   ! random shift
@@ -135,33 +65,18 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   ! wilkinson shift
   else
     ! get 2x2 block
-    call z_unifact_2x2diagblock(N,STP,Q,D,block,INFO) 
+    call z_unifact_2x2diagblock(.FALSE.,Q((3*N-8):(3*N-3)),D((2*N-3):(2*N)),block) 
       
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_unifact_2x2diagblock failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-        
     ! compute eigenvalues and eigenvectors
-    call z_2x2array_eig(block,eigs,temp,INFO)
+    t1 = block
+    call z_2x2array_eig(.FALSE.,t1,t1,t2,t2)
       
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_2x2array_eig failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-          
     ! choose wikinson shift
     ! complex abs does not matter here
-    if(abs(block(2,2)-eigs(1)) < abs(block(2,2)-eigs(2)))then
-      shift = eigs(1)
+    if(abs(block(2,2)-t1(1,1)) < abs(block(2,2)-t1(2,2)))then
+      shift = t1(1,1)
     else
-      shift = eigs(2)
+      shift = t2(2,2)
     end if
 
   end if
@@ -169,56 +84,30 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
   ! project shift onto unit circle
   ar = dble(shift)
   ai = aimag(shift)
-  call d_rot2_vec2gen(ar,ai,br,bi,nrm,INFO)
-
-  ! check INFO in debug mode
-  if (DEBUG) then
-     call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
-     if (INFO.NE.0) then 
-        return 
-     end if
-  end if
-  
+  call d_rot2_vec2gen(ar,ai,br,bi,nrm)
   shift = cmplx(br,bi,kind=8)
 
-
   ! build bulge
-  call z_unifact_buildbulge(N,STR,Q,D,shift,bulge,INFO)
+  call z_unifact_buildbulge(Q(1:6),D(1:4),shift,bulge)
         
-  ! check INFO in debug mode
-  if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"z_unifact_buildbulge failed",INFO,INFO)
-    if (INFO.NE.0) then 
-      return 
-    end if 
-  end if
-  
   ! bulge inverse
   binv(1) = bulge(1)
   binv(2) = -bulge(2)
   binv(3) = -bulge(3)
   
   ! fusion at top
-  call z_unifact_mergebulge('T',N,STR,STP,Q,D,binv,INFO)
-  
-  ! check INFO in debug mode
-  if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"z_unifact_mergebulge failed",INFO,INFO)
-    if (INFO.NE.0) then 
-      return 
-    end if 
-  end if
+  call z_unifact_mergebulge(.TRUE.,N,Q,D,binv)
   
   ! main chasing loop
-  do ii=STR,(STP-1)
+  do ii=1,(N-2)
   
     ! update eigenvectors
-    if (COMPZ .NE. 'N')then
-      temp(1,1) = cmplx(bulge(1),bulge(2),kind=8)
-      temp(2,1) = cmplx(bulge(3),0d0,kind=8)
-      temp(1,2) = -temp(2,1)
-      temp(2,2) = conjg(temp(1,1))
-      Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),temp)
+    if (VEC) then
+      t1(1,1) = cmplx(bulge(1),bulge(2),kind=8)
+      t1(2,1) = cmplx(bulge(3),0d0,kind=8)
+      t1(1,2) = -t1(2,1)
+      t1(2,2) = conjg(t1(1,1))
+      Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),t1)
     end if
      
     ! set indices
@@ -226,54 +115,27 @@ subroutine z_unifact_singlestep(COMPZ,N,STR,STP,Q,D,Z,ITCNT,INFO)
     ind2 = ind1+3
      
     ! through diag
-    call z_rot3_swapdiag('R',D(ind1:ind2),bulge,INFO)
+    call z_rot3_swapdiag(.FALSE.,D(ind1:ind2),bulge)
 
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_swapdiag failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-    
     ! set indices
     ind1 = 3*(ii-1) + 1
     ind2 = ind1+2
      
     ! through Q
-    call z_rot3_turnover(Q(ind1:ind2),Q((ind1+3):(ind2+3)),bulge,INFO)
-
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_turnover failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
+    call z_rot3_turnover(Q(ind1:ind2),Q((ind1+3):(ind2+3)),bulge)
 
   end do
   
   ! update eigenvectors
-  if (COMPZ .NE. 'N')then
-    temp(1,1) = cmplx(bulge(1),bulge(2),kind=8)
-    temp(2,1) = cmplx(bulge(3),0d0,kind=8)
-    temp(1,2) = -temp(2,1)
-    temp(2,2) = conjg(temp(1,1))
-    Z(:,STP:(STP+1)) = matmul(Z(:,STP:(STP+1)),temp)
+  if (VEC) then
+    t1(1,1) = cmplx(bulge(1),bulge(2),kind=8)
+    t1(2,1) = cmplx(bulge(3),0d0,kind=8)
+    t1(1,2) = -t1(2,1)
+    t1(2,2) = conjg(t1(1,1))
+    Z(:,(N-1):N) = matmul(Z(:,(N-1):N),t1)
   end if
   
   ! fusion at bottom
-  call z_unifact_mergebulge('B',N,STR,STP,Q,D,bulge,INFO)
+  call z_unifact_mergebulge(.FALSE.,N,Q,D,bulge)
   
-  ! check INFO in debug mode
-  if (DEBUG) then
-    call u_infocode_check(__FILE__,__LINE__,"z_unifact_mergebulge failed",INFO,INFO)
-    if (INFO.NE.0) then 
-      return 
-    end if 
-  end if
-  
-  ! update ITCNT
-  ITCNT = ITCNT + 1
-
 end subroutine z_unifact_singlestep

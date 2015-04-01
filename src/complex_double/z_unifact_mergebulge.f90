@@ -14,20 +14,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  JOB             CHARACTER
-!                    'T': fuses at the Top from the left
-!                    'B': fuses at the Bottom from the right
+!  TOP             LOGICAL
+!                    .TRUE.: fuses at the Top from the left
+!                    .FALSE.: fuses at the Bottom from the right
 !
 !  N               INTEGER
 !                    dimension of matrix
-!
-!  STR             INTEGER
-!                    index of the top most givens rotation where 
-!                    fusion could happen
-!
-!  STP             INTEGER
-!                    index of the bottom most givens rotation where 
-!                    fusion could happen
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
@@ -38,25 +30,14 @@
 !  B               REAL(8) array of dimension (3)
 !                    generators for rotation that will be fused
 !
-! OUTPUT VARIABLES:
-!
-!  INFO           INTEGER
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies JOB is invalid
-!                   INFO = -2 implies N is invalid
-!                   INFO = -3 implies STR is invalid
-!                   INFO = -4 implies STP is invalid
-!                   INFO = -7 implies B is invalid
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
+subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
 
   implicit none
   
   ! input variables
-  character, intent(in) :: JOB
-  integer, intent(in) :: N, STR, STP
-  integer, intent(inout) :: INFO
+  logical, intent(in) :: TOP
+  integer, intent(in) :: N
   real(8), intent(inout) :: Q(3*(N-1)),D(2*N)
   real(8), intent(in) :: B(3)
   
@@ -69,151 +50,19 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
   real(8) :: d2r, d2i
   real(8) :: phr, phi
   real(8) :: nrm
-  
-  ! initialize INFO
-  INFO = 0
+ 
+  ! fusion at top
+  if (TOP) then
 
-  ! check input in debug mode
-  if (DEBUG) then
-  
-    ! check JOB
-    if ((JOB.NE.'T').AND.(JOB.NE.'B')) then
-      INFO = -1
-      call u_infocode_check(__FILE__,__LINE__,"JOB must be 'T' or 'B'",INFO,INFO)
-      return
-    end if
-    
-    ! check N
-    if (N < 2) then
-      INFO = -2
-      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
-      return
-    end if
-    
-    ! check STR
-    if ((STR < 1).OR.(STR > N-1)) then
-      INFO = -3
-      call u_infocode_check(__FILE__,__LINE__,"STR must 1 <= STR <= N-1",INFO,INFO)
-      return
-    end if 
-    
-    ! check STP
-    if ((STP < STR).OR.(STP > N-1)) then
-      INFO = -4
-      call u_infocode_check(__FILE__,__LINE__,"STP must STR <= STP <= N-1",INFO,INFO)
-      return
-    end if  
-    
-    ! check B
-    call d_1Darray_check(3,B,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-7)
-      return
-    end if   
-
-  end if
-  
-  ! fusion at bottom
-  if(JOB.EQ.'B')then
-  
-    ! pass through diag
-    call z_rot3_swapdiag('R',D((2*(STP-1)+1):(2*(STP-1)+4)),B,INFO)
-    
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"z_rot3_swapdiag failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-    
-    ! set inputs  
-    c2r = B(1)
-    c2i = B(2)
-    s2 = B(3)
-  
-    ! retrieve Q  
-    k = 3*(STP-1)
-    c1r = Q(k+1)
-    c1i = Q(k+2)
-    s1 = Q(k+3)
-     
-    ! retrieve D
-    k = 2*(STP-1)
-    d1r = D(k+1)
-    d1i = D(k+2)
-    d2r = D(k+3)
-    d2i = D(k+4)
-     
-    ! compute givens product
-    c3r = c1r*c2r - c1i*c2i - s1*s2
-    c3i = c1r*c2i + c1i*c2r
-    s3r = s1*c2r + s2*c1r
-    s3i = s1*c2i - s2*c1i
-    
-    ! compute phase
-    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm,INFO)
-
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
-
-     
-    ! update Q
-    c2r = c3r*phr + c3i*phi
-    c2i = -c3r*phi + c3i*phr
-    s2 = nrm
-    nrm = sqrt(c2r*c2r + c2i*c2i + s2*s2)
-    c2r = c2r/nrm
-    c2i = c2i/nrm
-    s2 = s2/nrm
-    k = 3*(STP-1)
-    Q(k+1) = c2r
-    Q(k+2) = c2i
-    Q(k+3) = s2
-     
-    ! update D
-    c1r = phr*d1r - phi*d1i
-    c1i = phr*d1i + phi*d1r
-    nrm = sqrt(c1r*c1r + c1i*c1i)
-    c1r = c1r/nrm
-    c1i = c1i/nrm
-    c2r = phr*d2r + phi*d2i
-    c2i = phr*d2i - phi*d2r
-    nrm = sqrt(c2r*c2r + c2i*c2i)
-    c2r = c2r/nrm
-    c2i = c2i/nrm
-    k = 2*(STP-1)
-    D(k+1) = c1r 
-    D(k+2) = c1i
-    D(k+3) = c2r
-    D(k+4) = c2i
-     
-  ! fusion at the top
-  else
-  
     ! set inputs  
     c2r = B(1)
     c2i = B(2)
     s2 = B(3)
     
     ! retrieve Q  
-    k = 3*(STR-1)
-    c1r = Q(k+1)
-    c1i = Q(k+2)
-    s1 = Q(k+3)
-     
-    ! retrieve D
-    k = 2*(STR-1)
-    d1r = D(k+1)
-    d1i = D(k+2)
-    k = 2*(STP)
-    d2r = D(k+1)
-    d2i = D(k+2)
+    c1r = Q(1)
+    c1i = Q(2)
+    s1 = Q(3)
      
     ! compute givens product
     c3r = c1r*c2r - c1i*c2i - s1*s2
@@ -223,64 +72,85 @@ subroutine z_unifact_mergebulge(JOB,N,STR,STP,Q,D,B,INFO)
      
     ! compute phase
     call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
-     
-    ! check INFO in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_rot2_vec2gen failed",INFO,INFO)
-      if (INFO.NE.0) then 
-        return 
-      end if 
-    end if
 
     ! update Q
     c2r = c3r*phr + c3i*phi
     c2i = -c3r*phi + c3i*phr
     s2 = nrm
-    nrm = sqrt(c2r*c2r + c2i*c2i + s2*s2)
-    c2r = c2r/nrm
-    c2i = c2i/nrm
-    s2 = s2/nrm
-    k = 3*(STR-1)
-    Q(k+1) = c2r
-    Q(k+2) = c2i
-    Q(k+3) = s2
+    call z_rot3_vec3gen(c2r,c2i,s2,Q(1),Q(2),Q(3),nrm)
+
+    do ii = 2,(N-1)
      
-    do ii=(STR+1),STP
-      k = 3*(ii-1)
+       k = 3*(ii-1)
       c1r = Q(k+1)
       c1i = Q(k+2)
       s1 = Q(k+3)
+      
       nrm = c1r*phr + c1i*phi
       c1i = -c1r*phi + c1i*phr
       c1r = nrm
-      nrm = sqrt(c1r*c1r + c1i*c1i + s1*s1)
-      c1r = c1r/nrm
-      c1i = c1i/nrm
-      s1 = s1/nrm
-      Q(k+1) = c1r
-      Q(k+2) = c1i
-      Q(k+3) = s1
+      call z_rot3_vec3gen(c1r,c1i,s1,Q(k+1),Q(k+2),Q(k+3),nrm)
+    
     end do
      
+    ! retrieve D
+    d1r = D(1)
+    d1i = D(2)
+
     ! update D
     c1r = phr*d1r - phi*d1i
     c1i = phr*d1i + phi*d1r
-    nrm = sqrt(c1r*c1r + c1i*c1i)
-    c1r = c1r/nrm
-    c1i = c1i/nrm
-    c2r = phr*d2r + phi*d2i
-    c2i = phr*d2i - phi*d2r
-    nrm = sqrt(c2r*c2r + c2i*c2i)
-    c2r = c2r/nrm
-    c2i = c2i/nrm
-    
-    k = 2*(STR-1)
-    D(k+1) = c1r 
-    D(k+2) = c1i
-    k = 2*(STP)
-    D(k+1) = c2r
-    D(k+2) = c2i
+    call d_rot2_vec2gen(c1r,c1i,D(1),D(2),nrm)
      
+  ! fusion at bottom
+  else
+  
+    ! pass through diag
+    call z_rot3_swapdiag(.FALSE.,D((2*N-3):(2*N)),B)
+    
+    ! set inputs  
+    c2r = B(1)
+    c2i = B(2)
+    s2 = B(3)
+  
+    ! retrieve Q  
+    c1r = Q(3*N-5)
+    c1i = Q(3*N-4)
+    s1 = Q(3*N-3)
+     
+    ! compute givens product
+    c3r = c1r*c2r - c1i*c2i - s1*s2
+    c3i = c1r*c2i + c1i*c2r
+    s3r = s1*c2r + s2*c1r
+    s3i = s1*c2i - s2*c1i
+    
+    ! compute phase
+    call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
+
+    ! update Q
+    c2r = c3r*phr + c3i*phi
+    c2i = -c3r*phi + c3i*phr
+    s2 = nrm
+    call z_rot3_vec3gen(c2r,c2i,s2,Q(3*N-5),Q(3*N-4),Q(3*N-3),nrm)    
+     
+    ! retrieve D
+    d1r = D(2*N-3)
+    d1i = D(2*N-2)
+
+    ! update D
+    c1r = phr*d1r - phi*d1i
+    c1i = phr*d1i + phi*d1r
+    call d_rot2_vec2gen(c1r,c1i,D(2*N-3),D(2*N-2),nrm)
+
   end if
 
+  ! retrieve D
+  d2r = D(2*N-1)
+  d2i = D(2*N)
+     
+  ! update D
+  c2r = phr*d2r + phi*d2i
+  c2i = phr*d2i - phi*d2r
+  call d_rot2_vec2gen(c2r,c2i,D(2*N-1),D(2*N),nrm)
+     
 end subroutine z_unifact_mergebulge

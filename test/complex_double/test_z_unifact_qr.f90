@@ -1,16 +1,16 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! test_d_orthhess_qr
+! test_z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine d_orthhess_qr. The following tests are run:
+! This program tests the subroutine z_unifact_qr. The following tests are run:
 !
 ! 1) Compute roots of unity and checks the residuals for various powers of 2
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program test_d_orthhess_qr
+program test_z_unifact_qr
 
   implicit none
   
@@ -18,7 +18,8 @@ program test_d_orthhess_qr
   integer, parameter :: MPOW = 4
   integer, parameter :: N = 2**MPOW
   integer :: ii, INFO, jj, M
-  real(8) :: WORK(4*N), Hold(N,N), H(N,N), Z(N,N)
+  real(8) :: Q(3*(N-1)), D(2*N)
+  complex(8) :: H(N,N), Z(N,N)
   integer :: ITS(N-1)
   real(8) :: tol
   
@@ -39,29 +40,44 @@ program test_d_orthhess_qr
     M = 2**jj
   
     ! initialize H to be an upper hessenberg permutation matrix
-    H = 0d0
+    H = cmplx(0d0,0d0,kind=8)
     do ii=1,M-1
-      H(ii+1,ii) = 1d0
+      H(ii+1,ii) = cmplx(1d0,0d0,kind=8)
     end do
-    H(1,M) = 1d0
-    Hold = H
-    
+    H(1,M) = cmplx(1d0,0d0,kind=8)
+   
+    ! initialize Q
+    Q = 0d0
+    do ii=1,M-1
+      Q(3*ii) = 1d0
+    end do
+ 
+    ! initialize D
+    D = 0d0
+    do ii=1,M-1
+      D(2*ii-1) = 1d0
+    end do
+    D(2*M-1) = (-1d0)**(M-1)
+
     ! call dohfqr
-    call d_orthhess_qr('I',M,H(1:M,1:M),Z(1:M,1:M),ITS,WORK,INFO)
-    
+    call z_unifact_qr(.TRUE.,.TRUE.,M,Q,D,M,Z(1:M,1:M),ITS,INFO)
+
     ! check INFO
     if (INFO.NE.0) then
       call u_test_failed(__LINE__)
     end if
     
     ! compute residual matrix
-    Hold(1:M,1:M) = matmul(Hold(1:M,1:M),Z(1:M,1:M))-matmul(Z(1:M,1:M),H(1:M,1:M))
+    H(1:M,1:M) = matmul(H(1:M,1:M),Z(1:M,1:M))
+    do ii=1,M
+      H(:,ii) = H(:,ii) - Z(:,ii)*cmplx(D(2*ii-1),D(2*ii),kind=8)
+    end do
     
     ! set tolerance
-    tol = max(10d0,dble(M))*epsilon(1d0)
+    tol = max(10d0,dble(M))*EISCOR_DBL_EPS
     
     ! check maximum entry
-    if (maxval(abs(Hold(1:M,1:M))) >= tol) then
+    if (maxval(abs(H(1:M,1:M))) >= tol) then
       call u_test_failed(__LINE__)
     end if  
  
@@ -73,4 +89,4 @@ program test_d_orthhess_qr
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
      
-end program test_d_orthhess_qr
+end program test_z_unifact_qr
