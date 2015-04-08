@@ -132,7 +132,6 @@ program test_d_orthfact_mergebulge
      call u_test_failed(__LINE__)
   end if
   
-  
   ! stop timer
   call system_clock(count=c_stop)
   

@@ -21,7 +21,7 @@ program test_d_rot2_swapdiag
   real(8) :: tol = 2d0*EISCOR_DBL_EPS ! accuracy (tolerance)
 
   ! compute variables
-  real(8) :: D(2), B(2), a, c, nrm
+  real(8) :: H(2,2), D(2), B(2), a, c, nrm
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
