@@ -40,10 +40,189 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
   ! compute variables
   integer :: ii, id
   real(8) :: trace, disc, detm, temp
-  
+  real(8) :: p0, p1 ,p2, T(2,2)
+ 
   ! B not identity
   if (FLAG) then
   
+    ! make B upper-triangular
+    ! create eliminator
+    call d_rot2_vec2gen(B(1,1),B(2,1),c,s,nrm)
+      
+    ! store in Q
+    Q(1,1) = c
+    Q(2,1) = s
+    Q(2,2) = Q(1,1)
+    Q(1,2) = -Q(2,1)
+      
+    ! update B
+    B = matmul(transpose(Q),B)
+    B(2,1) = 0d0
+      
+    ! update A
+    A = matmul(transpose(Q),A)
+      
+    ! set Z
+    Z(1,1) = 1d0
+    Z(2,1) = 0d0
+    Z(2,2) = 1d0
+    Z(1,2) = 0d0
+    
+    ! check for infinite eigenvalues
+    if (abs(B(1,1)).EQ.0d0) then
+  
+      ! create eliminator
+      call d_rot2_vec2gen(A(1,1),A(2,1),c,s,nrm)
+      
+      ! store in T
+      T(1,1) = c
+      T(2,1) = s
+      T(2,2) = T(1,1)
+      T(1,2) = -T(2,1)
+      
+      ! update A
+      A = matmul(transpose(T),A)
+      A(2,1) = 0d0
+      
+      ! update B
+      B = matmul(transpose(Q),B)
+      
+      ! update Q
+      Q = matmul(Q,T)
+      
+      ! return
+      return
+  
+    ! check for infinite eigenvalues
+    else if (abs(B(2,2)).EQ.0d0) then
+  
+      ! create eliminator
+      call d_rot2_vec2gen(A(2,2),A(2,1),c,s,nrm)
+      
+      ! store in T
+      T(1,1) = c
+      T(2,1) = s
+      T(2,2) = T(1,1)
+      T(1,2) = -T(2,1)
+      
+      ! update A
+      A = matmul(A,T)
+      A(2,1) = 0d0
+      
+      ! update B
+      B = matmul(B,T)
+      
+      ! update Z
+      Z = matmul(Z,T)
+      
+      ! return
+      return
+
+    ! no infinite eigenvalues
+    else
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! this section needs finishing
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      ! compute polynomial coefficients
+      p2 = B(1,1)*B(2,2)
+      p1 = A(2,1)*B(1,2) - (A(1,1)*B(2,2)+A(2,2)*B(1,1))
+      p0 = A(1,1)*A(2,2) - A(2,1)*A(1,2)  
+  
+      ! compute intermediate values
+      disc = sqrt(p1**2 - 4d0*p2*p0)
+  
+    ! imaginary roots
+    if (temp < 0) then
+      
+      ! move A to standard form (A(1,1) = A(2,2))
+      ! real part of lambda
+      trace = trace/2d0
+    
+      ! imaginary part of lambda 
+      disc = sqrt(-temp)/2d0
+   
+      ! compute Q
+      temp = (A(2,2)-A(1,1))
+      if ((temp.NE.0).AND.(abs(temp)>1)) then
+        temp = (A(1,2)+A(2,1))/temp
+        temp = temp*(1d0-sqrt(1d0+1d0/temp/temp))
+      else if (temp.NE.0) then 
+        temp = (A(1,2)+A(2,1))/temp
+        temp = temp-sqrt(1d0+temp*temp)
+      end if
+      call d_rot2_vec2gen(1d0,temp,Q(1,1),Q(2,1),temp)
+      Q(2,2) = Q(1,1)
+      Q(1,2) = -Q(2,1)
+    
+      ! update A
+      A = matmul(transpose(Q),matmul(A,Q))
+
+    ! real roots
+    else
+     
+      ! sqrt of discriminant 
+      disc = sqrt(temp)
+      
+      ! compute most accurate eigenvalue
+      if(abs(trace+disc) > abs(trace-disc))then
+        temp = (trace+disc)/2d0
+      else
+        temp = (trace-disc)/2d0
+      end if
+
+      ! compute Schur vectors
+      call d_rot2_vec2gen(A(1,2),temp-A(1,1),Q(1,1),Q(2,1),trace)
+      Q(2,2) = Q(1,1)
+      Q(1,2) = -Q(2,1)
+      
+      ! update A
+      A(1,1) = temp
+      A(1,2) = 0d0
+      A(2,2) = detm/temp
+      A(2,1) = 0d0
+      
+    end if
+
+      ! create eliminator
+      call d_rot2_vec2gen(T(1,1),T(1,2),c,s,nrm)
+      
+      ! store in T
+      T(1,1) = -s
+      T(2,1) = c
+      T(1,2) = c
+      T(2,2) = s
+  
+      ! update A
+      A = matmul(A,T)
+  
+      ! update B
+      B = matmul(B,T)
+  
+      ! update Z
+      Z = matmul(Z,T)
+  
+      ! return to upper-triangular form  
+      ! create eliminator
+      call d_rot2_vec2gen(A(1,1),A(2,1),c,s,nrm)
+      
+      ! store in T
+      T(1,1) = c
+      T(2,1) = s
+      T(1,2) = -s
+      T(2,2) = c
+  
+      ! update A
+      A = matmul(transpose(T),A)
+      A(2,1) = 0d0
+  
+      ! update B
+      B = matmul(transpose(T),B)
+      B(2,1) = 0d0
+  
+      ! update Q 
+      Q = matmul(Q,T)
+
+    end if
   
   ! B identity
   else  
