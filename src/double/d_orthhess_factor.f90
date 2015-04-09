@@ -38,7 +38,7 @@ subroutine d_orthhess_factor(N,H,Q,D,INFO)
   
   ! input variables
   integer, intent(in) :: N
-  real(8), intent(inout) :: H(N,N), Q(2*(N-1)), D(2*N)
+  real(8), intent(inout) :: H(N,N), Q(2*(N-1)), D(N)
   integer, intent(inout) :: INFO
   
   ! compute variables
@@ -103,7 +103,7 @@ subroutine d_orthhess_factor(N,H,Q,D,INFO)
     D(ii) = sign(1d0,H(ii,ii))
    
   end do
-  
+
   ! check for unitarity       
   if (abs(abs(H(N,N))-1d0) >= tol) then
     INFO = -3

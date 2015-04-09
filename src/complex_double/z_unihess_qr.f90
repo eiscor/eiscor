@@ -59,7 +59,7 @@ subroutine z_unihess_qr(VEC,ID,N,H,WORK,M,Z,ITS,INFO)
   integer, intent(in) :: N, M
   real(8), intent(inout) :: WORK(5*N)
   integer, intent(inout) :: ITS(N-1), INFO
-  complex(8), intent(inout) :: H(N,N), Z(N,N)
+  complex(8), intent(inout) :: H(N,N), Z(M,N)
   
   ! compute variables
   integer :: ii
