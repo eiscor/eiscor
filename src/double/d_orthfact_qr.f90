@@ -64,17 +64,47 @@ subroutine d_orthfact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   real(8), intent(inout) :: Q(2*(N-1)), D(N), Z(M,N)
   
   ! compute variables
+  logical :: flg
   integer :: ii, jj, kk, ind
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   real(8) :: block(2,2) 
-  complex(8) :: temp(2,2), eigs(2)
 
   ! initialize INFO
   INFO = 0
   
   ! check factorization
+  call d_orthfact_factorcheck(N,Q,D,INFO)
+  if (INFO.NE.0) then
+    INFO = INFO - 2
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"N, Q, or D is invalid",INFO,INFO)
+    end if
+    return
+  end if
+  
+  ! check M
+  if (VEC.AND.(M < 1)) then
+    INFO = -6
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"M must be at least 1",INFO,INFO)
+    end if
+    return
+  end if
   
   ! check Z
+  if (VEC.AND..NOT.ID) then
+    call d_2Darray_check(M,N,Z,flg)
+    if (.NOT.flg) then
+      INFO = -7
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"Z is invalid",INFO,INFO)
+      end if
+      return
+    end if
+  end if   
   
   ! initialize storage
   ITS = 0
@@ -100,7 +130,7 @@ subroutine d_orthfact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     if(STP <= 0)then
       exit
     end if
-        
+
     ! check for deflation
     call d_orthfact_deflationcheck(STP-STR+2,Q((2*STR-1):(2*STP)),D(STR:(STP+1)),ZERO)
 
