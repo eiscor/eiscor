@@ -597,11 +597,11 @@ program test_d_rot2_turnover
   end if
 
   ! reference histogram, turnover passes test if histogram is better than this one
-  histot(1,:) = (/           0,       12000,       60000,      120000,           0,      118000,      120000,       60000/)!
-  histot(2,:) = (/           0,        8000,        5000,           0,           0,           0,           0,        3000/)!
-  histot(3,:) = (/       67000,       78000,       50000,           0,       79000,        2000,           0,       42000/)!
-  histot(4,:) = (/       52000,       21500,        5000,           0,       40000,           0,           0,       14600/)!
-  histot(5,:) = (/        1000,         500,           0,           0,        1000,           0,           0,         400/)!
+  histot(1,:) = (/           0,        4500,       35000,      120000,           0,       99500,      120000,       57000/)!
+  histot(2,:) = (/           0,        5000,        5000,           0,           0,           0,           0,        3000/)!
+  histot(3,:) = (/       38500,       70000,       70000,           0,       59000,       20000,           0,       35000/)!
+  histot(4,:) = (/       80000,       40000,        9900,           0,       70000,         500,           0,       24600/)!
+  histot(5,:) = (/        1500,         500,         100,           0,        1000,           0,           0,         400/)!
   histot(6,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
   histot(7,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
 
@@ -613,7 +613,7 @@ program test_d_rot2_turnover
         if (h2>ht*1.002) then
            if (DEBUG) then
               pass_all = .FALSE.
-           else
+           else             
               call u_test_failed(__LINE__)           
            end if
         end if
