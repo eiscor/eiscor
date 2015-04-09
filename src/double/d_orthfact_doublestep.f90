@@ -37,14 +37,13 @@
 !                   Contains the number of iterations since last deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_orthfact_doublestep(STR,STP,VEC,N,Q,D,M,Z,ITCNT)
+subroutine d_orthfact_doublestep(VEC,N,Q,D,M,Z,ITCNT)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: VEC
   integer, intent(in) :: N, M
-  integer, intent(in) :: STR, STP
   integer, intent(inout) :: ITCNT
   real(8), intent(inout) :: Q(2*(N-1)), D(N), Z(M,N)
   
@@ -52,26 +51,28 @@ subroutine d_orthfact_doublestep(STR,STP,VEC,N,Q,D,M,Z,ITCNT)
   integer :: ii, ind
   real(8) :: s1, s2
   real(8) :: b1(2), b2(2), b3(2), temp(2), nrm
-  real(8) :: block(2,2) 
-  complex(8) :: eigs(2), h(2,2)
+  real(8) :: block(2,2), w(2,2) 
 
   ! compute a nonzero shift
   ! shifts +1
   if((mod(ITCNT+1,11) == 0).AND.(ITCNT.NE.0))then
-    eigs(1) = cmplx(1d0,0d0,kind=8)
-    eigs(2) = cmplx(1d0,0d0,kind=8)
+    block = 0d0
+    block(1,1) = 1d0 
+    block(2,2) = 1d0 
     
   ! shifts -1
   else if((mod(ITCNT+1,16) == 0).AND.(ITCNT.NE.0))then
-    eigs(1) = cmplx(-1d0,0d0,kind=8)
-    eigs(2) = cmplx(-1d0,0d0,kind=8)
+    block = 0d0
+    block(1,1) = -1d0 
+    block(2,2) = -1d0 
     
   ! random shift
   else if((mod(ITCNT+1,21) == 0).AND.(ITCNT.NE.0))then
     call random_number(s1)
     call random_number(s2)
-    eigs(1) = cmplx(s1,s2,kind=8)
-    eigs(2) = cmplx(s1,-s2,kind=8)
+    block = 0d0
+    block(1,1) = s1
+    block(2,2) = s2
           
   ! wilkinson shifts
   else
@@ -80,87 +81,80 @@ subroutine d_orthfact_doublestep(STR,STP,VEC,N,Q,D,M,Z,ITCNT)
     call d_orthfact_2x2diagblock(.FALSE.,Q((2*N-5):(2*N-2)),D((N-1):N),block)
       
     ! compute eigenvalues and eigenvectors
-    call d_2x2array_eig(block,eigs,h)
+    call d_2x2array_eig(.FALSE.,block,block,w,w)
       
   end if
   
   ! two real shifts
-  if ((aimag(eigs(1)).EQ.0d0).AND.(aimag(eigs(2)).EQ.0d0)) then
+  if (block(2,1).EQ.0d0) then
  
-    ! first shift
-    eigs(1) = cmplx(sign(1d0,dble(eigs(1))),0d0,kind=8)
-    
     ! build first bulge
-    temp(1) = dble(eigs(1))
-    temp(2) = aimag(eigs(1))
-    call d_orthfact_buildbulge('S',N,STR,Q,D,temp,b1,b2)
+    temp(1) = sign(1d0,block(1,1))
+    temp(2) = 0d0
+    call d_orthfact_buildbulge(.FALSE.,Q(1:4),D(1:2),temp,b1,b2)
 
     ! fusion to initialize first bulge
-    ind = 2*(STR-1)
     b3(1) = b1(1)
     b3(2) = -b1(2)
-    call d_orthfact_mergebulge('R',b3,Q((ind+1):(ind+2)))
+    call d_orthfact_mergebulge(.TRUE.,Q(1:2),b3)
      
     ! first bulge update eigenvectors
     if (VEC)then
-      h(1,1) = b1(1)
-      h(2,1) = b1(2)
-      h(1,2) = -h(2,1)
-      h(2,2) = h(1,1)
-      Z(:,STR:(STR+1)) = matmul(Z(:,STR:(STR+1)),h)
+      w(1,1) = b1(1)
+      w(2,1) = b1(2)
+      w(1,2) = -w(2,1)
+      w(2,2) = w(1,1)
+      Z(:,1:2) = matmul(Z(:,1:2),w)
     end if 
     
     ! first bulge through D
-    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b1)
+    call d_rot2_swapdiag(D(1:2),b1)
       
     ! first bulge through Q
-    call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b1)
+    call d_rot2_turnover(Q(1:2),Q(3:4),b1)
       
     ! second shift
-    eigs(2) = cmplx(sign(1d0,dble(eigs(2))),0d0,kind=8)
-  
-    ! build bulge
-    temp(1) = dble(eigs(2))
-    temp(2) = aimag(eigs(2))
-    call d_orthfact_buildbulge('S',N,STR,Q,D,temp,b2,b3)
-          
+    temp(1) = sign(1d0,block(2,2))
+    temp(2) = 0d0
+    call d_orthfact_buildbulge(.FALSE.,Q(1:4),D(1:2),temp,b2,b3)
+
     ! fusion to initialize second bulge
     b3(1) = b2(1)
     b3(2) = -b2(2)
-    call d_orthfact_mergebulge('R',b3,Q((ind+1):(ind+2)))
+    call d_orthfact_mergebulge(.TRUE.,Q(1:2),b3)
      
     ! main chasing loop
-    do ii=STR,(STP-2)
+    do ii=1,(N-3)
        
       ! set ind
       ind = 2*(ii-1)
        
       ! first bulge update eigenvectors
       if (VEC)then
-        h(1,1) = b1(1)
-        h(2,1) = b1(2)
-        h(1,2) = -h(2,1)
-        h(2,2) = h(1,1)
-        Z(:,(ii+1):(ii+2)) = matmul(Z(:,(ii+1):(ii+2)),h)
+        w(1,1) = b1(1)
+        w(2,1) = b1(2)
+        w(1,2) = -w(2,1)
+        w(2,2) = w(1,1)
+        Z(:,(ii+1):(ii+2)) = matmul(Z(:,(ii+1):(ii+2)),w)
       end if 
         
       ! first bulge through D
-      call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1)
+      call d_rot2_swapdiag(D((ind+3):(ind+4)),b1)
       
       ! first bulge through Q
       call d_rot2_turnover(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1)
       
       ! second bulge update eigenvectors
       if (VEC)then
-        h(1,1) = b2(1)
-        h(2,1) = b2(2)
-        h(1,2) = -h(2,1)
-        h(2,2) = h(1,1)
-        Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),h)
+        w(1,1) = b2(1)
+        w(2,1) = b2(2)
+        w(1,2) = -w(2,1)
+        w(2,2) = w(1,1)
+        Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),w)
       end if 
         
       ! second bulge through D
-      call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2)
+      call d_rot2_swapdiag(D((ind+1):(ind+2)),b2)
       
       ! second bulge through Q
       call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2)
@@ -168,117 +162,114 @@ subroutine d_orthfact_doublestep(STR,STP,VEC,N,Q,D,M,Z,ITCNT)
     end do
     
     ! set ind
-    ind = 2*(stp-2)
+    ind = 2*(N-3)
     
     ! first bulge update eigenvectors
     if (VEC)then
-      h(1,1) = b1(1)
-      h(2,1) = b1(2)
-      h(1,2) = -h(2,1)
-      h(2,2) = h(1,1)
-      Z(:,STP:(STP+1)) = matmul(Z(:,STP:(STP+1)),h)
+      w(1,1) = b1(1)
+      w(2,1) = b1(2)
+      w(1,2) = -w(2,1)
+      w(2,2) = w(1,1)
+      Z(:,(N-1):(N)) = matmul(Z(:,(N-1):(N)),w)
     end if 
        
     ! first bulge through D
-    call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1)
+    call d_rot2_swapdiag(D((ind+3):(ind+4)),b1)
     
     ! first bulge fuse with Q
-    call d_orthfact_mergebulge('L',Q((ind+3):(ind+4)),b1)
+    call d_orthfact_mergebulge(.FALSE.,Q((ind+3):(ind+4)),b1)
     
     ! second bulge update eigenvectors
     if (VEC)then
-      h(1,1) = b2(1)
-      h(2,1) = b2(2)
-      h(1,2) = -h(2,1)
-      h(2,2) = h(1,1)
-      Z(:,(STP-1):STP) = matmul(Z(:,(STP-1):STP),h)
+      w(1,1) = b2(1)
+      w(2,1) = b2(2)
+      w(1,2) = -w(2,1)
+      w(2,2) = w(1,1)
+      Z(:,(N-2):(N-1)) = matmul(Z(:,(N-2):(N-1)),w)
     end if
         
     ! second bulge through D
-    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2)
+    call d_rot2_swapdiag(D((ind+1):(ind+2)),b2)
     
     ! second bulge through Q  
     call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2)
     
     ! set index
-    ind = 2*(stp-1)
+    ind = 2*(N-2)
     
     ! last bulge update eigenvectors
     if (VEC)then
-      h(1,1) = b2(1)
-      h(2,1) = b2(2)
-      h(1,2) = -h(2,1)
-      h(2,2) = h(1,1)
-      Z(:,STP:(STP+1)) = matmul(Z(:,STP:(STP+1)),h)
+      w(1,1) = b2(1)
+      w(2,1) = b2(2)
+      w(1,2) = -w(2,1)
+      w(2,2) = w(1,1)
+      Z(:,(N-1):(N)) = matmul(Z(:,(N-1):(N)),w)
     end if 
   
     ! last bulge through D
-    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2)
+    call d_rot2_swapdiag(D((ind+1):(ind+2)),b2)
     
     ! last bulge fuse with Q
-    call d_orthfact_mergebulge('L',Q((ind+1):(ind+2)),b2)
+    call d_orthfact_mergebulge(.FALSE.,Q((ind+1):(ind+2)),b2)
   
-    ! update ITCNT
-    ITCNT = ITCNT + 1
-
   ! complex conjugate pair
   else
   
     ! normalize shifts
-    call d_rot2_vec2gen(dble(eigs(1)),aimag(eigs(1)),temp(1),temp(2),nrm) 
+    call d_rot2_vec2gen(block(1,1),sqrt(-block(2,1)*block(1,2)),temp(1),temp(2),nrm) 
 
     ! build bulge
-    call d_orthfact_buildbulge('D',N,STR,Q,D,temp,b1,b2)
+    call d_orthfact_buildbulge(.TRUE.,Q(1:4),D(1:2),temp,b1,b2)
 
     ! turnover to initialize bulge
-    ind = 2*(STR-1)
+    ind = 2*(N-2)
     temp(1) = b2(1)
     temp(2) = -b2(2)
     b3(1) = b1(1)
     b3(2) = -b1(2)
-    call d_rot2_turnover(temp,b3,Q((ind+1):(ind+2)))
+    call d_rot2_turnover(temp,b3,Q(1:2))
       
     ! fusion to finish initialization
-    call d_orthfact_mergebulge('R',b3,Q((ind+3):(ind+4)))
+    call d_orthfact_mergebulge(.TRUE.,Q(3:4),b3)
      
     ! update b3
-    b3 = Q((ind+1):(ind+2))
+    b3 = Q(1:2)
     
     ! update Q
-    Q((ind+1):(ind+2)) = temp
+    Q(1:2) = temp
     
     ! main chasing loop
-    do ii=str,(stp-2)
+    do ii=1,(N-3)
        
       ! set ind
       ind = 2*(ii-1)
        
       ! first bulge update eigenvectors
       if (VEC)then
-        h(1,1) = b1(1)
-        h(2,1) = b1(2)
-        h(1,2) = -h(2,1)
-        h(2,2) = h(1,1)
-        Z(:,(ii+1):(ii+2)) = matmul(Z(:,(ii+1):(ii+2)),h)
+        w(1,1) = b1(1)
+        w(2,1) = b1(2)
+        w(1,2) = -w(2,1)
+        w(2,2) = w(1,1)
+        Z(:,(ii+1):(ii+2)) = matmul(Z(:,(ii+1):(ii+2)),w)
       end if 
         
       ! first bulge through D
-      call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1)
+      call d_rot2_swapdiag(D((ind+3):(ind+4)),b1)
       
       ! first bulge through Q
       call d_rot2_turnover(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1)
       
       ! second bulge update eigenvectors
       if (VEC)then
-        h(1,1) = b2(1)
-        h(2,1) = b2(2)
-        h(1,2) = -h(2,1)
-        h(2,2) = h(1,1)
-        Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),h)
+        w(1,1) = b2(1)
+        w(2,1) = b2(2)
+        w(1,2) = -w(2,1)
+        w(2,2) = w(1,1)
+        Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),w)
       end if 
         
       ! second bulge through D
-      call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2)
+      call d_rot2_swapdiag(D((ind+1):(ind+2)),b2)
       
       ! second bulge through Q
       call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2)
@@ -295,61 +286,58 @@ subroutine d_orthfact_doublestep(STR,STP,VEC,N,Q,D,M,Z,ITCNT)
     end do
     
     ! set ind
-    ind = 2*(stp-2)
+    ind = 2*(N-3)
     
     ! first bulge update eigenvectors
     if (VEC)then
-      h(1,1) = b1(1)
-      h(2,1) = b1(2)
-      h(1,2) = -h(2,1)
-      h(2,2) = h(1,1)
-      Z(:,STP:(STP+1)) = matmul(Z(:,STP:(STP+1)),h)
+      w(1,1) = b1(1)
+      w(2,1) = b1(2)
+      w(1,2) = -w(2,1)
+      w(2,2) = w(1,1)
+      Z(:,(N-1):(N)) = matmul(Z(:,(N-1):(N)),w)
     end if 
        
     ! first bulge through D
-    call d_rot2_swapdiag('R',D((ind+3):(ind+6)),b1)
+    call d_rot2_swapdiag(D((ind+3):(ind+4)),b1)
     
     ! first bulge fuse with Q
-    call d_orthfact_mergebulge('L',Q((ind+3):(ind+4)),b1)
+    call d_orthfact_mergebulge(.FALSE.,Q((ind+3):(ind+4)),b1)
     
     ! second bulge update eigenvectors
     if (VEC)then
-      h(1,1) = b2(1)
-      h(2,1) = b2(2)
-      h(1,2) = -h(2,1)
-      h(2,2) = h(1,1)
-      Z(:,(STP-1):STP) = matmul(Z(:,(STP-1):STP),h)
+      w(1,1) = b2(1)
+      w(2,1) = b2(2)
+      w(1,2) = -w(2,1)
+      w(2,2) = w(1,1)
+      Z(:,(N-2):(N-1)) = matmul(Z(:,(N-2):(N-1)),w)
     end if
         
     ! second bulge through D
-    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b2)
+    call d_rot2_swapdiag(D((ind+1):(ind+2)),b2)
     
     ! second bulge through Q  
     call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2)
     
     ! fuse b2 and b3
-    call d_orthfact_mergebulge('L',b3,b2)
+    call d_orthfact_mergebulge(.FALSE.,b3,b2)
     
     ! set index
-    ind = 2*(stp-1)
+    ind = 2*(N-2)
     
     ! last bulge update eigenvectors
     if (VEC)then
-      h(1,1) = b3(1)
-      h(2,1) = b3(2)
-      h(1,2) = -h(2,1)
-      h(2,2) = h(1,1)
-      Z(:,STP:(STP+1)) = matmul(Z(:,STP:(STP+1)),h)
+      w(1,1) = b3(1)
+      w(2,1) = b3(2)
+      w(1,2) = -w(2,1)
+      w(2,2) = w(1,1)
+      Z(:,(N-1):(N)) = matmul(Z(:,(N-1):(N)),w)
     end if 
   
     ! last bulge through D
-    call d_rot2_swapdiag('R',D((ind+1):(ind+4)),b3)
+    call d_rot2_swapdiag(D((ind+1):(ind+2)),b3)
     
     ! last bulge fuse with Q
-    call d_orthfact_mergebulge('L',Q((ind+1):(ind+2)),b3)
-  
-    ! update ITCNT
-    ITCNT = ITCNT + 1
+    call d_orthfact_mergebulge(.FALSE.,Q((ind+1):(ind+2)),b3)
   
   end if ! end of doubleshift step
 

@@ -29,11 +29,8 @@ subroutine d_rot2_swapdiag(D,B)
   real(8), intent(in) :: D(2)
   real(8), intent(inout) :: B(2)
   
-  ! return if scalar
-  if (D(1).EQ.D(2)) then
-    return
-  ! change sign
-  else
+  ! change sign in D not scalar
+  if (D(1).NE.D(2)) then
     B(2) = -B(2)
   end if 
   
