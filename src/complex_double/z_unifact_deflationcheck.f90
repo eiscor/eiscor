@@ -45,6 +45,9 @@ subroutine z_unifact_deflationcheck(N,Q,D,ZERO)
   integer :: ii, jj, down
   real(8), parameter :: tol = EISCOR_DBL_EPS
   real(8) :: dr, di, qr, qi, s, nrm
+
+  ! intialize ZERO
+  ZERO = 0
   
   ! check for deflation
   do ii=1,(N-1)
