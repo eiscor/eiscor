@@ -43,7 +43,7 @@ program test_d_rot2_turnover
   integer, allocatable :: seed(:)
   real(8) :: Q1(2), Q2(2), Q3(2)
   real(8) :: time
-  real(8) :: rp, nrm, pi = 3.141592653589793239d0
+  real(8) :: rp, nrm, pi = EISCOR_DBL_PI
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
