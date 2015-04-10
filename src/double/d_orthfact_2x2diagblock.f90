@@ -5,9 +5,9 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes a two by two diagonal block of an orthogonal
-! upper hessenberg matrix that is stored as a product of givens 
-! rotations and a diagonal matrix. 
+! This routine computes either the top or bottom 2x2 diagonal block 
+! of an orthogonal upper-hessenberg matrix that is stored as a product 
+! of givens rotations and a diagonal matrix. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
