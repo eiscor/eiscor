@@ -8,9 +8,11 @@
 ! This program tests the subroutine z_upr1fact_twistedqz. 
 ! The following tests are run:
 !
-! 1) check roots of unity with upperhess QR
+! 1) check roots of unity with upper-hess QR
 !
-! 2) check roots of unity with inversehess QR
+! 2) check roots of unity with inverse-hess QR
+!
+! 3) check roots of unity with cmv QR
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_upr1fact_twistedqz
@@ -18,7 +20,7 @@ program test_z_upr1fact_twistedqz
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**4
+  integer, parameter :: N = 2**3
   real(8) :: tol
   integer :: ii, INFO, ITS(N-1)
   logical :: P(N-2)
@@ -39,6 +41,13 @@ program test_z_upr1fact_twistedqz
       logical, dimension(m-2), intent(in) :: flags
     end function l_upr1fact_inversehess
   end interface
+  interface
+    function l_upr1fact_cmv(m,flags)
+      logical :: l_upr1fact_cmv
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_cmv
+  end interface
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -54,6 +63,9 @@ program test_z_upr1fact_twistedqz
   call u_test_banner(__FILE__)
   
   ! check 1)
+print*,""
+print*,""
+print*,"HESS"
     ! set INFO
     INFO = 0
     
@@ -92,6 +104,7 @@ program test_z_upr1fact_twistedqz
 
     do ii=1,(N)
       temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
+print*,temp
       if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
         call u_test_failed(__LINE__)
       end if
@@ -100,6 +113,8 @@ program test_z_upr1fact_twistedqz
   ! end check 1)
 
   ! check 2)
+print*,""
+print*,"INV HESS"
     ! set INFO
     INFO = 0
     
@@ -109,7 +124,7 @@ program test_z_upr1fact_twistedqz
     ! set valid Q
     Q = 0d0
     do ii=1,(N-1)
-      Q(3*ii) = -1d0
+      Q(3*ii) = 1d0
     end do     
   
     ! set valid D
@@ -138,12 +153,68 @@ program test_z_upr1fact_twistedqz
 
     do ii=1,(N)
       temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
+print*,temp
       if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
         call u_test_failed(__LINE__)
       end if
     end do
 
   ! end check 2)
+
+  ! check 3)
+print*,""
+print*,"CMV"
+    ! set INFO
+    INFO = 0
+    
+    ! set P
+    do ii=1,(N-2)
+      if (mod(ii,2).EQ.1) then 
+        P(ii) = .FALSE.
+      else 
+        P(ii) = .TRUE.
+      end if
+    end do    
+
+    ! set valid Q
+    Q = 0d0
+    do ii=1,(N-1)
+      Q(3*ii) = 1d0
+    end do     
+  
+    ! set valid D
+    D1 = 0d0
+    do ii=1,(N+1)
+      D1(2*ii-1) = 1d0
+    end do
+    D1(2*N-1) = (-1d0)**(N-1)
+    D2 = 0d0
+
+    ! set valid C1 and B1
+    C1 = 0d0
+    do ii=1,N
+      C1(3*ii) = -1d0
+    end do
+    B1 = -C1
+    
+    ! call twisted QZ
+    call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_cmv &
+    ,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+    
+    ! check INFO
+    if (INFO.NE.0) then
+      call u_test_failed(__LINE__)
+    end if
+
+    do ii=1,(N)
+      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
+print*,temp
+      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
+        call u_test_failed(__LINE__)
+      end if
+    end do
+
+  ! end check 3)
 
   ! stop timer
   call system_clock(count=c_stop)
