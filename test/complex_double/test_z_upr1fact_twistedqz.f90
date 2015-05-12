@@ -20,7 +20,7 @@ program test_z_upr1fact_twistedqz
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**3
+  integer, parameter :: N = 2**4
   real(8) :: tol
   integer :: ii, INFO, ITS(N-1)
   logical :: P(N-2)
@@ -63,9 +63,6 @@ program test_z_upr1fact_twistedqz
   call u_test_banner(__FILE__)
   
   ! check 1)
-print*,""
-print*,""
-print*,"HESS"
     ! set INFO
     INFO = 0
     
@@ -104,7 +101,6 @@ print*,"HESS"
 
     do ii=1,(N)
       temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-print*,temp
       if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
         call u_test_failed(__LINE__)
       end if
@@ -113,8 +109,6 @@ print*,temp
   ! end check 1)
 
   ! check 2)
-print*,""
-print*,"INV HESS"
     ! set INFO
     INFO = 0
     
@@ -153,7 +147,6 @@ print*,"INV HESS"
 
     do ii=1,(N)
       temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-print*,temp
       if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
         call u_test_failed(__LINE__)
       end if
@@ -162,8 +155,6 @@ print*,temp
   ! end check 2)
 
   ! check 3)
-print*,""
-print*,"CMV"
     ! set INFO
     INFO = 0
     
@@ -208,7 +199,6 @@ print*,"CMV"
 
     do ii=1,(N)
       temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-print*,temp
       if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
         call u_test_failed(__LINE__)
       end if
