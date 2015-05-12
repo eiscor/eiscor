@@ -24,11 +24,11 @@ program test_z_upr1fact_twistedqz
   real(8) :: error, err, arg
   complex(8) :: V(N,N), W(N,N)
   interface
-    function l_upr1fact_upperhess(m,flags)
-      logical :: l_upr1fact_upperhess
+    function l_upr1fact_hess(m,flags)
+      logical :: l_upr1fact_hess
       integer, intent(in) :: m
       logical, dimension(m-2), intent(in) :: flags
-    end function l_upr1fact_upperhess
+    end function l_upr1fact_hess
   end interface
   
   ! timing variables
@@ -73,7 +73,7 @@ program test_z_upr1fact_twistedqz
     end do
     
     ! call twisted QZ
-    call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_upperhess,N,P &
+    call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P &
     ,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
    
     ! check INFO
