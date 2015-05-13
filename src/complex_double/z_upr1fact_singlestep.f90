@@ -101,8 +101,9 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     ! get 2x2 blocks
     ir2 = 3*N; ir1 = ir2-5
     id2 = 2*N; id1 = id2-3
-    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2),Q((ir1-3):(ir2-3)) &
-    ,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2) &
+    ,Q((ir1-3):(ir2-3)),D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2) &
+    ,D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
   
     ! if not QZ
     if (.NOT.QZ) then
@@ -119,7 +120,8 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
           
     ! choose wikinson shift
     ! complex abs does not matter here
-    if(abs(A(2,2)-shift)+abs(B(2,2)-rho) < abs(A(1,1)-shift)+abs(B(1,1)-rho))then
+    if(abs(A(2,2)-shift)+abs(B(2,2)-rho) &
+    < abs(A(1,1)-shift)+abs(B(1,1)-rho))then
       shift = A(2,2)
       rho = B(2,2)
     else
@@ -129,7 +131,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     
     ! avoid zero division
     if ((dble(rho).EQ.0).AND.(aimag(rho).EQ.0)) then
-      shift = 1d16 ! not sure if this is a good idea?
+      shift = 1d0 ! not sure if this is a good idea?
     else
       shift = shift/rho
     end if
@@ -146,7 +148,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   if (QZ) then
-  
+
     ! update W
     if (VEC) then
       
@@ -247,7 +249,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     end if
 
     ! chase bulge
-    do ii=1,(N-1)
+    do ii=1,(N-3)
     
       ! execute turnover of G1*G2*G3
       call z_rot3_turnover(G1,G2,G3)
