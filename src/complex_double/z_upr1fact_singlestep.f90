@@ -131,7 +131,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     
     ! avoid zero division
     if ((dble(rho).EQ.0).AND.(aimag(rho).EQ.0)) then
-      shift = 1d0 ! not sure if this is a good idea?
+      shift = cmplx(1d0,0d0,kind=8) ! not sure if this is a good idea?
     else
       shift = shift/rho
     end if
@@ -238,7 +238,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       call z_upr1fact_rot3throughtri(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G2)
       
       ! merge from right
-      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
+      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G2)
       
       ! set G3 for turnover
       G3 = Q(1:3)
