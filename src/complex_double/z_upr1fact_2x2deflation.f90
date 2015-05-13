@@ -63,15 +63,21 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
   real(8) :: nrm, G1(3), G2(3), G3(3), Qt(6)
   complex(8) :: A(2,2), B(2,2), Vt(2,2), Wt(2,2)
   
+  ! compute 2x2 blocks
+  Qt = 0d0; Qt(1:3) = Q; Qt(4) = 1d0
+  call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Qt,D1,C1,B1 &
+  ,D2,C2,B2,A,B)
+
   ! compute standard Schur decomposition
   if (.NOT.QZ) then
 
-    ! compute 2x2 blocks
-    Qt = 0d0; Qt(1:3) = Q; Qt(4) = 1d0
-    call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Qt,D1,C1,B1,D2,C2,B2,A,B)
-
-    ! store block
-    B = A
+    ! replace Vt with rotation G1
+    call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)) &
+    ,aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm)
+    
+    ! pass G1 through triangular factor
+    G3 = G1
+    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G3)
     
     ! standard schur decomposition
     call z_2x2array_eig(QZ,A,B,Vt,Wt)
@@ -104,23 +110,25 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
   ! compute generalized Schur decomposition
   else
-  
+
     ! generalized schur decomposition
-    call z_2x2array_eig(QZ,A,B,Vt,Wt)
+    call z_2x2array_eig(QZ,A,B,Wt,Vt)
       
     ! replace Vt with rotation G1
-    call z_rot3_vec4gen(dble(Wt(1,1)),aimag(Wt(1,1)),dble(Wt(2,1)),aimag(Wt(2,1)),G1(1),G1(2),G1(3),nrm)
+    call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)) &
+    ,aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm)
     
     ! replace Wt with rotation G2
-    call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)),aimag(Vt(2,1)),G2(1),G2(2),G2(3),nrm)
+    call z_rot3_vec4gen(dble(Wt(1,1)),aimag(Wt(1,1)),dble(Wt(2,1)) &
+    ,aimag(Wt(2,1)),G2(1),G2(2),G2(3),nrm)
     
     ! pass G1 through right triangular factor
     G3 = G1
     call z_upr1fact_rot3throughtri(.FALSE.,D2,C2,B2,G3)
     
     ! equivalence transform
-    A(1,1) = cmplx(G2(1),G2(2),kind=8)
-    A(2,1) = cmplx(G2(3),0d0,kind=8)
+    A(1,1) = cmplx(G2(1),-G2(2),kind=8)
+    A(2,1) = cmplx(-G2(3),0d0,kind=8)
     A(1,2) = -A(2,1)
     A(2,2) = conjg(A(1,1))
     
@@ -129,7 +137,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     B(1,2) = -B(2,1)
     B(2,2) = conjg(B(1,1))
     
-    A = matmul(transpose(conjg(A)),B)
+    A = matmul(A,B)
     
     ! deflate into D2
     A(1,1) = A(1,1)*cmplx(D2(1),D2(2),kind=8)
@@ -182,7 +190,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
       B(1,2) = -B(2,1)
       B(2,2) = conjg(B(1,1))
       
-      W = matmul(W,B) 
+      V = matmul(V,B) 
       
       ! update W
       B(1,1) = cmplx(G2(1),G2(2),kind=8)
@@ -190,7 +198,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
       B(1,2) = -B(2,1)
       B(2,2) = conjg(B(1,1))
       
-      V = matmul(V,B)
+      W = matmul(W,B)
     
     end if
   

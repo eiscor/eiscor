@@ -40,11 +40,90 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
   ! compute variables
   integer :: ii, id
   real(8) :: trace, disc, detm, temp
-  
+  real(8) :: c, s, nrm, T(2,2)
+ 
   ! B not identity
   if (FLAG) then
   
+    ! make B upper-triangular
+    ! create eliminator
+    call d_rot2_vec2gen(B(1,1),B(2,1),c,s,nrm)
+      
+    ! store in Q
+    Q(1,1) = c
+    Q(2,1) = s
+    Q(2,2) = Q(1,1)
+    Q(1,2) = -Q(2,1)
+      
+    ! update B
+    B = matmul(transpose(Q),B)
+    B(2,1) = 0d0
+      
+    ! update A
+    A = matmul(transpose(Q),A)
+      
+    ! set Z
+    Z(1,1) = 1d0
+    Z(2,1) = 0d0
+    Z(2,2) = 1d0
+    Z(1,2) = 0d0
+    
+    ! check for infinite eigenvalues
+    if (abs(B(1,1)).EQ.0d0) then
   
+      ! create eliminator
+      call d_rot2_vec2gen(A(1,1),A(2,1),c,s,nrm)
+      
+      ! store in T
+      T(1,1) = c
+      T(2,1) = s
+      T(2,2) = T(1,1)
+      T(1,2) = -T(2,1)
+      
+      ! update A
+      A = matmul(transpose(T),A)
+      A(2,1) = 0d0
+      
+      ! update B
+      B = matmul(transpose(Q),B)
+      
+      ! update Q
+      Q = matmul(Q,T)
+      
+      ! return
+      return
+  
+    ! check for infinite eigenvalues
+    else if (abs(B(2,2)).EQ.0d0) then
+  
+      ! create eliminator
+      call d_rot2_vec2gen(A(2,2),A(2,1),c,s,nrm)
+      
+      ! store in T
+      T(1,1) = c
+      T(2,1) = s
+      T(2,2) = T(1,1)
+      T(1,2) = -T(2,1)
+      
+      ! update A
+      A = matmul(A,T)
+      A(2,1) = 0d0
+      
+      ! update B
+      B = matmul(B,T)
+      
+      ! update Z
+      Z = matmul(Z,T)
+      
+      ! return
+      return
+
+    ! no infinite eigenvalues
+    else
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! this section needs finishing
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    end if 
   ! B identity
   else  
 
@@ -57,27 +136,34 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
     if (temp < 0) then
       
       ! move A to standard form (A(1,1) = A(2,2))
-      ! real part of lambda
-      trace = trace/2d0
-    
-      ! imaginary part of lambda 
-      disc = sqrt(-temp)/2d0
    
       ! compute Q
       temp = (A(2,2)-A(1,1))
-      if ((temp.NE.0).AND.(abs(temp)>1)) then
+      if (temp.NE.0) then
+        
         temp = (A(1,2)+A(2,1))/temp
-        temp = temp*(1d0-sqrt(1d0+1d0/temp/temp))
-      else if (temp.NE.0) then 
-        temp = (A(1,2)+A(2,1))/temp
-        temp = temp-sqrt(1d0+temp*temp)
+
+        if (abs(temp) > 1d0) then
+          temp = temp*(1d0+sqrt(1d0+1d0/temp/temp))
+          call d_rot2_vec2gen(temp,1d0,Q(1,1),Q(2,1),temp)
+        else 
+          temp = temp+sign(1d0,temp)*sqrt(1d0+temp*temp)
+          call d_rot2_vec2gen(temp,1d0,Q(1,1),Q(2,1),temp)
+        end if
+
+      else
+
+        Q(1,1) = 1d0
+        Q(2,1) = 0d0
+
       end if
-      call d_rot2_vec2gen(1d0,temp,Q(1,1),Q(2,1),temp)
+
       Q(2,2) = Q(1,1)
       Q(1,2) = -Q(2,1)
-    
+
       ! update A
-      A = matmul(transpose(Q),matmul(A,Q))
+      A = matmul(A,Q)
+      A = matmul(transpose(Q),A)
 
     ! real roots
     else
@@ -98,9 +184,7 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
       Q(1,2) = -Q(2,1)
       
       ! update A
-      A(1,1) = temp
-      A(1,2) = 0d0
-      A(2,2) = detm/temp
+      A = matmul(transpose(Q),matmul(A,Q))
       A(2,1) = 0d0
       
     end if

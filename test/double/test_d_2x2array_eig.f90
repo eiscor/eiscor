@@ -10,7 +10,9 @@
 !
 ! 1) A = [1,2;2,1], B = I
 !
-! 2) A = [0.5, 0.3; 0.2, 0.3], B = I
+! 2) A = [5, 3; -2, 3], B = I
+!
+! 3) A = [1, 3; -1, 2], B = I
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_2x2array_eig
@@ -67,6 +69,30 @@ program test_d_2x2array_eig
     ! check results
     Aold = matmul(Q,A) - matmul(Aold,Q) 
     if (maxval(abs(Aold))>tol) then
+      call u_test_failed(__LINE__)
+    end if
+    if (abs(A(1,1)-A(2,2))>tol) then
+      call u_test_failed(__LINE__)
+    end if
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 3)
+  
+    ! set input
+    A(1,1) = 1d0
+    A(2,1) = -1d0
+    A(1,2) = 3d0
+    A(2,2) = 2d0
+    Aold = A
+    
+    call d_2x2array_eig(.FALSE.,A,B,Q,Z)
+    
+    ! check results
+    Aold = matmul(Q,A) - matmul(Aold,Q) 
+    if (maxval(abs(Aold))>tol) then
+      call u_test_failed(__LINE__)
+    end if
+    if (abs(A(1,1)-A(2,2))>tol) then
       call u_test_failed(__LINE__)
     end if
 
