@@ -249,10 +249,266 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     ! chase bulge
     do ii=1,(N-1)
     
+      ! execute turnover of G1*G2*G3
+      call z_rot3_turnover(G1,G2,G3)
+      
+      ! prepare for next turnover based on P(ii+1)
+      ! hess
+      if (.NOT.P(ii+1)) then
+      
+        ! set P(ii)
+        P(ii) = P(ii+1)
         
+        ! set Q(ii)
+        Q(3*ii-2) = G1(1)
+        Q(3*ii-1) = G1(2)
+        Q(3*ii) = G1(3)
+      
+        ! set Q(ii+1)
+        Q(3*ii+1) = G2(1)
+        Q(3*ii+2) = G2(2)
+        Q(3*ii+3) = G2(3)        
+ 
+        ! set G1 for turnover
+        G1 = G2     
+        
+        ! set G2 for turnover
+        G2(1) = Q(3*ii+4)
+        G2(2) = Q(3*ii+5)
+        G2(3) = Q(3*ii+6)
+        
+        ! update W
+        if (VEC) then
+          
+          A(1,1) = cmplx(G3(1),G3(2),kind=8)
+          A(2,1) = cmplx(G3(3),0d0,kind=8)
+          A(1,2) = -A(2,1)
+          A(2,2) = conjg(A(1,1))
+          
+          W(:,(ii+1):(ii+2)) = matmul(W(:,(ii+1):(ii+2)),A)
+          
+        end if
+
+        ! G3 = G3^-1
+        G3(2) = -G3(2)
+        G3(3) = -G3(3)
+        
+        ! pass G3 through R2
+        call z_upr1fact_rot3throughtri(.TRUE.,D2((2*ii+1):(2*ii+4)) &
+        ,C2((3*ii+1):(3*ii+6)),B2((3*ii+1):(3*ii+6)),G3)
+        
+        ! G3 = G3^-1
+        G3(2) = -G3(2)
+        G3(3) = -G3(3)
+        
+        ! update V
+        if (VEC) then
+          
+          A(1,1) = cmplx(G3(1),G3(2),kind=8)
+          A(2,1) = cmplx(G3(3),0d0,kind=8)
+          A(1,2) = -A(2,1)
+          A(2,2) = conjg(A(1,1))
+          
+          V(:,(ii+1):(ii+2)) = matmul(V(:,(ii+1):(ii+2)),A)
+          
+        end if
+
+        ! pass G3 through R1
+        call z_upr1fact_rot3throughtri(.FALSE.,D1((2*ii+1):(2*ii+4)) &
+        ,C1((3*ii+1):(3*ii+6)),B1((3*ii+1):(3*ii+6)),G3)
+        
+      ! inverse hess
+      else
+      
+        ! set P(ii)
+        P(ii) = P(ii+1)
+        
+        ! set Q(ii)
+        Q(3*ii-2) = G1(1)
+        Q(3*ii-1) = G1(2)
+        Q(3*ii) = G1(3)
+      
+        ! set Q(ii+1)
+        Q(3*ii+1) = G3(1)
+        Q(3*ii+2) = G3(2)
+        Q(3*ii+3) = G3(3)  
+        
+        ! set G3 for turnover
+        G3 = G3    
+        
+        ! pass G2 through R1
+        call z_upr1fact_rot3throughtri(.TRUE.,D1((2*ii+1):(2*ii+4)) &
+        ,C1((3*ii+1):(3*ii+6)),B1((3*ii+1):(3*ii+6)),G2)
+        
+        ! G2 = G2^-1
+        G2(2) = -G2(2)
+        G2(3) = -G2(3)
+
+        ! update V
+        if (VEC) then
+          
+          A(1,1) = cmplx(G2(1),G2(2),kind=8)
+          A(2,1) = cmplx(G2(3),0d0,kind=8)
+          A(1,2) = -A(2,1)
+          A(2,2) = conjg(A(1,1))
+          
+          V(:,(ii+1):(ii+2)) = matmul(V(:,(ii+1):(ii+2)),A)
+          
+        end if
+
+        ! pass G2 through R2
+        call z_upr1fact_rot3throughtri(.FALSE.,D2((2*ii+1):(2*ii+4)) &
+        ,C2((3*ii+1):(3*ii+6)),B2((3*ii+1):(3*ii+6)),G2)
+        
+        ! update W
+        if (VEC) then
+          
+          A(1,1) = cmplx(G2(1),G2(2),kind=8)
+          A(2,1) = cmplx(G2(3),0d0,kind=8)
+          A(1,2) = -A(2,1)
+          A(2,2) = conjg(A(1,1))
+          
+          V(:,(ii+1):(ii+2)) = matmul(V(:,(ii+1):(ii+2)),A)
+          
+        end if
+
+        ! G2 = G2^-1
+        G2(2) = -G2(2)
+        G2(3) = -G2(3)
+
+        ! set G1 for turnover
+        G1 = G2
+
+        ! set G2 for turnover
+        G2(1) = Q(3*ii+4)
+        G2(2) = Q(3*ii+5)
+        G2(3) = Q(3*ii+6)
+        
+      end if
 
     end do  
   
+    ! final turnover
+    call z_rot3_turnover(G1,G2,G3)
+      
+    ! set P(N-1)
+    P(N-2) = final_flag
+    
+    ! finish transformation based on P(N-1)
+    ! hess
+    if (.NOT.P(N-2)) then
+    
+      ! set Q(N-2)
+      Q(3*(N-2)-2) = G1(1)
+      Q(3*(N-2)-1) = G1(2)
+      Q(3*(N-2)) = G1(3)   
+      
+      ! set Q(N-1)
+      Q(3*(N-1)-2) = G2(1)
+      Q(3*(N-1)-1) = G2(2)
+      Q(3*(N-1)) = G2(3)  
+      
+      ! update W
+      if (VEC) then
+          
+        A(1,1) = cmplx(G3(1),G3(2),kind=8)
+        A(2,1) = cmplx(G3(3),0d0,kind=8)
+        A(1,2) = -A(2,1)
+        A(2,2) = conjg(A(1,1))
+          
+        W(:,(N-1):N) = matmul(W(:,(N-1):N),A)
+         
+      end if    
+   
+      ! G3 = G3^-1
+      G3(2) = -G3(2)
+      G3(3) = -G3(3)
+ 
+      ! pass G3 through R2
+      call z_upr1fact_rot3throughtri(.TRUE.,D2((2*N-3):(2*N)) &
+      ,C2((3*N-5):(3*N)),B2((3*N-5):(3*N)),G3)
+        
+      ! G3 = G3^-1
+      G3(2) = -G3(2)
+      G3(3) = -G3(3)
+ 
+      ! update V
+      if (VEC) then
+          
+        A(1,1) = cmplx(G3(1),G3(2),kind=8)
+        A(2,1) = cmplx(G3(3),0d0,kind=8)
+        A(1,2) = -A(2,1)
+        A(2,2) = conjg(A(1,1))
+          
+        V(:,(N-1):N) = matmul(V(:,(N-1):N),A)
+         
+      end if    
+    
+      ! pass G3 through R1
+      call z_upr1fact_rot3throughtri(.FALSE.,D1((2*N-3):(2*N)) &
+      ,C1((3*N-5):(3*N)),B1((3*N-5):(3*N)),G3)
+        
+      ! merge bulge 
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G3)
+      
+    ! inverse hess
+    else
+    
+      ! set Q(N-2)
+      Q(3*(N-2)-2) = G1(1)
+      Q(3*(N-2)-1) = G1(2)
+      Q(3*(N-2)) = G1(3)   
+      
+      ! set Q(N-1)
+      Q(3*(N-1)-2) = G3(1)
+      Q(3*(N-1)-1) = G3(2)
+      Q(3*(N-1)) = G3(3)  
+      
+      ! pass G2 through R1
+      call z_upr1fact_rot3throughtri(.TRUE.,D1((2*N-3):(2*N)) &
+      ,C1((3*N-5):(3*N)),B1((3*N-5):(3*N)),G2)
+        
+      ! G2 = G2^-1
+      G2(2) = -G2(2)
+      G2(3) = -G2(3)
+ 
+      ! update V
+      if (VEC) then
+          
+        A(1,1) = cmplx(G2(1),G2(2),kind=8)
+        A(2,1) = cmplx(G2(3),0d0,kind=8)
+        A(1,2) = -A(2,1)
+        A(2,2) = conjg(A(1,1))
+          
+        V(:,N:(N+1)) = matmul(V(:,N:(N+1)),A)
+         
+      end if  
+      
+      ! pass G2 through R2
+      call z_upr1fact_rot3throughtri(.FALSE.,D2((2*N-3):(2*N)) &
+      ,C2((3*N-5):(3*N)),B2((3*N-5):(3*N)),G2)
+        
+      ! update W
+      if (VEC) then
+          
+        A(1,1) = cmplx(G2(1),G2(2),kind=8)
+        A(2,1) = cmplx(G2(3),0d0,kind=8)
+        A(1,2) = -A(2,1)
+        A(2,2) = conjg(A(1,1))
+          
+        W(:,N:(N+1)) = matmul(W(:,N:(N+1)),A)
+         
+      end if  
+      
+      ! G2 = G2^-1
+      G2(2) = -G2(2)
+      G2(3) = -G2(3)
+ 
+      ! merge bulge 
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
+      
+    end if
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! iteration for QR
