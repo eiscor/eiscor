@@ -23,6 +23,7 @@ program example_d_orthhess_rootsofunity
   integer :: ii, INFO, cpair
   real(8) :: WORK(3*N), Q(2*(N-1)), D(N)
   real(8) :: H(N,N), Z
+  complex(8) :: E(N), V
   integer :: ITS(N-1)
   
   ! print banner
@@ -46,21 +47,19 @@ program example_d_orthhess_rootsofunity
     print*,"INFO:",INFO
   end if
   
-  ! print diag of H
-  cpair = 0
+  ! call d_orthhess_real2complex
+  call d_orthhess_real2complex(.FALSE.,N,H,1,Z,E,V,INFO)
+  
+  ! check INFO
+  if (INFO.NE.0) then
+    print*,"d_orthhess_real2complex failed."
+    print*,"INFO:",INFO
+  end if
+  
+  ! print E
   print*,"Roots computed using d_orthhess_qr:"
   do ii=1,N
-    if (cpair.EQ.0) then
-      if (H(ii,ii+1).EQ.0) then
-        print*,H(ii,ii)
-      else
-        print*,H(ii,ii),H(ii,ii+1)
-        print*,H(ii+1,ii+1),H(ii+1,ii)
-        cpair = 1
-      end if
-    else
-      cpair = 0
-    end if
+    print*,E(ii)
   end do
   print*,""
   
@@ -81,12 +80,20 @@ program example_d_orthhess_rootsofunity
     print*,"INFO:",INFO
   end if
   
-  ! print D
+  ! call d_orthfact_real2complex
+  call d_orthfact_real2complex(.FALSE.,N,Q,D,1,Z,E,V,INFO)
+  
+  ! check INFO
+  if (INFO.NE.0) then
+    print*,"d_orthfact_real2complex failed."
+    print*,"INFO:",INFO
+  end if
+  
+  ! print E
   print*,"Roots computed using d_orthfact_qr:"
   do ii=1,N
-    print*,D(ii)
+    print*,E(ii)
   end do
   print*,""
-
     
 end program example_d_orthhess_rootsofunity

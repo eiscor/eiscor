@@ -26,6 +26,7 @@ program example_d_orthhess_knowneigs
   integer :: ii, INFO, cpair
   real(8) :: WORK(3*N), Q(2*(N-1)), D(N)
   real(8) :: H(N,N), Z
+  complex(8) :: E(N), V
   integer :: ITS(N-1), ind, jj
   double precision :: rm,rp,pi = 3.141592653589793239d0
   double precision :: temp(2,2), he, diff
@@ -146,43 +147,26 @@ program example_d_orthhess_knowneigs
   end do
   print*,""
   
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! print diag of H
-  cpair = 0
+  ! call d_orthhess_real2complex
+  call d_orthhess_real2complex(.FALSE.,N,H,1,Z,E,V,INFO)
+  
+  ! check INFO
+  if (INFO.NE.0) then
+    print*,"d_orthhess_real2complex failed."
+    print*,"INFO:",INFO
+  end if
+  
+  ! print E
   print*,"Eigenvalues computed using d_orthhess_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
-    if (cpair.EQ.0) then
-      if (H(ii,ii+1).EQ.0) then
-         diff = abs(cmplx(H(ii,ii)-rev(1),iev(1),kind=8))
-         do jj=2,N
-            he = abs(cmplx(H(ii,ii)-rev(jj),iev(jj),kind=8))
-            if (he < diff) then
-               diff = he
-            end if
-         end do
-         print*,H(ii,ii), 0d0, diff
-      else
-         diff = sqrt(abs(H(ii,ii)-rev(1))**2+abs(H(ii,ii+1)-iev(1))**2)
-         do jj=2,N
-            he = sqrt(abs(H(ii,ii)-rev(jj))**2+abs(H(ii,ii+1)-iev(jj))**2)
-            if (he < diff) then
-               diff = he
-            end if
-         end do
-         print*,H(ii,ii),H(ii,ii+1),diff
-         diff = sqrt(abs(H(ii+1,ii+1)-rev(1))**2+abs(H(ii+1,ii)-iev(1))**2)
-         do jj=2,N
-            he = sqrt(abs(H(ii+1,ii+1)-rev(jj))**2+abs(H(ii+1,ii)-iev(jj))**2)
-            if (he < diff) then
-               diff = he
-            end if
-         end do
-         print*,H(ii+1,ii+1),H(ii+1,ii),diff
-         cpair = 1
-      end if
-    else
-      cpair = 0
-    end if
+     diff = sqrt(abs(dble(E(ii))-rev(1))**2+abs(aimag(E(ii))-iev(1))**2)
+     do jj=2,N
+        he = sqrt(abs(dble(E(ii))-rev(jj))**2+abs(aimag(E(ii))-iev(jj))**2)
+        if (he < diff) then
+           diff = he
+        end if
+     end do
+     print*,dble(E(ii)),aimag(E(ii)), diff
   end do
   print*,""
 
@@ -195,17 +179,26 @@ program example_d_orthhess_knowneigs
     print*,"INFO:",INFO
   end if
   
+  ! call d_orthfact_real2complex
+  call d_orthfact_real2complex(.FALSE.,N,Q,D,1,Z,E,V,INFO)
+  
+  ! check INFO
+  if (INFO.NE.0) then
+    print*,"d_orthfact_real2complex failed."
+    print*,"INFO:",INFO
+  end if
+  
   ! print D
   print*,"Eigenvalues computed using d_orthfact_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
-     diff = sqrt(abs(D(2*ii-1)-rev(1))**2+abs(D(2*ii)-iev(1))**2)
+     diff = sqrt(abs(dble(E(ii))-rev(1))**2+abs(aimag(E(ii))-iev(1))**2)
      do jj=2,N
-        he = sqrt(abs(D(2*ii-1)-rev(jj))**2+abs(D(2*ii)-iev(jj))**2)
+        he = sqrt(abs(dble(E(ii))-rev(jj))**2+abs(aimag(E(ii))-iev(jj))**2)
         if (he < diff) then
            diff = he
         end if
      end do
-     print*,D(2*ii-1),D(2*ii), diff
+     print*,dble(E(ii)),aimag(E(ii)), diff
   end do
   print*,""
 
