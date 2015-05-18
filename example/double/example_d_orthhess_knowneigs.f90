@@ -1,8 +1,8 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! example_d_orthhess_knowneigs
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine chooses N random eigenvalues on the unit 
 ! circle, constructs a unitary matrix with prescribed 
@@ -10,13 +10,13 @@
 ! a corresponding unitary eigenvalue problem two different 
 ! ways.
 !
-! 1) Form upper Hessenberg permutation matrix and compute its 
+! 1) Form corresponding upper-Hessenberg matrix and compute its 
 !    eigenvalues using d_orthhess_qr
 !
 ! 2) Construct the factorization directly and compute its 
 !    eigenvalues using d_orthfact_qr
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program example_d_orthhess_knowneigs
 
   implicit none
@@ -75,25 +75,25 @@ program example_d_orthhess_knowneigs
      ! generate random bulge
      call random_number(rp)     
      call random_number(rm)     
-     call d_rot2_vec2gen(sqrt(1-rp**2),rp,b1(1),b1(2),NRM,INFO)
-     call d_rot2_vec2gen(sqrt(1-rm**2),rm,b2(1),b2(2),NRM,INFO)
+     call d_rot2_vec2gen(sqrt(1-rp**2),rp,b1(1),b1(2),NRM)
+     call d_rot2_vec2gen(sqrt(1-rm**2),rm,b2(1),b2(2),NRM)
      ! fuse on the top of the current Q sequence
      tb(1) = b2(1)
      tb(2) = -b2(2)
      b3(1) = b1(1)
      b3(2) = -b1(2)
      ind = 2*(ii-1)
-     call d_rot2_turnover(tb,b3,Q((ind+1):(ind+2)),INFO)
-     call d_rot2_fuse('R',b3,Q((ind+3):(ind+4)),INFO)
+     call d_rot2_turnover(tb,b3,Q((ind+1):(ind+2)))
+     call d_rot2_fuse('R',b3,Q((ind+3):(ind+4)))
      b3 = Q((ind+1):(ind+2))
      Q((ind+1):(ind+2)) = tb
      ! main chasing loop
      do jj=ii,(n-3)
         ind = 2*(jj-1)
         ! set indices
-        call d_rot2_turnover(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1,INFO)
-        call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
-        call d_rot2_turnover(b3,b1,b2,INFO)
+        call d_rot2_turnover(Q((ind+3):(ind+4)),Q((ind+5):(ind+6)),b1)
+        call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2)
+        call d_rot2_turnover(b3,b1,b2)
         ! update bulges
         tb = b2
         b2 = b3
@@ -102,10 +102,10 @@ program example_d_orthhess_knowneigs
      end do
      ind = 2*(n-3)
      ! fusion at bottom
-     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b1,INFO)
-     call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2,INFO)
-     call d_rot2_fuse('L',b3,b2,INFO)
-     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b3,INFO)
+     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b1)
+     call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2)
+     call d_rot2_fuse('L',b3,b2)
+     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b3)
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -133,7 +133,7 @@ program example_d_orthhess_knowneigs
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! call dohfqr
-  call d_orthhess_qr('N',N,H,Z,ITS,WORK,INFO)
+  call d_orthhess_qr(.FALSE.,.FALSE.,N,H,WORK,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -190,7 +190,7 @@ program example_d_orthhess_knowneigs
   
   
   ! call doffqr
-  call d_orthfact_qr('N',N,Q,D,Z,ITS,INFO)
+  call d_orthfact_qr(.FALSE.,.FALSE.,N,Q,D,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
