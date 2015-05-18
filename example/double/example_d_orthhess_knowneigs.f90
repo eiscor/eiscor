@@ -24,7 +24,7 @@ program example_d_orthhess_knowneigs
   ! compute variables
   integer, parameter :: N = 16
   integer :: ii, INFO, cpair
-  real(8) :: WORK(4*N), Q(2*(N-1)), D(2*N)
+  real(8) :: WORK(3*N), Q(2*(N-1)), D(N)
   real(8) :: H(N,N), Z
   integer :: ITS(N-1), ind, jj
   double precision :: rm,rp,pi = 3.141592653589793239d0
@@ -43,12 +43,10 @@ program example_d_orthhess_knowneigs
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! initialize Q and D to be an identity matrix
   Q = 0d0
-  D = 0d0
   do ii=1,n-1
      Q(2*ii-1) = 1d0
-     D(2*ii-1) = 1d0
   end do
-  D(2*n-1) = 1d0
+  D = 1d0
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! random eigenvalues, on the unit circle
@@ -84,7 +82,7 @@ program example_d_orthhess_knowneigs
      b3(2) = -b1(2)
      ind = 2*(ii-1)
      call d_rot2_turnover(tb,b3,Q((ind+1):(ind+2)))
-     call d_rot2_fuse('R',b3,Q((ind+3):(ind+4)))
+     call d_rot2_fuse(.FALSE.,b3,Q((ind+3):(ind+4)))
      b3 = Q((ind+1):(ind+2))
      Q((ind+1):(ind+2)) = tb
      ! main chasing loop
@@ -102,10 +100,10 @@ program example_d_orthhess_knowneigs
      end do
      ind = 2*(n-3)
      ! fusion at bottom
-     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b1)
+     call d_rot2_fuse(.TRUE.,Q((ind+3):(ind+4)),b1)
      call d_rot2_turnover(Q((ind+1):(ind+2)),Q((ind+3):(ind+4)),b2)
-     call d_rot2_fuse('L',b3,b2)
-     call d_rot2_fuse('L',Q((ind+3):(ind+4)),b3)
+     call d_rot2_fuse(.TRUE.,b3,b2)
+     call d_rot2_fuse(.TRUE.,Q((ind+3):(ind+4)),b3)
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -132,8 +130,8 @@ program example_d_orthhess_knowneigs
 
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! call dohfqr
-  call d_orthhess_qr(.FALSE.,.FALSE.,N,H,WORK,1,Z,ITS,INFO)
+  ! call d_orthhess_qr
+  call d_orthhess_qr(.FALSE.,.FALSE.,N,H,WORK,N,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -187,10 +185,9 @@ program example_d_orthhess_knowneigs
     end if
   end do
   print*,""
-  
-  
-  ! call doffqr
-  call d_orthfact_qr(.FALSE.,.FALSE.,N,Q,D,1,Z,ITS,INFO)
+
+  ! call d_orthfact_qr
+  call d_orthfact_qr(.FALSE.,.FALSE.,N,Q,D,N,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then

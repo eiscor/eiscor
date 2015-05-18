@@ -21,7 +21,7 @@ program example_d_orthhess_rootsofunity
   ! compute variables
   integer, parameter :: N = 16
   integer :: ii, INFO, cpair
-  real(8) :: WORK(4*N), Q(2*(N-1)), D(2*N)
+  real(8) :: WORK(3*N), Q(2*(N-1)), D(N)
   real(8) :: H(N,N), Z
   integer :: ITS(N-1)
   
@@ -37,8 +37,8 @@ program example_d_orthhess_rootsofunity
   end do
   H(1,N) = 1d0
   
-  ! call dohfqr
-  call d_orthhess_qr('N',N,H,Z,ITS,WORK,INFO)
+  ! call d_orthhess_qr
+  call d_orthhess_qr(.FALSE.,.FALSE.,N,H,WORK,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -69,15 +69,11 @@ program example_d_orthhess_rootsofunity
     Q(2*ii-1) = 0d0
     Q(2*ii) = 1d0
   end do
-  do ii=1,N-1
-    D(2*ii-1) = 1d0
-    D(2*ii) = 0d0
-  end do
-  D(2*N-1) = (-1d0)**(N-1)
-  D(2*N) = 0d0
+  D = 1d0
+  D(N) = (-1d0)**(N-1)
   
-  ! call doffqr
-  call d_orthfact_qr('N',N,Q,D,Z,ITS,INFO)
+  ! call d_orthfact_qr
+  call d_orthfact_qr(.FALSE.,.FALSE.,N,Q,D,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -88,7 +84,7 @@ program example_d_orthhess_rootsofunity
   ! print D
   print*,"Roots computed using d_orthfact_qr:"
   do ii=1,N
-    print*,D(2*ii-1),D(2*ii)
+    print*,D(ii)
   end do
   print*,""
 

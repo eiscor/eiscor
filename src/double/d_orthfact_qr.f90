@@ -71,7 +71,7 @@ subroutine d_orthfact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
 
   ! initialize INFO
   INFO = 0
-  
+ 
   ! check factorization
   call d_orthfact_factorcheck(N,Q,D,INFO)
   if (INFO.NE.0) then
