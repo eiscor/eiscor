@@ -1,6 +1,6 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! example_z_unihess_rootsofunity
+! example_z_unihess_gaussquad
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -14,7 +14,7 @@
 !    eigenvalues using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program example_z_unihess_rootsofunity
+program example_z_unihess_gaussquad
 
   implicit none
   
@@ -22,12 +22,12 @@ program example_z_unihess_rootsofunity
   integer, parameter :: N = 16
   integer :: ii, INFO
   real(8) :: WORK(5*N), Q(3*(N-1)), D(2*N)
-  complex(8) :: H(N,N), Z
+  complex(8) :: H(N,N), Z(1,N)
   integer :: ITS(N-1)
   
   ! print banner
   print*,""
-  print*,"example_z_unihess_rootsofunity:"
+  print*,"example_z_unihess_gaussquad:"
   print*,""
   
   ! initialize H to be an upper hessenberg permutation matrix
@@ -38,7 +38,7 @@ program example_z_unihess_rootsofunity
   H(1,N) = cmplx(1d0,0d0,kind=8)
   
   ! call zuhfqr
-  call z_unihess_qr(.FALSE.,.FALSE.,N,H,WORK,N,Z,ITS,INFO)
+  call z_unihess_qr(.TRUE.,.TRUE.,N,H,WORK,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -47,9 +47,16 @@ program example_z_unihess_rootsofunity
   end if
   
   ! print diag of H
-  print*,"Roots computed using z_unihess_qr:"
+  print*,"Nodes computed using z_unihess_qr:"
   do ii=1,N
     print*,dble(H(ii,ii)),aimag(H(ii,ii))
+  end do
+  print*,""
+  
+  ! print Z
+  print*,"Weights computed using z_unihess_qr:"
+  do ii=1,N
+    print*,abs(Z(1,ii))**2
   end do
   print*,""
   
@@ -67,7 +74,7 @@ program example_z_unihess_rootsofunity
   D(2*N) = 0d0
   
   ! call zuffqr
-  call z_unifact_qr(.FALSE.,.FALSE.,N,Q,D,N,Z,ITS,INFO)
+  call z_unifact_qr(.TRUE.,.TRUE.,N,Q,D,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -76,11 +83,18 @@ program example_z_unihess_rootsofunity
   end if
   
   ! print D
-  print*,"Roots computed using z_unifact_qr:"
+  print*,"Nodes computed using z_unifact_qr:"
   do ii=1,N
     print*,D(2*ii-1),D(2*ii)
   end do
   print*,""
 
+  ! print Z
+  print*,"Weights computed using z_unifact_qr:"
+  do ii=1,N
+    print*,abs(Z(1,ii))**2
+  end do
+  print*,""
+  
     
-end program example_z_unihess_rootsofunity
+end program example_z_unihess_gaussquad

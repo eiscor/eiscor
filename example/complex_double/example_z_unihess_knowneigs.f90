@@ -1,6 +1,5 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! example_z_unihess_rootsofunity
+! example_z_unihess_knowneigs
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -10,14 +9,14 @@
 ! a corresponding unitary eigenvalue problem two different 
 ! ways.
 !
-! 1) Form upper Hessenberg permutation matrix and compute its 
+! 1) Form the corresponding upper-Hessenberg matrix and compute its 
 !    eigenvalues using z_unihess_qr
 !
 ! 2) Construct the factorization directly and compute its 
 !    eigenvalues using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program example_z_unihess_rootsofunity
+program example_z_unihess_knowneigs
 
   implicit none
   
@@ -39,7 +38,7 @@ program example_z_unihess_rootsofunity
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
   print*,""
-  print*,"example_z_unihess_rootsofunity:"
+  print*,"example_z_unihess_knowneigs:"
   print*,""
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -78,11 +77,11 @@ program example_z_unihess_rootsofunity
      call random_number(rp)     
      call random_number(ro)     
      call random_number(rm)     
-     call z_rot3_vec3gen(rm,ro,rp,b1(1),b1(2),b1(3),NRM,INFO)
+     call z_rot3_vec3gen(rm,ro,rp,b1(1),b1(2),b1(3),NRM)
      call random_number(rp)     
      call random_number(ro)     
      call random_number(rm)     
-     call z_rot3_vec3gen(rm,ro,rp,b2(1),b2(2),b2(3),NRM,INFO)
+     call z_rot3_vec3gen(rm,ro,rp,b2(1),b2(2),b2(3),NRM)
      ! fuse on the top of the current Q sequence
      tb(1) = b2(1)
      tb(2) = -b2(2)
@@ -91,7 +90,7 @@ program example_z_unihess_rootsofunity
      b3(2) = -b1(2)
      b3(3) = -b1(3)
      ind = 3*(ii-1)
-     call z_rot3_turnover(tb,b3,Q((ind+1):(ind+3)),INFO)
+     call z_rot3_turnover(tb,b3,Q((ind+1):(ind+3)))
      Q((ind+4):(ind+6)) = b3
      b3 = Q((ind+1):(ind+3))
      Q((ind+1):(ind+3)) = tb
@@ -100,11 +99,11 @@ program example_z_unihess_rootsofunity
         ! set indices
         ind = 3*(jj-1)
         ! through diag
-        call z_rot3_swapdiag('R',D(2*jj+1:2*jj+4),b1,INFO)
-        call z_rot3_turnover(Q((ind+4):(ind+6)),Q((ind+7):(ind+9)),b1,INFO)
-        call z_rot3_swapdiag('R',D(2*jj-1:2*jj+2),b2,INFO)
-        call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
-        call z_rot3_turnover(b3,b1,b2,INFO)
+        call z_rot3_swapdiag(.FALSE.,D(2*jj+1:2*jj+4),b1)
+        call z_rot3_turnover(Q((ind+4):(ind+6)),Q((ind+7):(ind+9)),b1)
+        call z_rot3_swapdiag(.FALSE.,D(2*jj-1:2*jj+2),b2)
+        call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2)
+        call z_rot3_turnover(b3,b1,b2)
         ! update bulges
         tb = b2
         b2 = b3
@@ -113,11 +112,11 @@ program example_z_unihess_rootsofunity
      end do
      ind = 3*(n-3)
      ! fusion at bottom
-     call z_unifact_mergebulge('B',N,ii,N-1,Q,D,b1,INFO)
-     call z_rot3_swapdiag('R',D(2*n-5:2*n-2),b2,INFO)
-     call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2,INFO)
-     call z_unifact_mergebulge('B',N,ii,N-1,Q,D,b3,INFO)
-     call z_unifact_mergebulge('B',N,ii,N-1,Q,D,b2,INFO)
+     call z_unifact_mergebulge(.FALSE.,N,Q,D,b1)
+     call z_rot3_swapdiag(.FALSE.,D(2*n-5:2*n-2),b2)
+     call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2)
+     call z_unifact_mergebulge(.FALSE.,N,Q,D,b3)
+     call z_unifact_mergebulge(.FALSE.,N,Q,D,b2)
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -154,7 +153,7 @@ program example_z_unihess_rootsofunity
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! call dohfqr
-  call z_unihess_qr('N',N,H,Z,ITS,WORK,INFO)
+  call z_unihess_qr(.FALSE.,.FALSE.,N,H,WORK,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -179,7 +178,7 @@ program example_z_unihess_rootsofunity
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! call doffqr
-  call z_unifact_qr('N',N,Q,D,Z,ITS,INFO)
+  call z_unifact_qr(.FALSE.,.FALSE.,N,Q,D,1,Z,ITS,INFO)
   
   ! check INFO
   if (INFO.NE.0) then
@@ -201,5 +200,4 @@ program example_z_unihess_rootsofunity
   end do
   print*,""
 
-    
-end program example_z_unihess_rootsofunity
+end program example_z_unihess_knowneigs
