@@ -7,14 +7,7 @@
 ! This routine chooses N random eigenvalues on the unit 
 ! circle, constructs a unitary matrix with prescribed 
 ! eigenvalues, and computes the N eigenvalues by solving
-! a corresponding unitary eigenvalue problem two different 
-! ways.
-!
-! 1) Form corresponding upper-Hessenberg matrix and compute its 
-!    eigenvalues using d_orthhess_qr
-!
-! 2) Construct the factorization directly and compute its 
-!    eigenvalues using d_orthfact_qr
+! a corresponding unitary eigenvalue problem using d_orthfact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program example_d_orthhess_knowneigs
@@ -24,8 +17,7 @@ program example_d_orthhess_knowneigs
   ! compute variables
   integer, parameter :: N = 16
   integer :: ii, INFO, cpair
-  real(8) :: WORK(3*N), Q(2*(N-1)), D(N)
-  real(8) :: H(N,N), Z
+  real(8) :: Q(2*(N-1)), D(N), Z
   complex(8) :: E(N), V
   integer :: ITS(N-1), ind, jj
   double precision :: rm,rp,pi = 3.141592653589793239d0
@@ -68,6 +60,13 @@ program example_d_orthhess_knowneigs
      iev(ii+1) = -iev(ii)
   end do
 
+  ! print eigenvalues
+  print*,"Eigenvalues:"
+  do ii=1,N
+     print*,rev(ii),iev(ii)
+  end do
+  print*,""
+
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! inverse eigenvalue problem 
   do ii=n-3,1,-2
@@ -107,69 +106,6 @@ program example_d_orthhess_knowneigs
      call d_rot2_fuse(.TRUE.,Q((ind+3):(ind+4)),b3)
   end do
 
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! initialize H to be an upper Hessenberg permutation matrix
-  H = 0d0
-  do ii=1,N
-     H(ii,ii)=1d0
-  end do
-  H(1,1) = Q(1)
-  H(1,2) = Q(2)
-  H(2,1) = -Q(2)
-  H(2,2) = Q(1)
-  do ii=2,N-1
-     temp(1,1) = Q(2*ii-1)
-     temp(1,2) = Q(2*ii)
-     temp(2,1) = -Q(2*ii)
-     temp(2,2) = Q(2*ii-1)
-     do jj = 1,ii+1
-        he = H(jj,ii)*temp(1,1) + H(jj,ii+1)*temp(2,1)
-        H(jj,ii+1) = H(jj,ii)*temp(1,2) + H(jj,ii+1)*temp(2,2)
-        H(jj, ii) = he
-     end do
-  end do
-
-
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! call d_orthhess_qr
-  call d_orthhess_qr(.FALSE.,.FALSE.,N,H,WORK,N,Z,ITS,INFO)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-    print*,"d_orthhess_qr failed."
-    print*,"INFO:",INFO
-  end if
-  
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  print*,"Eigenvalues:"
-  do ii=1,N
-     print*, rev(ii), iev(ii)
-  end do
-  print*,""
-  
-  ! call d_orthhess_real2complex
-  call d_orthhess_real2complex(.FALSE.,N,H,1,Z,E,V,INFO)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-    print*,"d_orthhess_real2complex failed."
-    print*,"INFO:",INFO
-  end if
-  
-  ! print E
-  print*,"Eigenvalues computed using d_orthhess_qr: (real part, imag part, distance to closest exact eigenvalue)"
-  do ii=1,N
-     diff = sqrt(abs(dble(E(ii))-rev(1))**2+abs(aimag(E(ii))-iev(1))**2)
-     do jj=2,N
-        he = sqrt(abs(dble(E(ii))-rev(jj))**2+abs(aimag(E(ii))-iev(jj))**2)
-        if (he < diff) then
-           diff = he
-        end if
-     end do
-     print*,dble(E(ii)),aimag(E(ii)), diff
-  end do
-  print*,""
-
   ! call d_orthfact_qr
   call d_orthfact_qr(.FALSE.,.FALSE.,N,Q,D,N,Z,ITS,INFO)
   
@@ -188,7 +124,7 @@ program example_d_orthhess_knowneigs
     print*,"INFO:",INFO
   end if
   
-  ! print D
+  ! print computed eigenvalues
   print*,"Eigenvalues computed using d_orthfact_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
      diff = sqrt(abs(dble(E(ii))-rev(1))**2+abs(aimag(E(ii))-iev(1))**2)
@@ -201,6 +137,5 @@ program example_d_orthhess_knowneigs
      print*,dble(E(ii)),aimag(E(ii)), diff
   end do
   print*,""
-
     
 end program example_d_orthhess_knowneigs

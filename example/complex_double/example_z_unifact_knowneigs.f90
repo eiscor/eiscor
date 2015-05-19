@@ -1,6 +1,6 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! example_z_unihess_knowneigs
+! example_z_unifact_knowneigs
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -10,7 +10,7 @@
 ! a corresponding unitary eigenvalue problem using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program example_z_unihess_knowneigs
+program example_z_unifact_knowneigs
 
   implicit none
   
@@ -30,7 +30,7 @@ program example_z_unihess_knowneigs
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
   print*,""
-  print*,"example_z_unihess_knowneigs:"
+  print*,"example_z_unifact_knowneigs:"
   print*,""
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -142,4 +142,4 @@ program example_z_unihess_knowneigs
   end do
   print*,""
 
-end program example_z_unihess_knowneigs
+end program example_z_unifact_knowneigs
