@@ -5,8 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the eigenvalues and optionally eigenvectors
-! of a real orthogonal upper hessenberg matrix.
+! This routine computes the real Schur factorization
+! of a real orthogonal upper-Hessenberg matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -24,7 +24,8 @@
 !                    dimension of matrix
 !
 !  H               REAL(8) array of dimension (N,N)
-!                    orthogonal hessenberg matrix, assumed that H(ii,jj) = 0 for |ii-jj| > 0
+!                    orthogonal hessenberg matrix, assumed that H(ii,jj) = 0 
+!                    for |ii-jj| > 0
 !                    on exit contains a diagonal matrix whose entries are the 
 !                    eigenvalues of H
 !
@@ -76,7 +77,8 @@ subroutine d_orthhess_qr(VEC,ID,N,H,WORK,M,Z,ITS,INFO)
   if (INFO.NE.0) then 
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthhess_factor failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthhess_factor failed" &
+      ,INFO,INFO)
     end if 
     INFO = 1
     return
