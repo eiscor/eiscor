@@ -1,5 +1,5 @@
 # eiscor - EIgenSolvers based on unitary CORe transformations #
-This package is a collection of Fortran 90 subroutines for accurately and efficiently solving matrix eigenvalue problems using essentially 2x2 matrices.
+This package is a collection of Fortran 90 subroutines for accurately and efficiently solving matrix eigenvalue problems using essentially 2x2 unitary matrices.
 
 ## Authors ##
 - [Jared L. Aurentz](https://www.maths.ox.ac.uk/people/jared.aurentz), University of Oxford, United Kingdom
