@@ -1,4 +1,4 @@
-# eiscor - EIgenSolvers based on unitary CORe transformations #
+# eiscor - eigensolvers based on unitary core transformations #
 This package is a collection of Fortran 90 subroutines for accurately and efficiently solving matrix eigenvalue problems using essentially 2x2 unitary matrices.
 
 ## Authors ##
