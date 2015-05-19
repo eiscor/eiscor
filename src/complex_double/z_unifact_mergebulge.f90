@@ -29,6 +29,8 @@
 !
 !  B               REAL(8) array of dimension (3)
 !                    generators for rotation that will be fused
+!                    if TOP = .TRUE. contains diagonal rotation
+!                    needed to adjust the phase
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
@@ -38,8 +40,7 @@ subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
   ! input variables
   logical, intent(in) :: TOP
   integer, intent(in) :: N
-  real(8), intent(inout) :: Q(3*(N-1)),D(2*N)
-  real(8), intent(in) :: B(3)
+  real(8), intent(inout) :: Q(3*(N-1)), D(2*N), B(3)
   
   ! compute variables
   integer :: k,ii
@@ -73,6 +74,11 @@ subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
     ! compute phase
     call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
 
+    ! store in B
+    B(1) = phr
+    B(2) = phi
+    B(3) = 0d0
+! not correct from here down
     ! update Q
     c2r = c3r*phr + c3i*phi
     c2i = -c3r*phi + c3i*phr
