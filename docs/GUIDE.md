@@ -1,8 +1,8 @@
-# Eiscor guide #
+# eiscor guide #
 Jared L. Aurentz and Thomas Mach, May 2015
 
 ## Introduction ##
-__Eiscor__ is a collection of Fortran 90 subroutines for accurately and 
+__eiscor__ is a collection of Fortran 90 subroutines for accurately and 
 efficiently solving matrix eigenvalue problems using unitary core 
 transformations. These algorithms are the result of an ongoing series of 
 papers written by Jared L. Aurentz, Thomas Mach, Raf Vandebril and 
