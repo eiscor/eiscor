@@ -5,16 +5,16 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the real Schur factorization
-! of a real orthogonal upper-Hessenberg matrix.
+! This routine computes the real Schur factorization of a real 
+! orthogonal upper-Hessenberg matrix H.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute eigenvectors
-!                    .FALSE.: no eigenvectors
+!                    .TRUE.: compute schurvectors
+!                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
 !                    .TRUE.: initialize to Z to identity
@@ -24,10 +24,9 @@
 !                    dimension of matrix
 !
 !  H               REAL(8) array of dimension (N,N)
-!                    orthogonal hessenberg matrix, assumed that H(ii,jj) = 0 
-!                    for |ii-jj| > 0
-!                    on exit contains a diagonal matrix whose entries are the 
-!                    eigenvalues of H
+!                    orthogonal hessenberg matrix, assumed that 
+!                    H(ii,jj) = 0 for |ii-jj| > 0
+!                    on exit H is a block diagonal matrix
 !
 !  WORK            REAL(8) array of dimension (3*N)
 !                    work space for eigensolver
@@ -38,6 +37,7 @@
 ! OUTPUT VARIABLES:
 !
 !  Z               REAL(8) array of dimension (M,N)
+!                    components of schurvectors
 !                    if VEC = .FALSE. unused
 !                    if VEC = .TRUE. and ID = .TRUE. initializes Z to I 
 !                    if VEC = .TRUE. and ID = .FALSE. assumes Z initialized

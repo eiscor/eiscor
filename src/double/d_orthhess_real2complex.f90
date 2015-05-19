@@ -5,16 +5,16 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine converts the real Schur of a real orthogonal matrix
-! to complex Schur form.
+! This routine converts the real Schur factorization of a real
+! orthogonal matrix to the complex Schur factorization.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute eigenvectors
-!                    .FALSE.: no eigenvectors
+!                    .TRUE.: compute schurvectors
+!                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -36,10 +36,9 @@
 !
 !  V               COMPLEX(8) array of dimension (M,N)
 !                    if VEC = .FALSE. unused
-!                    if VEC = .TRUE. contains complex Schur vectors 
+!                    if VEC = .TRUE. contains complex schurvectors 
 !
 !  INFO            INTEGER
-!                    INFO = 1 implies invalid real Schur form
 !                    INFO = 0 implies successful computation
 !                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies H is invalid
@@ -69,7 +68,7 @@ subroutine d_orthhess_real2complex(VEC,N,H,M,Z,E,V,INFO)
   ! check factorization
     call d_2Darray_check(N,N,H,flg)
   if (.NOT.flg) then
-    INFO = -2
+    INFO = -3
     ! print error message in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__ &
@@ -145,7 +144,7 @@ subroutine d_orthhess_real2complex(VEC,N,H,M,Z,E,V,INFO)
 
       ! check to see that next rotation is identity
       if ((ind.LT.(N-1)).AND.(H(ind+1,ind+2).NE.0)) then
-        INFO = 1
+        INFO = -3
         ! print error message in debug mode
         if (DEBUG) then
           call u_infocode_check(__FILE__,__LINE__  &

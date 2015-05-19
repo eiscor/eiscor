@@ -5,18 +5,18 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine converts the real Schur of a real orthogonal matrix
-! to complex Schur form. The real orthogonal matrix is stored as the
-! product of N-1 Givens' rotations and a diagonal matrix with entries
-! +/- 1.
+! This routine converts the real Schur factorization of a real 
+! orthogonal matrix to the complex Schur factorization. The real 
+! orthogonal matrix is stored as the product of N-1 Givens rotations 
+! and a diagonal matrix with entries +/- 1.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute eigenvectors
-!                    .FALSE.: no eigenvectors
+!                    .TRUE.: compute schurvectors
+!                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -32,7 +32,7 @@
 !
 !  Z               REAL(8) array of dimension (M,N)
 !                    if VEC = .FALSE. unused
-!                    if VEC = .TRUE. contains real Schur vectors 
+!                    if VEC = .TRUE. contains real schurvectors 
 !
 ! OUTPUT VARIABLES:
 !
@@ -41,10 +41,9 @@
 !
 !  V               COMPLEX(8) array of dimension (M,N)
 !                    if VEC = .FALSE. unused
-!                    if VEC = .TRUE. contains complex Schur vectors 
+!                    if VEC = .TRUE. contains complex schurvectors 
 !
 !  INFO            INTEGER
-!                    INFO = 1 implies invalid real Schur form
 !                    INFO = 0 implies successful computation
 !                    INFO = -2 implies N is invalid
 !                    INFO = -3 implies Q is invalid
@@ -151,7 +150,7 @@ subroutine d_orthfact_real2complex(VEC,N,Q,D,M,Z,E,V,INFO)
 
       ! check to see that next rotation is identity
       if ((ind.LT.(N-1)).AND.(Q(2*ind+2).NE.0)) then
-        INFO = 1
+        INFO = -3
         ! print error message in debug mode
         if (DEBUG) then
           call u_infocode_check(__FILE__,__LINE__  &

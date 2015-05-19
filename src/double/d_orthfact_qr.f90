@@ -5,17 +5,17 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the eigenvalues and optionally eigen(Schur)vectors of 
-! an orthogonal upper hessenberg matrix that is stored as a product of 
-! givens rotations and a diagonal matrix.
+! This routine computes the real Schur factorization of a real 
+! orthogonal upper-Hessenberg matrix that is stored as a product of 
+! N-1 Givens rotations and a diagonal matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute eigenvectors
-!                    .FALSE.: no eigenvectors
+!                    .TRUE.: compute schurvectors
+!                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
 !                    .TRUE.: initialize to Z to identity
@@ -36,6 +36,7 @@
 ! OUTPUT VARIABLES:
 !
 !  Z               REAL(8) array of dimension (M,N)
+!                    components of schurvectors
 !                    if VEC = .FALSE. unused
 !                    if VEC = .TRUE. and ID = .TRUE. initializes Z to I 
 !                    if VEC = .TRUE. and ID = .FALSE. assumes Z initialized
