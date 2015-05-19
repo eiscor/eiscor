@@ -7,14 +7,7 @@
 ! This routine chooses N random eigenvalues on the unit 
 ! circle, constructs a unitary matrix with prescribed 
 ! eigenvalues, and computes the N eigenvalues by solving
-! a corresponding unitary eigenvalue problem two different 
-! ways.
-!
-! 1) Form the corresponding upper-Hessenberg matrix and compute its 
-!    eigenvalues using z_unihess_qr
-!
-! 2) Construct the factorization directly and compute its 
-!    eigenvalues using z_unifact_qr
+! a corresponding unitary eigenvalue problem using z_unifact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program example_z_unihess_knowneigs
@@ -24,8 +17,8 @@ program example_z_unihess_knowneigs
   ! compute variables
   integer, parameter :: N = 16
   integer :: ii, INFO
-  real(8) :: WORK(5*N), Q(3*(N-1)), D(2*N)
-  complex(8) :: H(N,N), Z, he, temp(2,2)
+  real(8) :: Q(3*(N-1)), D(2*N)
+  complex(8) :: Z, he, temp(2,2)
   integer :: ITS(N-1), ind, jj
   double precision :: rm,ro,rp,pi = 3.141592653589793239d0
   double precision :: diff, her
@@ -33,8 +26,6 @@ program example_z_unihess_knowneigs
 
   ! real and imag part of eigenvalues
   double precision :: rev(N), iev(N)
-
-
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
@@ -121,31 +112,6 @@ program example_z_unihess_knowneigs
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! initialize H to be an upper Hessenberg permutation matrix
-  H = 0d0
-  do ii=1,N
-     H(ii,ii)=1d0
-  end do
-  H(1,1) = cmplx(Q(1),Q(2),kind=8)
-  H(1,2) = Q(3)
-  H(2,1) = -Q(3)
-  H(2,2) = cmplx(Q(1),-Q(2),kind=8)
-  do ii=2,N-1
-     temp(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
-     temp(1,2) = Q(3*ii)
-     temp(2,1) = -Q(3*ii)
-     temp(2,2) = cmplx(Q(3*ii-2),-Q(3*ii-1),kind=8)
-     do jj = 1,ii+1
-        he = H(jj,ii)*temp(1,1) + H(jj,ii+1)*temp(2,1)
-        H(jj,ii+1) = H(jj,ii)*temp(1,2) + H(jj,ii+1)*temp(2,2)
-        H(jj,ii) = he
-     end do
-  end do
-  do ii=1,N
-     H(:,ii) = H(:,ii)*cmplx(D(2*ii-1),D(2*ii),kind=8)
-  end do
-
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   print*,"Eigenvalues:"
   do ii=1,N
      print*, rev(ii), iev(ii)
@@ -153,32 +119,7 @@ program example_z_unihess_knowneigs
   print*,""
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! call dohfqr
-  call z_unihess_qr(.FALSE.,.FALSE.,N,H,WORK,1,Z,ITS,INFO)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-    print*,"z_unihess_qr failed."
-    print*,"INFO:",INFO
-  end if
-  
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! print diag of H
-  print*,"Eigenvalues computed using z_unihess_qr: (real part, imag part, distance to closest exact eigenvalue)"
-  do ii=1,N
-     diff = sqrt(abs(dble(H(ii,ii))-rev(1))**2+abs(aimag(H(ii,ii))-iev(1))**2)
-     do jj=2,N
-        her = sqrt(abs(dble(H(ii,ii))-rev(jj))**2+abs(aimag(H(ii,ii))-iev(jj))**2)
-        if (her < diff) then
-           diff = her
-        end if
-     end do
-     print*,dble(H(ii,ii)),aimag(H(ii,ii)),diff
-  end do
-  print*,""
-  
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! call doffqr
+  ! call z_unifact_qr
   call z_unifact_qr(.FALSE.,.FALSE.,N,Q,D,1,Z,ITS,INFO)
   
   ! check INFO
@@ -187,7 +128,7 @@ program example_z_unihess_knowneigs
     print*,"INFO:",INFO
   end if
   
-  ! print D
+  ! print eigenvalues
   print*,"Eigenvalues computed using z_unifact_qr: (real part, imag part, distance to closest exact eigenvalue)"
   do ii=1,N
      diff = sqrt(abs(D(2*ii-1)-rev(1))**2+abs(D(2*ii)-iev(1))**2)
