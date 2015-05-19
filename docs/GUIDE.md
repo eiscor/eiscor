@@ -16,7 +16,7 @@ __eiscor-v0.2.0__ has the following features:
 
 ### Changes from previous version ###
  - changed to a more intuitive naming convention
- - added support for the computation of Gauss-Szego quadrature rules
+ - added support for the computation of Gauss-Szegő quadrature rules
 
 ## Expert routines ##
 Every subroutine in __eiscor__ contains a comment block that describes what 
