@@ -5,16 +5,16 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the eigenvalues and optionally eigenvectors
-! of a real orthogonal upper hessenberg matrix.
+! This routine computes the real Schur factorization of a real 
+! orthogonal upper-Hessenberg matrix H.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute eigenvectors
-!                    .FALSE.: no eigenvectors
+!                    .TRUE.: compute schurvectors
+!                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
 !                    .TRUE.: initialize to Z to identity
@@ -24,9 +24,9 @@
 !                    dimension of matrix
 !
 !  H               REAL(8) array of dimension (N,N)
-!                    orthogonal hessenberg matrix, assumed that H(ii,jj) = 0 for |ii-jj| > 0
-!                    on exit contains a diagonal matrix whose entries are the 
-!                    eigenvalues of H
+!                    orthogonal hessenberg matrix, assumed that 
+!                    H(ii,jj) = 0 for |ii-jj| > 0
+!                    on exit H is a block diagonal matrix
 !
 !  WORK            REAL(8) array of dimension (3*N)
 !                    work space for eigensolver
@@ -37,6 +37,7 @@
 ! OUTPUT VARIABLES:
 !
 !  Z               REAL(8) array of dimension (M,N)
+!                    components of schurvectors
 !                    if VEC = .FALSE. unused
 !                    if VEC = .TRUE. and ID = .TRUE. initializes Z to I 
 !                    if VEC = .TRUE. and ID = .FALSE. assumes Z initialized
@@ -76,7 +77,8 @@ subroutine d_orthhess_qr(VEC,ID,N,H,WORK,M,Z,ITS,INFO)
   if (INFO.NE.0) then 
     ! print error in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"d_orthhess_factor failed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"d_orthhess_factor failed" &
+      ,INFO,INFO)
     end if 
     INFO = 1
     return
