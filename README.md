@@ -28,7 +28,7 @@ Analysis. To appear.
 SIAM Journal on Matrix Analysis and Applications. To appear.
  3. Thomas Mach and Raf Vandebril. [_On deﬂations in extended QR Algorithms._]
 (http://epubs.siam.org/doi/abs/10.1137/130935665) SIAM Journal on Matrix 
-Analysis and Applications. Vol. 35, No. 2, pp. 559–579. SIAM. 2014. 
+Analysis and Applications. Vol. 35, No. 2, pp. 559–579. 2014. 
  4. Raf Vandebril and David S. Watkins. [_An extension of the QZ algorithm 
 beyond the Hessenberg-upper triangular pencil._](http://etna.mcs.kent.edu/
 volumes/2011-2020/vol40/abstract.php?vol=40&pages=17-35) Electronic 
