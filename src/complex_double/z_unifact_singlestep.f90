@@ -51,7 +51,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   ! compute variables
   integer :: ii, ind1, ind2
   real(8) :: s1, s2, ar, ai, br, bi, nrm
-  real(8) :: bulge(3),binv(3)
+  real(8) :: bulge(3), binv(3)
   complex(8) :: shift
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
   
@@ -65,7 +65,8 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   ! wilkinson shift
   else
     ! get 2x2 block
-    call z_unifact_2x2diagblock(.FALSE.,Q((3*N-8):(3*N-3)),D((2*N-3):(2*N)),block) 
+    call z_unifact_2x2diagblock(.FALSE.,Q((3*N-8):(3*N-3)),D((2*N-3):(2*N)) &
+    ,block) 
       
     ! compute eigenvalues and eigenvectors
     t1 = block
@@ -96,7 +97,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   binv(3) = -bulge(3)
   
   ! fusion at top
-  call z_unifact_mergebulge(.TRUE.,N,Q,D,binv)
+  call z_unifact_mergebulge(.TRUE.,Q(1:3),D(1:4),binv)
   
   ! main chasing loop
   do ii=1,(N-2)
@@ -110,12 +111,31 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
       Z(:,ii:(ii+1)) = matmul(Z(:,ii:(ii+1)),t1)
     end if
      
+    ! update eigenvectors
+    if (VEC.AND.(ii.EQ.1)) then
+      Z(:,1) = Z(:,1)*cmplx(binv(1),binv(2),kind=8)
+      Z(:,2) = Z(:,2)*cmplx(binv(1),-binv(2),kind=8)
+    end if
+     
     ! set indices
     ind1 = 2*(ii-1) + 1
     ind2 = ind1+3
      
     ! through diag
     call z_rot3_swapdiag(.FALSE.,D(ind1:ind2),bulge)
+
+    ! correct D from fusion at top
+    if (ii.EQ.1) then
+
+      ! update D(1:2)
+      t1(1,1) = cmplx(D(1),D(2),kind=8)*cmplx(binv(1),binv(2),kind=8)
+      call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),D(1),D(2),nrm)
+
+      ! update D(3:4)
+      t1(1,1) = cmplx(D(3),D(4),kind=8)*cmplx(binv(1),-binv(2),kind=8)
+      call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),D(3),D(4),nrm)
+
+    end if
 
     ! set indices
     ind1 = 3*(ii-1) + 1
@@ -136,6 +156,6 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   end if
   
   ! fusion at bottom
-  call z_unifact_mergebulge(.FALSE.,N,Q,D,bulge)
+  call z_unifact_mergebulge(.FALSE.,Q((3*N-5):(3*N-3)),D((2*N-3):(2*N)),bulge)
   
 end subroutine z_unifact_singlestep
