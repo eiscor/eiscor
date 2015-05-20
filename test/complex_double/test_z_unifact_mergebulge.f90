@@ -9,10 +9,8 @@
 ! The following tests are run:
 !
 ! Matrix:
-! Q1=[0.8, 0.6, 0.0], 
-! Q2=[-1/sqrt(3),1/sqrt(3), 1/sqrt(3)]
-! Q3=[0.3,0.4,-sqrt(3)/2], 
-! D = diag([1, 0.8+i0,6, 1/sqrt(2)+i/sqrt(2), 1])
+! Q = [-1/sqrt(3), 1/sqrt(3), 1/sqrt(3)]
+! D = [0, 1, 0, 1]
 !
 ! 1) merge at top  
 ! 2) merge at bottom
@@ -27,8 +25,7 @@ program test_z_unifact_mergebulge
   real(8) :: tol = 1d1*EISCOR_DBL_EPS ! accuracy (tolerance)
   
   ! compute variables
-  integer :: N = 4
-  real(8) :: Q(9), Qs(9), D(8), Ds(8), B(3), C(3), nul
+  real(8) :: Q(3), Qs(3), D(4), Ds(4), B(3), C(3), nul
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -42,85 +39,53 @@ program test_z_unifact_mergebulge
 
   !!!!!!!!!!!!!!!!!!!!
   ! check 1)
-  Q(1) = 8d-1
-  Q(2) = 6d-1
-  Q(3) = 0d0
-  Q(4) = -1d0/sqrt(3d0)
-  Q(5) = 1d0/sqrt(3d0)
-  Q(6) = 1d0/sqrt(3d0)
-  Q(7) = 3d-1
-  Q(8) = 4d-1
-  Q(9) = -sqrt(3d0)/2d0
+  Q(1) = -1d0/sqrt(3d0)
+  Q(2) = 1d0/sqrt(3d0)
+  Q(3) = 1d0/sqrt(3d0)
   Qs = Q
   
-  D(1) = 1d0
-  D(2) = 0d0
-  D(3) = 0.8d0
-  D(4) = 0.6d0
-  D(5) = 1d0/sqrt(2d0)
-  D(6) = 1d0/sqrt(2d0)
-  D(7) = 1d0
-  D(8) = 0d0
+  D(1) = 0d0
+  D(2) = 1d0
+  D(3) = 0d0
+  D(4) = 1d0
   Ds = D
-
-  nul = 0d0
  
-  B(1) = 1/sqrt(3d0)
+  B(1) = -1/sqrt(3d0)
   B(2) = -1/sqrt(3d0)
   B(3) = -1/sqrt(3d0)
 
-  call z_unifact_mergebulge(.TRUE.,N,Q,D,B)
+  call z_unifact_mergebulge(.TRUE.,Q,D,B)
 
-  if (abs(Q(1)+1d0/sqrt(3d0))>tol) then
+  if (abs(Q(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-1d0/sqrt(3d0))>tol) then
+  if (abs(Q(2))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(3)-1d0/sqrt(3d0))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(4)-0.2d0/sqrt(3d0))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(5)+1.4d0/sqrt(3d0))>tol) then
-     call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(6)-1d0/sqrt(3d0))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(7)+0.48d0)>tol) then
-     call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(8)+0.14d0)>tol) then
-     call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(9)+sqrt(3d0)/2d0)>tol) then
+  if (abs(Q(3))>tol) then
     call u_test_failed(__LINE__)
   end if
 
-  if (abs(D(1)+0.8d0)>tol) then
+  if (abs(D(1))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(2)+0.6d0)>tol) then
+  if (abs(D(2)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(3)-0.8d0)>tol) then
+  if (abs(D(3))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(4)-0.6d0)>tol) then
+  if (abs(D(4)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(5)-1d0/sqrt(2d0))>tol) then
+
+  if (abs(B(1)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(6)-1d0/sqrt(2d0))>tol) then
+  if (abs(B(2))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(7)+0.8d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(D(8)-0.6d0)>tol) then
+  if (abs(B(3))>tol) then
     call u_test_failed(__LINE__)
   end if
 
@@ -128,58 +93,32 @@ program test_z_unifact_mergebulge
   ! check 2)
   Q = Qs
   D = Ds
-  call z_unifact_mergebulge(.FALSE.,N,Q,D,B)
+  B(1) = -1/sqrt(3d0)
+  B(2) = -1/sqrt(3d0)
+  B(3) = -1/sqrt(3d0)
 
-  if (abs(Q(1)-0.8d0)>tol) then
-    call u_test_failed(__LINE__)
+  call z_unifact_mergebulge(.FALSE.,Q,D,B)
+
+  if (abs(Q(1)-1d0)>tol) then
+     call u_test_failed(__LINE__)
   end if
-  if (abs(Q(2)-0.6d0)>tol) then
-    call u_test_failed(__LINE__)
+  if (abs(Q(2))>tol) then
+     call u_test_failed(__LINE__)
   end if
   if (abs(Q(3))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(4)+1d0/sqrt(3d0))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(5)-1d0/sqrt(3d0))>tol) then
-     call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(6)-1d0/sqrt(3d0))>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(7)-0.32957819226739016d0)>tol) then
-     call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(8)+0.25118898775644621d0)>tol) then
-     call u_test_failed(__LINE__)
-  end if
-  if (abs(Q(9)-0.91010016350490297d0)>tol) then
      call u_test_failed(__LINE__)
   end if
   
-  if (abs(D(1)-1.0d0)>tol) then
+  if (abs(D(1))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(2))>tol) then
+  if (abs(D(2)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(3)-0.8d0)>tol) then
+  if (abs(D(3))>tol) then
     call u_test_failed(__LINE__)
   end if
-  if (abs(D(4)-0.6d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(D(5)+0.96726920535125560d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(D(6)-0.25375240763222456d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(D(7)+0.50453256615763697d0)>tol) then
-    call u_test_failed(__LINE__)
-  end if
-  if (abs(D(8)+0.86339266251595492d0)>tol) then
+  if (abs(D(4)-1d0)>tol) then
     call u_test_failed(__LINE__)
   end if
 
