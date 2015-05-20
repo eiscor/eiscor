@@ -168,9 +168,9 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       ! set G2 as G2^-1 
       G2(2) = -G2(2)
       G2(3) = -G2(3)
-    
+! not finished from here down
       ! merge from left
-      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G2)
+      call z_upr1fact_mergebulge(.TRUE.,P(1),Q(1:3),D1(1:4),G2)
       
       ! set G1 for turnover
       G1(1) = Q(1)
