@@ -24,10 +24,11 @@ program benchmark_z_rot3_vs_rot4_turn
   integer, parameter :: num_trials = 1000000 ! 1 mio trials
 
   ! compute variables
+  integer, parameter :: M = 1000
   integer :: ii, n, ind, jj
   integer, allocatable :: seed(:)
-  real(8) :: Q(4*99), B(4), nrm
-  real(8) :: D(2*100)
+  real(8) :: Q(4*(M-1)), B(4), nrm
+  real(8) :: D(2*M)
   real(8) :: rot3_time, rot4_time
   
   ! timing variables
@@ -56,7 +57,7 @@ program benchmark_z_rot3_vs_rot4_turn
   ! free memory        
   deallocate(seed)
   
-  do ii=1,99
+  do ii=1,M-1
      ind = 3*ii-2
      call random_number(Q(ind))
      call random_number(Q(ind+1))
@@ -69,7 +70,7 @@ program benchmark_z_rot3_vs_rot4_turn
   call random_number(B(3))
   call z_rot3_vec3gen(B(1),B(2),B(3),B(1),B(2),B(3),nrm)
 
-  do ii=1,100
+  do ii=1,M
      ind = 2*ii-1
      call random_number(D(ind))
      call random_number(D(ind+1))
@@ -82,7 +83,7 @@ program benchmark_z_rot3_vs_rot4_turn
 
   ! loop
   do ii=1,num_trials
-     jj = mod(ii,98)+1
+     jj = mod(ii,M-1)+1
      ind = 2*jj-1;
      ! through diag
      call z_rot3_swapdiag(.FALSE.,D(ind:ind+3),B)
@@ -112,7 +113,7 @@ program benchmark_z_rot3_vs_rot4_turn
   ! print banner
   call u_test_banner(__FILE__) 
 
-  do ii=1,99
+  do ii=1,M-1
      ind = 4*ii-3
      call random_number(Q(ind))
      call random_number(Q(ind+1))
@@ -132,7 +133,7 @@ program benchmark_z_rot3_vs_rot4_turn
   ! loop
   do ii=1,num_trials
      ! through Q
-     jj = mod(ii,98)+1
+     jj = mod(ii,M-1)+1
      ind = 4*jj-3;
      call z_rot4_turnover(Q(ind:ind+3),Q(ind+4:ind+7),B)     
       
