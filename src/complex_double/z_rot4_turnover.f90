@@ -34,7 +34,7 @@ subroutine z_rot4_turnover(G1,G2,G3)
   real(8), intent(inout) :: G1(4), G2(4), G3(3)
 
   ! compute variables
-  real(8) :: nrm, Hr(3,2), Hi(3,2)
+  real(8) :: nrm, Hr(3,3), Hi(3,3)
 
   real(8) :: c1r, c1i, s1r, s1i
   real(8) :: c2r, c2i, s2r, s2i
@@ -59,7 +59,7 @@ subroutine z_rot4_turnover(G1,G2,G3)
   c3i = G3(2)
   s3 = G3(3)
  
-  ! first two columns
+  ! first column
   Hr(1,1) = c1r*c3r - c1i*c3i - c2i*s3*s1i - c2r*s3*s1r
   Hr(2,1) = c3r*s1r - c3i*s1i + c1i*c2i*s3 + c1r*c2r*s3
   Hr(3,1) = s3*s2r
@@ -68,41 +68,68 @@ subroutine z_rot4_turnover(G1,G2,G3)
   Hi(2,1) = c3i*s1r + c3r*s1i - c1i*c2r*s3 + c2i*c1r*s3
   Hi(3,1) = s3*s2i
 
-  Hr(1,2) = -c1r*s3 - c3i*(c2i*s1r - c2r*s1i) - c3r*(c2i*s1i + c2r*s1r)
-  Hr(2,2) = c3r*(c1i*c2i + c1r*c2r) - c3i*(c1i*c2r - c2i*c1r) - s3*s1r
-  Hr(3,2) = c3i*s2i + c3r*s2r
+  ! second column
+!  Hr(1,2) = -c1r*s3 - c3i*(c2i*s1r - c2r*s1i) - c3r*(c2i*s1i + c2r*s1r)
+!  Hr(2,2) = c3r*(c1i*c2i + c1r*c2r) - c3i*(c1i*c2r - c2i*c1r) - s3*s1r
+!  Hr(3,2) = c3i*s2i + c3r*s2r
 
-  Hi(1,2) = c3i*(c2i*s1i + c2r*s1r) - c1i*s3 - c3r*(c2i*s1r - c2r*s1i)
-  Hi(2,2) = -s3*s1i - c3i*(c1i*c2i + c1r*c2r) - c3r*(c1i*c2r - c2i*c1r)
-  Hi(3,2) = c3r*s2i - c3i*s2r
+!  Hi(1,2) = c3i*(c2i*s1i + c2r*s1r) - c1i*s3 - c3r*(c2i*s1r - c2r*s1i)
+!  Hi(2,2) = -s3*s1i - c3i*(c1i*c2i + c1r*c2r) - c3r*(c1i*c2r - c2i*c1r)
+!  Hi(3,2) = c3r*s2i - c3i*s2r
+
+  ! last column
+  Hr(1,3) = s1r*s2r - s1i*s2i
+  Hr(2,3) = c1i*s2i - c1r*s2r
+  Hr(3,3) = c2r
+
+  Hi(1,3) = -s1i*s2r - s2i*s1r
+  Hi(2,3) = c1i*s2r + c1r*s2i
+  Hi(3,3) = -c2i
 
   ! first rotation
   call z_rot3_vec4gen(Hr(2,1),Hi(2,1),Hr(3,1),Hi(3,1),c4r,c4i,s4,nrm)
 
-  ! update H
+  ! update first column of H
   nrm = Hi(2,1)*c4i + Hr(2,1)*c4r + Hr(3,1)*s4
   Hi(2,1) = Hi(2,1)*c4r - Hr(2,1)*c4i + Hi(3,1)*s4
   Hr(2,1) = nrm
 
-  c6r = Hi(2,2)*c4i + Hr(2,2)*c4r + Hr(3,2)*s4
-  s6r = Hr(3,2)*c4r - Hi(3,2)*c4i - Hr(2,2)*s4
-  c6i = Hi(2,2)*c4r - Hr(2,2)*c4i + Hi(3,2)*s4
-  s6i = Hi(3,2)*c4r + Hr(3,2)*c4i - Hi(2,2)*s4
-  Hr(2,2) = c6r
-  Hi(2,2) = c6i
-  Hr(3,2) = s6r
-  Hi(3,2) = s6i
+  ! update second column of H
+ ! c6r = Hi(2,2)*c4i + Hr(2,2)*c4r + Hr(3,2)*s4
+ ! s6r = Hr(3,2)*c4r - Hi(3,2)*c4i - Hr(2,2)*s4
+ ! c6i = Hi(2,2)*c4r - Hr(2,2)*c4i + Hi(3,2)*s4
+ ! s6i = Hi(3,2)*c4r + Hr(3,2)*c4i - Hi(2,2)*s4
+ ! Hr(2,2) = c6r
+ ! Hi(2,2) = c6i
+ ! Hr(3,2) = s6r
+ ! Hi(3,2) = s6i
+
+  ! update third column of H
+  c6r = Hi(2,3)*c4i + Hr(2,3)*c4r + Hr(3,3)*s4
+  s6r = Hr(3,3)*c4r - Hi(3,3)*c4i - Hr(2,3)*s4
+  c6i = Hi(2,3)*c4r - Hr(2,3)*c4i + Hi(3,3)*s4
+  s6i = Hi(3,3)*c4r + Hr(3,3)*c4i - Hi(2,3)*s4
+  Hr(2,3) = c6r
+  Hi(2,3) = c6i
+  Hr(3,3) = s6r
+  Hi(3,3) = s6i
 
   ! second rotation
   call z_rot4_vec4gen(Hr(1,1),Hi(1,1),Hr(2,1),Hi(2,1),c5r,c5i,s5r,s5i,nrm)
   
-  ! update H
-  nrm = Hr(2,2)*c5r - Hi(2,2)*c5i + Hi(1,2)*s5i - Hr(1,2)*s5r
-  Hi(2,2) = Hi(2,2)*c5r + Hr(2,2)*c5i - Hi(1,2)*s5r - Hr(1,2)*s5i
-  Hr(2,2) = nrm
+  ! update second column of H
+!  nrm = Hr(2,2)*c5r - Hi(2,2)*c5i + Hi(1,2)*s5i - Hr(1,2)*s5r
+!  Hi(2,2) = Hi(2,2)*c5r + Hr(2,2)*c5i - Hi(1,2)*s5r - Hr(1,2)*s5i
+!  Hr(2,2) = nrm
+
+  ! update third column of H
+  nrm = Hr(2,3)*c5r - Hi(2,3)*c5i + Hi(1,3)*s5i - Hr(1,3)*s5r
+  Hi(2,3) = Hi(2,3)*c5r + Hr(2,3)*c5i - Hi(1,3)*s5r - Hr(1,3)*s5i
+  Hr(2,3) = nrm
 
   ! third rotation
-  call z_rot4_vec4gen(Hr(2,2),Hi(2,2),Hr(3,2),Hi(3,2),c6r,c6i,s6r,s6i,nrm)
+!  call z_rot4_vec4gen(Hr(2,2),Hi(2,2),Hr(3,2),Hi(3,2),c6r,c6i,s6r,s6i,nrm)
+  call z_rot4_vec4gen(Hr(3,3),-Hi(3,3),-Hr(2,3),Hi(2,3),c6r,c6i,s6r,s6i,nrm)
   
   ! set outputs
   G1(1) = c5r
