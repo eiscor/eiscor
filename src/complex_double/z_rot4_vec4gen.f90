@@ -21,10 +21,10 @@
 !
 ! If only one of AR, AI, BR or BI = +/-INF then the corresponding AR, AI, BR 
 ! or BI is first set to +/-1 and the remaining terms are set to 0. Then the 
-! CR, CI and S are computed from the new vector containing +/-1 and 0. In 
-! this case NRM is always set to INF.
+! CR, CI, SR, and SI are computed from the new vector containing +/-1 and 0.
+! In this case NRM is always set to INF.
 !
-! If more than one of AR, AI, BR or BI = +/- INF then CR = CI = S = NRM = NAN
+! If more than one of AR, AI, BR, or BI = +/- INF then CR = CI = S = NRM = NAN
 !
 ! If AR = AI = BR = BI = 0 then CR = 1, CI = S = 0 and NRM = 0.
 !
@@ -32,17 +32,18 @@
 ! 
 ! EXCEPTIONAL CASES
 !
-!    AR   |    AI   |    BR   |    BI   |    CR   |    CI   |    SR   |    SI   |   NRM 
-! ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
-!   0d0   |   0d0   |   0d0   |   0d0   |   1d0   |   0d0   |   0d0   |   0d0
-! ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
-! +-INF   |   XdX   |   XdX   |   XdX   | +-1d0   |   0d0   |   0d0   |   INF
-!   XdX   | +-INF   |   XdX   |   XdX   |   0d0   | +-1d0   |   0d0   |   INF
-!   XdX   |   XdX   | +-INF   |   XdX   |   0d0   |   0d0   |   1d0   |   INF
-!   XdX   |   XdX   |   XdX   | +-INF   |   0d0   |   0d0   |   1d0   |   INF
-!          at least two +-INFs          |   NAN   |   NAN   |   NAN   |   NAN
-! ------- | ------- | ------- | ------- | ------- | ------- | ------- | -------
-!           at least one NAN            |   NAN   |   NAN   |   NAN   |   NAN
+!   AR   |   AI   |   BR   |   BI   ||   CR   |   CI   |   SR   |   SI   |  NRM 
+! ------ | ------ | ------ | ------ || ------ | ------ | ------ | ------ | -----
+!   0d0  |   0d0  |   0d0  |   0d0  ||   1d0  |   0d0  |   0d0  |   0d0  |  0d0
+! ------ | ------ | ------ | ------ || ------ | ------ | ------ | ------ | -----
+! +-INF  |   XdX  |   XdX  |   XdX  || +-1d0  |   0d0  |   0d0  |   0d0  |  INF  
+!   XdX  | +-INF  |   XdX  |   XdX  ||   0d0  | +-1d0  |   0d0  |   0d0  |  INF  
+!   XdX  |   XdX  | +-INF  |   XdX  ||   0d0  |   0d0  | +-1d0  |   0d0  |  INF  
+!   XdX  |   XdX  |   XdX  | +-INF  ||   0d0  |   0d0  |   0d0  | +-1d0  |  INF  
+! --------------------------------- || ------ | ------ | ------ | ------ | -----
+!        at least two +-INFs        ||   NAN  |   NAN  |   NAN  |   NAN  |  NAN  
+! --------------------------------- || ------ | ------ | ------ | ------ | -----
+!         at least one NAN          ||   NAN  |   NAN  |   NAN  |   NAN  |  NAN
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -90,6 +91,20 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
   nbr = abs(BR)
   nbi = abs(BI)
   NRM = 1d0
+
+!!$  ! 1 or more NANs
+!!$  if ((nar.NE.nar).OR.(nai.NE.nai).OR.(nbr.NE.nbr).OR.(nbi.NE.nbi)) then
+!!$
+!!$     CR = 0d0
+!!$     CR = 0d0/CR
+!!$     CI = CR
+!!$     SR = CR
+!!$     SI = CR
+!!$     NRM = CR
+!!$     
+!!$     return
+!!$     
+!!$  end if
   
   ! 2 or more INFs
   if (((nar>EISCOR_DBL_INF).AND.((nai>EISCOR_DBL_INF).OR.(nbr>EISCOR_DBL_INF).OR.(nbi>EISCOR_DBL_INF)))&
@@ -108,7 +123,7 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
   end if
   
   ! AR = AI = BR = BI = 0
-  if(nar.EQ.0 .AND. nai.EQ.0 .AND. nbr.EQ.0 .AND. nbi.EQ.0)then
+  if (nar.EQ.0 .AND. nai.EQ.0 .AND. nbr.EQ.0 .AND. nbi.EQ.0)then
      
      CR = 1d0
      CI = 0d0
@@ -116,35 +131,205 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
      SI = 0d0
      NRM = 0d0
      
-!!$  ! AR = AI = BR = 0, BI /=0
-!!$  else
+     return
+  end if
+
+!!$  ! AI = BR = BI = 0 
+!!$  if (nai.EQ.0 .AND. nbr.EQ.0 .AND. nbi.EQ.0)then
+!!$  
+!!$     if (AR < 0) then
+!!$        CR = -1d0
+!!$     else
+!!$        CR = 1d0
+!!$     end if
+!!$     CI = 0d0
+!!$     SR = 0d0
+!!$     SI = 0d0
+!!$     NRM = CR*AR
+!!$
+!!$     return
+!!$
+!!$  end if
+     
+
+!!$  ! AR = BR = BI = 0 
+!!$  if (nar.EQ.0 .AND. nbr.EQ.0 .AND. nbi.EQ.0)then
+!!$  
+!!$     CR = 0d0
+!!$     if (AI < 0) then
+!!$        CI = -1d0
+!!$     else
+!!$        CI = 1d0
+!!$     end if
+!!$     SR = 0d0
+!!$     SI = 0d0
+!!$     NRM = CI*AI
+!!$
+!!$     return
+!!$
+!!$  end if
+!!$
+!!$
+!!$  ! AR = AI = BI = 0 
+!!$  if (nar.EQ.0 .AND. nai.EQ.0 .AND. nbi.EQ.0)then
+!!$
+!!$     CR = 0d0  
+!!$     CI = 0d0
+!!$     if (BR < 0) then
+!!$        SR = -1d0
+!!$     else
+!!$        SR = 1d0
+!!$     end if
+!!$     SI = 0d0
+!!$     NRM = SR*SR
+!!$
+!!$     return
+!!$
+!!$  end if
+!!$
+!!$
+!!$  ! AR = AI = BR  = 0 
+!!$  if (nar.EQ.0 .AND. nai.EQ.0 .AND. nbr.EQ.0)then
+!!$  
 !!$     CR = 0d0
 !!$     CI = 0d0
 !!$     SR = 0d0
-!!$     if (BI.LT.0d0) then
+!!$     if (BI < 0) then
 !!$        SI = -1d0
 !!$     else
 !!$        SI = 1d0
 !!$     end if
 !!$     NRM = SI*BI
-     
-  ! BR = BI = 0 
-  else if(nbr.EQ.0 .AND. nbi.EQ.0)then
-  
-     call d_rot2_vec2gen(AR,AI,CR,CI,NRM)
-     SR = 0d0
-     SI = 0d0
-
+!!$
+!!$     return
+!!$
+!!$  end if
+!!$
+!!$  ! BR = BI = 0 
+!!$  if (nbr.EQ.0 .AND. nbi.EQ.0)then
+!!$  
+!!$     call d_rot2_vec2gen(AR,AI,CR,CI,NRM)
+!!$     SR = 0d0
+!!$     SI = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$   
+!!$
+!!$  ! AI = BI = 0 
+!!$  if (nai.EQ.0 .AND. nbi.EQ.0)then
+!!$  
+!!$     call d_rot2_vec2gen(AR,BR,CR,SR,NRM)
+!!$     CI = 0d0
+!!$     SI = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$   
+!!$
+!!$  ! AR = BI = 0 
+!!$  if (nar.EQ.0 .AND. nbi.EQ.0)then
+!!$  
+!!$     call d_rot2_vec2gen(AI,BR,CI,SR,NRM)
+!!$     CR = 0d0
+!!$     SI = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$   
+!!$
+!!$  ! AI = BR = 0 
+!!$  if (nai.EQ.0 .AND. nbr.EQ.0)then
+!!$  
+!!$     call d_rot2_vec2gen(AR,BI,CR,SI,NRM)
+!!$     CI = 0d0
+!!$     SR = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$   
+!!$
+!!$  ! AR = BR = 0 
+!!$  if (nar.EQ.0 .AND. nbr.EQ.0)then
+!!$  
+!!$     call d_rot2_vec2gen(AI,BI,CI,SI,NRM)
+!!$     CR = 0d0
+!!$     SR = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$
+!!$  
+!!$  ! AR = AI = 0 
+!!$  if (nar.EQ.0 .AND. nai.EQ.0)then
+!!$  
+!!$     call d_rot2_vec2gen(BR,BI,SR,SI,NRM)
+!!$     CR = 0d0
+!!$     CI = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$
+!!$
+!!$  ! BI = 0 
+!!$  if (nbi.EQ.0)then
+!!$  
+!!$     call z_rot3_vec3gen(AR,AI,BR,CR,CI,SR,NRM)
+!!$     SI = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$   
+!!$
+!!$  ! BR = 0 
+!!$  if (nbr.EQ.0)then
+!!$  
+!!$     call z_rot3_vec3gen(AR,AI,BI,CR,CI,SI,NRM)
+!!$     SR = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$   
+!!$
+!!$  ! AI = 0 
+!!$  if (nai.EQ.0)then
+!!$  
+!!$     call z_rot3_vec3gen(AR,BR,BI,CR,SR,SI,NRM)
+!!$     CI = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
+!!$   
+!!$
+!!$  ! AR = 0 
+!!$  if (nar.EQ.0)then
+!!$  
+!!$     call z_rot3_vec3gen(AI,BR,BI,CR,SR,SI,NRM)
+!!$     CR = 0d0
+!!$     
+!!$     return
+!!$
+!!$  end if
    
+
   ! AR,AI,BR,BI /= 0, |AR| largest
-  else if(nar >= nai .AND. nar >= nbr .AND. nar >= nbi)then
-  
+  if (nar >= nai .AND. nar >= nbr .AND. nar >= nbi)then
+     
      tai = AI/AR
      tbr = BR/AR
      tbi = BI/AR
      
      NRM = sqrt(1d0 + tai*tai + tbr*tbr + tbi*tbi)
-     if(AR < 0)then
+     if (AR < 0)then
         CR = -1d0/NRM
         CI = tai*CR
         SR = tbr*CR
@@ -167,7 +352,7 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
      tbi = BI/AI
      
      NRM = sqrt(1d0 + tar*tar + tbr*tbr + tbi*tbi)
-     if(AR < 0)then
+     if (AI < 0)then
         CI = -1d0/NRM
         CR = tar*CI
         SR = tbr*CI
@@ -190,7 +375,7 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
      tbi = BI/BR
      
      NRM = sqrt(1d0 + tar*tar + tai*tai + tbi*tbi)
-     if(AR < 0)then
+     if (BR < 0)then
         SR = -1d0/NRM
         CR = tar*SR
         CI = tai*SR
@@ -213,11 +398,11 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
      tbr = BR/BI
      
      NRM = sqrt(1d0 + tar*tar + tai*tai + tbr*tbr)
-     if(AR < 0)then
+     if (BI < 0)then
         SI = -1d0/NRM
         CR = tar*SI
         CI = tai*SI
-        SR = tbi*SI
+        SR = tbr*SI
         NRM = -BI*NRM
      else
         SI = 1d0/NRM
