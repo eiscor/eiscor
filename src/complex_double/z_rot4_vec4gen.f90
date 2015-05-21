@@ -118,12 +118,12 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
      SI = CR
      NRM = CR
      
-     return
+     !return
      
-  end if
+  !end if
   
   ! AR = AI = BR = BI = 0
-  if (nar.EQ.0 .AND. nai.EQ.0 .AND. nbr.EQ.0 .AND. nbi.EQ.0)then
+  else if (nar.EQ.0 .AND. nai.EQ.0 .AND. nbr.EQ.0 .AND. nbi.EQ.0)then
      
      CR = 1d0
      CI = 0d0
@@ -131,8 +131,8 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
      SI = 0d0
      NRM = 0d0
      
-     return
-  end if
+     !return
+  !end if
 
 !!$  ! AI = BR = BI = 0 
 !!$  if (nai.EQ.0 .AND. nbr.EQ.0 .AND. nbi.EQ.0)then
@@ -322,7 +322,7 @@ subroutine z_rot4_vec4gen(AR,AI,BR,BI,CR,CI,SR,SI,NRM)
    
 
   ! AR,AI,BR,BI /= 0, |AR| largest
-  if (nar >= nai .AND. nar >= nbr .AND. nar >= nbi)then
+  else if (nar >= nai .AND. nar >= nbr .AND. nar >= nbi)then
      
      tai = AI/AR
      tbr = BR/AR

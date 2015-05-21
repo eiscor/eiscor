@@ -60,12 +60,12 @@ subroutine z_rot4_turnover(G1,G2,G3)
   s3 = G3(3)
  
   ! first column
-  Hr(1,1) = c1r*c3r - c1i*c3i - c2i*s3*s1i - c2r*s3*s1r
-  Hr(2,1) = c3r*s1r - c3i*s1i + c1i*c2i*s3 + c1r*c2r*s3
+  Hr(1,1) = c1r*c3r - c1i*c3i + (-c2i*s1i - c2r*s1r)*s3
+  Hr(2,1) = c3r*s1r - c3i*s1i + (c1i*c2i + c1r*c2r)*s3
   Hr(3,1) = s3*s2r
 
-  Hi(1,1) = c1i*c3r + c3i*c1r - c2i*s3*s1r + c2r*s3*s1i
-  Hi(2,1) = c3i*s1r + c3r*s1i - c1i*c2r*s3 + c2i*c1r*s3
+  Hi(1,1) = c1i*c3r + c3i*c1r + (-c2i*s1r + c2r*s1i)*s3
+  Hi(2,1) = c3i*s1r + c3r*s1i + (-c1i*c2r + c2i*c1r)*s3
   Hi(3,1) = s3*s2i
 
   ! second column
