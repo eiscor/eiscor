@@ -5,17 +5,17 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the eigenvalues and optionally eigenvectors of 
+! This routine computes the Schur factorization of
 ! a unitary upper hessenberg matrix that is stored as a product of 
-! givens rotations and a complex diagonal matrix. 
+! N-1 Givens rotations and a complex diagonal matrix. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute eigenvectors
-!                    .FALSE.: no eigenvectors
+!                    .TRUE.: compute schurvectors
+!                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
 !                    .TRUE.: initialize to Z to identity
@@ -25,7 +25,7 @@
 !                    dimension of matrix
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
-!                    array of generators for givens rotations
+!                    array of generators for Givens rotations
 !
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
@@ -37,12 +37,13 @@
 ! OUTPUT VARIABLES:
 !
 !  Z              COMPLEX(8) array of dimension (M,N)
+!                   components of schurvectors
 !                   if VEC = .FALSE. unused
 !                   if VEC = .TRUE. and ID = .TRUE. initializes Z to I 
 !                   if VEC = .TRUE. and ID = .FALSE. assumes Z initialized
 !
 !  ITS            INTEGER array of dimension (N-1)
-!                   Contains the number of iterations per deflation
+!                   contains the number of iterations per deflation
 !
 !  INFO           INTEGER
 !                   INFO = 1 implies no convergence

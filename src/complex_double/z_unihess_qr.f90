@@ -5,16 +5,16 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the eigenvalues and optionally eigenvectors
-! of a unitary upper hessenberg matrix.
+! This routine computes the Schur factorization of a unitary 
+! upper-Hessenberg matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute eigenvectors
-!                    .FALSE.: no eigenvectors
+!                    .TRUE.: compute schurvectors
+!                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
 !                    .TRUE.: initialize to Z to identity
@@ -24,9 +24,10 @@
 !                    dimension of matrix
 !
 !  H               COMPLEX(8) array of dimension (N,N)
-!                    unitary hessenberg matrix, assumed that H(ii,jj) = 0 for |ii-jj| > 0
-!                    on exit contains a diagonal matrix whose entries are the 
-!                    eigenvalues of H
+!                    unitary hessenberg matrix, assumed that 
+!                    H(ii,jj) = 0 for |ii-jj| > 0
+!                    on exit contains a diagonal matrix whose entries 
+!                    are the eigenvalues of H
 !
 !  WORK            REAL(8) array of dimension (5*N)
 !                    work space for eigensolver
@@ -37,6 +38,7 @@
 ! OUTPUT VARIABLES:
 !
 !  Z              COMPLEX(8) array of dimension (M,N)
+!                   components of schurvectors
 !                   if VEC = .FALSE. unused
 !                   if VEC = .TRUE. and ID = .TRUE. initializes Z to I 
 !                   if VEC = .TRUE. and ID = .FALSE. assumes Z initialized
