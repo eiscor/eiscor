@@ -174,9 +174,9 @@ subroutine z_rot4_turnover(G1,G2,G3)
 
 
   !c6r = (c1i*s2r + c1r*s2i)*c4i + (c1i*s2i - c1r*s2r)*c4r + c2r*s4
-  T(1) = -c2r*c4r - c2i*c4i + (c1i*s2i - c1r*s2r)*s4
+  T(1) = c2r*c4r + c2i*c4i + (-c1i*s2i + c1r*s2r)*s4
   !c6i = (c1i*s2r + c1r*s2i)*c4r - (c1i*s2i - c1r*s2r)*c4i -c2i*s4
-  T(2) = -c2i*c4r + c2r*c4i - (c1i*s2r + c1r*s2i)*s4
+  T(2) = c2i*c4r - c2r*c4i + (c1i*s2r + c1r*s2i)*s4
 
   T(3) = -((c1i*s2r + c1r*s2i)*c4i + (c1i*s2i - c1r*s2r)*c4r + c2r*s4)*c5r &
        &+ ((c1i*s2r + c1r*s2i)*c4r + (-c1i*s2i + c1r*s2r)*c4i - c2i*s4)*c5i &
