@@ -27,6 +27,14 @@
 #define EISCOR_DBL_EPS (epsilon(1d0))
 #endif
 
+/* define EISCOR_SNG_EPS as unit roundoff */
+#ifdef EISCOR_SNG_EPS 
+#undef EISCOR_SNG_EPS
+#define EISCOR_SNG_EPS (epsilon(1e0))
+#else 
+#define EISCOR_SNG_EPS (epsilon(1e0))
+#endif
+
 /* define EISCOR_DBL_INF as largest supported positive double precision number */
 #ifdef EISCOR_DBL_INF 
 #undef EISCOR_DBL_INF
