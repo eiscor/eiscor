@@ -61,7 +61,7 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)
   
   ! compute variables
   integer :: ii
-  real(8) :: phr, phi, nrm
+  real(8) :: phr, phi, nrm, beta
   complex(8) :: temp, block(2,2), vec(2,1), h(2,2)
   
   ! initialize info
@@ -96,25 +96,27 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)
   C1 = 0d0
 
   ! compute the phase of last coefficient
-  call d_rot2_vec2gen(dble(V(N)),aimag(V(N)),phr,phi,nrm)
-
-  ! initialize bottom of B1
-  call d_rot2_vec2gen(nrm,-1d0,B1(3*N-2),B1(3*N),nrm)
+  call d_rot2_vec2gen(dble(V(N)),aimag(V(N)),phr,phi,beta)
  
   ! compute square root of phase
   temp = sqrt(cmplx(phr,phi,kind=8))  
   call d_rot2_vec2gen(dble(temp),aimag(temp),phr,phi,nrm)
+  temp = cmplx(-phr,-phi,kind=8)
+
+  ! initialize bottom of B1
+  call z_rot3_vec3gen(-beta*phr,-beta*phi,1d0 &
+  ,B1(3*N-2),B1(3*N-1),B1(3*N),nrm)
 
   ! initialize bottom of C1
-  call z_rot3_vec3gen(B1(3*N-2)*phr,-B1(3*N-2)*phi,-B1(3*N) &
-  ,C1(3*N-2),C1(3*N-1),C1(3*N),nrm)
+  C1(3*N-2) = B1(3*N-2)
+  C1(3*N-1) = -B1(3*N-1)
+  C1(3*N) = -B1(3*N)
 
   ! update bottom of B1
-  call z_rot3_vec3gen(C1(3*N)*phr,C1(3*N)*phi,B1(3*N-2) &
+  call z_rot3_vec3gen(C1(3*N)*phr,C1(3*N)*phi,-beta/nrm &
   ,B1(3*N-2),B1(3*N-1),B1(3*N),nrm)
 
   ! roll up V into B1 and C1
-  temp = cmplx(-phr,-phi,kind=8)
   do ii = 1,(N-1)
 
     ! update last entry of V using C1
@@ -159,20 +161,22 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)
     ! compute the phase of last coefficient
     call d_rot2_vec2gen(dble(W(N)),aimag(W(N)),phr,phi,nrm)
 
-    ! initialize bottom of B2
-    call d_rot2_vec2gen(nrm,-1d0,B2(3*N-2),B2(3*N),nrm)
- 
     ! compute square root of phase
     temp = sqrt(cmplx(phr,phi,kind=8))  
     call d_rot2_vec2gen(dble(temp),aimag(temp),phr,phi,nrm)
 
+    ! initialize bottom of B2
+    call z_rot3_vec4gen(dble(W(N)),aimag(W(N)),-phr,-phi &
+    ,B2(3*N-2),B2(3*N-1),B2(3*N),nrm)
+
     ! initialize bottom of C2
-    call z_rot3_vec3gen(B2(3*N-2)*phr,-B2(3*N-2)*phi,-B2(3*N) &
-    ,C2(3*N-2),C2(3*N-1),C2(3*N),nrm)
+    C2(3*N-2) = B2(3*N-2)
+    C2(3*N-1) = -B2(3*N-1)
+    C2(3*N) = -B2(3*N)
 
     ! update bottom of B2
-    call z_rot3_vec3gen(C2(3*N)*phr,C2(3*N)*phi,B2(3*N-2) &
-    ,B2(3*N-2),B2(3*N-1),B2(3*N),nrm)
+    call z_rot3_vec4gen(C2(3*N)*phr,C2(3*N)*phi,C2(3*N-2)*phr+C2(3*N-1)*phi &
+    ,C2(3*N-2)*phi-C2(3*N-1)*phr,B2(3*N-2),B2(3*N-1),B2(3*N),nrm)
 
     ! roll up W into B2 and C2
     temp = cmplx(-phr,-phi,kind=8)

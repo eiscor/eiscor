@@ -40,7 +40,7 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
   integer, allocatable :: ITS(:)
   real(8), allocatable :: Q(:),D1(:),C1(:),B1(:)
   real(8), allocatable :: D2(:),C2(:),B2(:)
-  complex(8), allocatable :: V(:),W(:)
+  complex(8), allocatable :: V(:),W(:),T(:,:)
   interface
     function l_upr1fact_hess(m,flags)
       logical :: l_upr1fact_hess
@@ -51,30 +51,91 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
   
   ! allocate memory
   allocate(P(N-2),ITS(N-1),Q(3*(N-1)),D1(2*(N+1)),C1(3*N),B1(3*N))    
-  allocate(V(N),W(N),D2(2*(N+1)),C2(3*N),B2(3*N))    
+  allocate(V(N),W(N),D2(2*(N+1)),C2(3*N),B2(3*N),T(N,N))    
 
   ! fill P
   P = .FALSE.
 
   ! fill V and W
-  V(N) = (-1d0)**(N)*COEFFS(N+1)
+  V(N) = ((-1d0)**(N))*COEFFS(N+1)
   do ii=1,(N-1)
     V(ii) = -COEFFS(N+1-ii)
   end do
-  W = cmplx(0d0,0d0,kind=8)
-  W(N) = COEFFS(1)
+!  W = cmplx(0d0,0d0,kind=8)
+!  W(N) = COEFFS(1)
 
   ! factor companion matrix
-  call z_comppenc_factor(.TRUE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
+!  call z_comppenc_factor(.TRUE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
+  call z_comppenc_factor(.FALSE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
+print*,""
+print*,""
+do ii=1,(N-2)
+print*,P(ii)
+end do
+print*,""
+print*,""
+do ii=1,(N-1)
+print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+end do
+print*,""
+print*,""
+do ii=1,N
+print*,D1(2*ii-1),D1(2*ii)
+end do
+print*,""
+print*,""
+do ii=1,N
+print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
+end do
+print*,""
+print*,""
+do ii=1,N
+print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
+end do
+print*,""
+  call z_upr1fact_extracttri(.FALSE.,N,D1,C1,B1,T)
+print*,""
+do ii=1,N
+print*,V(ii),T(ii,N)
+end do
+print*,""
     
   ! call z_upr1fact_twistedqz
-  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+!  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+  call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+print*,""
+print*,""
+do ii=1,(N-1)
+print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+end do
+print*,""
+print*,""
+do ii=1,N
+print*,D1(2*ii-1),D1(2*ii)
+end do
+print*,""
+print*,""
+do ii=1,N
+print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
+end do
+print*,""
+print*,""
+do ii=1,N
+print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
+end do
+print*,""
   
   ! extract roots
-  call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,V)
-  call z_upr1fact_extracttri(.TRUE.,N,D2,C2,B2,W)
+  call z_upr1fact_extracttri(.FALSE.,N,D1,C1,B1,T)
+print*,""
+do ii=1,N
+print*,T(ii,:)
+end do
+print*,""
+!  call z_upr1fact_extracttri(.TRUE.,N,D2,C2,B2,W)
   do ii=1,N
-    ROOTS(ii) = V(ii)/W(ii)
+!    ROOTS(ii) = V(ii)/W(ii)
+    ROOTS(ii) = T(ii,ii)
   end do
     
   ! compute residuals
@@ -94,6 +155,6 @@ end do
 print*,""
 
   ! free memory
-  deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W)
+  deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W,T)
 
 end subroutine z_poly_roots
