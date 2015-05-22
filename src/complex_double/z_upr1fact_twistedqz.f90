@@ -140,6 +140,8 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     if(STP == (STR+ZERO-1))then
     
       ! update indices
+      ITS(STR+STP-1) = ITCNT
+      ITCNT = 0
       STP = STP - 1
       ZERO = 0
       STR = 1
@@ -155,17 +157,18 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       ,N,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
     
       ! update indices
-!      STP = STP - 2
-!      ZERO = 0
-!      STR = 1
+      ITS(STR+STP-1) = ITCNT
+      ITCNT = 0
+      STP = STP - 2
+      ZERO = 0
+      STR = 1
     
     ! if greater than 2x2 chase a bulge
     else
 
       ! check STR
       if (STR <= ZERO) then
-        STR = STR+ZERO
-        ZERO = 0
+        STR = ZERO+1
       end if
 
       ! perform singleshift iteration

@@ -42,11 +42,11 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
   real(8), allocatable :: Q(:),D(:),C(:),B(:)
   complex(8) :: V
   interface
-    function l_upr1fact_upperhess(m,flags)
-      logical :: l_upr1fact_upperhess
+    function l_upr1fact_hess(m,flags)
+      logical :: l_upr1fact_hess
       integer, intent(in) :: m
       logical, dimension(m-2), intent(in) :: flags
-    end function l_upr1fact_upperhess
+    end function l_upr1fact_hess
   end interface
   
   ! set variables
@@ -61,7 +61,7 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
   call z_poly_factorcomp(QZ,VEC,ID,N,COEFFS,P,Q,D,C,B,D,C,B,V,V)  
     
   ! call z_upr1fact_twistedqz
-  call z_upr1fact_twistedqz(QZ,VEC,ID,l_upr1fact_upperhess,N,P,Q,D,C,B,D,C,B,V,V,ITS,INFO)
+  call z_upr1fact_twistedqz(QZ,VEC,ID,l_upr1fact_hess,N,P,Q,D,C,B,D,C,B,V,V,ITS,INFO)
   
   ! extract roots
   call z_upr1fact_extracttri(.TRUE.,N,D,C,B,ROOTS)
