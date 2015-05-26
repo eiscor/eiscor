@@ -68,7 +68,7 @@ subroutine z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P,Q,D1,C1,B1,D2,C2,B2,A,B)
   A(1,1) = cmplx(-B1(3)/C1(3),0d0,kind=8)
 
   ! second column of T
-  A(2,2) = cmplx(-B1(6)/C1(6),0d0)
+  A(2,2) = cmplx(-B1(6)/C1(6),0d0,kind=8)
   A(1,2) = (cmplx(-B1(1),B1(2),kind=8)*cmplx(B1(4),B1(5),kind=8) &
       + A(2,2)*cmplx(C1(1),C1(2),kind=8)*cmplx(C1(4),-C1(5),kind=8))/cmplx(C1(3),0d0,kind=8)
   
@@ -125,7 +125,7 @@ subroutine z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P,Q,D1,C1,B1,D2,C2,B2,A,B)
     B(1,1) = cmplx(-B2(3)/C2(3),0d0,kind=8)
         
     ! second column of T
-    B(2,2) = cmplx(-B2(6)/C2(6),0d0)
+    B(2,2) = cmplx(-B2(6)/C2(6),0d0,kind=8)
     B(1,2) = (cmplx(-B2(1),B2(2),kind=8)*cmplx(B2(4),B2(5),kind=8) &
         + B(2,2)*cmplx(C2(1),C2(2),kind=8)*cmplx(C2(4),-C2(5),kind=8))/cmplx(C2(3),0d0,kind=8)
     

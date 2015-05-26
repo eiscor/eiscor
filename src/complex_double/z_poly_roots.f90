@@ -61,81 +61,81 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
   do ii=1,(N-1)
     V(ii) = -COEFFS(N+1-ii)
   end do
-!  W = cmplx(0d0,0d0,kind=8)
-!  W(N) = COEFFS(1)
+  W = cmplx(0d0,0d0,kind=8)
+  W(N) = COEFFS(1)
 
   ! factor companion matrix
-!  call z_comppenc_factor(.TRUE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
-  call z_comppenc_factor(.FALSE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
-print*,""
-print*,""
-do ii=1,(N-2)
-print*,P(ii)
-end do
-print*,""
-print*,""
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-print*,""
-do ii=1,N
-print*,D1(2*ii-1),D1(2*ii)
-end do
-print*,""
-print*,""
-do ii=1,N
-print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
-end do
-print*,""
-print*,""
-do ii=1,N
-print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
-end do
-print*,""
-  call z_upr1fact_extracttri(.FALSE.,N,D1,C1,B1,T)
-print*,""
-do ii=1,N
-print*,V(ii),T(ii,N)
-end do
-print*,""
+  call z_comppenc_factor(.TRUE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
+!  call z_comppenc_factor(.FALSE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
+!print*,""
+!print*,""
+!do ii=1,(N-2)
+!print*,P(ii)
+!end do
+!print*,""
+!print*,""
+!do ii=1,(N-1)
+!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+!end do
+!print*,""
+!print*,""
+!do ii=1,N
+!print*,D1(2*ii-1),D1(2*ii)
+!end do
+!print*,""
+!print*,""
+!do ii=1,N
+!print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
+!end do
+!print*,""
+!print*,""
+!do ii=1,N
+!print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
+!end do
+!print*,""
+!  call z_upr1fact_extracttri(.FALSE.,N,D1,C1,B1,T)
+!print*,""
+!do ii=1,N
+!print*,V(ii),T(ii,N)
+!end do
+!print*,""
     
   ! call z_upr1fact_twistedqz
-!  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-print*,""
-print*,""
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-print*,""
-do ii=1,N
-print*,D1(2*ii-1),D1(2*ii)
-end do
-print*,""
-print*,""
-do ii=1,N
-print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
-end do
-print*,""
-print*,""
-do ii=1,N
-print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
-end do
-print*,""
+  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+!  call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+!print*,""
+!print*,""
+!do ii=1,(N-1)
+!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+!end do
+!print*,""
+!print*,""
+!do ii=1,N
+!print*,D1(2*ii-1),D1(2*ii)
+!end do
+!print*,""
+!print*,""
+!do ii=1,N
+!print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
+!end do
+!print*,""
+!print*,""
+!do ii=1,N
+!print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
+!end do
+!print*,""
   
   ! extract roots
-  call z_upr1fact_extracttri(.FALSE.,N,D1,C1,B1,T)
-print*,""
-do ii=1,N
-print*,T(ii,:)
-end do
-print*,""
-!  call z_upr1fact_extracttri(.TRUE.,N,D2,C2,B2,W)
+  call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,V)
+  call z_upr1fact_extracttri(.TRUE.,N,D2,C2,B2,W)
+!print*,""
+!do ii=1,N
+!print*,V(ii)/W(ii)
+!end do
+!print*,""
   do ii=1,N
-!    ROOTS(ii) = V(ii)/W(ii)
-    ROOTS(ii) = T(ii,ii)
+    ROOTS(ii) = V(ii)/W(ii)
+!    ROOTS(ii) = T(ii,ii)
   end do
     
   ! compute residuals

@@ -113,7 +113,7 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     B(2,2) = conjg(B(1,1))    
 
     A = matmul(B,A)
-    
+
     Q(1) = 1d0
     Q(2) = 0d0
     Q(3) = 0d0
