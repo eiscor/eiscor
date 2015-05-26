@@ -111,29 +111,22 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       B(1,1) = cmplx(1d0,0d0,kind=8); B(2,2) = B(1,1)
     end if
     
-    ! store bottom right entries
-    shift = A(2,2)
-    rho = B(2,2)
-        
+    ! store ratio of bottom right entries
+    rho = A(2,2)/B(2,2) 
+      
     ! compute eigenvalues and eigenvectors
     call z_2x2array_eig(QZ,A,B,Vt,Wt)
           
-    ! choose wikinson shift
-    ! complex abs does not matter here
-    if(abs(A(2,2)-shift)+abs(B(2,2)-rho) &
-    < abs(A(1,1)-shift)+abs(B(1,1)-rho))then
-      shift = A(2,2)
-      rho = B(2,2)
+    ! wilkinson shift
+    if(abs(A(2,2)/B(2,2)-rho) < abs(A(1,1)/B(1,1)-rho))then
+      shift = A(2,2)/B(2,2)
     else
-      shift = A(1,1)
-      rho = B(1,1)
+      shift = A(1,1)/B(1,1)
     end if
     
-    ! avoid zero division
-    if ((dble(rho).EQ.0).AND.(aimag(rho).EQ.0)) then
+    ! avoid INFs and NANs
+    if ((shift.NE.shift).OR.(abs(shift) > EISCOR_DBL_INF)) then
       shift = cmplx(1d0,0d0,kind=8) ! not sure if this is a good idea?
-    else
-      shift = shift/rho
     end if
 
   end if

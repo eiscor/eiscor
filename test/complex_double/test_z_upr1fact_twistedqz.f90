@@ -335,7 +335,7 @@ program test_z_upr1fact_twistedqz
       D2(2*ii-1) = 1d0
     end do
     D1 = D2
-    D2(2*N-1) = (-1d0)**(N-1)
+    D1(2*N-1) = (-1d0)**(N-1)
 
     ! set valid C1 and B1
     C1 = 0d0
