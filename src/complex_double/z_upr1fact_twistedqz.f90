@@ -56,21 +56,22 @@
 !
 ! OUTPUT VARIABLES:
 !
-!  V              COMPLEX(8) array of dimension (N,N)
+!  V              COMPLEX(8) array of dimension (M,N)
 !                   right schur vectors
 !
-!  W              COMPLEX(8) array of dimension (N,N)
+!  W              COMPLEX(8) array of dimension (M,N)
 !                   left schur vectors
 !
 !  ITS            INTEGER array of dimension (N-1)
 !                   Contains the number of iterations per deflation
 !
 !  INFO           INTEGER
-!                   INFO = 1 implies no convergence 
+!                   INFO = 2 implies no convergence 
+!                   INFO = 1 random seed initialization failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies N, Q, D1, C1, B1, D2, C2 or B2 is invalid
-!                   INFO = -9 implies V is invalid
-!                   INFO = -10 implies W is invalid
+!                   INFO = -14 implies V is invalid
+!                   INFO = -15 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
@@ -94,12 +95,61 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   end interface
   
   ! compute variables
+  logical :: flg
   integer :: ii, jj, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   
   ! initialize info
   INFO = 0
+
+  ! initialize random seed
+  call u_randomseed_initialize(INFO)
+  if (INFO.NE.0) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"Failed to initialize random seed",INFO,INFO)
+    end if
+    INFO = 1
+    return
+  end if
+ 
+  ! check factorization
+  call z_upr1fact_factorcheck(QZ,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+  if (INFO.NE.0) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"N, Q, D1, C1, B1, D2, C2 or B2 is invalid",INFO,INFO)
+    end if
+    INFO = -1
+    return
+  end if
   
+  ! check V
+  if (VEC.AND..NOT.ID) then
+    call z_2Darray_check(N,N,V,flg)
+    if (.NOT.flg) then
+      INFO = -14
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,INFO)
+      end if
+      return
+    end if
+  end if   
+  
+  ! check W
+  if (QZ.AND.VEC.AND..NOT.ID) then
+    call z_2Darray_check(N,N,W,flg)
+    if (.NOT.flg) then
+      INFO = -15
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,INFO)
+      end if
+      return
+    end if
+  end if
+ 
   ! initialize storage
   ITS = 0
   

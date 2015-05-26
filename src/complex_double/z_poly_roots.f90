@@ -48,6 +48,27 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
       logical, dimension(m-2), intent(in) :: flags
     end function l_upr1fact_hess
   end interface
+  interface
+    function l_upr1fact_inversehess(m,flags)
+      logical :: l_upr1fact_inversehess
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_inversehess
+  end interface
+  interface
+    function l_upr1fact_cmv(m,flags)
+      logical :: l_upr1fact_cmv
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_cmv
+  end interface
+  interface
+    function l_upr1fact_random(m,flags)
+      logical :: l_upr1fact_random
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_random
+  end interface
   
   ! allocate memory
   allocate(P(N-2),ITS(N-1),Q(3*(N-1)),D1(2*(N+1)),C1(3*N),B1(3*N))    
@@ -66,73 +87,17 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
 
   ! factor companion matrix
   call z_comppenc_factor(.TRUE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
-!  call z_comppenc_factor(.FALSE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
-!print*,""
-!print*,""
-!do ii=1,(N-2)
-!print*,P(ii)
-!end do
-!print*,""
-!print*,""
-!do ii=1,(N-1)
-!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-!end do
-!print*,""
-!print*,""
-!do ii=1,N
-!print*,D1(2*ii-1),D1(2*ii)
-!end do
-!print*,""
-!print*,""
-!do ii=1,N
-!print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
-!end do
-!print*,""
-!print*,""
-!do ii=1,N
-!print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
-!end do
-!print*,""
-!  call z_upr1fact_extracttri(.FALSE.,N,D1,C1,B1,T)
-!print*,""
-!do ii=1,N
-!print*,V(ii),T(ii,N)
-!end do
-!print*,""
     
   ! call z_upr1fact_twistedqz
-  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+!  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+!  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_inversehess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_cmv,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+ ! call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_random,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
 !  call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-!print*,""
-!print*,""
-!do ii=1,(N-1)
-!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-!end do
-!print*,""
-!print*,""
-!do ii=1,N
-!print*,D1(2*ii-1),D1(2*ii)
-!end do
-!print*,""
-!print*,""
-!do ii=1,N
-!print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
-!end do
-!print*,""
-!print*,""
-!do ii=1,N
-!print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
-!end do
-!print*,""
   
   ! extract roots
   call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,V)
   call z_upr1fact_extracttri(.TRUE.,N,D2,C2,B2,W)
-!print*,""
-!do ii=1,N
-!print*,V(ii)/W(ii)
-!end do
-!print*,""
   do ii=1,N
     ROOTS(ii) = V(ii)/W(ii)
 !    ROOTS(ii) = T(ii,ii)
