@@ -51,7 +51,7 @@ subroutine z_upr1fact_singleshift(QZ,P,Q,D1,C1,B1,D2,C2,B2,SHFT)
   complex(8) :: rho, R1(3,3), R2(3,3), H(2,2), K(2,2)
 
   ! extract first triangle
-  call z_upr1fact_extracttri(.FALSE.,3,D1,C2,B1,R1)
+  call z_upr1fact_extracttri(.FALSE.,3,D1,C1,B1,R1)
   
   ! extract second triangle
   if (QZ) then
@@ -124,7 +124,7 @@ subroutine z_upr1fact_singleshift(QZ,P,Q,D1,C1,B1,D2,C2,B2,SHFT)
     
   ! avoid INFs and NANs
   if ((SHFT.NE.SHFT).OR.(abs(SHFT) > EISCOR_DBL_INF)) then
-    SHFT = cmplx(1d0,0d0,kind=8) ! not sure if this is a good idea?
+    SHFT = cmplx(1d9,0d0,kind=8) ! not sure if this is a good idea?
   end if
 
 end subroutine z_upr1fact_singleshift

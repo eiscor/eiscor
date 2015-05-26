@@ -98,36 +98,12 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   ! wilkinson shift
   else
   
-    ! get 2x2 blocks
-    ir2 = 3*N; ir1 = ir2-5
-    id2 = 2*N; id1 = id2-3
-    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2) &
-    ,Q((ir1-3):(ir2-3)),D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2) &
-    ,D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
-  
-    ! if not QZ
-    if (.NOT.QZ) then
-      B = cmplx(0d0,0d0,kind=8)
-      B(1,1) = cmplx(1d0,0d0,kind=8); B(2,2) = B(1,1)
-    end if
-    
-    ! store ratio of bottom right entries
-    rho = A(2,2)/B(2,2) 
-      
-    ! compute eigenvalues and eigenvectors
-    call z_2x2array_eig(QZ,A,B,Vt,Wt)
-          
-    ! wilkinson shift
-    if(abs(A(2,2)/B(2,2)-rho) < abs(A(1,1)/B(1,1)-rho))then
-      shift = A(2,2)/B(2,2)
-    else
-      shift = A(1,1)/B(1,1)
-    end if
-    
-    ! avoid INFs and NANs
-    if ((shift.NE.shift).OR.(abs(shift) > EISCOR_DBL_INF)) then
-      shift = cmplx(1d0,0d0,kind=8) ! not sure if this is a good idea?
-    end if
+    ! compute wilkinson shift
+    ir2 = 3*N; ir1 = ir2-8
+    id2 = 2*N; id1 = id2-5
+    call z_upr1fact_singleshift(QZ,P((N-1):(N-2)) &
+    ,Q((ir1):(ir2-3)),D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2) &
+    ,D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),shift)
 
   end if
 
