@@ -90,7 +90,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   
   ! compute shift
   ! random shift
-  if(mod(ITCNT+1,11) == 0)then
+  if(mod(ITCNT+1,16) == 0)then
     call random_number(G1(1))
     call random_number(G1(2))
     shift = cmplx(G1(1),G1(2),kind=8)
@@ -101,7 +101,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     ! compute wilkinson shift
     ir2 = 3*N; ir1 = ir2-8
     id2 = 2*N; id1 = id2-5
-    call z_upr1fact_singleshift(QZ,P((N-1):(N-2)) &
+    call z_upr1fact_singleshift(QZ,P((N-3):(N-2)) &
     ,Q((ir1):(ir2-3)),D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2) &
     ,D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),shift)
 

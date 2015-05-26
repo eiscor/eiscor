@@ -156,11 +156,17 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
     A = matmul(A,B)
     
-    ! deflate into D2
-    A(1,1) = A(1,1)*cmplx(D2(1),D2(2),kind=8)
-    call d_rot2_vec2gen(dble(A(1,1)),aimag(A(1,1)),D2(1),D2(2),nrm)
+print*,""
+print*,"Inside 2x2 deflation"
+print*,A(1,:)
+print*,A(2,:)
+print*,""
     
-    A(2,2) = A(2,2)*cmplx(D2(3),D2(4),kind=8)
+    ! deflate into D2
+    A(2,2) = A(1,1)*cmplx(D2(1),D2(2),kind=8)
+    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D2(1),D2(2),nrm)
+    
+    A(2,2) = conjg(A(1,1))*cmplx(D2(3),D2(4),kind=8)
     call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D2(3),D2(4),nrm)
     
     ! pass G1 through left triangular factor
@@ -186,16 +192,21 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     B(2,2) = conjg(B(1,1))
     
     A = matmul(B,A)
+
+print*,""
+print*,A(1,:)
+print*,A(2,:)
+print*,""
     
     Q(1) = 1d0
     Q(2) = 0d0
     Q(3) = 0d0
     
     ! deflate into D1
-    A(1,1) = A(1,1)*cmplx(D1(1),D1(2),kind=8)
-    call d_rot2_vec2gen(dble(A(1,1)),aimag(A(1,1)),D1(1),D1(2),nrm)
+    A(2,2) = A(1,1)*cmplx(D1(1),D1(2),kind=8)
+    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D1(1),D1(2),nrm)
     
-    A(2,2) = A(2,2)*cmplx(D1(3),D1(4),kind=8)
+    A(2,2) = conjg(A(1,1))*cmplx(D1(3),D1(4),kind=8)
     call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D1(3),D1(4),nrm)
     
     ! update vecs
