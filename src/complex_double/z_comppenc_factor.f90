@@ -98,6 +98,12 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)
   ! compute the phase of last coefficient
   call d_rot2_vec2gen(dble(V(N)),aimag(V(N)),phr,phi,beta)
  
+print*,""
+print*,"Inside comppenc_factor"
+print*,"V(N):",V(N)
+print*,"beta:",beta
+print*,""
+
   ! store in D1
   D1(2*N-1) = phr
   D1(2*N) = phi

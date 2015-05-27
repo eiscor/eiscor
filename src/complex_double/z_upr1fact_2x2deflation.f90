@@ -131,84 +131,33 @@ subroutine z_upr1fact_2x2deflation(QZ,VEC,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     ! generalized schur decomposition
     call z_2x2array_eig(QZ,A,B,Wt,Vt)
       
-    ! replace Vt with rotation G1
-    call z_rot3_vec4gen(dble(Vt(1,1)),aimag(Vt(1,1)),dble(Vt(2,1)) &
-    ,aimag(Vt(2,1)),G1(1),G1(2),G1(3),nrm)
-    
     ! replace Wt with rotation G2
     call z_rot3_vec4gen(dble(Wt(1,1)),aimag(Wt(1,1)),dble(Wt(2,1)) &
     ,aimag(Wt(2,1)),G2(1),G2(2),G2(3),nrm)
-    
+   
+    ! G1 = G2^-1
+    G1(1) = G2(1)
+    G1(2) = -G2(2)
+    G1(3) =- G2(3)
+ 
     ! pass G1 through right triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,D2,C2,B2,G3)
+    call z_upr1fact_rot3throughtri(.TRUE.,D2,C2,B2,G3)
     
-    ! equivalence transform
-    A(1,1) = cmplx(G2(1),-G2(2),kind=8)
-    A(2,1) = cmplx(-G2(3),0d0,kind=8)
-    A(1,2) = -A(2,1)
-    A(2,2) = conjg(A(1,1))
-    
-    B(1,1) = cmplx(G3(1),G3(2),kind=8)
-    B(2,1) = cmplx(G3(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))
-    
-    A = matmul(A,B)
-    
-print*,""
-print*,"Inside 2x2 deflation"
-print*,A(1,:)
-print*,A(2,:)
-print*,""
-    
-    ! deflate into D2
-    A(2,2) = A(1,1)*cmplx(D2(1),D2(2),kind=8)
-    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D2(1),D2(2),nrm)
-    
-    A(2,2) = conjg(A(1,1))*cmplx(D2(3),D2(4),kind=8)
-    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D2(3),D2(4),nrm)
-    
-    ! pass G1 through left triangular factor
-    G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G3)
-    
-    ! equivalence transform of Q
-    A(1,1) = cmplx(Q(1),Q(2),kind=8)
-    A(2,1) = cmplx(Q(3),0d0,kind=8)
-    A(1,2) = -A(2,1)
-    A(2,2) = conjg(A(1,1))
-    
-    B(1,1) = cmplx(G3(1),G3(2),kind=8)
-    B(2,1) = cmplx(G3(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))
-    
-    A = matmul(A,B)
-    
-    B(1,1) = cmplx(G2(1),-G2(2),kind=8)
-    B(2,1) = cmplx(-G2(3),0d0,kind=8)
-    B(1,2) = -B(2,1)
-    B(2,2) = conjg(B(1,1))
-    
-    A = matmul(B,A)
+    ! merge G1 with Q
+    call z_upr1fact_mergebulge(.TRUE.,2,.FALSE.,Q,D1,G1)
 
-print*,""
-print*,A(1,:)
-print*,A(2,:)
-print*,""
+    ! G1 = G3^-1
+    G1(1) = G3(1)
+    G1(2) = -G3(2)
+    G1(3) =- G3(3)
+ 
+    ! pass G1 through left triangular factor
+    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G1)
     
-    Q(1) = 1d0
-    Q(2) = 0d0
-    Q(3) = 0d0
-    
-    ! deflate into D1
-    A(2,2) = A(1,1)*cmplx(D1(1),D1(2),kind=8)
-    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D1(1),D1(2),nrm)
-    
-    A(2,2) = conjg(A(1,1))*cmplx(D1(3),D1(4),kind=8)
-    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D1(3),D1(4),nrm)
-    
+    ! merge G1 with Q
+    call z_upr1fact_mergebulge(.FALSE.,2,.FALSE.,Q,D1,G1)
+
     ! update vecs
     if (VEC) then
     

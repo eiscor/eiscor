@@ -81,16 +81,21 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   
   ! compute variables
   integer :: ii, ir1, ir2, id1, id2
-  logical :: final_flag
+  logical :: final_flag, tp(2)
   real(8) :: G1(3), G2(3), G3(3)
+  real(8) :: tq(6), td1(6), tc1(9), tb1(9), td2(6), tc2(9), tb2(9)
   complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2)
   
   ! compute final_flag
-  final_flag = FUN(N,P)
-  
+  if (N.LT.3) then 
+    final_flag = .FALSE.
+  else
+    final_flag = FUN(N,P)
+  end if  
+
   ! compute shift
   ! random shift
-  if(mod(ITCNT+1,16) == 0)then
+  if ((mod(ITCNT+1,16) == 0).OR.(ITCNT.LT.0)) then
     call random_number(G1(1))
     call random_number(G1(2))
     shift = cmplx(G1(1),G1(2),kind=8)
@@ -98,17 +103,53 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   ! wilkinson shift
   else
   
+    ! special case N = 2
+    if (N.LT.3) then 
+
+      ! pad with identity
+      tp = .FALSE.
+      tq = 0d0; tq(1) = 1d0; tq(4:6) = Q
+      td1 = 0d0; td1(1) = 1d0; td1(3:6) = D1(3:6)
+      tc1 = 0d0; tc1(3) = 1d0; tc1(4:9) = C1
+      tb1 = 0d0; tb1(3) = -1d0; tb1(4:9) = B1
+      td2 = 0d0; td2(1) = 1d0; td2(3:6) = D2(3:6)
+      tc2 = 0d0; tc2(3) = 1d0; tc2(4:9) = C2
+      tb2 = 0d0; tb2(3) = -1d0; tb2(4:9) = B2
+    
+    ! general case
+    else 
+
+      ! store in temp arrays    
+      if (N.EQ.3) then
+        tp(1) = .FALSE.
+        tp(2) = P(N-2)
+      else
+        tp = P((N-3):(N-2))
+      end if
+      ir2 = 3*N; ir1 = ir2-8
+      id2 = 2*N; id1 = id2-5
+      tq = Q((ir1):(ir2-3))
+      td1 = D1(id1:id2)
+      tc1 = C1(ir1:ir2)
+      tb1 = B1(ir1:ir2)
+      td2 = D2(id1:id2)
+      tc2 = C2(ir1:ir2)
+      tb2 = B2(ir1:ir2)
+
+    end if
+
     ! compute wilkinson shift
-    ir2 = 3*N; ir1 = ir2-8
-    id2 = 2*N; id1 = id2-5
-    call z_upr1fact_singleshift(QZ,P((N-3):(N-2)) &
-    ,Q((ir1):(ir2-3)),D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2) &
-    ,D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),shift)
+    call z_upr1fact_singleshift(QZ,tp,tq,td1,tc1,tb1,td2,tc2,tb2,shift)
 
   end if
 
   ! build bulge
-  call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
+  if (N.LT.3) then
+    tq = 0d0; tq(1:3) = Q(1:3); tq(4) = 1d0
+  else
+    tq = Q
+  end if
+  call z_upr1fact_buildbulge(QZ,P(1),tq,D1(1:4),C1(1:6),B1(1:6) &
   ,D2(1:4),C2(1:6),B2(1:6),shift,G2)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -36,6 +36,7 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
   
   ! compute variables
   integer :: ii, INFO
+  real(8) :: scl
   logical, allocatable :: P(:)
   integer, allocatable :: ITS(:)
   real(8), allocatable :: Q(:),D1(:),C1(:),B1(:)
@@ -78,12 +79,13 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
   P = .FALSE.
 
   ! fill V and W
-  V(N) = ((-1d0)**(N))*COEFFS(N+1)
+  scl = maxval(abs(COEFFS))
+  V(N) = ((-1d0)**(N))*COEFFS(N+1)/scl
   do ii=1,(N-1)
-    V(ii) = -COEFFS(N+1-ii)
+    V(ii) = -COEFFS(N+1-ii)/scl
   end do
   W = cmplx(0d0,0d0,kind=8)
-  W(N) = COEFFS(1)
+  W(N) = COEFFS(1)/scl
 
   ! factor companion matrix
   call z_comppenc_factor(.TRUE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
@@ -94,7 +96,16 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS)
 !  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_cmv,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
   call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_random,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
 !  call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  
+
+  ! check INFO
+  if (INFO.NE.0) then
+    print*,""
+    print*,"INFO:",INFO
+    print*,""
+    deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W,T)
+    return  
+  end if
+
   ! extract roots
   call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,V)
   call z_upr1fact_extracttri(.TRUE.,N,D2,C2,B2,W)

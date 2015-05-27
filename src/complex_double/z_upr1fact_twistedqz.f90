@@ -172,7 +172,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   STP = N-1
   ZERO = 0
   ITMAX = 20*N
-  ITCNT = 0
+  ITCNT = -1
   
   ! iteration loop
   do kk=1,ITMAX
@@ -182,6 +182,47 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       exit
     end if
 
+!print*,""
+!print*,"Inside twisted QZ"
+!print*,"STR:",STR
+!print*,"STP:",STP
+!print*,"Q"
+!do ii=1,(N-1)
+!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+!end do
+!print*,""
+!print*,"D1"
+!do ii=1,(N+1)
+!print*,D1(2*ii-1),D1(2*ii)
+!end do
+!print*,""
+!print*,"C1"
+!do ii=1,(N)
+!print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
+!end do
+!print*,""
+!print*,"B1"
+!do ii=1,(N)
+!print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
+!end do
+!print*,""
+!print*,"D2"
+!do ii=1,(N+1)
+!print*,D2(2*ii-1),D2(2*ii)
+!end do
+!print*,""
+!print*,"C2"
+!do ii=1,(N)
+!print*,C2(3*ii-2),C2(3*ii-1),C2(3*ii)
+!end do
+!print*,""
+!print*,"B2"
+!do ii=1,(N)
+!print*,B2(3*ii-2),B2(3*ii-1),B2(3*ii)
+!end do
+!print*,""
+!pause
+
     ! check for deflation
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)) &
     ,Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)),ZERO)
@@ -190,7 +231,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     if(STP == (STR+ZERO-1))then
     
       ! update indices
-      ITS(STR+STP-1) = ITCNT
+      ITS(STR+ZERO-1) = ITCNT
       ITCNT = 0
       STP = STP - 1
       ZERO = 0
@@ -199,6 +240,11 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     ! if 2x2 block remove and check again
     else if(STP == (STR+ZERO))then
     
+      ! check STR
+      if (STR <= ZERO) then
+        STR = ZERO+1
+      end if
+
       ! call 2x2 deflation
       call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)) &
       ,D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
@@ -207,11 +253,14 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       ,N,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
     
       ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
-      STP = STP - 2
-      ZERO = 0
-      STR = 1
+      ITCNT = ITCNT + 1
+ 
+      ! update indices
+!      ITS(STR+STP-1) = ITCNT
+!      ITCNT = 0
+!      STP = STP - 2
+!      ZERO = 0
+!      STR = 1
     
     ! if greater than 2x2 chase a bulge
     else
@@ -229,8 +278,12 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       ,B2((3*STR-2):(3*STP+3)),N,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
      
       ! update indices
-      ITCNT = ITCNT + 1
- 
+      if (ITCNT.EQ.-1) then 
+        ITCNT = 1 
+      else
+        ITCNT = ITCNT + 1
+      end if
+
     end if
     
     ! if ITMAX hit
