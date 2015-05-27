@@ -6,8 +6,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine passes a rotation through an upper-triangular matrix 
-! stored as the product of a diagonal matrix and 2 sequences of 
-! rotations.
+! stored as the product of 2 sequences of Givens rotations.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -16,10 +15,6 @@
 !  DIR             LOGICAL
 !                    .TRUE.: pass rotation from left to right
 !                    .FALSE.: pass rotation from right to left
-!
-!  D               REAL(8) array of dimension (4)
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
 !
 !  C               REAL(8) array of dimension (6)
 !                    array of generators for upper-triangular parts
@@ -31,13 +26,13 @@
 !                    generator for rotation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
+subroutine z_upr1fact_rot3throughtri(DIR,C,B,G)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: DIR
-  real(8), intent(inout) :: D(4), C(6), B(6), G(3)
+  real(8), intent(inout) :: C(6), B(6), G(3)
  
   ! compute variables
   logical :: SYM
@@ -54,9 +49,6 @@ subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
   ! L2R
   if (DIR) then
   
-    ! through D
-    call z_rot3_swapdiag(DIR,D,G)
- 
     ! through C and B, symmetric case
     if (SYM) then
     
@@ -116,9 +108,6 @@ subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
       
     end if
     
-    ! through D
-    call z_rot3_swapdiag(DIR,D,G)
-  
   end if
 
 end subroutine z_upr1fact_rot3throughtri
