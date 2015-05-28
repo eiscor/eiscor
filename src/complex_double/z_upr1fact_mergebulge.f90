@@ -5,10 +5,6 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine fuses a Givens rotation represented by 3 real numbers: 
-! the real and imaginary parts of a complex cosine and a scrictly real 
-! sine into the unitary extended hessenberg part of a upr1 pencil.
-!
 ! There are only 4 possibilities for this fusion:
 !
 ! 1)    top, left  <=>      TOP.AND..NOT.P(1)
@@ -48,62 +44,64 @@ subroutine z_upr1fact_mergebulge(TOP,P,Q,G)
   
   ! compute variables
   real(8) :: B(4), nrm
+
+! This is only here for debbugging purposes and should be removed when
+! code is finalized.
+! check to see if P(1) == P(2)
+if (.NOT.(P(1).EQV.P(2))) then
+
+    print*,""
+    print*,""
+    print*,"Inside z_upr1fact_mergebulge."
+    print*,"  P(1) must equal P(2)!"
+    print*,""
+    print*,""
+
+end if
   
   ! fusion at top from left
   if (TOP.AND..NOT.P(1)) then
-  
+
+    ! temporary storage
+    B(1:2) = G(1:2)
+    B(3) = G(3)*Q(1)
+    B(4) = -G(3)*Q(2)
+
     ! fuse with Q 
-    call z_rot4_rot3fuse(.TRUE.,Q(1:4),G) 
+    call z_rot4_rot4fuse(.TRUE.,Q(5:8),B) 
 
   ! fusion at top from right
   else if (TOP.AND.P(1)) then
-  
+
+    ! temporary storage
+    B(1:2) = G(1:2)
+    B(3) = G(3)*Q(1)
+    B(4) = G(3)*Q(2)
+
     ! fuse with Q 
-    call z_rot4_rot3fuse(.FALSE.,Q(1:4),G) 
+    call z_rot4_rot4fuse(.FALSE.,Q(5:8),B) 
 
   ! fusion at bottom from right
   else if (.NOT.TOP.AND..NOT.P(1)) then
-    
-    ! next Q is not in the way
-    if (P(2)) then
   
-      ! fuse with Q 
-      call z_rot4_rot3fuse(.FALSE.,Q(1:4),G) 
+    ! temporary storage
+    B(1:2) = G(1:2)
+    B(3) = G(3)*Q(5)
+    B(4) = G(3)*Q(6)
 
-    ! next Q is in the way
-    else
-  
-      ! temporary storage
-      B(1:2) = G(1:2)
-      B(3) = G(3)*Q(5)
-      B(4) = G(3)*Q(6)
-
-      ! fuse with Q 
-      call z_rot4_rot4fuse(.FALSE.,Q(1:4),B) 
-
-    end if
+    ! fuse with Q 
+    call z_rot4_rot4fuse(.FALSE.,Q(1:4),B) 
 
   ! fusion at bottom from left
   else
-    
-    ! next Q is not in the way
-    if (.NOT.P(2)) then
   
-      ! fuse with Q 
-      call z_rot4_rot3fuse(.TRUE.,Q(1:4),G) 
+    ! temporary storage
+    B(1:2) = G(1:2)
+    B(3) = G(3)*Q(5)
+    B(4) = -G(3)*Q(6)
 
-    ! next Q is in the way
-    else
-  
-      ! temporary storage
-      B(1:2) = G(1:2)
-      B(3) = G(3)*Q(5)
-      B(4) = -G(3)*Q(6)
-
-      ! fuse with Q 
-      call z_rot4_rot4fuse(.TRUE.,Q(1:4),B) 
-
-    end if
+    ! fuse with Q 
+    call z_rot4_rot4fuse(.TRUE.,Q(1:4),B) 
 
   end if
 
