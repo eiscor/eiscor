@@ -169,8 +169,12 @@ print*,""
       ,B2((3*STR-2):(3*STP+3)),M,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
      
       ! update indices
-      ITCNT = ITCNT + 1
- 
+      if (ITCNT.LT.0) then 
+        ITCNT = 1
+      else
+        ITCNT = ITCNT + 1
+      end if
+
     end if
     
     ! if ITMAX hit

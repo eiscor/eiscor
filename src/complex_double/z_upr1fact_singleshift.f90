@@ -97,10 +97,10 @@ end if
 
   ! update R2
   if (P(1)) then 
-    R2(2:3,:) = matmul(transpose(conjg(H)),R2(2:3,:))
+    R2(1:2,:) = matmul(transpose(conjg(H)),R2(1:2,:))
   ! update R1
   else
-    R1(2:3,:) = matmul(H,R1(2:3,:))
+    R1(1:2,:) = matmul(H,R1(1:2,:))
   end if
 
   ! store ratio of bottom right entries

@@ -49,19 +49,23 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
   ! input variables
   logical, intent(in) :: QZ
   integer, intent(in) :: N
-  logical, intent(in) :: P(N)
-  complex(8), intent(inout) :: V(N), W(N)
-  real(8), intent(inout) :: Q(4*(N+1)), C1(3*N), B1(3*N), C2(3*N), B2(3*N)
+  logical, intent(inout) :: P(N)
   integer, intent(inout) :: INFO
+  real(8), intent(inout) :: Q(4*(N+1)), C1(3*N), B1(3*N), C2(3*N), B2(3*N)
+  complex(8), intent(inout) :: V(N), W(N)
   
   ! compute variables
+  logical :: tP(2)
   integer :: ii
-  real(8) :: phr, phi, nrm, beta
+  real(8) :: phr, phi, nrm, beta, tQ(8)
   complex(8) :: temp
   
   ! initialize info
   INFO = 0
-  
+ 
+  ! fix P(1)
+  P(1) = P(2)
+
   ! initialize Q
   Q = 0d0
   Q(1) = 1d0
@@ -87,14 +91,16 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
   B1 = 0d0
   C1 = 0d0
 
-! this code is not ready from here down
-
   ! compute the phase of last coefficient
   call d_rot2_vec2gen(dble(V(N)),aimag(V(N)),phr,phi,beta)
  
   ! store in Q
   Q(4*N+1) = phr
   Q(4*N+2) = phi
+
+  ! move to the correct side if necessary
+  P(N) = .FALSE.
+  call z_upr1fact_correctend(.FALSE.,P((N-1):N),Q((4*N-3):(4*N+4)))
 
   ! initialize bottom of C1
   call d_rot2_vec2gen(beta,-1d0,C1(3*N-2),C1(3*N),nrm)
@@ -145,17 +151,18 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
     ! compute the phase of last coefficient
     call d_rot2_vec2gen(dble(W(N)),aimag(W(N)),phr,phi,beta)
  
-    ! store in Q
-    nrm = Q(4*(N-1)-1)*phr + Q(4*(N-1))*phi
-    Q(4*(N-1)) = -Q(4*(N-1)-1)*phi + Q(4*(N-1))*phr
-    Q(4*(N-1)-1) = nrm
-    call d_rot4_vec4gen(Q(4*(N-1)-3),Q(4*(N-1)-2),Q(4*(N-1)-1),Q(4*(N-1)) &
-    ,Q(4*(N-1)-3),Q(4*(N-1)-2),Q(4*(N-1)-1),Q(4*(N-1)),nrm)
+    ! store in tQ
+    tQ = 0d0; tQ(1:4) = Q((4*N-3):(4*N))
+    tQ(5) = phr
+    tQ(6) = -phi
 
-    nrm = Q(4*N-3)*phr - Q(4*N-2)*phi
-    Q(4*N-2) = Q(4*N-3)*phi + Q(4*N-2)*phr
-    Q(4*N-3) = nrm
-    call d_rot2_vec2gen(Q(4*N-3),Q(4*N-2),Q(4*N-3),Q(4*N-2),nrm)
+    ! move to the correct side if necessary
+    tP(1) = P(N-1); tP(2) = .TRUE.
+    call z_upr1fact_correctend(.FALSE.,tP,tQ)
+
+    ! update Q
+    temp = cmplx(tQ(5),tQ(6),kind=8)*cmplx(Q(4*N+1),Q(4*N+2),kind=8)
+    call d_rot2_vec2gen(dble(temp),aimag(temp),Q(4*N+1),Q(4*N+2),nrm)
 
     ! initialize bottom of C2
     call d_rot2_vec2gen(beta,-1d0,C2(3*N-2),C2(3*N),nrm)
@@ -177,7 +184,7 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
       B2(3*(N-ii)-1) = -C2(3*(N-ii)-1)
       B2(3*(N-ii)) = -C2(3*(N-ii))
 
-      ! update last entry of V using C2
+      ! update last entry of W using C2
       temp = cmplx(C2(3*(N-ii)-2),-C2(3*(N-ii)-1),kind=8)*W(N-ii) &
       + C2(3*(N-ii))*temp
 

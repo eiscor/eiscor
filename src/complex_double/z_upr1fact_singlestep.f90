@@ -104,8 +104,8 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,C1,B1,C2,B2,M,V,W,ITCNT)
     ! N < 3
     if (N.LT.3) then
 
-      tP(1) = .FALSE.; tP(2:3) = P((N-1):N)
-      tQ = 0d0; tQ(1) = 1d0; tQ(5:12) = Q(5:12)
+      tP(1) = P(N-1); tP(2:3) = P((N-1):N)
+      tQ(1:12) = Q(1:12)
       tC1 = 0d0; tC1(3) = 1d0; tC1(4:9) = C1
       tB1 = 0d0; tB1(3) = -1d0; tB1(4:9) = B1
 
