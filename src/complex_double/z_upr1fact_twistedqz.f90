@@ -40,15 +40,11 @@
 !  N               INTEGER
 !                    dimension of matrix
 !
-!  P               LOGICAL array of dimension (N-2)
+!  P               LOGICAL array of dimension (N)
 !                    array of position flags for Q
 !
-!  Q               REAL(8) array of dimension (3*(N-1))
+!  Q               REAL(8) array of dimension (4*(N+1))
 !                    array of generators for first sequence of rotations
-!
-!  D1,D2           REAL(8) arrays of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
 !
 !  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
 !                    array of generators for upper-triangular parts
@@ -56,34 +52,36 @@
 !
 ! OUTPUT VARIABLES:
 !
-!  V              COMPLEX(8) array of dimension (N,N)
-!                   right schur vectors
+!  M               INTEGER
+!                    leading dimension of V and W
 !
-!  W              COMPLEX(8) array of dimension (N,N)
-!                   left schur vectors
+!  V               COMPLEX(8) array of dimension (M,N)
+!                    right schur vectors
 !
-!  ITS            INTEGER array of dimension (N-1)
-!                   Contains the number of iterations per deflation
+!  W               COMPLEX(8) array of dimension (M,N)
+!                    left schur vectors
 !
-!  INFO           INTEGER
-!                   INFO = 1 implies no convergence 
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies N, Q, D1, C1, B1, D2, C2 or B2 is invalid
-!                   INFO = -9 implies V is invalid
-!                   INFO = -10 implies W is invalid
+!  ITS             INTEGER array of dimension (N-1)
+!                    Contains the number of iterations per deflation
+!
+!  INFO            INTEGER
+!                    INFO = 1 implies no convergence 
+!                    INFO = 0 implies successful computation
+!                    INFO = -1 implies N, Q, D1, C1, B1, D2, C2 or B2 is invalid
+!                    INFO = -9 implies V is invalid
+!                    INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,C1,B1,C2,B2,M,V,W,ITS,INFO)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: QZ, VEC, ID
-  integer, intent(in) :: N
-  logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
-  real(8), intent(inout) :: D2(2*(N+1)), C2(3*N), B2(3*N)
-  complex(8), intent(inout) :: V(N,N), W(N,N)
+  integer, intent(in) :: N, M
+  logical, intent(inout) :: P(N)
+  real(8), intent(inout) :: Q(4*(N+1)), C1(3*N), B1(3*N), C2(3*N), B2(3*N)
+  complex(8), intent(inout) :: V(M,N), W(M,N)
   integer, intent(inout) :: INFO, ITS(N-1)
   interface
     function FUN(m,flags)
@@ -127,14 +125,25 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   ! iteration loop
   do kk=1,ITMAX
 
+print*,""
+print*,""
+print*,"Inside z_upr1fact_twistedqz"
+print*,"STR:",STR
+print*,"STP:",STP
+print*,"Q"
+do ii=1,(N+1)
+print*,Q(4*(ii-1)+1),Q(4*(ii-1)+2),Q(4*(ii-1)+3),Q(4*(ii-1)+4)
+end do
+print*,""
+print*,""
+
     ! check for completion
     if(STP <= 0)then    
       exit
     end if
     
     ! check for deflation
-    call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
-    ,D1((2*STR-1):(2*STP+2)),ZERO)
+    call z_upr1fact_deflationcheck(STP-STR+2,Q((4*STR+1):(4*STP+4)),ZERO)
     
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
@@ -146,22 +155,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       ZERO = 0
       STR = 1
     
-    ! if 2x2 block remove and check again
-    else if(STP == (STR+ZERO))then
-    
-      ! call 2x2 deflation
-      call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)),D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
-      ,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)),C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)),N &
-      ,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
-    
-      ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
-      STP = STP - 2
-      ZERO = 0
-      STR = 1
-    
-    ! if greater than 2x2 chase a bulge
+    ! if greater than 1x1 chase a bulge
     else
 
       ! check STR
@@ -170,9 +164,9 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       end if
 
       ! perform singleshift iteration
-      call z_upr1fact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &
-      ,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)) &
-      ,B2((3*STR-2):(3*STP+3)),N,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
+      call z_upr1fact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP+1)),Q((4*STR-3):(4*STP+8)) &
+      ,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)),C2((3*STR-2):(3*STP+3)) &
+      ,B2((3*STR-2):(3*STP+3)),M,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
      
       ! update indices
       ITCNT = ITCNT + 1

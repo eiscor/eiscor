@@ -18,7 +18,7 @@
 !  N               INTEGER
 !                    dimension of matrix
 !
-!  P               LOGICAL array of dimension (N-1)
+!  P               LOGICAL array of dimension (N)
 !                    array of position flags for Q
 !
 !  V               COMPLEX(8) array of dimension (N)
@@ -29,7 +29,7 @@
 !
 ! OUTPUT VARIABLES:
 !
-!  Q               REAL(8) array of dimension (4*N)
+!  Q               REAL(8) array of dimension (4*(N+1))
 !                    array of generators for first sequence of rotations
 !
 !  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
@@ -49,9 +49,9 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
   ! input variables
   logical, intent(in) :: QZ
   integer, intent(in) :: N
-  logical, intent(in) :: P(N-1)
+  logical, intent(in) :: P(N)
   complex(8), intent(inout) :: V(N), W(N)
-  real(8), intent(inout) :: Q(4*N), C1(3*N), B1(3*N), C2(3*N), B2(3*N)
+  real(8), intent(inout) :: Q(4*(N+1)), C1(3*N), B1(3*N), C2(3*N), B2(3*N)
   integer, intent(inout) :: INFO
   
   ! compute variables
@@ -64,15 +64,16 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
   
   ! initialize Q
   Q = 0d0
-  do ii = 1,(N-1)
-    Q(3*ii) = 1d0
+  Q(1) = 1d0
+  do ii = 2,N
+    Q(4*ii-1) = 1d0
   end do
 
   ! shuffle V
   do ii = 1,(N-2)
 
     ! permute if necessary
-    if (P(N-ii-1)) then
+    if (P(N-ii)) then
 
       temp = (-1d0)**(N-ii-1)*V(N-ii)
       V(2:(N-ii)) = V(1:(N-ii-1))
@@ -86,12 +87,14 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
   B1 = 0d0
   C1 = 0d0
 
+! this code is not ready from here down
+
   ! compute the phase of last coefficient
   call d_rot2_vec2gen(dble(V(N)),aimag(V(N)),phr,phi,beta)
  
   ! store in Q
-  Q(4*N-3) = phr
-  Q(4*N-2) = phi
+  Q(4*N+1) = phr
+  Q(4*N+2) = phi
 
   ! initialize bottom of C1
   call d_rot2_vec2gen(beta,-1d0,C1(3*N-2),C1(3*N),nrm)

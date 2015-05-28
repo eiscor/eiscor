@@ -33,7 +33,7 @@ subroutine z_upr1fact_deflationcheck(N,Q,ZERO)
   
   ! input variables
   integer, intent(in) :: N
-  real(8), intent(inout) :: Q(4*N)
+  real(8), intent(inout) :: Q(4*(N-1))
   integer, intent(inout) :: ZERO
 
   ! compute variables
