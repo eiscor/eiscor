@@ -16,10 +16,10 @@
 !                    .TRUE.: second triangular factor is assumed nonzero
 !                    .FALSE.: second triangular factor is assumed to be identity
 !
-!  P               LOGICAL 
-!                    position flag for Q
+!  P               LOGICAL array of dimension (2)
+!                    position flags for Q
 !
-!  Q               REAL(8) array of dimension (4)
+!  Q               REAL(8) array of dimension (8)
 !                    array of generators for first sequence of rotations
 !
 !  C1,B1,C2,B2     REAL(8) arrays of dimension (6)
@@ -42,8 +42,8 @@ subroutine z_upr1fact_buildbulge(QZ,P,Q,C1,B1,C2,B2,SHFT,G)
   implicit none
   
   ! input variables
-  logical, intent(in) :: QZ, P
-  real(8), intent(in) :: Q(4), C1(6), B1(6), C2(6), B2(6)
+  logical, intent(in) :: QZ, P(2)
+  real(8), intent(in) :: Q(8), C1(6), B1(6), C2(6), B2(6)
   complex(8), intent(in) :: SHFT
   real(8), intent(inout) :: G(3)
   
@@ -64,7 +64,7 @@ subroutine z_upr1fact_buildbulge(QZ,P,Q,C1,B1,C2,B2,SHFT,G)
 
   ! compute first columns
   ! P == FALSE
-  if (.NOT.P) then
+  if (.NOT.P(2)) then
    
     ! first column of A
     vec1(1) = cmplx(Q(1),Q(2),kind=8)*A(1,1)
