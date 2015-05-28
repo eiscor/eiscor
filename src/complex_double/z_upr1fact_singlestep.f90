@@ -27,15 +27,11 @@
 !  N               INTEGER
 !                    dimension of matrix
 !
-!  P               LOGICAL array of dimension (N-2)
+!  P               LOGICAL array of dimension (N)
 !                    array of position flags for Q
 !
-!  Q               REAL(8) array of dimension (3*(N-1))
+!  Q               REAL(8) array of dimension (4*(N+1))
 !                    array of generators for givens rotations
-!
-!  D1,D2           REAL(8) arrays of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
-!                    If QZ = .FALSE., D2 is unused.
 !
 !  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
 !                    array of generators for upper-triangular parts of the pencil
@@ -59,16 +55,15 @@
 !                   Contains the number of iterations since last deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
+subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,C1,B1,C2,B2,M,V,W,ITCNT)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: QZ, VEC
   integer, intent(in) :: M, N
-  logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
-  real(8), intent(inout) :: D2(2*(N+1)), C2(3*N), B2(3*N)
+  logical, intent(inout) :: P(N)
+  real(8), intent(inout) :: Q(4*(N+1)), C1(3*N), B1(3*N), C2(3*N), B2(3*N)
   complex(8), intent(inout) :: V(M,N), W(M,N)
   integer, intent(in) :: ITCNT
   interface
@@ -82,63 +77,66 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   ! compute variables
   integer :: ii, ir1, ir2, id1, id2
   logical :: final_flag
-  real(8) :: G1(3), G2(3), G3(3)
-  complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2)
+  real(8) :: G1(4), G2(4), G3(4)
+  complex(8) :: shift
+  logical :: tP(3)
+  real(8) :: tQ(12), tC1(9), tB1(9), tC2(9), tB2(9)
   
   ! compute final_flag
-  final_flag = FUN(N,P)
+  final_flag = FUN(N,P(2:(N-1)))
+
+  ! correct top end of Q
+  call z_upr1fact_correctend(.TRUE.,P(1:2),Q(1:8))
   
   ! compute shift
   ! random shift
-  if(mod(ITCNT+1,11) == 0)then
+  if ((mod(ITCNT+1,16) == 0).OR.(ITCNT.LT.0)) then
     call random_number(G1(1))
     call random_number(G1(2))
     shift = cmplx(G1(1),G1(2),kind=8)
           
   ! wilkinson shift
   else
+
+    tC2 = 0d0
+    tB2 = 0d0
   
-    ! get 2x2 blocks
-    ir2 = 3*N; ir1 = ir2-5
-    id2 = 2*N; id1 = id2-3
-    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2),Q((ir1-3):(ir2-3)) &
-    ,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+    ! N < 3
+    if (N.LT.3) then
+
+      tP(1) = .FALSE.; tP(2:3) = P((N-1):N)
+      tQ = 0d0; tQ(1) = 1d0; tQ(5:12) = Q(5:12)
+      tC1 = 0d0; tC1(3) = 1d0; tC1(4:9) = C1
+      tB1 = 0d0; tB1(3) = -1d0; tB1(4:9) = B1
+
+      if (QZ) then
+        tC2 = 0d0; tC2(3) = 1d0; tC2(4:9) = C2
+        tB2 = 0d0; tB2(3) = -1d0; tB2(4:9) = B2
+      end if
+
+    ! N > 2
+    else
   
-    ! if not QZ
-    if (.NOT.QZ) then
-      B = cmplx(0d0,0d0,kind=8)
-      B(1,1) = cmplx(1d0,0d0,kind=8); B(2,2) = B(1,1)
-    end if
-    
-    ! store bottom right entries
-    shift = A(2,2)
-    rho = B(2,2)
-        
-    ! compute eigenvalues and eigenvectors
-    call z_2x2array_eig(QZ,A,B,Vt,Wt)
-          
-    ! choose wikinson shift
-    ! complex abs does not matter here
-    if(abs(A(2,2)-shift)+abs(B(2,2)-rho) < abs(A(1,1)-shift)+abs(B(1,1)-rho))then
-      shift = A(2,2)
-      rho = B(2,2)
-    else
-      shift = A(1,1)
-      rho = B(1,1)
-    end if
-    
-    ! avoid zero division
-    if ((dble(rho).EQ.0).AND.(aimag(rho).EQ.0)) then
-      shift = 1d16 ! not sure if this is a good idea?
-    else
-      shift = shift/rho
+      tP = P((N-2):N)
+      tQ = Q((4*(N+1)-11):(4*(N+1)))
+      tC1 = C1((3*N-8):(3*N))
+      tB1 = B1((3*N-8):(3*N))
+
+      if (QZ) then
+        tC2 = C2((3*N-8):(3*N))
+        tB2 = B2((3*N-8):(3*N))
+      end if
+
     end if
 
+    ! compute shift
+    call z_upr1fact_singleshift(QZ,tP,tQ,tC1,tB1,tC2,tB2,shift)
+  
   end if
 
   ! build bulge
-  call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
-  ,D2(1:4),C2(1:6),B2(1:6),shift,G2)
+  call z_upr1fact_buildbulge(QZ,P(1:2),Q(1:8),C1(1:6),B1(1:6) &
+  ,C2(1:6),B2(1:6),shift,G1)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -147,231 +145,101 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   if (QZ) then
   
+    ! initialize chase
+    ! inverse hess
+    if(P(2)) then
+
+! this warning is temporary and should be removed when the code is
+! finalized
+print*,"" 
+print*,"" 
+print*,"Inside z_upr1fact_singlestep."
+print*,"  P(2) == .TRUE. is not supported!" 
+print*,"" 
+print*,"" 
+
+    ! hess
+    else
+
+      ! G2 = G1 = G1^-1
+      G1(2) = -G1(2); G1(3) = -G1(3)
+      G2 = G1
+
+      ! merge G1 with Q
+      call z_upr1fact_mergebulge(.TRUE.,P(1:2),Q(1:8),G1)
+
+      ! pass G2 from left to right through R2
+      call z_upr1fact_rot3throughtri(.TRUE.,C2(1:6),B2(1:6),G2)
+
+      ! G2 = G2^-1
+      G2(2) = -G2(2); G2(3) = -G2(3)
+
+      ! pass G2 from right to left through R1
+      call z_upr1fact_rot3throughtri(.FALSE.,C1(1:6),B1(1:6),G2)
+
+      ! prepare G1, G2 and G3 for turnover
+      G1 = Q(5:8)
+      G3 = G2
+      G2 = Q(9:12)      
+
+    end if
+
     ! chase bulge
-    do ii=1,(N-1)
-    
+    do ii=1,(N-2)
+
+! this warning is temporary and should be removed when the code is
+! finalized
+print*,"" 
+print*,"" 
+print*,"Inside z_upr1fact_singlestep."
+print*,"  N > 2 is not supported!" 
+print*,"" 
+print*,"" 
 
     end do  
   
+    ! set new position flag
+    P(N-1) = final_flag
+
+    ! finalize chase
+    ! inverse hess
+    if(P(N-1)) then
+
+! this warning is temporary and should be removed when the code is
+! finalized
+print*,"" 
+print*,"" 
+print*,"Inside z_upr1fact_singlestep."
+print*,"  P(N-1) == .TRUE. is not supported!" 
+print*,"" 
+print*,"" 
+
+    ! hess
+    else
+
+      ! correct top end of Q
+      call z_upr1fact_correctend(.FALSE.,P((N-1):N),Q((4*(N+1)-7):(4*(N+1))))
+  
+      ! merge G3 with Q
+      call z_upr1fact_mergebulge(.FALSE.,P((N-1):N),Q((4*(N+1)-7):(4*(N+1))),G3)
+
+    end if
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! iteration for QR
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   else
-  
-    ! update V
-    if (VEC) then
-      
-      A(1,1) = cmplx(G1(1),G1(2),kind=8)
-      A(2,1) = cmplx(G1(3),0d0,kind=8)
-      A(1,2) = -A(2,1)
-      A(2,2) = conjg(A(1,1))
-      
-      V(:,1:2) = matmul(V(:,1:2),A)
-      
-    end if
-    
-    ! set G1 as G2^-1 for turnover
-    G1(1) = G2(1)
-    G1(2) = -G2(2)
-    G1(3) = -G2(3)
-    
-    ! merge with Q if necessary
-    if (.NOT.P(1)) then
-    
-      ! merge from left
-      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G1)
-      
-      ! set G1 for turnover
-      G1(1) = Q(1)
-      G1(2) = Q(2)
-      G1(3) = Q(3)
-
-    end if
-    
-    ! pass G2 through triangular part
-    call z_upr1fact_rot3throughtri(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G2)
-    
-    ! set G3 for turnover
-    G3 = G2
-    
-    ! merge with Q if necessary
-    if (P(1)) then
-    
-      ! merge from left
-      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G2)
-      
-      ! set G3 for turnover
-      G3(1) = Q(1)
-      G3(2) = Q(2)
-      G3(3) = Q(3)
-
-    end if
-    
-    ! set G2 for turnover
-    G2(1) = Q(4)
-    G2(2) = Q(5)
-    G2(3) = Q(6)    
-  
-    ! chase bulge
-    do ii=1,(N-3)
-    
-      ! execute turnover of G1G2G3
-      call z_rot3_turnover(G1,G2,G3)
-      
-      ! set Q(ii)
-      Q(3*ii-2) = G1(1)
-      Q(3*ii-1) = G1(2)
-      Q(3*ii) = G1(3)
-      
-      ! prepare for next turnover based on P(ii+1)
-      ! hess
-      if (.NOT.P(ii+1)) then
-      
-        ! set P(ii)
-        P(ii) = P(ii+1)
-        
-        ! set Q(ii+1)
-        Q(3*ii+1) = G2(1)
-        Q(3*ii+2) = G2(2)
-        Q(3*ii+3) = G2(3)        
  
-        ! set G1 for turnover
-        G1 = G2     
-        
-        ! set G2 for turnover
-        G2(1) = Q(3*ii+4)
-        G2(2) = Q(3*ii+5)
-        G2(3) = Q(3*ii+6)
-        
-        ! update V
-        if (VEC) then
-          
-          A(1,1) = cmplx(G3(1),G3(2),kind=8)
-          A(2,1) = cmplx(G3(3),0d0,kind=8)
-          A(1,2) = -A(2,1)
-          A(2,2) = conjg(A(1,1))
-          
-          V(:,(ii+1):(ii+2)) = matmul(V(:,(ii+1):(ii+2)),A)
-          
-        end if
-        
-        ! pass G3 through upper triangular part
-        call z_upr1fact_rot3throughtri(.FALSE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
-        ,B1((3*ii+1):(3*ii+6)),G3)
-        
-      ! inverse hess
-      else
-      
-        ! set P(ii)
-        P(ii) = P(ii+1)
-        
-        ! set Q(ii+1)
-        Q(3*ii+1) = G3(1)
-        Q(3*ii+2) = G3(2)
-        Q(3*ii+3) = G3(3)  
-        
-        ! pass G2 through upper triangular part
-        call z_upr1fact_rot3throughtri(.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
-        ,B1((3*ii+1):(3*ii+6)),G2)
-        
-        ! update V
-        if (VEC) then
-          
-          A(1,1) = cmplx(G2(1),-G2(2),kind=8)
-          A(2,1) = cmplx(-G2(3),0d0,kind=8)
-          A(1,2) = -A(2,1)
-          A(2,2) = conjg(A(1,1))
-          
-          V(:,(ii+1):(ii+2)) = matmul(V(:,(ii+1):(ii+2)),A)
-          
-        end if
-
-        ! set G1 for turnover
-        G1 = G2    
-        
-        ! set G2 for turnover
-        G2(1) = Q(3*ii+4)
-        G2(2) = Q(3*ii+5)
-        G2(3) = Q(3*ii+6)
-        
-      end if
-
-    end do
-    
-    ! final turnover
-    call z_rot3_turnover(G1,G2,G3)
-      
-    ! set P(N-1)
-    P(N-2) = final_flag
-    
-    ! finish transformation based on P(N-1)
-    ! hess
-    if (.NOT.P(N-2)) then
-    
-      ! set Q(N-2)
-      Q(3*(N-2)-2) = G1(1)
-      Q(3*(N-2)-1) = G1(2)
-      Q(3*(N-2)) = G1(3)   
-      
-      ! set Q(N-1)
-      Q(3*(N-1)-2) = G2(1)
-      Q(3*(N-1)-1) = G2(2)
-      Q(3*(N-1)) = G2(3)  
-      
-      ! update V
-      if (VEC) then
-          
-        A(1,1) = cmplx(G3(1),G3(2),kind=8)
-        A(2,1) = cmplx(G3(3),0d0,kind=8)
-        A(1,2) = -A(2,1)
-        A(2,2) = conjg(A(1,1))
-          
-        V(:,(N-1):N) = matmul(V(:,(N-1):N),A)
-         
-      end if    
-    
-      ! pass G3 through upper triangular part
-      call z_upr1fact_rot3throughtri(.FALSE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
-      ,B1((3*N-5):(3*N)),G3)
-        
-      ! merge bulge 
-      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G3)
-      
-    ! inverse hess
-    else
-    
-      ! set Q(N-2)
-      Q(3*(N-2)-2) = G1(1)
-      Q(3*(N-2)-1) = G1(2)
-      Q(3*(N-2)) = G1(3)   
-      
-      ! set Q(N-1)
-      Q(3*(N-1)-2) = G3(1)
-      Q(3*(N-1)-1) = G3(2)
-      Q(3*(N-1)) = G3(3)  
-      
-      ! pass G2 through upper triangular part
-      call z_upr1fact_rot3throughtri(.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
-      ,B1((3*N-5):(3*N)),G2)
-        
-      ! update V
-      if (VEC) then
-          
-        A(1,1) = cmplx(G2(1),-G2(2),kind=8)
-        A(2,1) = cmplx(-G2(3),0d0,kind=8)
-        A(1,2) = -A(2,1)
-        A(2,2) = conjg(A(1,1))
-          
-        V(:,N:(N+1)) = matmul(V(:,N:(N+1)),A)
-         
-      end if  
-      
-      ! merge bulge 
-      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
-      
-    end if
+! this warning is temporary and should be removed when the code is
+! finalized
+print*,"" 
+print*,"" 
+print*,"Inside z_upr1fact_singlestep."
+print*,"  QZ == .FALSE. is not supported!" 
+print*,"" 
+print*,"" 
     
   end if
   
