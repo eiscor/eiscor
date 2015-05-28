@@ -51,6 +51,20 @@ subroutine z_upr1fact_buildbulge(QZ,P,Q,C1,B1,C2,B2,SHFT,G)
   real(8) :: nrm
   complex(8) :: A(2,2), B(2,2), vec1(2), vec2(2)
   
+! This is only here for debbugging purposes and should be removed when
+! code is finalized.
+! check to see if P(1) == P(2)
+if (.NOT.(P(1).EQV.P(2))) then
+
+    print*,""
+    print*,""
+    print*,"Inside z_upr1fact_buildbulge."
+    print*,"  P(1) must equal P(2)!"
+    print*,""
+    print*,""
+
+end if
+  
   ! get first triangle
   call z_upr1fact_extracttri(.FALSE.,2,C1,B1,A)
 
@@ -63,23 +77,23 @@ subroutine z_upr1fact_buildbulge(QZ,P,Q,C1,B1,C2,B2,SHFT,G)
   end if
 
   ! compute first columns
-  ! P == FALSE
-  if (.NOT.P(2)) then
+  ! P(1) == .FALSE.
+  if (.NOT.P(1)) then
    
     ! first column of A
-    vec1(1) = cmplx(Q(1),Q(2),kind=8)*A(1,1)
-    vec1(2) = cmplx(Q(3),Q(4),kind=8)*A(1,1)
+    vec1(1) = cmplx(Q(1),-Q(2),kind=8)*cmplx(Q(5),Q(6),kind=8)*A(1,1)
+    vec1(2) = cmplx(Q(7),Q(8),kind=8)*A(1,1)
     
     ! first column of B
     vec2(1) = B(1,1)
     vec2(2) = B(2,1)
   
-  ! P == TRUE
+  ! P(1) == .TRUE.
   else
     
     ! Q^H e1
-    vec2(1) = cmplx(Q(1),-Q(2),kind=8)
-    vec2(2) = cmplx(-Q(3),Q(4),kind=8)
+    vec2(1) = cmplx(Q(1),Q(2),kind=8)*cmplx(Q(5),-Q(6),kind=8)
+    vec2(2) = cmplx(-Q(7),Q(8),kind=8)
     
     ! back solve with A
     vec2(2) = vec2(2)/A(2,2)
@@ -95,6 +109,7 @@ subroutine z_upr1fact_buildbulge(QZ,P,Q,C1,B1,C2,B2,SHFT,G)
   vec1 = vec1 - SHFT*vec2
   
   ! compute eliminator
-  call z_rot3_vec4gen(dble(vec1(1)),aimag(vec1(1)),dble(vec1(2)),aimag(vec1(2)),G(1),G(2),G(3),nrm)
+  call z_rot3_vec4gen(dble(vec1(1)),aimag(vec1(1)),dble(vec1(2)),aimag(vec1(2)) &
+  ,G(1),G(2),G(3),nrm)
       
 end subroutine z_upr1fact_buildbulge
