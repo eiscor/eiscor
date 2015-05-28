@@ -14,7 +14,7 @@
 !                    .TRUE.: second triangular factor is assumed nonzero
 !                    .FALSE.: second triangular factor is assumed to be identity
 !
-!  P               LOGICAL array of dimension (2)
+!  P               LOGICAL array of dimension (3)
 !                    position flags for Q
 !
 !  Q               REAL(8) array of dimension (12)
@@ -35,19 +35,30 @@ subroutine z_upr1fact_singleshift(QZ,P,Q,C1,B1,C2,B2,SHFT)
   implicit none
   
   ! input variables
-  logical, intent(in) :: QZ, P(2)
+  logical, intent(in) :: QZ, P(3)
   real(8), intent(in) :: Q(12), C1(9), B1(9), C2(9), B2(9)
   complex(8), intent(inout) :: SHFT
   
   ! compute variables
   complex(8) :: rho, R1(3,3), R2(3,3), H(2,2), K(2,2)
 
+! This is only here for debbugging purposes and should be removed when
+! code is finalized.
+! check to see if P(2) == P(3)
+if (.NOT.(P(2).EQV.P(3))) then
+
+    print*,""
+    print*,""
+    print*,"Inside z_upr1fact_singleshift."
+    print*,"  P(2) must equal P(3)!"
+    print*,""
+    print*,""
+
+end if
+  
   ! extract first triangle
   call z_upr1fact_extracttri(.FALSE.,3,C1,B1,R1)
   
-  ! update with Q 
-  R1(3,3) = cmplx(Q(9),Q(10),kind=8)*R1(3,3)
-
   ! extract second triangle
   if (QZ) then
 
@@ -70,9 +81,11 @@ subroutine z_upr1fact_singleshift(QZ,P,Q,C1,B1,C2,B2,SHFT)
 
   ! update R2
   if (P(2)) then 
+    R2(3,3) = cmplx(Q(9),-Q(10),kind=8)*R2(3,3)
     R2(2:3,:) = matmul(transpose(conjg(H)),R2(2:3,:))
   ! update R1
   else
+    R1(3,3) = cmplx(Q(9),Q(10),kind=8)*R1(3,3)
     R1(2:3,:) = matmul(H,R1(2:3,:))
   end if
 
