@@ -64,17 +64,17 @@ subroutine z_upr1fact_correctend(TOP,P,Q)
     ! P(1) == .FALSE. and P(2) == .TRUE.
     if ((.NOT.P(1)).AND.P(2)) then 
 
-      temp = cmplx(Q(1),Q(2),kind=8)*cmplx(Q(7),Q(8),kind=8)
-      call z_rot4_vec4gen(Q(5),Q(6),dble(temp),aimag(temp) &
-      ,Q(5),Q(6),Q(7),Q(8),nrm)
+      temp = cmplx(Q(3),Q(4),kind=8)*cmplx(Q(5),Q(6),kind=8)
+      call z_rot4_vec4gen(Q(1),Q(2),dble(temp),aimag(temp) &
+      ,Q(1),Q(2),Q(3),Q(4),nrm)
       P(2) = P(1)
 
     ! P(1) == .TRUE. and P(2) == .FALSE.
     else if (P(1).AND.(.NOT.P(2))) then 
 
-      temp = cmplx(Q(1),-Q(2),kind=8)*cmplx(Q(7),Q(8),kind=8)
-      call z_rot4_vec4gen(Q(5),Q(6),dble(temp),aimag(temp) &
-      ,Q(5),Q(6),Q(7),Q(8),nrm)
+      temp = cmplx(Q(3),Q(4),kind=8)*cmplx(Q(5),-Q(6),kind=8)
+      call z_rot4_vec4gen(Q(1),Q(2),dble(temp),aimag(temp) &
+      ,Q(1),Q(2),Q(3),Q(4),nrm)
       P(2) = P(1)
 
     end if

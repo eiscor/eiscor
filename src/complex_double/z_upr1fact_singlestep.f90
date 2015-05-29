@@ -187,14 +187,25 @@ print*,""
     ! chase bulge
     do ii=1,(N-2)
 
+      ! inverse hess
+      if (P(ii+1)) then
+
 ! this warning is temporary and should be removed when the code is
 ! finalized
 print*,"" 
 print*,"" 
 print*,"Inside z_upr1fact_singlestep."
-print*,"  N > 2 is not supported!" 
+print*,"  P(ii+1) == .TRUE. is not supported!" 
 print*,"" 
 print*,"" 
+ 
+      ! hess
+      else
+
+        ! update P
+        P(ii+1) = P(ii+2)
+
+      end if
 
     end do  
   

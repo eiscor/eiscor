@@ -134,7 +134,7 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
     do ii = 1,(N-2)
 
       ! permute if necessary
-      if (P(N-ii-1)) then
+      if (P(N-ii)) then
 
         temp = (-1d0)**(N-ii-1)*W(N-ii)
         W(2:(N-ii)) = W(1:(N-ii-1))
@@ -152,17 +152,30 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,C1,B1,C2,B2,INFO)
     call d_rot2_vec2gen(dble(W(N)),aimag(W(N)),phr,phi,beta)
  
     ! store in tQ
-    tQ = 0d0; tQ(1:4) = Q((4*N-3):(4*N))
+    tQ = 0d0
     tQ(5) = phr
     tQ(6) = -phi
 
-    ! move to the correct side if necessary
-    tP(1) = P(N-1); tP(2) = .TRUE.
-    call z_upr1fact_correctend(.FALSE.,tP,tQ)
+    ! merge into Q
+    if (P(N)) then
 
-    ! update Q
-    temp = cmplx(tQ(5),tQ(6),kind=8)*cmplx(Q(4*N+1),Q(4*N+2),kind=8)
-    call d_rot2_vec2gen(dble(temp),aimag(temp),Q(4*N+1),Q(4*N+2),nrm)
+      ! update Q
+      temp = cmplx(tQ(5),tQ(6),kind=8)*cmplx(Q(4*N+1),Q(4*N+2),kind=8)
+      call d_rot2_vec2gen(dble(temp),aimag(temp),Q(4*N+1),Q(4*N+2),nrm)
+
+    else
+      ! move to the correct side if necessary
+      tP(1) = P(N-1); tP(2) = .TRUE.
+      tQ(1:4) = Q((4*N-3):(4*N))
+      call z_upr1fact_correctend(.FALSE.,tP,tQ)
+      P((N-1):N) = tP
+      Q((4*N-3):(4*N)) = tQ(1:4) 
+
+      ! update Q
+      temp = cmplx(tQ(5),tQ(6),kind=8)*cmplx(Q(4*N+1),Q(4*N+2),kind=8)
+      call d_rot2_vec2gen(dble(temp),aimag(temp),Q(4*N+1),Q(4*N+2),nrm)
+  
+    end if
 
     ! initialize bottom of C2
     call d_rot2_vec2gen(beta,-1d0,C2(3*N-2),C2(3*N),nrm)

@@ -97,6 +97,9 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,C1,B1,C2,B2,M,V,W,ITS,INFO)
   
   ! initialize info
   INFO = 0
+
+  ! initialize random seed
+  call u_randomseed_initialize(INFO)
   
   ! initialize storage
   ITS = 0
@@ -120,7 +123,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,C1,B1,C2,B2,M,V,W,ITS,INFO)
   STP = N-1
   ZERO = 0
   ITMAX = 20*N
-  ITCNT = 0
+  ITCNT = -1
   
   ! iteration loop
   do kk=1,ITMAX
