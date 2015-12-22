@@ -78,7 +78,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   complex(8) :: ca, cb, cg, cd, temp
   
   complex(8) :: D1(N), D2(N), EL(N), EU(N)
-  real(8) :: QB(3*N-3),QC(3*N-3), DR(2*N), bulge(3)
+  real(8) :: QB(3*N-3),QC(3*N-3), DR(2*N), bulge(3), pi = EISCOR_DBL_PI
   
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
   
@@ -86,12 +86,21 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   INFO = 0
   
   ! parameters Moebius transformation
-  thg = 3d0
-  thd = 2d0
-  tha = 1d0
-  thb = 2d0
-  ag = 2d-1
-  ad = 5d-1
+  call u_randomseed_initialize(INFO)
+  call random_number(thg)
+  thg = 2d0*pi*thg
+  call random_number(thg)
+  thg = 2d0*pi*thg
+  call random_number(thd)
+  thd = 2d0*pi*thd
+  !thg = 3d0
+  !thd = 2d0
+  !tha = 1d0
+  thb = tha+thg-thd
+  !ag = 2d-1
+  !ad = 5d-1
+  call random_number(ag)
+  call random_number(ad)
   
   ! ca = ag exp(i tha)
   ca = ag * exp(cmplx(0d0,tha,kind=8))
@@ -251,6 +260,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
 
   ! back transformation
   do ii=1,N
+     !print*, DR(2*ii-1),DR(2*ii)
      D1(ii) = cmplx(DR(2*ii-1),DR(2*ii),kind=8)
      D1(ii) = (cd*D1(ii)-cb)/(-cg*D1(ii)+ca)
      ! print*, D1(ii)

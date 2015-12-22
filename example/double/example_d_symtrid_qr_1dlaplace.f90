@@ -14,9 +14,10 @@ program example_d_symtrid_qr_1dlaplace
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 4092
+  !integer, parameter :: N = 4092
   !integer, parameter :: N = 16
-  integer :: ii, jj, INFO
+  integer, parameter :: N = 1024
+  integer :: ii, jj, INFO, IWORK(3+5*N)
   real(8) :: WORK(14*N), D(N), E(N), Z, t
   !complex(8) :: V
   integer :: ITS(N-1)
@@ -30,7 +31,7 @@ program example_d_symtrid_qr_1dlaplace
 
   ! print banner
   print*,""
-  print*,"example_d_orthhess_rootsofunity:"
+  print*,"example_d_symtrid_qr_1dlaplace:"
   print*,""
   
   ! initialize T to be a tridiagonal matrix of the form
@@ -90,7 +91,7 @@ program example_d_symtrid_qr_1dlaplace
 
   ! print banner
   print*,""
-  print*,"LAPACK"
+  print*,"LAPACK DSTEQR"
   print*,""
   
   ! initialize T to be a tridiagonal matrix of the form
@@ -131,5 +132,51 @@ program example_d_symtrid_qr_1dlaplace
 
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
+
+
+  ! print banner
+  print*,""
+  print*,"LAPACK DSTEVD"
+  print*,""
+  
+  ! initialize T to be a tridiagonal matrix of the form
+  !  2 -1
+  ! -1  2 -1
+  !     -1 2 ...
+  D = 2d0
+  E = -1d0
+
+  ! run DSTEVD
+  call dstevd ('N', N, D, E, Z, 1, WORK, 14*N, IWORK, 3+5*N, INFO) 
+
+  ! check results
+  do ii=1,N
+     E(ii) = 2d0+2d0*cos(ii*EISCOR_DBL_PI/(N+1d0))
+  end do
+  Z = 0d0
+  do ii=1,N
+     t = abs(D(ii)-E(1))
+     INFO = 1
+     do jj=2,N
+        if (abs(D(ii)-E(jj))<t) then
+           t = abs(D(ii)-E(jj))
+           INFO = jj
+        end if
+     end do
+     
+     if (N<129) then
+        print*, D(ii), E(INFO), t
+     end if
+     Z = Z + t**2
+  end do
+  print*, "forward error (2-norm of the vector) ", dsqrt(Z)
+  print*,""
+
+  ! stop timer
+  call system_clock(count=c_stop) 
+
+  ! print success
+  call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
+
 
 end program example_d_symtrid_qr_1dlaplace
