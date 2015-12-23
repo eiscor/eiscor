@@ -109,7 +109,7 @@ program test_z_rot4_turnover
      rm = 2d0*pi*rm
      call random_number(rn)
      rn = 2d0*pi*rn
-     call z_rot4_vec4gen(cos(rp)*cos(rm),sin(rp)*cos(rm),cos(rn)*sin(rm),&
+     call z_rot4_vec4gen(.FALSE.,cos(rp)*cos(rm),sin(rp)*cos(rm),cos(rn)*sin(rm),&
           &sin(rn)*sin(rm),Q1(1),Q1(2),Q1(3),Q1(4),nrm)
      ! Q2
      call random_number(rp)
@@ -118,7 +118,7 @@ program test_z_rot4_turnover
      rm = 2d0*pi*rm
      call random_number(rn)
      rn = 2d0*pi*rn
-     call z_rot4_vec4gen(cos(rp)*cos(rm),sin(rp)*cos(rm),cos(rn)*sin(rm),&
+     call z_rot4_vec4gen(.FALSE.,cos(rp)*cos(rm),sin(rp)*cos(rm),cos(rn)*sin(rm),&
           &sin(rn)*sin(rm),Q2(1),Q2(2),Q2(3),Q2(4),nrm)
      ! Q3
      call random_number(rp)

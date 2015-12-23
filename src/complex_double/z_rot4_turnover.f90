@@ -91,16 +91,68 @@ subroutine z_rot4_turnover(flag,G1,G2,G3)
     C2imag(1) = c3i*(c2i*s1i + c2r*s1r) - c1i*s3 - c3r*(c2i*s1r - c2r*s1i) 
     C2imag(2) = -s3*s1i - c3i*(c1i*c2i + c1r*c2r) - c3r*(c1i*c2r - c2i*c1r) 
     C2imag(3) = c3r*s2i - c3i*s2r
+
+  ! flag == 1 case
+  else
+
+    ! compute first column of (G1*G2*G3)^H
+    C1real(1) = c1r*c3r - c1i*c3i - c2i*s3*s1i - c2r*s3*s1r
+    C1real(2) = c3r*s1r - c3i*s1i + c1i*c2i*s3 + c1r*c2r*s3
+    C1real(3) = s3*s2r
+
+    C1imag(1) = c1i*c3r + c3i*c1r - c2i*s3*s1r + c2r*s3*s1i
+    C1imag(2) = c3i*s1r + c3r*s1i - c1i*c2r*s3 + c2i*c1r*s3
+    C1imag(3) = s3*s2i
+
+    ! compute second column of (G1*G2*G3)^H
+    C2real(1) = -c1r*s3 - c3i*(c2i*s1r - c2r*s1i) - c3r*(c2i*s1i + c2r*s1r)
+    C2real(2) = c3r*(c1i*c2i + c1r*c2r) - c3i*(c1i*c2r - c2i*c1r) - s3*s1r
+    C2real(3) = c3i*s2i + c3r*s2r
+
+    C2imag(1) = c3i*(c2i*s1i + c2r*s1r) - c1i*s3 - c3r*(c2i*s1r - c2r*s1i) 
+    C2imag(2) = -s3*s1i - c3i*(c1i*c2i + c1r*c2r) - c3r*(c1i*c2r - c2i*c1r) 
+    C2imag(3) = c3r*s2i - c3i*s2r
+
+  end if
  
-    ! compute 3 parameter rotation
-    call z_rot3vec4gen(C1real(2),C1imag(2),C1real(3),C1imag(3),c4r,c4i,s4,nrm)
+  ! compute 3 parameter rotation
+  call z_rot3_vec4gen(C1real(2),C1imag(2),C1real(3),C1imag(3),c4r,c4i,s4,nrm)
 
-    ! update first column using c4r, c4i and s4
-    nrm = Ci2_1*c4i + Cr2_1*c4r + Cr3_1*s4
-    Ci2_1 = Ci2_1*c4r - Cr2_1*c4i + Ci3_1*s4
-    Cr2_1 = nrm
+  ! update first column using c4r, c4i and s4
+  c1r = C1real(2)
+  c1i = C1imag(2)
+  s1r = C1real(3)
+  s1i = C1imag(3)
+  C1real(2) = c1i*c4i + c1r*c4r + s4*s1r 
+  C1imag(2) = c1i*c4r - c4i*c1r + s4*s1i
     
+  ! update second column using c4r, c4i and s4
+  c1r = C2real(2)
+  c1i = C2imag(2)
+  s1r = C2real(3)
+  s1i = C2imag(3)
+  C2real(2) = c1i*c4i + c1r*c4r + s4*s1r 
+  C2imag(2) = c1i*c4r - c4i*c1r + s4*s1i
+  C2real(3) = c4r*s1r - c4i*s1i - c1r*s4 
+  C2imag(3) = c4i*s1r - c1i*s4 + c4r*s1i
+    
+  ! compute first 4 parameter rotation
+  call z_rot4_vec4gen(C1real(1),C1imag(1),C1real(2),C1imag(2),c5r,c5i,s5r,s5i,nrm)
 
+  ! update second column using c5r, c5i, s5r  and s5i
+  c1r = C2real(1)
+  c1i = C2imag(1)
+  s1r = C2real(2)
+  s1i = C2imag(2)
+  C2real(2) = c1i*s5i - c5i*s1i + c1r*s5r + c5r*s1r 
+  C2imag(2) = c1i*s5r + c5i*s1r - c1r*s5i + c5r*s1i
+    
+  ! compute second 4 parameter rotation
+  call z_rot4_vec4gen(C2real(2),C2imag(2),C2real(3),C2imag(3),c6r,c6i,s6r,s6i,nrm)
+
+  ! flag == 0 case
+  if (.NOT.flag) then
+  
     ! set outputs
     G1(1) = c5r
     G1(2) = c5i
@@ -115,6 +167,24 @@ subroutine z_rot4_turnover(flag,G1,G2,G3)
     G3(1) = c4r
     G3(2) = c4i
     G3(3) = s4
+
+  ! flag == 1 case
+  else
+
+    ! set outputs
+    G1(1) = c5r
+    G1(2) = -c5i
+    G1(3) = -s5r
+    G1(4) = s5i
+
+    G2(1) = c6r
+    G2(2) = -c6i
+    G2(3) = -s6r
+    G2(4) = s6i
+
+    G3(1) = c4r
+    G3(2) = -c4i
+    G3(3) = -s4
 
   end if
   
