@@ -62,6 +62,7 @@ program example_d_symtrid_qr_race
         Es(ii) = Es(ii)/3d0
     end do
   end if
+  print*, Ds(1), Ds(N2), EISCOR_DBL_EPS
   
   do ll=2,2
      if (ll.EQ.1) then

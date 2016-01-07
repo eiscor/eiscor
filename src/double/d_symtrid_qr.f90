@@ -83,6 +83,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   real(8) :: bulge(3)
    
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
+  character(len=1024) :: filename
   
   ! initialize INFO
   INFO = 0
@@ -91,7 +92,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
     Z = cmplx(0d0,0d0,kind=8)
     do ii=1,min(M,N)
       Z(ii,ii) = cmplx(1d0,0d0,kind=8)
-    end do
+   end do
   end if
   
 
@@ -169,6 +170,18 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
 !!$     print*, ii, WORK(3*ii-2), WORK(3*ii-1), WORK(3*ii)
 !!$     print*, ii, WORK(3*N+2*ii-1), WORK(3*N+2*ii)
 !!$  end do
+
+  ! write data to file
+  write (filename, "(A2,I4,A4)") "QD",N,".txt"
+  open (unit=7, file=filename, status='unknown', position="rewind")
+  write (7,*) "new file"
+  do ii=1,N-1
+     write (7,*) WORK(3*ii-2), WORK(3*ii-1), WORK(3*ii)
+  end do
+  do ii=1,N
+     write (7,*) WORK(3*N+2*ii-1), WORK(3*N+2*ii)
+  end do
+  close(7)
   
   ! compute eigenvalues
   call z_unifact_qr(VEC,.FALSE.,N,WORK(1:3*N-3),WORK((3*N+1):(5*N-1)),M,Z,ITS,INFO)

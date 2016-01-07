@@ -37,6 +37,7 @@ subroutine u_fixedseed_initialize(INFO)
   call random_seed(size = n)
   
   m = min(12,n)
+  print*, n, m
   ! allocate memory for seed
   allocate(seed(m))
   

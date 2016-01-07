@@ -93,6 +93,7 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   
   Qs = Q
   Ds = D
+
   do ii=1,N
      do jj=1,M
         Zb(ii,jj) = conjg(Z(jj,ii))
