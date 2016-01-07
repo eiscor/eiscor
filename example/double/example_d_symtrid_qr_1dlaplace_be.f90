@@ -15,8 +15,8 @@ program example_d_symtrid_qr_1dl_be
   
   ! compute variables
   !integer, parameter :: N = 4
-  !integer, parameter :: N = 16
-  integer, parameter :: N = 200
+  integer, parameter :: N = 16
+  !integer, parameter :: N = 200
   !integer, parameter :: N = 6184
   !integer, parameter :: N = 4092
   !integer, parameter :: N = 2048
@@ -176,11 +176,11 @@ program example_d_symtrid_qr_1dl_be
 !!$     !print*, H(ii,:)
 !!$  end do
 
-  ! analysis of angles in the first eigenvector
+!!$  ! analysis of angles in the first eigenvector
 !!$  do jj=1,N
 !!$     c1 = Z(1,jj)
 !!$     do ii=1,N
-!!$        print*, ii,jj, atan(real(Z(ii,jj))/aimag(Z(ii,jj))), Z(ii,jj)/c1
+!!$        print*, ii,jj, atan(real(Z(ii,jj))/aimag(Z(ii,jj))), Z(ii,jj)/c1*abs(c1)
 !!$     end do
 !!$  end do
   ! print success
