@@ -62,6 +62,8 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     call random_number(s2)
     shift = cmplx(s1,s2,kind=8)
           
+    !print*, "random shift ", ITCNT
+
   ! wilkinson shift
   else
     ! get 2x2 block
@@ -79,7 +81,6 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     else
       shift = t2(2,2)
     end if
-
   end if
         
   ! project shift onto unit circle
@@ -87,7 +88,12 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   ai = aimag(shift)
   call d_rot2_vec2gen(ar,ai,br,bi,nrm)
   shift = cmplx(br,bi,kind=8)
-
+  !if (ITCNT.eq.0) then
+  !   shift = cmplx(0d0,1d0,kind=8)
+  !   print*, "first shifts",shift
+  !end if
+  !print*, ITCNT, shift
+  
   ! build bulge
   call z_unifact_buildbulge(Q(1:6),D(1:4),shift,bulge)
         

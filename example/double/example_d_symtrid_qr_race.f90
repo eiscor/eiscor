@@ -15,7 +15,7 @@ program example_d_symtrid_qr_race
   
   ! compute variables
   integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 64
+  integer, parameter :: N2 = 256
   real(8), parameter :: scale = 1d0
   !logical, parameter :: backward = .TRUE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -34,8 +34,8 @@ program example_d_symtrid_qr_race
   double precision :: dnrm2, dznrm2
 
   random = .TRUE.
-  !gauss = .TRUE.
-  gauss = .FALSE.
+  gauss = .TRUE.
+  !gauss = .FALSE.
   !random = .FALSE.
 
   if (.NOT.random) then
@@ -47,7 +47,7 @@ program example_d_symtrid_qr_race
      Es = -5d-1
      Es = scale*Es
   else
-     call u_randomseed_initialize(INFO)
+     call u_fixedseed_initialize(INFO)
      do ii=1,N2
         if (gauss) then
            call d_scalar_random_normal(Ds(ii))
@@ -61,7 +61,7 @@ program example_d_symtrid_qr_race
     end do
   end if
   
-  do ll=1,2
+  do ll=2,2
      if (ll.EQ.1) then
         backward = .FALSE.
         print*, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
