@@ -62,6 +62,8 @@ program example_d_symtrid_qr_race
         Es(ii) = Es(ii)/3d0
     end do
   end if
+
+  print*, Ds(1),  Ds(N2), EISCOR_DBL_EPS
   
   do ll=2,2
      if (ll.EQ.1) then
@@ -212,7 +214,13 @@ program example_d_symtrid_qr_race
                  v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
                       & Es(N-1)*Z(N-1+N*(ii-1),1)
                  t3 =  dznrm2(N,v,1)
+                 if (ii<20) then
+                    print*, ii, D(ii), t3
+                 end if
                  if (t3.GT.t2) then
+                    if (ii>=20) then
+                       print*, ii, D(ii), t3
+                    end if
                     t2 = t3
                  end if
               end do
