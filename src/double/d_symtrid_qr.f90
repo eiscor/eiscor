@@ -80,7 +80,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   real(8) :: cr,ci,s,nrm
   
   complex(8) :: eu, d1
-  real(8) :: bulge(3), pi = EISCOR_DBL_PI
+  real(8) :: bulge(3)
    
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
   
@@ -164,6 +164,11 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
      call z_unifact_mergebulge(.FALSE.,WORK((3*N-5):(3*N-3)),WORK((3*N + 2*N-3):(3*N + 2*N)),bulge)
 
   end do
+
+!!$  do ii=1,N-1
+!!$     print*, ii, WORK(3*ii-2), WORK(3*ii-1), WORK(3*ii)
+!!$     print*, ii, WORK(3*N+2*ii-1), WORK(3*N+2*ii)
+!!$  end do
   
   ! compute eigenvalues
   call z_unifact_qr(VEC,.FALSE.,N,WORK(1:3*N-3),WORK((3*N+1):(5*N-1)),M,Z,ITS,INFO)

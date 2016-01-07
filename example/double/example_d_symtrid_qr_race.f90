@@ -15,24 +15,51 @@ program example_d_symtrid_qr_race
   
   ! compute variables
   integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 1024
+  integer, parameter :: N2 = 64
   real(8), parameter :: scale = 1d0
   !logical, parameter :: backward = .TRUE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   integer :: N, M, MM, N3
   integer :: ii, jj, kk, ll, ij, INFO, IWORK(3+5*N2)
   real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), t, t1, t2, t3
-  real(8) :: Ds(N2), Es(N2), Hr(N2,N2), Zr(N2,N2)
+  real(8) :: Ds(N2), Es(N2), Hr(N2,N2), Zr(N2,N2), pi = EISCOR_DBL_PI
   complex(8) :: Z(N2,N2), H(N2,N2), v(N2), c1
   integer :: ITS(N2-1)
-  logical :: backward
+  logical :: backward, random, gauss
   
   ! timing variables
   integer:: c_start, c_start2, c_stop, c_stop2, c_rate
   
-  ! BLAS DNRM2
-  double precision :: dnrm2
+  ! BLAS
+  double precision :: dnrm2, dznrm2
 
+  random = .TRUE.
+  !gauss = .TRUE.
+  gauss = .FALSE.
+  !random = .FALSE.
+
+  if (.NOT.random) then
+     ! initialize T to be a tridiagonal matrix of the form
+     !  2 -1
+     ! -1  2 -1
+     !     -1 2 ...
+     Ds = 0d0
+     Es = -5d-1
+     Es = scale*Es
+  else
+     call u_randomseed_initialize(INFO)
+     do ii=1,N2
+        if (gauss) then
+           call d_scalar_random_normal(Ds(ii))
+           call d_scalar_random_normal(Es(ii))
+         else
+           call random_number(t)
+           Ds(ii) = t
+           call random_number(t)
+           Es(ii) = t
+        end if
+    end do
+  end if
   
   do ll=1,2
      if (ll.EQ.1) then
@@ -55,23 +82,6 @@ program example_d_symtrid_qr_race
         MM = 4
      end if
      
-  ! initialize T to be a tridiagonal matrix of the form
-  !  2 -1
-  ! -1  2 -1
-  !     -1 2 ...
-  Ds = 0d0
-  Es = -5d-1
-  Es = scale*Es
-
-  !call u_randomseed_initialize(INFO)
-  if (1==0) then
-     do ii=1,N 
-        call random_number(t)
-        Ds(ii) = t
-        call random_number(t)
-        Es(ii) = t
-     end do
-  end if
 
   do M=1,MM
      ! print banner
@@ -148,46 +158,58 @@ program example_d_symtrid_qr_race
         ! stop timer
         call system_clock(count=c_stop)
         
-        ! computing forward error
-        do ii=1,N
-           E(ii) = 0d0+scale*cos(ii*EISCOR_DBL_PI/(N+1d0))
-        end do
-        
-        t1 = 0d0
-        t2 = 0d0
-        
-        do ii=1,N
-           t = abs(D(ii)-E(1))
-           INFO = 1
-           do jj=2,N
-              if (abs(D(ii)-E(jj))<t) then
-                 t = abs(D(ii)-E(jj))
-                 INFO = jj
-              end if
+        if (.NOT.random) then
+           ! computing forward error
+           do ii=1,N
+              E(ii) = 0d0+scale*cos(ii*EISCOR_DBL_PI/(N+1d0))
            end do
            
-           if (t.GT.t2) then
-              t2 = t
-              kk = INFO
+           t1 = 0d0
+           t2 = 0d0
+           
+           do ii=1,N
+              t = abs(D(ii)-E(1))
+              INFO = 1
+              do jj=2,N
+                 if (abs(D(ii)-E(jj))<t) then
+                    t = abs(D(ii)-E(jj))
+                    INFO = jj
+                 end if
+              end do
+              
+              if (t.GT.t2) then
+                 t2 = t
+                 kk = INFO
+              end if
+              t1 = t1 + t**2
+           end do
+           if ((dsqrt(t1)>1d-3).OR.(t1.NE.t1)) then
+              call u_test_failed(__LINE__)
            end if
-           t1 = t1 + t**2
-        end do
-        if ((dsqrt(t1)>1d-3).OR.(t1.NE.t1)) then
-           call u_test_failed(__LINE__)
+        else 
+           t1 = 0d0
+           t1 = 0d0/t1
         end if
         
+!!$        do ii=1,N
+!!$           print*, ii, D(ii)
+!!$        end do
+
         ! computing backward error
         if (backward) then
            if (M==1) then
               t2 = 0d0
               do ii=1,N
-                 ! jj = 1
+                 ! jj  1
                  v(1) = (Ds(1)-D(ii))*Z(1+N*(ii-1),1) + Es(1)*Z(2+N*(ii-1),1)
                  do jj=2,N-1
-                    v(jj) = (Ds(jj)-D(ii))*Z(jj+N*(ii-1),1) + Es(jj)*Z(jj+1+N*(ii-1),1) + Es(jj)*Z(jj-1+N*(ii-1),1)
+                    v(jj) = (Ds(jj)-D(ii))*Z(jj+N*(ii-1),1) + &
+                         & Es(jj)*Z(jj+1+N*(ii-1),1) + &
+                         & Es(jj-1)*Z(jj-1+N*(ii-1),1)
                  end do
-                 v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + Es(N)*Z(N-1+N*(ii-1),1)
-                 t3 =  dnrm2(N,v,1)
+                 v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
+                      & Es(N-1)*Z(N-1+N*(ii-1),1)
+                 t3 =  dznrm2(N,v,1)
                  if (t3.GT.t2) then
                     t2 = t3
                  end if
@@ -196,12 +218,16 @@ program example_d_symtrid_qr_race
               t2 = 0d0
               do ii=1,N
                  ! jj = 1
-                 v(1) = (Ds(1)-D(ii))*Zr(1+N*(ii-1),1) + Es(1)*Zr(2+N*(ii-1),1)
+                 v(1) = (Ds(1)-D(ii))*cmplx(Zr(1+N*(ii-1),1),0d0,kind=8) + &
+                      & Es(1)*cmplx(Zr(2+N*(ii-1),1),0d0,kind=8)
                  do jj=2,N-1
-                    v(jj) = (Ds(jj)-D(ii))*Zr(jj+N*(ii-1),1) + Es(jj)*Zr(jj+1+N*(ii-1),1) + Es(jj)*Zr(jj-1+N*(ii-1),1)
+                    v(jj) = (Ds(jj)-D(ii))*cmplx(Zr(jj+N*(ii-1),1),0d0,kind=8) + &
+                         & Es(jj)*cmplx(Zr(jj+1+N*(ii-1),1),0d0,kind=8) + &
+                         & Es(jj-1)*cmplx(Zr(jj-1+N*(ii-1),1),0d0,kind=8)
                  end do
-                 v(N) = (Ds(N)-D(ii))*Zr(N+N*(ii-1),1) + Es(N)*Zr(N-1+N*(ii-1),1)
-                 t3 =  dnrm2(N,v,1)
+                 v(N) = (Ds(N)-D(ii))*cmplx(Zr(N+N*(ii-1),1),0d0,kind=8) + &
+                      & Es(N-1)*cmplx(Zr(N-1+N*(ii-1),1),0d0,kind=8)
+                 t3 =  dznrm2(N,v,1)
                  if (t3.GT.t2) then
                     t2 = t3
                  end if

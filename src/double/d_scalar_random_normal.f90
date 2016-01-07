@@ -16,7 +16,7 @@
 !
 ! OUTPUT VARIABLES:
 !
-!  V               REAL(8) 
+!  NUM             REAL(8) 
 !                    random numbers 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -25,7 +25,7 @@ subroutine d_scalar_random_normal(NUM)
   implicit none
   
   ! input variables
-  real(8), intent(in) :: NUM
+  real(8), intent(inout) :: NUM
 
   ! compute variables
   double precision :: u,v,s,pi = EISCOR_DBL_PI
