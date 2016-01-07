@@ -55,7 +55,9 @@ subroutine u_fixedseed_initialize(INFO)
   ! store seeds        
   seed = 9 + 37 * (/ (ii - 1, ii = 1, n) /)
 
-    
+  ! set the generator
+  call random_seed(put = seed)
+  
   ! free memory        
   deallocate(seed)
 

@@ -14,8 +14,8 @@ program example_d_symtrid_qr_race
   implicit none
   
   ! compute variables
-  integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 256
+  integer, parameter :: N1 = 512
+  integer, parameter :: N2 = 512
   real(8), parameter :: scale = 1d0
   !logical, parameter :: backward = .TRUE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -58,6 +58,8 @@ program example_d_symtrid_qr_race
            call random_number(t)
            Es(ii) = t
         end if
+        Ds(ii) = Ds(ii)/3d0
+        Es(ii) = Es(ii)/3d0
     end do
   end if
   
@@ -83,7 +85,7 @@ program example_d_symtrid_qr_race
      end if
      
 
-  do M=1,MM
+  do M=1,1!,MM
      ! print banner
      if (M.EQ.1) then
         print*,""
