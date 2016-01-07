@@ -138,6 +138,8 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     call z_unifact_deflationcheck(STP-STR+2,Q((3*STR-2):(3*STP)) &
     ,D((2*STR-1):(2*STP+2)),ZERO)
     
+    !print*, STP, STR, ZERO
+
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
     
@@ -165,9 +167,9 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     ! if greater than 2x2 chase a bulge
     else
 
-      ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      ! check ZERO
+      if (ZERO.GT.0) then
+         STR = STR+ZERO
       end if
 
       ! perform singleshift iteration
@@ -182,9 +184,25 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     ! if ITMAX hit
     if (kk == ITMAX) then
       INFO = 1
+      !print*, ITCNT
       ITS(STR+STP-1) = ITCNT
+      !do ii=1,N
+      !   print*, ITS(ii)
+      !end do
+      !do ii=1,N
+      !   print*, D(2*ii-1), D(2*ii)
+      !end do
     end if
     
   end do
+  
+  !ITCNT = 0
+  !do ii=1,N
+  !  print*, ITS(ii)
+  !  ITCNT = ITCNT + ITS(ii)
+  !end do
+  !print*, ""
+  !print*, "it/N", 1d0*ITCNT/N
+  
 
 end subroutine z_unifact_qr

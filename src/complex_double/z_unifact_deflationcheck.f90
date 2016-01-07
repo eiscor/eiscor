@@ -43,15 +43,17 @@ subroutine z_unifact_deflationcheck(N,Q,D,ZERO)
 
   ! compute variables
   integer :: ii, jj, down
-  real(8), parameter :: tol = EISCOR_DBL_EPS
+  real(8), parameter :: tol = 5d-1*EISCOR_DBL_EPS
   real(8) :: dr, di, qr, qi, s, nrm
 
-  ! intialize ZERO
+  ! initialize ZERO
   ZERO = 0
   
   ! check for deflation
   do ii=1,(N-1)
-  
+    !if ((ii.lt.5).OR.(ii.gt.N-6)) then
+    !  print*, ii, N-ii, abs(Q(3*(N-ii)))
+    !end if
     ! deflate if subdiagonal is small enough
     nrm = abs(Q(3*(N-ii)))
     if(nrm < tol)then
