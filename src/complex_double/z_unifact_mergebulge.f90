@@ -84,9 +84,6 @@ subroutine z_unifact_mergebulge(TOP,Q,D,B)
   ! fusion at bottom
   else
   
-    ! pass through diag
-    call z_rot3_swapdiag(.FALSE.,D,B)
-    
     ! set inputs  
     c2r = B(1)
     c2i = B(2)

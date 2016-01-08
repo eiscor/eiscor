@@ -165,20 +165,6 @@ Zb = Z
       ZERO = 0
       STR = 1
     
-    ! if 2x2 block remove and check again
-    else if(STP == (STR+ZERO))then
-    
-      ! call 2x2 deflation
-      call z_unifact_2x2deflation(VEC,Q((3*STP-2):(3*STP)),D((2*STP-1):(2*STP+2)),M &
-      ,Z(:,STP:(STP+1)))
-    
-      ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
-      STP = STP - 2
-      ZERO = 0
-      STR = 1
-    
     ! if greater than 2x2 chase a bulge
     else
 
@@ -249,19 +235,14 @@ Zb = Z
         !print*, ""
         t3 =  dznrm2(N,v,1)
 
-!print*, ""
-!print*, "t2 = ", t2
-!print*, "t3 = ", t3
-!print*, ""
-
-!        if (t3.GT.t2) then
-!           t2 = t3
-if (ii.eq.1) then
-           print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii-1)/(1d0+D(2*ii)), " it", 0
-else
-           print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii-1)/(1d0+D(2*ii)), " it", ITS(ii-1)
-end if
-!        end if
+        if (t3.GT.t2) then
+           t2 = t3
+!if (ii.eq.1) then
+!           print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii)/(1d0+D(2*ii-1)), " it", 0
+!else
+           print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii)/(1d0+D(2*ii-1))
+!end if
+        end if
      end do
   end if
         
