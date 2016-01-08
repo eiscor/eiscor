@@ -148,26 +148,12 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
       ZERO = 0
       STR = 1
     
-    ! if 2x2 block remove and check again
-    else if(STP == (STR+ZERO))then
-    
-      ! call 2x2 deflation
-      call z_unifact_2x2deflation(VEC,Q((3*STP-2):(3*STP)),D((2*STP-1):(2*STP+2)),M &
-      ,Z(:,STP:(STP+1)))
-    
-      ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
-      STP = STP - 2
-      ZERO = 0
-      STR = 1
-    
     ! if greater than 2x2 chase a bulge
     else
 
       ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      if (ZERO.GT.0) then
+        STR = STR+ZERO
       end if
 
       ! perform singleshift iteration
