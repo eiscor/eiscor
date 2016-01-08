@@ -159,8 +159,16 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
            t1(2,2) = conjg(t1(1,1))
            Z(:,(ii+1):(ii+2)) = matmul(Z(:,(ii+1):(ii+2)),t1)
         end if
+
      end do
           
+     ! set indices
+     ind1 = 3*N + 2*(N-2) + 1  ! DR in WORK
+     ind2 = 3*N + ind1+3
+     
+     ! through diag
+     call z_rot3_swapdiag(.FALSE.,WORK(ind1:ind2),bulge)
+     
      ! fusion at bottom
      call z_unifact_mergebulge(.FALSE.,WORK((3*N-5):(3*N-3)),WORK((3*N + 2*N-3):(3*N + 2*N)),bulge)
 
@@ -171,17 +179,17 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
 !!$     print*, ii, WORK(3*N+2*ii-1), WORK(3*N+2*ii)
 !!$  end do
 
-  ! write data to file
-  write (filename, "(A2,I4,A4)") "QD",N,".txt"
-  open (unit=7, file=filename, status='unknown', position="rewind")
-  write (7,*) "new file"
-  do ii=1,N-1
-     write (7,*) WORK(3*ii-2), WORK(3*ii-1), WORK(3*ii)
-  end do
-  do ii=1,N
-     write (7,*) WORK(3*N+2*ii-1), WORK(3*N+2*ii)
-  end do
-  close(7)
+!!$  ! write data to file
+!!$  write (filename, "(A2,I4,A4)") "QD",N,".txt"
+!!$  open (unit=7, file=filename, status='unknown', position="rewind")
+!!$  write (7,*) "new file"
+!!$  do ii=1,N-1
+!!$     write (7,*) WORK(3*ii-2), WORK(3*ii-1), WORK(3*ii)
+!!$  end do
+!!$  do ii=1,N
+!!$     write (7,*) WORK(3*N+2*ii-1), WORK(3*N+2*ii)
+!!$  end do
+!!$  close(7)
   
   ! compute eigenvalues
   call z_unifact_qr(VEC,.FALSE.,N,WORK(1:3*N-3),WORK((3*N+1):(5*N-1)),M,Z,ITS,INFO)
@@ -200,6 +208,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   ! back transformation
   do ii=1,N
      D(ii) = WORK(3*N+2*ii)/(1d0+WORK(3*N+2*ii-1))
+     !print*, WORK(3*N+2*ii-1), WORK(3*N+2*ii), D(ii)
   end do
   
 end subroutine d_symtrid_qr

@@ -8,7 +8,8 @@ all: srcs
 srcs: $(ZOBJS)
 
 %.o: %.f90
-	$(FC) $(FFLAGS) -cpp -fPIC -c $< -I../../include $(LIBS)
+	$(FC) $(FFLAGS) -cpp -fPIC -c $< -I../../include
+	# $(LIBS)
 
 clean:
 	@rm -f $(ZOBJS)	

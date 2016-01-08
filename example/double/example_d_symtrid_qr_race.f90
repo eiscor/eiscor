@@ -14,8 +14,8 @@ program example_d_symtrid_qr_race
   implicit none
   
   ! compute variables
-  integer, parameter :: N1 = 512
-  integer, parameter :: N2 = 512
+  integer, parameter :: N1 = 4
+  integer, parameter :: N2 = 4096
   real(8), parameter :: scale = 1d0
   !logical, parameter :: backward = .TRUE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -46,8 +46,11 @@ program example_d_symtrid_qr_race
      Ds = 0d0
      Es = -5d-1
      Es = scale*Es
+     !print*, Ds
+     !print*, Es
   else
-     call u_fixedseed_initialize(INFO)
+     call u_randomseed_initialize(INFO)
+     !call u_fixedseed_initialize(INFO)
      do ii=1,N2
         if (gauss) then
            call d_scalar_random_normal(Ds(ii))
@@ -58,13 +61,13 @@ program example_d_symtrid_qr_race
            call random_number(t)
            Es(ii) = t
         end if
-        Ds(ii) = Ds(ii)/3d0
-        Es(ii) = Es(ii)/3d0
+        Ds(ii) = Ds(ii)/scale
+        Es(ii) = Es(ii)/scale
     end do
   end if
   print*, Ds(1), Ds(N2), EISCOR_DBL_EPS
   
-  do ll=2,2
+  do ll=1,2
      if (ll.EQ.1) then
         backward = .FALSE.
         print*, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
@@ -86,7 +89,7 @@ program example_d_symtrid_qr_race
      end if
      
 
-  do M=1,1!,MM
+  do M=1,1
      ! print banner
      if (M.EQ.1) then
         print*,""
@@ -213,13 +216,13 @@ program example_d_symtrid_qr_race
                  v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
                       & Es(N-1)*Z(N-1+N*(ii-1),1)
                  t3 =  dznrm2(N,v,1)
-                 if (ii<20) then
-                    print*, ii, D(ii), t3
-                 end if
+                 !if (ii<20) then
+                 !   print*, ii, D(ii), t3
+                 !end if
                  if (t3.GT.t2) then
-                    if (ii>=20) then
-                       print*, ii, D(ii), t3
-                    end if
+                    !if (ii>=20) then
+                    !   print*, ii, D(ii), t3
+                    !end if
                     t2 = t3
                  end if
               end do

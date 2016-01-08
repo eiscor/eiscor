@@ -131,7 +131,7 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     do ii=1,min(M,N)
       Z(ii,ii) = cmplx(1d0,0d0,kind=8)
     end do
-Zb = Z
+    Zb = Z
   end if
   
   ! initialize indices
@@ -237,11 +237,7 @@ Zb = Z
 
         if (t3.GT.t2) then
            t2 = t3
-!if (ii.eq.1) then
-!           print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii)/(1d0+D(2*ii-1)), " it", 0
-!else
-           print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii)/(1d0+D(2*ii-1))
-!end if
+           !print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii)/(1d0+D(2*ii-1))
         end if
      end do
   end if
