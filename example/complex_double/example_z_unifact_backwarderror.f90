@@ -32,14 +32,14 @@ program example_z_unifact_backwarderror
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! initialize Q and D to be an identity matrix
 
-  open (unit=7, file="QD512.txt", status='unknown', position="rewind")
+  open (unit=7, file="QD 512.txt", status='unknown', position="rewind")
   do ii=1,N-1
      read (7,*) Q(3*ii-2), Q(3*ii-1), Q(3*ii)
-     print*, ii, Q(3*ii-2), Q(3*ii-1), Q(3*ii)  
+!     print*, ii, Q(3*ii-2), Q(3*ii-1), Q(3*ii)  
   end do
   do ii=1,N
      read (7,*) D(2*ii-1), D(2*ii)
-     print*, ii, D(2*ii-1), D(2*ii)  
+!     print*, ii, D(2*ii-1), D(2*ii)  
   end do
   close(7)
 

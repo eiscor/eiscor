@@ -19,7 +19,7 @@ benchmark%:
 	@$(MAKE) $@ -C ./benchmark
 
 lib$(LIBNAME).$(SLIB).$(VERSION): srcs
-	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(OBJS) 
+	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(OBJS) $(LIBS) 
 
 srcs:
 	@$(MAKE) $@ -C ./src
