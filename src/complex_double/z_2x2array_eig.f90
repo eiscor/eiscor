@@ -38,7 +38,7 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
   
   ! compute variables
   real(8) :: nrm, cr, ci, s
-  complex(8) :: temp(2,2), p0, p1, p2, lambda 
+  complex(8) :: temp(2,2), p0, p1, p2, lambda, lambda2 
   complex(8) :: trace, detm, disc
   
   ! B not the identity
@@ -194,10 +194,16 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
     else
       lambda = (trace-disc)/2d0
     end if
+    lambda2 = detm/lambda
 
     ! compute Q
-    lambda = lambda-A(1,1)
-    call z_rot3_vec4gen(dble(A(1,2)),aimag(A(1,2)),dble(lambda),aimag(lambda),cr,ci,s,nrm)
+    if (abs(A(1,1)-lambda) > abs(A(1,1)-lambda2)) then
+      call z_rot3_vec4gen(dble(A(1,1)-lambda),aimag(A(1,1)-lambda),&
+                          dble(A(2,1)),aimag(A(2,1)),cr,ci,s,nrm)
+    else
+      call z_rot3_vec4gen(dble(A(1,1)-lambda2),aimag(A(1,1)-lambda2),&
+                          dble(A(2,1)),aimag(A(2,1)),cr,ci,s,nrm)
+    end if
     Q(1,1) = cmplx(cr,ci,kind=8)
     Q(2,1) = cmplx(s,0d0,kind=8)
     Q(2,2) = conjg(Q(1,1))
@@ -205,7 +211,6 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
 
     ! update A
     A = matmul(transpose(conjg(Q)),matmul(A,Q))
-    A(2,1) = cmplx(0d0,0d0,kind=8)
 
   end if
 

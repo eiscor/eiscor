@@ -88,8 +88,9 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     if(abs(block(2,2)-t1(1,1)) < abs(block(2,2)-t1(2,2)))then
       shift = t1(1,1)
     else
-      shift = t2(2,2)
+      shift = t1(2,2)
     end if
+
   end if
         
   ! project shift onto unit circle
@@ -115,7 +116,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
 
   ! build bulge
   call z_unifact_buildbulge(qt,D(1:4),shift,bulge)
-        
+      
   ! update eigenvectors
   if (VEC) then
     t1(1,1) = cmplx(bulge(1),bulge(2),kind=8)
