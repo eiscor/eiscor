@@ -15,17 +15,17 @@ program example_d_symtrid_qr_race
   
   ! compute variables
   integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 4096
-  real(8), parameter :: scale = 1d0
+  integer, parameter :: N2 = 4
+  real(8), parameter :: scale = 1d4
   !logical, parameter :: backward = .TRUE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   integer :: N, M, MM, N3
   integer :: ii, jj, kk, ll, ij, INFO, IWORK(3+5*N2)
-  real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), t, t1, t2, t3
+  real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), eig(N2), t, t1, t2, t3
   real(8) :: Ds(N2), Es(N2), Hr(N2,N2), Zr(N2,N2), pi = EISCOR_DBL_PI
   complex(8) :: Z(N2,N2), H(N2,N2), v(N2), c1
   integer :: ITS(N2-1)
-  logical :: backward, random, gauss
+  logical :: backward, random, gauss, osipov
   
   ! timing variables
   integer:: c_start, c_start2, c_stop, c_stop2, c_rate
@@ -35,19 +35,25 @@ program example_d_symtrid_qr_race
 
   random = .TRUE.
   gauss = .TRUE.
-  !gauss = .FALSE.
-  !random = .FALSE.
-
+  osipov = .TRUE.
+  gauss = .FALSE.
+  random = .FALSE.
+  osipov = .FALSE.
+  
   if (.NOT.random) then
-     ! initialize T to be a tridiagonal matrix of the form
-     !  2 -1
-     ! -1  2 -1
-     !     -1 2 ...
-     Ds = 0d0
-     Es = -5d-1
-     Es = scale*Es
-     !print*, Ds
-     !print*, Es
+     if (osipov) then
+        do ii=1,N2
+           Ds(ii) = 2d0 + ii**2/1d6
+           Es(ii) = -1d0
+        end do
+     else
+        ! initialize T to be a tridiagonal matrix of the form
+        !  2 -1
+        ! -1  2 -1
+        !     -1 2 ...
+        Ds = 0d0
+        Es = -5d-1
+     end if
   else
      call u_randomseed_initialize(INFO)
      !call u_fixedseed_initialize(INFO)
@@ -56,16 +62,21 @@ program example_d_symtrid_qr_race
            call d_scalar_random_normal(Ds(ii))
            call d_scalar_random_normal(Es(ii))
          else
-           call random_number(t)
-           Ds(ii) = t
-           call random_number(t)
-           Es(ii) = t
-        end if
-        Ds(ii) = Ds(ii)/scale
-        Es(ii) = Es(ii)/scale
+            call random_number(t)
+            Ds(ii) = t
+            call random_number(t)
+            Es(ii) = t
+         end if
     end do
   end if
-  print*, Ds(1), Ds(N2), EISCOR_DBL_EPS
+
+
+  do ii=1,N2
+     Ds(ii) = Ds(ii)*scale
+     Es(ii) = Es(ii)*scale
+  end do
+
+  print*, Ds(1), Ds(N2), Es(1), EISCOR_DBL_EPS
   
   do ll=1,2
      if (ll.EQ.1) then
@@ -164,21 +175,21 @@ program example_d_symtrid_qr_race
         ! stop timer
         call system_clock(count=c_stop)
         
-        if (.NOT.random) then
+        if ((.NOT.random).AND.(.NOT.osipov)) then
            ! computing forward error
            do ii=1,N
-              E(ii) = 0d0+scale*cos(ii*EISCOR_DBL_PI/(N+1d0))
+              eig(ii) = 0d0+scale*cos(ii*EISCOR_DBL_PI/(N+1d0))
            end do
            
            t1 = 0d0
            t2 = 0d0
            
            do ii=1,N
-              t = abs(D(ii)-E(1))
+              t = abs(D(ii)-eig(1))
               INFO = 1
               do jj=2,N
-                 if (abs(D(ii)-E(jj))<t) then
-                    t = abs(D(ii)-E(jj))
+                 if (abs(D(ii)-eig(jj))<t) then
+                    t = abs(D(ii)-eig(jj))
                     INFO = jj
                  end if
               end do
@@ -190,6 +201,9 @@ program example_d_symtrid_qr_race
               t1 = t1 + t**2
            end do
            if ((dsqrt(t1)>1d-3).OR.(t1.NE.t1)) then
+              do ii=1,N
+                 print*, ii, D(ii),eig(ii)
+              end do
               call u_test_failed(__LINE__)
            end if
         else 
@@ -197,9 +211,9 @@ program example_d_symtrid_qr_race
            t1 = 0d0/t1
         end if
         
-!!$        do ii=1,N
-!!$           print*, ii, D(ii)
-!!$        end do
+!        do ii=1,N
+!           print*, ii, D(ii)
+!        end do
 
         ! computing backward error
         if (backward) then

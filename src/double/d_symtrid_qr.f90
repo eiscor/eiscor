@@ -57,8 +57,8 @@
 !                    Contains the number of iterations per deflation
 !
 !  INFO            INTEGER
-!                    INFO = 2 implies  failed
-!                    INFO = 1 implies  failed
+!                    INFO = 2 implies QR failed to converge
+!                    INFO = 1 implies 
 !                    INFO = 0 implies successful computation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -73,17 +73,20 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   ! WORK(1:3N-3) = QB
   ! WORK(3N+1:5N) = DR
   integer, intent(inout) :: ITS(N-1), INFO
-  real(8), intent(inout) :: D(N), E(N)
+  real(8), intent(inout) :: D(N), E(N-1)
   complex(8), intent(inout) :: Z(M,N)
   ! compute variables
   integer :: ii, jj, ind1, ind2
   real(8) :: cr,ci,s,nrm
   
   complex(8) :: eu, d1
-  real(8) :: bulge(3)
+  real(8) :: bulge(3), a, b
    
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
   character(len=1024) :: filename
+
+  print*, D
+  print*, E
   
   ! initialize INFO
   INFO = 0
@@ -94,6 +97,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
       Z(ii,ii) = cmplx(1d0,0d0,kind=8)
    end do
   end if
+
   
 
   ! Cayley transform -(T-iI)(T+iI)              
@@ -200,15 +204,26 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
      if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"z_unifact_qr failed",INFO,INFO)
      end if
+     call u_infocode_check(__FILE__,__LINE__,"z_unifact_qr failed",INFO,INFO)
      INFO = 1
      ! since some of the eigenvalues have been found, the back transform is performed for all
      ! return
   end if
-  
+
+  a = 0d0
+  b = 0d0
   ! back transformation
   do ii=1,N
      D(ii) = WORK(3*N+2*ii)/(1d0+WORK(3*N+2*ii-1))
-     !print*, WORK(3*N+2*ii-1), WORK(3*N+2*ii), D(ii)
+     if (D(ii).LT.a) then
+        a = D(ii)
+     end if
+     if (D(ii).GT.b) then
+        b = D(ii)
+     end if
+     print*, WORK(3*N+2*ii-1), WORK(3*N+2*ii), D(ii)
   end do
+  
+  print*, "Min ", a, "Max ", b
   
 end subroutine d_symtrid_qr
