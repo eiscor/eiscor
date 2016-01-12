@@ -22,7 +22,7 @@
 !  D               REAL(8) array of dimension (N)  
 !                    diagonal entries of T
 !
-!  E               REAL(8) array of dimension (N)
+!  E               REAL(8) array of dimension (N-1)
 !                    subdiagonal entries of T
 !
 ! OUTPUT VARIABLES:

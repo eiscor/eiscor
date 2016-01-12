@@ -14,18 +14,26 @@ program example_d_symtrid_qr_race
   implicit none
   
   ! compute variables
+  integer, parameter :: problem = 1 ! [-0.5, 0, -0.5]  
+  !integer, parameter :: problem = 2 ! osipov
+  !integer, parameter :: problem = 3 ! random uniform  
+  !integer, parameter :: problem = 4 ! random normal
+  !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
   integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 4
-  real(8), parameter :: scale = 1d4
-  !logical, parameter :: backward = .TRUE.
+  integer, parameter :: N2 = 4096
+  real(8), parameter :: scale1 = 1d0
+  real(8), parameter :: scale2 = 1d0
+  real(8), parameter :: shift = 0d0
+  !logical, parameter :: sca = .TRUE.
+  logical, parameter :: sca = .FALSE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   integer :: N, M, MM, N3
   integer :: ii, jj, kk, ll, ij, INFO, IWORK(3+5*N2)
-  real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), eig(N2), t, t1, t2, t3
+  real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), eig(N2), t, t1, t2, t3, nrm, scale
   real(8) :: Ds(N2), Es(N2), Hr(N2,N2), Zr(N2,N2), pi = EISCOR_DBL_PI
   complex(8) :: Z(N2,N2), H(N2,N2), v(N2), c1
   integer :: ITS(N2-1)
-  logical :: backward, random, gauss, osipov
+  logical :: backward
   
   ! timing variables
   integer:: c_start, c_start2, c_stop, c_stop2, c_rate
@@ -33,50 +41,58 @@ program example_d_symtrid_qr_race
   ! BLAS
   double precision :: dnrm2, dznrm2
 
-  random = .TRUE.
-  gauss = .TRUE.
-  osipov = .TRUE.
-  gauss = .FALSE.
-  random = .FALSE.
-  osipov = .FALSE.
+  call system_clock(count_rate=c_rate)
+  ! start timer
+  call system_clock(count=c_start2)
+
+  scale = scale1
   
-  if (.NOT.random) then
-     if (osipov) then
-        do ii=1,N2
-           Ds(ii) = 2d0 + ii**2/1d6
-           Es(ii) = -1d0
-        end do
-     else
+  do while (scale.LE.scale2)
+     select case (problem)
+     case (1) 
         ! initialize T to be a tridiagonal matrix of the form
         !  2 -1
         ! -1  2 -1
         !     -1 2 ...
         Ds = 0d0
         Es = -5d-1
-     end if
-  else
-     call u_randomseed_initialize(INFO)
-     !call u_fixedseed_initialize(INFO)
-     do ii=1,N2
-        if (gauss) then
+     case (2)
+        do ii=1,N2
+           Ds(ii) = 2d0 + ii**2/1d6
+           Es(ii) = -1d0
+        end do
+     case (3)  
+        call u_randomseed_initialize(INFO)
+        !call u_fixedseed_initialize(INFO)
+        do ii=1,N2
+           call random_number(t)
+           Ds(ii) = t
+           call random_number(t)
+           Es(ii) = t
+        end do
+     case (4)
+        do ii=1,N2
            call d_scalar_random_normal(Ds(ii))
            call d_scalar_random_normal(Es(ii))
-         else
-            call random_number(t)
-            Ds(ii) = t
-            call random_number(t)
-            Es(ii) = t
-         end if
-    end do
-  end if
+        end do
+     case (5)
+        do ii=1,N2
+           call random_number(t)
+           call random_number(t1)
+           Ds(ii) = t * exp(10*t1)
+           call random_number(t)
+           call random_number(t1)
+           Es(ii) = t * exp(10*t1)
+        end do
+        
+     end select
 
+     do ii=1,N2
+        Ds(ii) = (Ds(ii)-shift)*scale
+        Es(ii) = Es(ii)*scale
+     end do
 
-  do ii=1,N2
-     Ds(ii) = Ds(ii)*scale
-     Es(ii) = Es(ii)*scale
-  end do
-
-  print*, Ds(1), Ds(N2), Es(1), EISCOR_DBL_EPS
+     print*, Ds(1), Ds(N2), Es(1), EISCOR_DBL_EPS
   
   do ll=1,2
      if (ll.EQ.1) then
@@ -88,11 +104,7 @@ program example_d_symtrid_qr_race
         print*, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
         print*, "Backward error"
      end if
-     
-     call system_clock(count_rate=c_rate)
-     ! start timer
-     call system_clock(count=c_start2)
-     
+          
      if (backward) then
         MM = 3
      else
@@ -100,13 +112,13 @@ program example_d_symtrid_qr_race
      end if
      
 
-  do M=1,1
+  do M=1,3
      ! print banner
      if (M.EQ.1) then
         print*,""
         print*,"example_d_symtrid_qr_1dlaplace:"
         print*,""
-        print*, "N ", N1, " ... ", N2, " scale ", scale
+        print*, "N", N1, " ... ", N2, "problem", problem, "scale", scale, "shift", shift
         print*,""
      elseif (M.EQ.2) then
        print*,""
@@ -142,9 +154,9 @@ program example_d_symtrid_qr_race
            if (M.EQ.1) then
               ! call d_orthhess_qr
               if (backward) then
-                 call d_symtrid_qr(.TRUE.,.TRUE.,N,D,E,WORK,N,Z,ITS,INFO)
+                 call d_symtrid_qr(.TRUE.,.TRUE.,sca,N,D,E,WORK,N,Z,ITS,INFO)
               else
-                 call d_symtrid_qr(.FALSE.,.FALSE.,N,D,E,WORK,1,Z,ITS,INFO)
+                 call d_symtrid_qr(.FALSE.,.FALSE.,sca,N,D,E,WORK,1,Z,ITS,INFO)
               end if
            elseif (M.EQ.2) then
               ! run LAPACK
@@ -166,6 +178,13 @@ program example_d_symtrid_qr_race
            end if
         end do
 
+        nrm = 0d0
+        do ii=1,N
+           if (abs(D(ii))>nrm) then
+              nrm = abs(D(ii))
+           end if
+        end do
+
         ! check INFO
         if (INFO.NE.0) then
            print*,"d_symtrid_qr failed."
@@ -175,10 +194,10 @@ program example_d_symtrid_qr_race
         ! stop timer
         call system_clock(count=c_stop)
         
-        if ((.NOT.random).AND.(.NOT.osipov)) then
+        if (problem.EQ.1) then
            ! computing forward error
            do ii=1,N
-              eig(ii) = 0d0+scale*cos(ii*EISCOR_DBL_PI/(N+1d0))
+              eig(ii) = (-scale*shift)+scale*cos(ii*EISCOR_DBL_PI/(N+1d0))
            end do
            
            t1 = 0d0
@@ -200,7 +219,8 @@ program example_d_symtrid_qr_race
               end if
               t1 = t1 + t**2
            end do
-           if ((dsqrt(t1)>1d-3).OR.(t1.NE.t1)) then
+           t1 = t1/nrm
+           if ((dsqrt(t1)>1d-3*max(scale,1d0/scale)**2).OR.(t1.NE.t1)) then
               do ii=1,N
                  print*, ii, D(ii),eig(ii)
               end do
@@ -231,7 +251,7 @@ program example_d_symtrid_qr_race
                       & Es(N-1)*Z(N-1+N*(ii-1),1)
                  t3 =  dznrm2(N,v,1)
                  !if (ii<20) then
-                 !   print*, ii, D(ii), t3
+                 ! print*, ii, D(ii)!, t3
                  !end if
                  if (t3.GT.t2) then
                     !if (ii>=20) then
@@ -261,7 +281,20 @@ program example_d_symtrid_qr_race
            end if
         end if
 
+        t2 = t2/nrm
 
+!!$        if (N>110) then
+!!$           ITS = 0
+!!$           !<-5 ii = 1
+!!$           !>5
+!!$           do jj=1,N
+!!$              INFO = int(floor((D(jj)+5d0)*10d0))
+!!$              ITS(INFO) = ITS(INFO) + 1
+!!$           end do
+!!$           do ii=1,105
+!!$              print*, ii, ITS(ii)
+!!$           end do
+!!$        end if
 
         if (backward) then
            print*, "(",N, ",",t2,")% for ", dsqrt(t1), " time ", dble(c_stop-c_start)/dble(c_rate)/N3 
@@ -274,6 +307,8 @@ program example_d_symtrid_qr_race
   end do
   end do
   
+  scale = 1d1*scale
+  end do
   ! stop timer
   call system_clock(count=c_stop2)
   

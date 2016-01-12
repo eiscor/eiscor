@@ -243,9 +243,9 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   end if
         
   
-  do ii=1,N-1
-     print*, D(2*ii-1), D(2*ii), ITS(ii), Q(3*ii) 
-  end do
-  print*, D(2*N-1), D(2*N), ITS(N) 
+  !do ii=1,N-1
+  !   print*, D(2*ii-1), D(2*ii), ITS(ii), Q(3*ii) 
+  !end do
+  !print*, D(2*N-1), D(2*N), ITS(N) 
      
 end subroutine z_unifact_qr

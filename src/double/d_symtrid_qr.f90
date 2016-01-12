@@ -30,6 +30,13 @@
 !                    .TRUE.: initialize to Z to identity
 !                    .FALSE.: assume Z is already initialized
 !
+!  SCA             LOGICAL
+!                    .TRUE.: scale and shift the matrix to 
+!                            have eigenvalues in [-1,1]
+!                    .FALSE.: do not scale nor shift the matrix
+!                  !! CAUTION: Not scaling and shifting the matrix can 
+!                              result in inaccurate eigenvalues !! 
+! 
 !  N               INTEGER
 !                    dimension of matrix
 !
@@ -62,16 +69,14 @@
 !                    INFO = 0 implies successful computation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
+subroutine d_symtrid_qr(VEC,ID,SCA,N,D,E,WORK,M,Z,ITS,INFO)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: VEC, ID
+  logical, intent(in) :: VEC, ID, SCA
   integer, intent(in) :: N, M
-  real(8), intent(inout) :: WORK(14*N)
-  ! WORK(1:3N-3) = QB
-  ! WORK(3N+1:5N) = DR
+  real(8), intent(inout) :: WORK(14*N) ! WORK(1:3N-3) = QB ! WORK(3N+1:5N) = DR
   integer, intent(inout) :: ITS(N-1), INFO
   real(8), intent(inout) :: D(N), E(N-1)
   complex(8), intent(inout) :: Z(M,N)
@@ -80,14 +85,11 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   real(8) :: cr,ci,s,nrm
   
   complex(8) :: eu, d1
-  real(8) :: bulge(3), a, b
+  real(8) :: bulge(3), a, b, scale, shift
    
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
   character(len=1024) :: filename
 
-  print*, D
-  print*, E
-  
   ! initialize INFO
   INFO = 0
 
@@ -98,7 +100,33 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
    end do
   end if
 
-  
+  ! scaling and shifting
+  if (SCA) then
+     !call d_symtrid_specint(.FALSE.,N,D,E,a,b,INFO)
+     call d_symtrid_specint(.TRUE.,N,D,E,a,b,INFO)
+
+     if (INFO.NE.0) then 
+        ! print error in debug mode
+        if (DEBUG) then
+           call u_infocode_check(__FILE__,__LINE__,"d_symtrid_specint failed",INFO,INFO)
+        end if
+        INFO = -10
+
+     end if
+     
+     shift = -(b+a)/2d0
+     scale = 2d0/(b-a)
+     
+     do ii=1,N
+        D(ii) = (D(ii)+shift)*scale
+        !print*, D(ii)
+     end do
+     do ii=1,N-1
+        E(ii) = E(ii)*scale
+     end do
+
+     !print*, "shift", shift, "scale", scale
+  end if
 
   ! Cayley transform -(T-iI)(T+iI)              
   ! implicitly form B = T - i I  and C = T + i I = conjg(B)
@@ -130,6 +158,7 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
   end do
   ! ii = N
   d1 = -d1/conjg(d1)
+  !print*, d1
   call d_rot2_vec2gen(dble(d1),aimag(d1),WORK(3*N + 2*N-1),WORK(3*N + 2*N),nrm)             
 
   ! fuse QC into QB
@@ -204,26 +233,32 @@ subroutine d_symtrid_qr(VEC,ID,N,D,E,WORK,M,Z,ITS,INFO)
      if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"z_unifact_qr failed",INFO,INFO)
      end if
-     call u_infocode_check(__FILE__,__LINE__,"z_unifact_qr failed",INFO,INFO)
      INFO = 1
      ! since some of the eigenvalues have been found, the back transform is performed for all
      ! return
   end if
 
-  a = 0d0
-  b = 0d0
+  !a = 0d0
+  !b = 0d0
   ! back transformation
   do ii=1,N
      D(ii) = WORK(3*N+2*ii)/(1d0+WORK(3*N+2*ii-1))
-     if (D(ii).LT.a) then
-        a = D(ii)
-     end if
-     if (D(ii).GT.b) then
-        b = D(ii)
-     end if
-     print*, WORK(3*N+2*ii-1), WORK(3*N+2*ii), D(ii)
+     !if (D(ii).LT.a) then
+     !   a = D(ii)
+     !end if
+     !if (D(ii).GT.b) then
+     !   b = D(ii)
+     !end if
+     !print*, WORK(3*N+2*ii-1), WORK(3*N+2*ii), D(ii)
   end do
   
-  print*, "Min ", a, "Max ", b
+  !print*, "Min ", a, "Max ", b
   
+  ! back shift
+  if (SCA) then
+     do ii=1,N
+        D(ii) = D(ii)/scale - shift
+     end do
+  end if
+
 end subroutine d_symtrid_qr
