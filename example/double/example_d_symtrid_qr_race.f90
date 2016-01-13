@@ -20,10 +20,10 @@ program example_d_symtrid_qr_race
   !integer, parameter :: problem = 4 ! random normal
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
   integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 256
-  real(8), parameter :: scale1 = 1d1
-  real(8), parameter :: scale2 = 1d1
-  real(8), parameter :: shift = 1d0
+  integer, parameter :: N2 = 4
+  real(8), parameter :: scale1 = 1d0
+  real(8), parameter :: scale2 = 1d0
+  real(8), parameter :: shift = 0d0
   logical, parameter :: sca = .TRUE.
   !logical, parameter :: sca = .FALSE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -83,8 +83,7 @@ program example_d_symtrid_qr_race
            call random_number(t)
            call random_number(t1)
            Es(ii) = t * exp(10*t1)
-        end do
-        
+        end do        
      end select
 
      do ii=1,N2
@@ -113,8 +112,7 @@ program example_d_symtrid_qr_race
      
 
   do M=1,1
-     ! print banner
-     if (M.EQ.1) then
+    if (M.EQ.1) then
         print*,""
         print*,"example_d_symtrid_qr_1dlaplace:"
         print*,""

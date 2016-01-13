@@ -42,9 +42,11 @@
 !
 !  D               REAL(8) array of dimension (N)  
 !                    diagonal entries of T
-!                    on exit D contains the eigenvalues of T
+!                    on exit: D contains the eigenvalues of T
+!
 !  E               REAL(8) array of dimension (N)
 !                    subdiagonal entries of T
+!                    on exit: if SCA=.TRUE., E is scaled 
 !
 !  WORK            REAL(8) array of dimension (5*N)
 !                    work space for eigensolver
@@ -76,7 +78,7 @@ subroutine d_symtrid_qr(VEC,ID,SCA,N,D,E,WORK,M,Z,ITS,INFO)
   ! input variables
   logical, intent(in) :: VEC, ID, SCA
   integer, intent(in) :: N, M
-  real(8), intent(inout) :: WORK(14*N) ! WORK(1:3N-3) = Q ! WORK(3N+1:5N) = QD
+  real(8), intent(inout) :: WORK(5*N) ! WORK(1:3N-3) = Q ! WORK(3N+1:5N) = QD
   integer, intent(inout) :: ITS(N-1), INFO
   real(8), intent(inout) :: D(N), E(N-1)
   complex(8), intent(inout) :: Z(M,N)
@@ -94,7 +96,7 @@ subroutine d_symtrid_qr(VEC,ID,SCA,N,D,E,WORK,M,Z,ITS,INFO)
    end do
   end if
 
-  ! factorize \Phi(T) and reduce to unitary Hessenberg form
+  ! factorize \Phi(T) and reduction to unitary Hessenberg form
   call d_symtrid_factor(VEC,.FALSE.,SCA,N,D,E,WORK(1:(3*(N-3))),WORK((3*N+1):(5*N)),scale,M,Z,INFO)
 
   ! check info
@@ -127,7 +129,7 @@ subroutine d_symtrid_qr(VEC,ID,SCA,N,D,E,WORK,M,Z,ITS,INFO)
      D(ii) = WORK(3*N+2*ii)/(1d0+WORK(3*N+2*ii-1))
   end do
   
-  ! back shift
+  ! reverse scaling
   if (SCA) then
      do ii=1,N
         D(ii) = D(ii)*scale
