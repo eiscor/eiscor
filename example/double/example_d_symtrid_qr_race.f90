@@ -20,12 +20,12 @@ program example_d_symtrid_qr_race
   !integer, parameter :: problem = 4 ! random normal
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
   integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 4096
-  real(8), parameter :: scale1 = 1d0
-  real(8), parameter :: scale2 = 1d0
-  real(8), parameter :: shift = 0d0
-  !logical, parameter :: sca = .TRUE.
-  logical, parameter :: sca = .FALSE.
+  integer, parameter :: N2 = 256
+  real(8), parameter :: scale1 = 1d1
+  real(8), parameter :: scale2 = 1d1
+  real(8), parameter :: shift = 1d0
+  logical, parameter :: sca = .TRUE.
+  !logical, parameter :: sca = .FALSE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   integer :: N, M, MM, N3
   integer :: ii, jj, kk, ll, ij, INFO, IWORK(3+5*N2)
@@ -94,7 +94,7 @@ program example_d_symtrid_qr_race
 
      print*, Ds(1), Ds(N2), Es(1), EISCOR_DBL_EPS
   
-  do ll=1,2
+  do ll=2,2
      if (ll.EQ.1) then
         backward = .FALSE.
         print*, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
@@ -112,7 +112,7 @@ program example_d_symtrid_qr_race
      end if
      
 
-  do M=1,3
+  do M=1,1
      ! print banner
      if (M.EQ.1) then
         print*,""
