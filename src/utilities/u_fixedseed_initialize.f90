@@ -5,8 +5,8 @@
 !                                                                                                               
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                                          
 !                                                                                                               
-! This routine initializes the random number generator using the cpu                                            
-! clock.                                                                                                        
+! This routine initializes the random number generator using a                                             
+! fixed seed.                                                                                                        
 !                                                                                                               
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                                          
 !                                                                                                               
