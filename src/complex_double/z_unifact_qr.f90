@@ -138,12 +138,14 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     call z_unifact_deflationcheck(STP-STR+2,Q((3*STR-2):(3*STP)) &
     ,D((2*STR-1):(2*STP+2)),ZERO)
     
+    if (ZERO.GT.0) then
+      ITS(STR+ZERO-1) = ITCNT
+      ITCNT = 0
+    end if
+    
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
-    
       ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
       STP = STP - 1
       ZERO = 0
       STR = 1
