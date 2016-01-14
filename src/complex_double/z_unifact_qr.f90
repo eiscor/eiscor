@@ -148,7 +148,7 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
       ZERO = 0
       STR = 1
     
-    ! if greater than 2x2 chase a bulge
+    ! if greater than 1x1 chase a bulge
     else
 
       ! check ZERO

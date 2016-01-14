@@ -86,7 +86,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     if(abs(block(2,2)-t1(1,1)) < abs(block(2,2)-t1(2,2)))then
       shift = t1(1,1)
     else
-      shift = t2(2,2)
+      shift = t1(2,2)
     end if
 
   end if
