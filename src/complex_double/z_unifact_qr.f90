@@ -151,7 +151,7 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     ! if greater than 2x2 chase a bulge
     else
 
-      ! check STR
+      ! check ZERO
       if (ZERO.GT.0) then
         STR = STR+ZERO
       end if
