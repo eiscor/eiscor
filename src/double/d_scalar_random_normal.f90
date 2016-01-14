@@ -9,6 +9,7 @@
 ! normally distributed (expected value 0, standard deviation 1). The routine
 ! generates two uniformly distributed random numbers using Fortran's built-in
 ! routine and then uses the Box-Muller transform. 
+!
 ! Call u_randomseed_initialize(INFO) first to set the seed of the number 
 ! generator.
 !
