@@ -70,13 +70,7 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   logical :: flg
   integer :: ii, jj, kk, ind1, ind2, ll, strt, k
   integer :: STR, STP, ZERO, ITMAX, ITCNT
-  real(8) :: nrm
-  real(8) :: Qs(3*(N-1)), Ds(2*N), t2, t3
-  complex(8) :: v(N), temp(2,2), Zb(N,M), Z2(N,N)
 
-  ! BLAS
-  double precision :: dnrm2, dznrm2
-  
   ! initialize info
   INFO = 0
   
@@ -91,9 +85,6 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     return
   end if
   
-  Qs = Q
-  Ds = D
-
   do ii=1,N
      do jj=1,M
         Zb(ii,jj) = conjg(Z(jj,ii))
@@ -170,7 +161,7 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
 
       ! check ZERO
       if (ZERO.GT.0) then
-         STR = STR+ZERO
+        STR = STR+ZERO
       end if
 
       ! perform singleshift iteration
@@ -185,67 +176,9 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     ! if ITMAX hit
     if (kk == ITMAX) then
       INFO = 1
-      !print*, ITCNT
       ITS(STR+STP-1) = ITCNT
-      !do ii=1,N
-      !   print*, ITS(ii)
-      !end do
-      !do ii=1,N
-      !   print*, D(2*ii-1), D(2*ii)
-      !end do
     end if
     
   end do
-  
-  !ITCNT = 0
-  !do ii=1,N
-  !  print*, ITS(ii)
-  !  ITCNT = ITCNT + ITS(ii)
-  !end do
-  !print*, ""
-  !print*, "it/N", 1d0*ITCNT/N
-  
-
-  ! check backward errors
-  if (VEC) then
-     Z2 = matmul(Zb,Z)
-     t2 = 0d0
-     do ii=1,M
-        do jj=1,N
-           v(jj) = cmplx(Ds(2*jj-1),Ds(2*jj),kind=8)*Z2(jj,ii)
-           !print*, jj, v(jj), Z2(jj,ii)
-        end do
-        !print*, ""
-        do jj=N-1,1,-1
-           temp(1,1) = cmplx(Qs(3*jj-2),Qs(3*jj-1),kind=8)
-           temp(2,1) = cmplx(Qs(3*jj),0d0,kind=8)
-           temp(1,2) = -temp(2,1)
-           temp(2,2) = conjg(temp(1,1))
-           v(jj:jj+1) = matmul(temp,v(jj:jj+1))
-        end do
-
-        !do jj=1,N
-        !   print*, jj, v(jj)
-        !end do
-        !print*, ""
-        do jj=1,N
-           v(jj) = v(jj)-cmplx(D(2*ii-1),D(2*ii),kind=8)*Z2(jj,ii)
-           !print*, jj, v(jj)
-        end do           
-        !print*, ""
-        t3 =  dznrm2(N,v,1)
-
-        if (t3.GT.t2) then
-           t2 = t3
-           !print*, ii, t3, " ev", D(2*ii-1), D(2*ii), "phi-1(ev) ", D(2*ii)/(1d0+D(2*ii-1))
-        end if
-     end do
-  end if
-        
-  
-  !do ii=1,N-1
-  !   print*, D(2*ii-1), D(2*ii), ITS(ii), Q(3*ii) 
-  !end do
-  !print*, D(2*N-1), D(2*N), ITS(N) 
      
 end subroutine z_unifact_qr
