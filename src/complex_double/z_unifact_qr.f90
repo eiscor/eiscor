@@ -139,7 +139,7 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     ,D((2*STR-1):(2*STP+2)),ZERO)
     
     if (ZERO.GT.0) then
-      ITS(STR+ZERO-1) = ITCNT
+      ITS(STR+ZERO-1) = ITS(STR+ZERO-1) + ITCNT
       ITCNT = 0
     end if
     
