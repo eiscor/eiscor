@@ -94,6 +94,7 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
 
   ! initialize INFO
   INFO = 0
+  scale = 1d0
 
   ! check N
   if (N < 1) then
