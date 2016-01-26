@@ -34,7 +34,6 @@ program test_z_rot3_turnover2
   real(8) :: time
   real(8) :: rp, rm, nrm, pi = 3.141592653589793239d0
 
-  integer :: INFO
   real(8) :: B(3)
   complex(8) :: H(3,3), Hs(3,3), Hd(3,3), A1(3,3), A2(3,3), A3(3,3)
   real(8) :: Q1s(3), Q2s(3), Q3s(3)
