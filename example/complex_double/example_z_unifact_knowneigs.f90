@@ -104,11 +104,11 @@ program example_z_unifact_knowneigs
      end do
      ind = 3*(n-3)
      ! fusion at bottom
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b1)
+     call z_unifact_mergebulge(.FALSE.,Q((3*n-5):(3*n-3)),D((2*n-3):(2*n-1)),b1)
      call z_rot3_swapdiag(.FALSE.,D(2*n-5:2*n-2),b2)
      call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2)
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b3)
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b2)
+     call z_unifact_mergebulge(.FALSE.,Q((3*n-5):(3*n-3)),D((2*n-3):(2*n-1)),b3)
+     call z_unifact_mergebulge(.FALSE.,Q((3*n-5):(3*n-3)),D((2*n-3):(2*n-1)),b2)
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
