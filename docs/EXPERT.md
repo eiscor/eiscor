@@ -44,7 +44,7 @@ src/double/d_orthfact_real2complex.f90)
 ## Real tridiagonal eigensolver ##
 The eigensolver for symmetric tridiagonal matrices uses a Cayley transformation
 and a similarity transformation to transform the matrix into unitary Hessenberg
-form. Hence interavtion is only possible at the highest level:
+form. Hence interaction is only possible at the highest level:
 - [__d_symtrid_qr__](https://github.com/eiscor/eiscor/blob/master/
 src/double/d_symtrid_qr.f90)
 
