@@ -102,7 +102,7 @@ subroutine d_symtrid_specint(NEWT,N,D,E,A,B,INFO)
       call d_symtrid_newtonstep(N,D,E,B,tb,INFO)
       
       ! update if not converged
-      if ((abs(ta) > EISCOR_DBL_EPS).AND.(abs(tb) > EISCOR_DBL_EPS)) then
+      if ((abs(ta)/abs(A) > EISCOR_DBL_EPS).AND.(abs(tb)/abs(B) > EISCOR_DBL_EPS)) then
 
         A = A - ta
         B = B - tb
@@ -200,6 +200,11 @@ subroutine d_symtrid_newtonstep(N,D,E,X,F,INFO)
   end do
 
   ! compute F
-  F = p2/d2
+  ! check for zero diagonal
+  if (abs(d2)<EISCOR_DBL_EPS) then
+     F = X
+  else
+     F = p2/d2
+  end if
 
 end subroutine d_symtrid_newtonstep

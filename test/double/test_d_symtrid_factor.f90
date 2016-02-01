@@ -5,7 +5,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the factorization of a random tridiagonal 
+! This routine computes the factorization of a tridiagonal 
 ! matrix and compares it with a precomputed solution.  
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -35,8 +35,21 @@ program test_d_symtrid_factor
   ! print banner
   call u_test_banner(__FILE__)
 
-  ! compute a random symmetric tridiagonal matrix
-  call u_fixedseed_initialize(INFO)
+  ! check zero matrix
+  D(1) = 0d0
+  D(2) = 0d0
+  D(3) = 0d0
+  D(4) = 0d0
+  E(1) = 0d0
+  E(2) = 0d0
+  E(3) = 0d0
+
+  call d_symtrid_factor(.TRUE.,.TRUE.,sca,N,D,E,Q,Dq,scale,N,Z,INFO)
+  if (INFO.NE.-56) then
+     call u_test_failed(__LINE__)
+  end if
+  
+  ! check one tridiagonal matrix
   D(1) = 1d0
   D(2) = 2d0
   D(3) = 3d0

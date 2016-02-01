@@ -73,6 +73,7 @@
 !                    INFO = -6 implies E is invalid
 !                    INFO = -10 implies M is invalid
 !                    INFO = -11 implies Z is invalid
+!                    INFO = -56 implies D and E are zero
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
@@ -128,7 +129,29 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
     end if
     return
   end if
-
+  
+  flg = .TRUE.
+  if (D(1).NE.0d0) then
+     flg = .FALSE.
+  else
+     do ii=1,N-1
+        if (D(ii+1).NE.0d0) then
+           flg = .FALSE.
+           exit
+        elseif (E(ii).NE.0d0) then           
+           flg = .FALSE.
+           exit
+        end if
+     end do
+  end if
+  if (flg) then
+     INFO = -56
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,INFO)
+    end if
+    return
+  end if    
 
   ! check M
   if (VEC.AND.(M < 1)) then
