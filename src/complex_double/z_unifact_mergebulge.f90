@@ -18,28 +18,25 @@
 !                    .TRUE.: fuses at the Top from the left
 !                    .FALSE.: fuses at the Bottom from the right
 !
-!  N               INTEGER
-!                    dimension of matrix
-!
-!  Q               REAL(8) array of dimension (3*(N-1))
+!  Q               REAL(8) array of dimension (3)
 !                    array of generators for givens rotations
 !
-!  D               REAL(8) array of dimension (2*N)
+!  D               REAL(8) array of dimension (4)
 !                    array of generators for complex diagonal matrix
 !
 !  B               REAL(8) array of dimension (3)
 !                    generators for rotation that will be fused
+!                    if TOP = .TRUE. contains diagonal rotation
+!                    needed to update schurvectors
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
+subroutine z_unifact_mergebulge(TOP,Q,D,B)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: TOP
-  integer, intent(in) :: N
-  real(8), intent(inout) :: Q(3*(N-1)),D(2*N)
-  real(8), intent(in) :: B(3)
+  real(8), intent(inout) :: Q(3), D(4), B(3)
   
   ! compute variables
   integer :: k,ii
@@ -73,50 +70,29 @@ subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
     ! compute phase
     call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
 
+    ! store in B
+    B(1) = phr
+    B(2) = -phi
+    B(3) = 0d0
+
     ! update Q
-    c2r = c3r*phr + c3i*phi
-    c2i = -c3r*phi + c3i*phr
+    c2r = c3r*phr - c3i*phi
+    c2i = c3r*phi + c3i*phr
     s2 = nrm
     call z_rot3_vec3gen(c2r,c2i,s2,Q(1),Q(2),Q(3),nrm)
 
-    do ii = 2,(N-1)
-     
-       k = 3*(ii-1)
-      c1r = Q(k+1)
-      c1i = Q(k+2)
-      s1 = Q(k+3)
-      
-      nrm = c1r*phr + c1i*phi
-      c1i = -c1r*phi + c1i*phr
-      c1r = nrm
-      call z_rot3_vec3gen(c1r,c1i,s1,Q(k+1),Q(k+2),Q(k+3),nrm)
-    
-    end do
-     
-    ! retrieve D
-    d1r = D(1)
-    d1i = D(2)
-
-    ! update D
-    c1r = phr*d1r - phi*d1i
-    c1i = phr*d1i + phi*d1r
-    call d_rot2_vec2gen(c1r,c1i,D(1),D(2),nrm)
-     
   ! fusion at bottom
   else
   
-    ! pass through diag
-    call z_rot3_swapdiag(.FALSE.,D((2*N-3):(2*N)),B)
-    
     ! set inputs  
     c2r = B(1)
     c2i = B(2)
     s2 = B(3)
   
     ! retrieve Q  
-    c1r = Q(3*N-5)
-    c1i = Q(3*N-4)
-    s1 = Q(3*N-3)
+    c1r = Q(1)
+    c1i = Q(2)
+    s1 = Q(3)
      
     ! compute givens product
     c3r = c1r*c2r - c1i*c2i - s1*s2
@@ -131,26 +107,26 @@ subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
     c2r = c3r*phr + c3i*phi
     c2i = -c3r*phi + c3i*phr
     s2 = nrm
-    call z_rot3_vec3gen(c2r,c2i,s2,Q(3*N-5),Q(3*N-4),Q(3*N-3),nrm)    
+    call z_rot3_vec3gen(c2r,c2i,s2,Q(1),Q(2),Q(3),nrm)    
      
     ! retrieve D
-    d1r = D(2*N-3)
-    d1i = D(2*N-2)
+    d1r = D(1)
+    d1i = D(2)
 
     ! update D
     c1r = phr*d1r - phi*d1i
     c1i = phr*d1i + phi*d1r
-    call d_rot2_vec2gen(c1r,c1i,D(2*N-3),D(2*N-2),nrm)
+    call d_rot2_vec2gen(c1r,c1i,D(1),D(2),nrm)
 
+    ! retrieve D
+    d2r = D(3)
+    d2i = D(4)
+     
+    ! update D
+    c2r = phr*d2r + phi*d2i
+    c2i = phr*d2i - phi*d2r
+    call d_rot2_vec2gen(c2r,c2i,D(3),D(4),nrm)
+     
   end if
 
-  ! retrieve D
-  d2r = D(2*N-1)
-  d2i = D(2*N)
-     
-  ! update D
-  c2r = phr*d2r + phi*d2i
-  c2i = phr*d2i - phi*d2r
-  call d_rot2_vec2gen(c2r,c2i,D(2*N-1),D(2*N),nrm)
-     
 end subroutine z_unifact_mergebulge
