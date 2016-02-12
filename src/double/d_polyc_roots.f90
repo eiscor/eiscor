@@ -42,8 +42,8 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
   logical, allocatable :: P(:)
   integer, allocatable :: ITS(:)
   real(8), allocatable :: Q(:),D1(:),C1(:),B1(:),D(:),E(:),Z(:,:)
-  real(8) :: D2,C2,B2,scale
-  complex(8), allocatable :: U(:), H(:,:)
+  real(8) :: D2,C2,B2,a,b,scale
+  complex(8), allocatable :: U(:)!, H(:,:)
   complex(8) :: V,W, t(2,2)
 
   complex(8) :: WORK(5*N)
@@ -80,7 +80,7 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
   
   ! allocate memory
   allocate(P(N-2),ITS(N-1),Q(3*(N-1)),D1(2*(N+1)),C1(3*N),B1(3*N))    
-  allocate(D(N),E(N-1),U(N),Z(1,N),H(N,N))
+  allocate(D(N),E(N-1),U(N),Z(1,N))!,H(N,N))
 
   ! fill P
   P = .FALSE.
@@ -89,13 +89,22 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
   D = 0d0
   E = 5d-1
   E(1) = sqrt(2d0)/2d0
-  U(1) = -sqrt(2d0)/COEFFS(N-1+1)/2d0
+  U(1) = cmplx(-sqrt(2d0)/COEFFS(N-1+1)/2d0,0d0,kind=8)
   do ii=2,N
-     U(ii) = -COEFFS(N-ii+1)/2d0
+     U(ii) = cmplx(-COEFFS(N-ii+1)/2d0,0d0,kind=8)
   end do
   
+print*, "D", D
+print*, "E", E
+print*, "U", U
   ! factorize \Phi(T + Ue^H) and reduce it to Hessenberg form
   call d_spr1_factor(.FALSE.,.FALSE.,.FALSE.,N,D,E,U,Q,D1,C1,B1,scale,1,Z,INFO)
+  !call d_spr1_factor2(.FALSE.,.FALSE.,.FALSE.,N,D,E,U,Q,D1,C1,B1,scale,1,Z,INFO)
+
+print*, "Q", Q
+print*, "D1", D1
+print*, "C1", B1
+print*, "B1", C1
 
   ! check info
   if (INFO.NE.0) then 
@@ -139,17 +148,13 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
 
   ! compute the roots with upr1fact Hessenberg QR
   call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  ! call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_inversehess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  ! call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_cmv,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  ! call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_random,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  ! call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
 
   ! check INFO
   if (INFO.NE.0) then
     print*,""
     print*,"INFO:",INFO
     print*,""
-    deallocate(P,ITS,Q,D1,C1,B1,D,E,U,Z,H)
+    deallocate(P,ITS,Q,D1,C1,B1,D,E,U,Z)!,H)
     return  
   end if
 
@@ -157,14 +162,21 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
   call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,ROOTS)
   ! back transformation
   do ii=1,N
-     !ROOTS(ii) = aimag(ROOTS(ii))/(1d0+dble(ROOTS(ii)))
-     ROOTS(ii) = cmplx(0d0,1d0,kind=8)*(1-ROOTS(ii))/(1+ROOTS(ii))
+     call d_rot2_vec2gen(dble(ROOTS(ii)),aimag(ROOTS(ii)),a,b,scale)
+     print*, ii,"ROOTS(ii)", ROOTS(ii),"1/ROOTS(ii)", 1d0/ROOTS(ii),"nrm",scale           
+     if (abs(1d0-scale)<EISCOR_DBL_EPS) then
+        ROOTS(ii) = aimag(ROOTS(ii))/(1d0+dble(ROOTS(ii)))
+     else
+        ROOTS(ii) = cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-ROOTS(ii))/(cmplx(1d0,0d0,kind=8)+ROOTS(ii))
+     end if
+
+
   end do
     
   ! compute residuals
   ! call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
 
-  deallocate(P,ITS,Q,D1,C1,B1,D,E,U,Z,H)
+  deallocate(P,ITS,Q,D1,C1,B1,D,E,U,Z)!,H)
 
     
 end subroutine d_polyc_roots

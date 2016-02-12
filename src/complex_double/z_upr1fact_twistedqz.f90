@@ -103,7 +103,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   INFO = 0
 
   ! initialize random seed
-  call u_randomseed_initialize(INFO)
+  ! call u_randomseed_initialize(INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then

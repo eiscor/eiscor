@@ -197,10 +197,6 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
 !!$
 !!$  end if
 
-  !print*, "U",U
-
-  !print*, "MITTE 2 d_spr1_factor"
-
   ! Cayley transform -(T-iI)(T+iI)              
   ! implicitly form B = T - i I  and T + i I = conjg(B)
   eu = E(1)
@@ -210,8 +206,6 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
   do ii=1,N-1
      ! compute new rotation
      call z_rot3_vec3gen(dble(d1),aimag(d1),E(ii),cr,ci,s,nrm)
-     
-     !print*, nrm
      
      Q(3*ii-2) = cr
      Q(3*ii-1) = ci
@@ -224,15 +218,12 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
      t1(2,2) = conjg(t1(1,1))
      U(ii:(ii+1)) = matmul(t1,U(ii:(ii+1)))
 
-
      ! update banded matrix (ignoring the second superdiagonal and the upper part of the matrix)
      d1 = -s*eu + cmplx(cr,ci,kind=8)*cmplx(D(ii+1),-1d0,kind=8)
      if (ii<N-1) then
         eu = cmplx(cr*E(ii+1),ci*E(ii+1),kind=8)
      end if
   end do
-
-  !print*, "MITTE 3 d_spr1_factor"
 
   ! form diagonal R conjg(R)^-1 (which is a diagonal matrix) 
   do ii=1,N+1
@@ -243,58 +234,17 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
   !print*, "cr", cr, "s", s
   !call d_rot2_vec2gen(-cr*cr+s*s,-2*cr*s,QD(2*N-1),QD(2*N),nrm)             
   call d_rot2_vec2gen(-cr,-s,QD(2*N-1),QD(2*N),nrm)             
+  ! cr and s will be used later !
   ! update U
   U(N) = cmplx(cr,-s,kind=8)*U(N)
   mu = conjg(U(N))
-  !mu = U(N)
-  !print*, d1
   d1 = conjg(cmplx(cr,-s,kind=8)*d1)
- 
-!!$  print*, "Q'*U"
-!!$  do ii=1,N
-!!$     print*, ii,U(ii)
-!!$  end do
-!!$  print*, "rnn (d1)", d1, nrm
-!!$  print*, "mu", mu
-!!$  print*, "U-conjg(U))/(d1+mu)"
+
   ! update U
   do ii=1,N
-     !U(ii) = 2d0*cmplx(0d0,aimag(U(ii)),kind=8)/(conjg(d1)+mu)
-     !U(ii) = (U(ii)-conjg(U(ii)))/(conjg(d1)+mu)
-     U(ii) = (U(ii)-conjg(U(ii)))/(d1+mu)!*cmplx(cr,+s,kind=8)
-     !print*, ii,U(ii)
+     U(ii) = cmplx(0d0,2d0*aimag(U(ii)),kind=8)/(d1+mu)
   end do
-!!$  !U(N) = cmplx(cr,-s,kind=8)*U(N)
-!!$  !U(N) = (U(N)-conjg(U(N)))/(d1+mu)
-!!$  !print*, N,U(N)
-
   
-!!$  print*, "Q ", Q
-!!$  print*, "QD", QD
-
-!!$  ! check Q, form HQ
-!!$  HQ = 0d0
-!!$  do ii=1,N
-!!$     HQ(ii,ii) = 1d0
-!!$  end do
-!!$  ! Apply QD from the left
-!!$  do ii=1,N
-!!$     HQ(ii,:) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*HQ(ii,:)
-!!$  end do
-!!$  ! Apply Q from the left
-!!$  do ii=N-1,1,-1
-!!$     t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
-!!$     t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
-!!$     t(1,2) = -t(2,1)
-!!$     t(2,2) = conjg(t(1,1))
-!!$     HQ(ii:(ii+1),:) = matmul(t,HQ(ii:(ii+1),:))
-!!$  end do 
-!!$  ! plot H
-!!$  print*, "Q"
-!!$  do ii=1,N
-!!$     print*, ii, HQ(ii,1:N)
-!!$  end do
-
   if (DEBUGOUT) then
      ! check H, form H
      H = 0d0
@@ -352,7 +302,9 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
      ! EIGENVALUES ARE CORRECT HERE
      
      do ii=1,N
-        print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
+        !print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
+        !     &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
+        print*, ii, HQ(ii,1), (cmplx(0d0,1d0,kind=8)-cmplx(0d0,1d0,kind=8)*HQ(ii,1))/&
              &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
      end do
   end if
@@ -378,7 +330,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
         t1(2,1) = cmplx(-bulge(3),0d0,kind=8)
         t1(1,2) = -t1(2,1)
         t1(2,2) = conjg(t1(1,1))
-        Z(:,(jj):(jj+1)) = matmul(Z(:,(jj):(jj+1)),t1)
+        Z(1:N,(jj):(jj+1)) = matmul(Z(1:N,(jj):(jj+1)),t1)
      end if
      
      ! set indices
@@ -451,7 +403,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
            t1(2,1) = cmplx(-bulge(3),0d0,kind=8)
            t1(1,2) = -t1(2,1)
            t1(2,2) = conjg(t1(1,1))
-           Z(:,(ii-1):(ii)) = matmul(Z(:,(ii-1):(ii)),t1)
+           Z(1:N,(ii-1):(ii)) = matmul(Z(1:N,(ii-1):(ii)),t1)
         end if
         
         ! through diag 
@@ -477,11 +429,11 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
   end do
 
   !print*, "LD(N)", LD(2*N-1), LD(2*N)
-  t1(1,1) = cmplx( LD(2*N-1), LD(2*N), kind=8) * cmplx(cr,s,kind=8);
   if (VEC) then
-     t1(1,1) = cmplx(-cr,s,kind=8)
-     Z(:,N) = Z(:,N)*t1(1,1)
+     t1(1,1) = cmplx(cr,-s,kind=8)
+     Z(1:N,N) = Z(1:N,N)*t1(1,1)
   end if
+  t1(1,1) = cmplx( LD(2*N-1), LD(2*N), kind=8) * cmplx(cr,s,kind=8);
   call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),LD(2*N-1),LD(2*N),nrm)
   !print*, "LD(N)", LD(2*N-1), LD(2*N)
 
@@ -562,68 +514,10 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
 
   end if
 
-
-
-  
-  !U = -conjg(U)
-  !U = -U
-  !U = conjg(U)
-
   QC = 0d0
   QB = 0d0
 
-  ! roll up U
-  ! compute the phase of last coefficient
-  call d_rot2_vec2gen(dble(U(N))+1,aimag(U(N)),phr,phi,beta)
- 
-  if (DEBUGOUT) then
-     print*,""
-     print*,"U(N):",U(N)
-     print*,"beta:",beta
-     print*,""
-
-
-     print*, "QD",QD
-     print*, "ph", phr, phi
-  end if
-
-  ! store in QD
-  t1(1,1) = cmplx(QD(2*N-1),QD(2*N),kind=8)*cmplx(phr,phi,kind=8)
-  call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*N-1),QD(2*N),nrm)
-  t1(1,1) = cmplx(QD(2*N+1),QD(2*N+2),kind=8)*cmplx(phr,-phi,kind=8)
-  call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*N+1),QD(2*N+2),nrm)
-
-  if (DEBUGOUT) then
-
-     print*, "QD",QD
-  end if
-
-  ! initialize bottom of QC
-  call d_rot2_vec2gen(beta,-1d0,QC(3*N-2),QC(3*N),nrm)
-
-  !!$ call z_rot3_vec3gen(dble(U(N)),aimag(U(N)),beta,QC(3*N-2),QC(3*N-1),QC(3*N),nrm)
-
-  ! initialize bottom of QB
-  QB(3*N-2) = QC(3*N)
-  QB(3*N) = QC(3*N-2)
-
-  ! roll up U into QB and QC
-  temp = cmplx(nrm,0d0,kind=8)
-  do ii = 1,(N-1)
-    ! compute new QC
-    call z_rot3_vec4gen(dble(U(N-ii)),aimag(U(N-ii)),dble(temp),aimag(temp) &
-         &,QC(3*(N-ii)-2),QC(3*(N-ii)-1),QC(3*(N-ii)),nrm)
-
-    ! store new QB
-    QB(3*(N-ii)-2) = QC(3*(N-ii)-2)
-    QB(3*(N-ii)-1) = -QC(3*(N-ii)-1)
-    QB(3*(N-ii)) = -QC(3*(N-ii))
-
-    ! update last entry of U using QC
-    temp = cmplx(QC(3*(N-ii)-2),-QC(3*(N-ii)-1),kind=8)*U(N-ii) &
-         &+ QC(3*(N-ii))*temp
-
-  end do
-
+  U(N) = U(N) + cmplx(1d0,0d0,kind=8)
+  call z_upr1_factoridpspike(.FALSE.,N,U,QD,QC,QB,INFO)
 
 end subroutine d_spr1_factor

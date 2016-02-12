@@ -87,54 +87,7 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)
  
   end do
 
-  ! compress first triangle
-  D1 = 0d0
-  do ii = 1,N
-    D1(2*ii-1) = 1d0
-  end do
-  B1 = 0d0
-  C1 = 0d0
-
-  ! compute the phase of last coefficient
-  call d_rot2_vec2gen(dble(V(N)),aimag(V(N)),phr,phi,beta)
- 
-print*,""
-print*,"Inside comppenc_factor"
-print*,"V(N):",V(N)
-print*,"beta:",beta
-print*,""
-
-  ! store in D1
-  D1(2*N-1) = phr
-  D1(2*N) = phi
-  D1(2*N+1) = phr
-  D1(2*N+2) = -phi
-
-  ! initialize bottom of C1
-  call d_rot2_vec2gen(beta,-1d0,C1(3*N-2),C1(3*N),nrm)
-
-  ! initialize bottom of B1
-  B1(3*N-2) = C1(3*N)
-  B1(3*N) = C1(3*N-2)
-
-  ! roll up V into B1 and C1
-  temp = cmplx(nrm,0d0,kind=8)
-  do ii = 1,(N-1)
-
-    ! compute new C1
-    call z_rot3_vec4gen(dble(V(N-ii)),aimag(V(N-ii)),dble(temp),aimag(temp) &
-    ,C1(3*(N-ii)-2),C1(3*(N-ii)-1),C1(3*(N-ii)),nrm)
-
-    ! store new B1
-    B1(3*(N-ii)-2) = C1(3*(N-ii)-2)
-    B1(3*(N-ii)-1) = -C1(3*(N-ii)-1)
-    B1(3*(N-ii)) = -C1(3*(N-ii))
-
-    ! update last entry of V using C1
-    temp = cmplx(C1(3*(N-ii)-2),-C1(3*(N-ii)-1),kind=8)*V(N-ii) &
-    + C1(3*(N-ii))*temp
-
-  end do
+  call z_upr1_factoridpspike(.TRUE.,N,V,D1,C1,B1,INFO)
 
   ! shuffle W
   if (QZ) then
@@ -152,48 +105,7 @@ print*,""
  
     end do
 
-    ! compress second triangle
-    D2 = 0d0
-    do ii = 1,N
-      D2(2*ii-1) = 1d0
-    end do
-    B2 = 0d0
-    C2 = 0d0
-
-    ! compute the phase of last coefficient
-    call d_rot2_vec2gen(dble(W(N)),aimag(W(N)),phr,phi,beta)
- 
-    ! store in D2
-    D2(2*N-1) = phr
-    D2(2*N) = phi
-    D2(2*N+1) = phr
-    D2(2*N+2) = -phi
-
-    ! initialize bottom of C2
-    call d_rot2_vec2gen(beta,-1d0,C2(3*N-2),C2(3*N),nrm)
-
-    ! initialize bottom of B2
-    B2(3*N-2) = C2(3*N)
-    B2(3*N) = C2(3*N-2)
-
-    ! roll up W into B2 and C2
-    temp = cmplx(nrm,0d0,kind=8)
-    do ii = 1,(N-1)
-
-      ! compute new C2
-      call z_rot3_vec4gen(dble(W(N-ii)),aimag(W(N-ii)),dble(temp),aimag(temp) &
-      ,C2(3*(N-ii)-2),C2(3*(N-ii)-1),C2(3*(N-ii)),nrm)
-
-      ! store new B2
-      B2(3*(N-ii)-2) = C2(3*(N-ii)-2)
-      B2(3*(N-ii)-1) = -C2(3*(N-ii)-1)
-      B2(3*(N-ii)) = -C2(3*(N-ii))
-
-      ! update last entry of V using C2
-      temp = cmplx(C2(3*(N-ii)-2),-C2(3*(N-ii)-1),kind=8)*W(N-ii) &
-      + C2(3*(N-ii))*temp
-
-    end do
+    call z_upr1_factoridpspike(.TRUE.,N,W,D2,C2,B2,INFO)
 
   end if
 

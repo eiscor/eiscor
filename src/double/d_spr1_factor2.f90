@@ -367,66 +367,69 @@ subroutine d_spr1_factor2(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
 
 
 
-  !U = -conjg(U)
-  !U = -U
-  !U = conjg(U)
+  U(N) = U(N) + cmplx(1d0,0d0,kind=8)
+  call z_upr1_factoridpspike(.FALSE.,N,U,QD,QC,QB,INFO)
 
-  QC = 0d0
-  QB = 0d0
-
-  ! roll up U
-  ! compute the phase of last coefficient
-  call d_rot2_vec2gen(dble(U(N))+1,aimag(U(N)),phr,phi,beta)
- 
-  if (DEBUGOUT) then
-
-     print*,""
-     print*,"U(N):",U(N)
-     print*,"beta:",beta
-     print*,""
-     
-     
-     print*, "QD",QD
-     print*, "ph", phr, phi
-     
-  end if
-
-  ! store in QD
-  t1(1,1) = cmplx(QD(2*N-1),QD(2*N),kind=8)*cmplx(phr,phi,kind=8)
-  call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*N-1),QD(2*N),nrm)
-  t1(1,1) = cmplx(QD(2*N+1),QD(2*N+2),kind=8)*cmplx(phr,-phi,kind=8)
-  call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*N+1),QD(2*N+2),nrm)
-
-  if (DEBUGOUT) then
-     print*, "QD",QD
-  end if
-
-  ! initialize bottom of QC
-  call d_rot2_vec2gen(beta,-1d0,QC(3*N-2),QC(3*N),nrm)
-
-  !!$ call z_rot3_vec3gen(dble(U(N)),aimag(U(N)),beta,QC(3*N-2),QC(3*N-1),QC(3*N),nrm)
-
-  ! initialize bottom of QB
-  QB(3*N-2) = QC(3*N)
-  QB(3*N) = QC(3*N-2)
-
-  ! roll up U into QB and QC
-  temp = cmplx(nrm,0d0,kind=8)
-  do ii = 1,(N-1)
-    ! compute new QC
-    call z_rot3_vec4gen(dble(U(N-ii)),aimag(U(N-ii)),dble(temp),aimag(temp) &
-         &,QC(3*(N-ii)-2),QC(3*(N-ii)-1),QC(3*(N-ii)),nrm)
-
-    ! store new QB
-    QB(3*(N-ii)-2) = QC(3*(N-ii)-2)
-    QB(3*(N-ii)-1) = -QC(3*(N-ii)-1)
-    QB(3*(N-ii)) = -QC(3*(N-ii))
-
-    ! update last entry of U using QC
-    temp = cmplx(QC(3*(N-ii)-2),-QC(3*(N-ii)-1),kind=8)*U(N-ii) &
-         &+ QC(3*(N-ii))*temp
-
-  end do
+!!$  !U = -conjg(U)
+!!$  !U = -U
+!!$  !U = conjg(U)
+!!$
+!!$  QC = 0d0
+!!$  QB = 0d0
+!!$
+!!$  ! roll up U
+!!$  ! compute the phase of last coefficient
+!!$  call d_rot2_vec2gen(dble(U(N))+1,aimag(U(N)),phr,phi,beta)
+!!$ 
+!!$  if (DEBUGOUT) then
+!!$
+!!$     print*,""
+!!$     print*,"U(N):",U(N)
+!!$     print*,"beta:",beta
+!!$     print*,""
+!!$     
+!!$     
+!!$     print*, "QD",QD
+!!$     print*, "ph", phr, phi
+!!$     
+!!$  end if
+!!$
+!!$  ! store in QD
+!!$  t1(1,1) = cmplx(QD(2*N-1),QD(2*N),kind=8)*cmplx(phr,phi,kind=8)
+!!$  call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*N-1),QD(2*N),nrm)
+!!$  t1(1,1) = cmplx(QD(2*N+1),QD(2*N+2),kind=8)*cmplx(phr,-phi,kind=8)
+!!$  call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*N+1),QD(2*N+2),nrm)
+!!$
+!!$  if (DEBUGOUT) then
+!!$     print*, "QD",QD
+!!$  end if
+!!$
+!!$  ! initialize bottom of QC
+!!$  call d_rot2_vec2gen(beta,-1d0,QC(3*N-2),QC(3*N),nrm)
+!!$
+!!$  !!$ call z_rot3_vec3gen(dble(U(N)),aimag(U(N)),beta,QC(3*N-2),QC(3*N-1),QC(3*N),nrm)
+!!$
+!!$  ! initialize bottom of QB
+!!$  QB(3*N-2) = QC(3*N)
+!!$  QB(3*N) = QC(3*N-2)
+!!$
+!!$  ! roll up U into QB and QC
+!!$  temp = cmplx(nrm,0d0,kind=8)
+!!$  do ii = 1,(N-1)
+!!$    ! compute new QC
+!!$    call z_rot3_vec4gen(dble(U(N-ii)),aimag(U(N-ii)),dble(temp),aimag(temp) &
+!!$         &,QC(3*(N-ii)-2),QC(3*(N-ii)-1),QC(3*(N-ii)),nrm)
+!!$
+!!$    ! store new QB
+!!$    QB(3*(N-ii)-2) = QC(3*(N-ii)-2)
+!!$    QB(3*(N-ii)-1) = -QC(3*(N-ii)-1)
+!!$    QB(3*(N-ii)) = -QC(3*(N-ii))
+!!$
+!!$    ! update last entry of U using QC
+!!$    temp = cmplx(QC(3*(N-ii)-2),-QC(3*(N-ii)-1),kind=8)*U(N-ii) &
+!!$         &+ QC(3*(N-ii))*temp
+!!$
+!!$  end do
 
 
 

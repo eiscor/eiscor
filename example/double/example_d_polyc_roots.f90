@@ -15,8 +15,9 @@ program example_d_polyc_roots
   ! compute variables
   integer, parameter :: N = 16
   integer :: ii, jj, ij
-  real(8) :: COEFFS(N), RESIDUALS(N), a, b
+  real(8) :: COEFFS(N), RESIDUALS(N), a, b, RES(N,3)
   complex(8) :: ROOTS(N), E(4096), C(N+3), ac
+  complex(8) :: CCOEFFS(N), RECUR(N,3), ALLROOTS (N,1)
 
 
   ! timing variables
@@ -76,6 +77,7 @@ program example_d_polyc_roots
         print*, ii, E(ii)
      end if
      COEFFS(ii) = 1d0*(N+1-ii)
+     CCOEFFS(ii) = cmplx(COEFFS(ii),0d0,kind=8)
      !COEFFS(ii) = 1d0*(ii)
   end do
   
@@ -101,31 +103,55 @@ program example_d_polyc_roots
 
   ! check polynomial value in roots
   ! using Clenshaws algorithm
-  do ii=1,N
-     C = cmplx(0d0,0d0,kind=8)
-     C(N+1) = cmplx(1d0,0d0,kind=8)
-     do jj=N-1,1,-1
-        C(jj+1) = cmplx(COEFFS(N+1-(jj+1)),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*ROOTS(ii)*C(jj+2) - C(jj+3)
+     a = 0d0
+     do ii=1,N
+        C = cmplx(0d0,0d0,kind=8)
+        C(N+1) = cmplx(1d0,0d0,kind=8)
+        do jj=N-1,1,-1
+           C(jj+1) = cmplx(COEFFS(N+1-(jj+1)),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*ROOTS(ii)*C(jj+2) - C(jj+3)
+        end do
+        C(1) = cmplx(2d0*COEFFS(N+1-1),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*ROOTS(ii)*C(2) - C(3)
+        
+        ac = (C(1) - C(3))/cmplx(2d0,0d0,kind=8)
+        print*, ROOTS(ii),ac, abs(ac)
+        if (abs(ac).GT.a) then
+           a = abs(ac)
+        end if
      end do
-     C(1) = cmplx(2d0*COEFFS(N+1-1),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*ROOTS(ii)*C(2) - C(3)
-
-     ac = (C(1) - C(3))/cmplx(2d0,0d0,kind=8)
-     print*, ROOTS(ii),ac, abs(ac)
-  end do
-
-  print*, "Real Roots"
-  ! using Clenshaws algorithm
-  do ii=1,N
-     C = cmplx(0d0,0d0,kind=8)
-     C(N+1) = cmplx(1d0,0d0,kind=8)
-     do jj=N-1,1,-1
-        C(jj+1) = cmplx(COEFFS(N+1-(jj+1)),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*E(ii)*C(jj+2) - C(jj+3)
+     print*, "maximal polynomial value in roots", a
+     
+     print*, "Real Roots"
+     ! using Clenshaws algorithm
+     do ii=1,N
+        C = cmplx(0d0,0d0,kind=8)
+        C(N+1) = cmplx(1d0,0d0,kind=8)
+        do jj=N-1,1,-1
+           C(jj+1) = cmplx(COEFFS(N+1-(jj+1)),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*E(ii)*C(jj+2) - C(jj+3)
+        end do
+        C(1) = cmplx(2d0*COEFFS(N+1-1),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*E(ii)*C(2) - C(3)
+        
+        ac = (C(1) - C(3))/cmplx(2d0,0d0,kind=8)
+        print*, E(ii),ac, abs(ac)
      end do
-     C(1) = cmplx(2d0*COEFFS(N+1-1),0d0,kind=8) + cmplx(2d0,0d0,kind=8)*E(ii)*C(2) - C(3)
+     
+     RECUR = cmplx(0d0,0d0,kind=8)
+     RECUR(:,1) = cmplx(.5d0,0d0,kind=8)
+     RECUR(:,3) = cmplx(.5d0,0d0,kind=8)
+     RECUR(N,1) = cmplx(1d0,0d0,kind=8)
+     RECUR(N,3) = cmplx(0d0,0d0,kind=8)
+     
+     
+     call z_polyc_residuals(N,3,0,CCOEFFS,RECUR,ROOTS,ALLROOTS,RES)
 
-     ac = (C(1) - C(3))/cmplx(2d0,0d0,kind=8)
-     print*, E(ii),ac, abs(ac)
-  end do
+     print*, RES(:,1)
+
+     b = 0d0
+     do ii=1,N
+        b = b + abs(RES(ii,1))
+     end do
+     
+     print*, "sum of residuals", b
+
   end if
 
   

@@ -14,11 +14,11 @@ program example_d_polyc_roots
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2048
+  integer, parameter :: N = 3
   integer :: ii, jj, ij
-  real(8) :: COEFFS(N), RESIDUALS(N), a, b
-  complex(8) :: ROOTS(N), E(4096), C(N+3), ac
-
+  real(8) :: COEFFS(N), RESIDUALS(N), a, b, RES(N,3)
+  complex(8) :: ROOTS(N), E(N), C(N+3), ac
+  complex(8) :: CCOEFFS(N), RECUR(N,3), ALLROOTS (N,1)
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -34,6 +34,19 @@ program example_d_polyc_roots
 
   COEFFS = 0d0
   COEFFS(N) = -1d0
+  CCOEFFS = cmplx(0d0,0d0,kind=8)
+  CCOEFFS(N) = cmplx(-1d0,0d0,kind=8)
+
+  !call d_1Darray_random_normal(N,COEFFS)
+
+  do ii=1,N
+     CCOEFFS(ii) = cmplx(COEFFS(ii),0d0,kind=8)
+  end do
+
+  print*, COEFFS
+  print*, CCOEFFS
+
+
   do ii=1,N
      E(ii) = cos((2d0*ii)*EISCOR_DBL_PI/N) 
      !E(ii) = cos((ii-1d0)*EISCOR_DBL_PI/(1d0*N+0d0))
@@ -80,7 +93,7 @@ program example_d_polyc_roots
            a = abs(ac)
         end if
      end do
-     print*, "maximal forward error", a
+     print*, "maximal polynomial value in roots", a
      
 !!$  print*, "Real Roots"
 !!$  ! using Clenshaws algorithm
@@ -95,6 +108,28 @@ program example_d_polyc_roots
 !!$     ac = (C(1) - C(3))/cmplx(2d0,0d0,kind=8)
 !!$     print*, E(ii),ac, abs(ac)
 !!$  end do
+
+     RECUR = cmplx(0d0,0d0,kind=8)
+     RECUR(:,1) = cmplx(.5d0,0d0,kind=8)
+     RECUR(:,3) = cmplx(.5d0,0d0,kind=8)
+     RECUR(N,1) = cmplx(1d0,0d0,kind=8)
+     RECUR(N,3) = cmplx(0d0,0d0,kind=8)
+     
+     
+     call z_polyc_residuals(N,3,0,CCOEFFS,RECUR,ROOTS,ALLROOTS,RES)
+
+     print*, RES(:,1) 
+     print*, RES(:,2)
+     print*, RES(:,3)
+    
+
+     b = 0d0
+     do ii=1,N
+        b = b + abs(RES(ii,1))
+     end do
+     
+     print*, "sum of residuals", b
+
   end if
 
   
