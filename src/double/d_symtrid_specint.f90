@@ -200,9 +200,10 @@ subroutine d_symtrid_newtonstep(N,D,E,X,F,INFO)
   end do
 
   ! compute F
-  ! check for zero diagonal
-  if (abs(d2)<EISCOR_DBL_EPS) then
-     F = X
+  ! if derivative is zero introduce a tiny Newton step
+  ! to break the symmetry
+  if (d2.EQ.0d0) then
+     F = EISCOR_DBL_EPS
   else
      F = p2/d2
   end if
