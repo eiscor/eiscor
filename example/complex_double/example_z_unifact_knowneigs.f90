@@ -45,72 +45,44 @@ program example_z_unifact_knowneigs
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! random eigenvalues, on the unit circle
-  do ii = 1,n,2
+  do ii = 1,n
      call random_number(rm)
      rev(ii) = sin(2*pi*rm)
      iev(ii) = cos(2*pi*rm)
      ! project on the unit circle
-     nrm = rev(ii)**2+iev(ii)**2
-     if (abs(nrm-1)<tol) then
-        nrm = sqrt(nrm)
-        rev(ii) = rev(ii)/nrm
-        iev(ii) = iev(ii)/nrm
-     end if
-     Q(3*ii-2) = rev(ii)
-     Q(3*ii)   = iev(ii)
-     rev(ii+1) = rev(ii)
-     iev(ii+1) = -iev(ii)
+     call d_rot2_vec2gen(rev(ii),iev(ii),rev(ii),iev(ii),nrm)
+     D(2*ii-1) = rev(ii)
+     D(2*ii)   = iev(ii)
   end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! inverse eigenvalue problem 
-  do ii=n-3,1,-2
+  do ii=n-1,1,-1
      ! generate random bulge
      call random_number(rp)     
      call random_number(ro)     
      call random_number(rm)     
      call z_rot3_vec3gen(rm,ro,rp,b1(1),b1(2),b1(3),NRM)
-     call random_number(rp)     
-     call random_number(ro)     
-     call random_number(rm)     
-     call z_rot3_vec3gen(rm,ro,rp,b2(1),b2(2),b2(3),NRM)
-     ! fuse on the top of the current Q sequence
-     tb(1) = b2(1)
-     tb(2) = -b2(2)
-     tb(3) = -b2(3)
-     b3(1) = b1(1)
-     b3(2) = -b1(2)
-     b3(3) = -b1(3)
-     ind = 3*(ii-1)
-     call z_rot3_turnover(tb,b3,Q((ind+1):(ind+3)))
-     Q((ind+4):(ind+6)) = b3
-     b3 = Q((ind+1):(ind+3))
-     Q((ind+1):(ind+3)) = tb
+     ! fuse on the top of the current Q sequence    
+     ind = 3*ii-3
+     Q(ind+1) = b1(1)
+     Q(ind+2) = -b1(2)
+     Q(ind+3) = -b1(3)
+
      ! main chasing loop
-     do jj=ii,(n-3)
+     do jj=ii,(n-2)
         ! set indices
         ind = 3*(jj-1)
         ! through diag
-        call z_rot3_swapdiag(.FALSE.,D(2*jj+1:2*jj+4),b1)
-        call z_rot3_turnover(Q((ind+4):(ind+6)),Q((ind+7):(ind+9)),b1)
-        call z_rot3_swapdiag(.FALSE.,D(2*jj-1:2*jj+2),b2)
-        call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2)
-        call z_rot3_turnover(b3,b1,b2)
-        ! update bulges
-        tb = b2
-        b2 = b3
-        b3 = b1
-        b1 = tb
+        call z_rot3_swapdiag(.FALSE.,D(2*jj-1:2*jj+2),b1)
+        call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b1)
      end do
-     ind = 3*(n-3)
+     ind = 3*(n-1)
      ! fusion at bottom
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b1)
-     call z_rot3_swapdiag(.FALSE.,D(2*n-5:2*n-2),b2)
-     call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b2)
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b3)
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b2)
+     call z_rot3_swapdiag(.FALSE.,D((2*n-3):(2*n)),b1)
+     call z_unifact_mergebulge(.FALSE.,Q((ind-2):(ind)),D((2*n-3):(2*n)),b1)
   end do
-
+  
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   print*,"Eigenvalues:"
   do ii=1,N
