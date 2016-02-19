@@ -42,7 +42,7 @@ program example_d_symtrid_qr_1dlaplace
    
   ! print D
   print*,"Roots computed using d_symtrid_qr:"
-  print*,"computed roots            closest exact root          difference" 
+  print*,"         ii computed roots            closest exact root          difference" 
   do ii=1,N
      E(ii) = 0d0+cos(ii*EISCOR_DBL_PI/(N+1d0))
   end do
@@ -59,7 +59,7 @@ program example_d_symtrid_qr_1dlaplace
         end if
      end do
      
-     print*, D(ii), E(INFO), t
+     print*, ii, D(ii), E(INFO), t
 
      if (t.GT.t2) then
         t2 = t
