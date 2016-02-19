@@ -6,7 +6,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes the eigenvalues of the tridiagonal Toeplitz
-! matrix [ -1 2 -1 ]. 
+! matrix [ -0.5 0 -0.5 ]. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program example_d_symtrid_qr_1dlaplace
