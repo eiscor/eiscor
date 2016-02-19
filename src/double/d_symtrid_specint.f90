@@ -32,6 +32,7 @@
 !
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
+!                    INFO = -1 implies A or B is NAN
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_symtrid_specint(NEWT,N,D,E,A,B,INFO)
@@ -48,6 +49,7 @@ subroutine d_symtrid_specint(NEWT,N,D,E,A,B,INFO)
   ! compute variables
   integer :: ii
   real(8) :: ta, tb
+  real(8) :: tol = EISCOR_DBL_EPS
   
   ! initialize INFO
   INFO = 0
@@ -89,6 +91,11 @@ subroutine d_symtrid_specint(NEWT,N,D,E,A,B,INFO)
     B = tb
   end if
 
+  ! return if A and B are 0
+  if ((A.EQ.0).AND.(B.EQ.0)) then
+    return
+  end if
+
   ! Newton updates
   if (NEWT) then
 
@@ -97,12 +104,24 @@ subroutine d_symtrid_specint(NEWT,N,D,E,A,B,INFO)
 
       ! correction for A
       call d_symtrid_newtonstep(N,D,E,A,ta,INFO)
+       
+      ! check if INFO = -1
+      if (INFO.EQ.-1) then
+        ta = tol
+        INFO = 0
+      end if
       
       ! correction for B
       call d_symtrid_newtonstep(N,D,E,B,tb,INFO)
       
+      ! check if INFO = -1
+      if (INFO.EQ.-1) then
+        tb = -tol
+        INFO = 0
+      end if
+      
       ! update if not converged
-      if ((abs(ta)/abs(A) > EISCOR_DBL_EPS).AND.(abs(tb)/abs(B) > EISCOR_DBL_EPS)) then
+      if ((abs(ta) > tol*abs(A)).AND.(abs(tb) > tol*abs(B))) then
 
         A = A - ta
         B = B - tb
@@ -116,6 +135,11 @@ subroutine d_symtrid_specint(NEWT,N,D,E,A,B,INFO)
 
     end do
 
+  end if
+
+  ! check if A and B are NAN
+  if ((A.NE.A).OR.(B.NE.B)) then 
+    INFO = -1
   end if
 
 end subroutine d_symtrid_specint
@@ -153,6 +177,7 @@ end subroutine d_symtrid_specint
 !
 !  INFO            INTEGER
 !                    INFO = 0 implies successful computation
+!                    INFO = -1 implies zero derivative at X
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine d_symtrid_newtonstep(N,D,E,X,F,INFO)
@@ -200,10 +225,11 @@ subroutine d_symtrid_newtonstep(N,D,E,X,F,INFO)
   end do
 
   ! compute F
-  ! if derivative is zero introduce a tiny Newton step
-  ! to break the symmetry
+  ! if derivative is zero set Newton step
+  ! to zero and throw error
   if (d2.EQ.0d0) then
-     F = EISCOR_DBL_EPS
+     F = 0
+     INFO = -1
   else
      F = p2/d2
   end if

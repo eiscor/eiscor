@@ -12,6 +12,8 @@
 !
 ! 2) T = Toeplitz(.5,0,.5) with Newton correction 
 !
+! 3) T = 0 matrix 
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_d_symtrid_specint
 
@@ -70,6 +72,29 @@ program test_d_symtrid_specint
 
   ! check B
   if (B.NE.rho) then
+     call u_test_failed(__LINE__)
+  end if
+
+  ! check flag
+  if (flag) then
+     call u_test_failed(__LINE__)
+  end if
+
+  !!!!!!!!!!!!!!!!!!!!
+  ! check 2)
+
+  ! set variables
+  D = 0d0
+  E = 0d0
+  call d_symtrid_specint(.TRUE.,N,D,E,A,B,flag)
+
+  ! check A
+  if (A.NE.0) then
+     call u_test_failed(__LINE__)
+  end if
+
+  ! check B
+  if (B.NE.0) then
      call u_test_failed(__LINE__)
   end if
 
