@@ -25,9 +25,9 @@ program example_d_symtrid_qr_1dlaplace
   print*,""
 
   ! initialize T to be a tridiagonal matrix of the form
-  !  2 -1
-  ! -1  2 -1
-  !     -1 2 ...
+  !   0  -0.5
+  ! -0.5   0 -0.5
+  !      -0.5  0  ...
   D = 0d0
   E = -5d-1
 
