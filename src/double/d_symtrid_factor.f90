@@ -95,7 +95,6 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
 
   ! initialize INFO
   INFO = 0
-  scale = 1d0
 
   ! check N
   if (N < 1) then
@@ -106,7 +105,6 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
     end if
     return
   end if
-
 
   ! check D
   call d_1Darray_check(N,D,flg)
@@ -130,29 +128,6 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
     return
   end if
   
-  flg = .TRUE.
-  if (D(1).NE.0d0) then
-     flg = .FALSE.
-  else
-     do ii=1,N-1
-        if (D(ii+1).NE.0d0) then
-           flg = .FALSE.
-           exit
-        elseif (E(ii).NE.0d0) then           
-           flg = .FALSE.
-           exit
-        end if
-     end do
-  end if
-  if (flg) then
-     INFO = -56
-    ! print error message in debug mode
-    if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"E is invalid",INFO,INFO)
-    end if
-    return
-  end if    
-
   ! check M
   if (VEC.AND.(M < 1)) then
     INFO = -9
@@ -184,29 +159,41 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
      end do
   end if
 
-  ! scaling
-  if (SCA) then
-     ! .TRUE. : use Newton correction
-     call d_symtrid_specint(.TRUE.,N,D,E,a,b,INFO)
-
-     if (INFO.NE.0) then 
-        ! print error in debug mode
-        if (DEBUG) then
-           call u_infocode_check(__FILE__,__LINE__,"d_symtrid_specint failed",INFO,INFO)
-        end if
-        INFO = 1
-
+  ! compute scale factor whether we use it or not
+  ! .TRUE. : use Newton correction
+  call d_symtrid_specint(.TRUE.,N,D,E,a,b,INFO)
+  if (INFO.NE.0) then 
+     ! print error in debug mode
+     if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"d_symtrid_specint failed",INFO,INFO)
      end if
-     
-     SCALE = max(abs(a),abs(b))
-     
+     INFO = 1
+  end if
+
+  ! compute scale
+  SCALE = max(abs(a),abs(b))
+
+  ! return if scale == 0
+  if (SCALE.EQ.0) then 
+     INFO = -56
+     ! print error in debug mode
+     if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"input matrices are 0",INFO,INFO)
+     end if
+     return
+  end if
+
+  ! scale D and E if SCA == .TRUE.
+  if (SCA) then
      do ii=1,N
         D(ii) = D(ii)/SCALE
      end do
      do ii=1,N-1
         E(ii) = E(ii)/SCALE
      end do
-
+  ! otherwise set scale to 1
+  else
+    scale = 1d0
   end if
 
   ! Cayley transform -(T-iI)(T+iI)              
