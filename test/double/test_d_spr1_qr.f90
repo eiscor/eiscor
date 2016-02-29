@@ -22,7 +22,7 @@ program test_d_symtrid_qr
   
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! parameters
-  integer, parameter :: N = 20
+  integer, parameter :: N = 4096
   logical, parameter :: sca = .FALSE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! compute variables
@@ -35,7 +35,8 @@ program test_d_symtrid_qr
   logical :: backward
   !
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), C1(3*N), B1(3*N), D1(2*(N+1)), D2, W, B2, C2
+  real(8) :: Q(3*(N-1)), C1(3*N), B1(3*N), D1(2*(N+1))
+  real(8) :: D2(2*(N+1)), W, B2(3*N), C2(3*N), LWORK(2*N)
   complex(8) :: ROOTS(N)
   ! RES
   complex(8) :: CCOEFFS(N), RECUR(N,3), ALLROOTS (N,1)
@@ -178,7 +179,7 @@ program test_d_symtrid_qr
   ! fill P
   P = .FALSE.
 
-  call d_spr1_factor(.TRUE.,.TRUE.,.FALSE.,N,D,E,U,Q,D1,C1,B1,t2,N,Z,INFO)
+  call d_spr1_factor(.TRUE.,.TRUE.,.FALSE.,N,D,E,U,Q,D1,C1,B1,t2,N,Z,LWORK,INFO)
 
   ! check INFO
   if (INFO.NE.0) then
@@ -219,6 +220,7 @@ program test_d_symtrid_qr
         t2 = t2 + RES(ii,3)
      end do
      
+        print*, "case", kk, "norm", t2
      if ((t2>1d-14*N*N).OR.(t2.NE.t2)) then
         ! backward error test failed
         print*, "case", kk, "norm", t2

@@ -14,15 +14,23 @@ program example_d_polyc_roots
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 3
+  integer, parameter :: N = 20
+  !integer, parameter :: N = 2048
+  !integer, parameter :: N = 4096
   integer :: ii, jj, ij
-  real(8) :: COEFFS(N), RESIDUALS(N), a, b, RES(N,3)
-  complex(8) :: ROOTS(N), E(N), C(N+3), ac
-  complex(8) :: CCOEFFS(N), RECUR(N,3), ALLROOTS (N,1)
+  real(8), allocatable :: COEFFS(:), RESIDUALS(:), RES(:,:)
+  real(8) :: a, b
+  complex(8), allocatable :: ROOTS(:), E(:), C(:)
+  complex(8) :: ac
+  complex(8), allocatable :: CCOEFFS(:), RECUR(:,:), ALLROOTS (:,:)
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
   
+  ! allocate memory
+  allocate(COEFFS(N),RESIDUALS(N),RES(N,3),ROOTS(N),E(N),C(N+3),CCOEFFS(N))
+  allocate(RECUR(N,3),ALLROOTS(N,1))
+
   ! start timer
   call system_clock(count_rate=c_rate)
   call system_clock(count=c_start)
@@ -33,9 +41,9 @@ program example_d_polyc_roots
   print*,""
 
   COEFFS = 0d0
-  COEFFS(N) = -1d0
+  COEFFS(N) = -1d-2
   CCOEFFS = cmplx(0d0,0d0,kind=8)
-  CCOEFFS(N) = cmplx(-1d0,0d0,kind=8)
+  CCOEFFS(N) = cmplx(-1d-2,0d0,kind=8)
 
   !call d_1Darray_random_normal(N,COEFFS)
 
@@ -92,6 +100,7 @@ program example_d_polyc_roots
         if (abs(ac).GT.a) then
            a = abs(ac)
         end if
+           print*, ROOTS(ii),ac, abs(ac)
      end do
      print*, "maximal polynomial value in roots", a
      
@@ -114,21 +123,30 @@ program example_d_polyc_roots
      RECUR(:,3) = cmplx(.5d0,0d0,kind=8)
      RECUR(N,1) = cmplx(1d0,0d0,kind=8)
      RECUR(N,3) = cmplx(0d0,0d0,kind=8)
+     RECUR = cmplx(0d0,0d0,kind=8)
+     RECUR(:,1) = cmplx(.5d0,0d0,kind=8)
+     RECUR(:,3) = cmplx(.5d0,0d0,kind=8)
+     RECUR(1,1) = cmplx(1d0,0d0,kind=8)
+     RECUR(1,3) = cmplx(0d0,0d0,kind=8)
      
      
      call z_polyc_residuals(N,3,0,CCOEFFS,RECUR,ROOTS,ALLROOTS,RES)
 
-     print*, RES(:,1) 
-     print*, RES(:,2)
-     print*, RES(:,3)
+     !print*, RES(:,1) 
+     !print*, RES(:,2)
+     !print*, RES(:,3)
     
 
+     a = 0d0
      b = 0d0
      do ii=1,N
+        if (abs(RES(ii,1)).GT.a) then
+           a = abs(RES(ii,1))
+        end if
         b = b + abs(RES(ii,1))
      end do
      
-     print*, "sum of residuals", b
+     print*, "max residual", a, "sum of residuals", b
 
   end if
 

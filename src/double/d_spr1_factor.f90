@@ -72,6 +72,9 @@
 !                    if VEC = .TRUE. and ID = .TRUE. initializes Z to I 
 !                    if VEC = .TRUE. and ID = .FALSE. assumes Z initialized
 !
+!  LD              REAL (8) array of dimenison (2*N)
+!                    (workspace) used to store diagonal entries temporarily
+!
 !  INFO            INTEGER
 !                    INFO = 1 implies scaling failed
 !                    INFO = 0 implies successful computation
@@ -82,28 +85,30 @@
 !                    INFO = -11 implies Z is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
+subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
 
   implicit none
   
   ! input variables
-  logical, parameter :: DEBUGOUT = .FALSE.
+  !logical, parameter :: DEBUGOUT = .FALSE.
   !logical, parameter :: DEBUGOUT = .TRUE.
   logical, intent(in) :: VEC, ID, SCA
   integer, intent(in) :: N, M
   real(8), intent(inout) :: D(N), E(N-1), Q(3*N-3), QD(2*N+2), SCALE
-  real(8), intent(inout) :: QB(3*N), QC(3*N)
+  real(8), intent(inout) :: QB(3*N), QC(3*N), LD(2*N)
   complex(8), intent(inout) :: Z(M,N), U(N)
   integer, intent(inout) :: INFO
 
   ! compute variables
   integer :: ii, jj, ind1, ind2
   logical :: flg
-  real(8) :: cr, ci, s, nrm, bulge(3), a, b, hb(3), LD(2*N), beta, phr, phi
-  complex(8) :: eu, d1, t1(2,2), mu, temp, H(N,N),HQ(N,N), t(2,2)
-  complex(8) :: WORK(5*N)
-  real(8) :: RWORK(2*N)
-  !print*, "START d_spr1_factor"
+  real(8) :: cr, ci, s, nrm, bulge(3), hb(3)
+  complex(8) :: eu, d1, t1(2,2), mu
+
+!!$  complex(8) :: WORK(5*N), H(N,N),HQ(N,N), t(2,2)
+!!$  real(8) :: RWORK(2*N)
+
+
   ! initialize INFO
   INFO = 0
 
@@ -197,6 +202,14 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
 !!$
 !!$  end if
 
+  
+!!$  if (DEBUGOUT) then
+!!$     print*, "U"
+!!$     do ii=1,N
+!!$        print*, ii, U(ii)
+!!$     end do
+!!$  end if
+
   ! Cayley transform -(T-iI)(T+iI)              
   ! implicitly form B = T - i I  and T + i I = conjg(B)
   eu = E(1)
@@ -240,74 +253,81 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
   mu = conjg(U(N))
   d1 = conjg(cmplx(cr,-s,kind=8)*d1)
 
+!!$  if (DEBUGOUT) then
+!!$     print*, "qU"
+!!$     do ii=1,N
+!!$        print*, ii, U(ii)
+!!$     end do
+!!$  end if
+  
   ! update U
   do ii=1,N
      U(ii) = cmplx(0d0,2d0*aimag(U(ii)),kind=8)/(d1+mu)
   end do
   
-  if (DEBUGOUT) then
-     ! check H, form H
-     H = 0d0
-     do ii=1,N
-        H(ii,ii) = 1d0
-     end do
-     do ii=1,N
-        H(ii,N) = H(ii,N)+U(ii)
-        print*, "H U", ii, H(ii,N), U(ii)
-     end do
-!!$  print*, "RiR"
-!!$  do ii=1,N
-!!$     print*, ii, H(ii,1:N)
-!!$  end do
-     
-     
-     ! Apply QD from the left
-     do ii=1,N
-        H(ii,:) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*H(ii,:)
-     end do
-     ! Apply Q from the left
-     do ii=N-1,1,-1
-        t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
-        t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
-        t(1,2) = -t(2,1)
-        t(2,2) = conjg(t(1,1))
-        H(ii:(ii+1),:) = matmul(t,H(ii:(ii+1),:))
-     end do
-     
-!!$  print*, "Q*RiR"
-!!$  do ii=1,N
-!!$     print*, ii, H(ii,1:N)
-!!$  end do
-     ! Apply QD^T from the right
-     do ii=1,N
-        H(:,ii) = -H(:,ii)*cmplx(QD(2*ii-1),QD(2*ii),kind=8)
-     end do
-     ! Apply Q^T from the right
-     do ii=N-1,1,-1
-        t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
-        t(2,1) = cmplx(-Q(3*ii),0d0,kind=8)
-        t(1,2) = -t(2,1)
-        t(2,2) = conjg(t(1,1))
-        H(:,ii:(ii+1)) = matmul(H(:,ii:(ii+1)),t)
-     end do
-     ! plot H
-!!$  print*, "H"
-!!$  do ii=1,N
-!!$     print*, ii, H(ii,1:N)
-!!$  end do
-     
-     print*, "First ZGEEV"
-     call zgeev('N','N', N, H, N, HQ, Z, 1, Z, 1, WORK, 5*N, RWORK, INFO)
-     
-     ! EIGENVALUES ARE CORRECT HERE
-     
-     do ii=1,N
-        !print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
-        !     &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
-        print*, ii, HQ(ii,1), (cmplx(0d0,1d0,kind=8)-cmplx(0d0,1d0,kind=8)*HQ(ii,1))/&
-             &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
-     end do
-  end if
+!!$  if (DEBUGOUT) then
+!!$     ! check H, form H
+!!$     H = 0d0
+!!$     do ii=1,N
+!!$        H(ii,ii) = 1d0
+!!$     end do
+!!$     do ii=1,N
+!!$        H(ii,N) = H(ii,N)+U(ii)
+!!$        print*, "H U", ii, H(ii,N), U(ii)
+!!$     end do
+!!$!  print*, "RiR"
+!!$!  do ii=1,N
+!!$!     print*, ii, H(ii,1:N)
+!!$!  end do
+!!$     
+!!$     
+!!$     ! Apply QD from the left
+!!$     do ii=1,N
+!!$        H(ii,:) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*H(ii,:)
+!!$     end do
+!!$     ! Apply Q from the left
+!!$     do ii=N-1,1,-1
+!!$        t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
+!!$        t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
+!!$        t(1,2) = -t(2,1)
+!!$        t(2,2) = conjg(t(1,1))
+!!$        H(ii:(ii+1),:) = matmul(t,H(ii:(ii+1),:))
+!!$     end do
+!!$    
+!!$!  print*, "Q*RiR"
+!!$!  do ii=1,N
+!!$!     print*, ii, H(ii,1:N)
+!!$!  end do
+!!$     ! Apply QD^T from the right
+!!$     do ii=1,N
+!!$        H(:,ii) = -H(:,ii)*cmplx(QD(2*ii-1),QD(2*ii),kind=8)
+!!$     end do
+!!$     ! Apply Q^T from the right
+!!$     do ii=N-1,1,-1
+!!$        t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
+!!$        t(2,1) = cmplx(-Q(3*ii),0d0,kind=8)
+!!$        t(1,2) = -t(2,1)
+!!$        t(2,2) = conjg(t(1,1))
+!!$        H(:,ii:(ii+1)) = matmul(H(:,ii:(ii+1)),t)
+!!$     end do
+!!$     ! plot H
+!!$!  print*, "H"
+!!$! do ii=1,N
+!!$!     print*, ii, H(ii,1:N)
+!!$!  end do
+!!$     
+!!$     print*, "First ZGEEV"
+!!$     call zgeev('N','N', N, H, N, HQ, Z, 1, Z, 1, WORK, 5*N, RWORK, INFO)
+!!$     
+!!$     ! EIGENVALUES ARE CORRECT HERE
+!!$     
+!!$     do ii=1,N
+!!$        !print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
+!!$        !     &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
+!!$        print*, ii, HQ(ii,1), (cmplx(0d0,1d0,kind=8)-cmplx(0d0,1d0,kind=8)*HQ(ii,1))/&
+!!$             &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
+!!$     end do
+!!$  end if
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! chasing upward
@@ -343,7 +363,6 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
      ! main chasing loop
      do ii=jj,2,-1
         
-        !print*, "MITTE 4b d_spr1_factor",jj,ii
         ! set indices
         ind1 = 3*(ii-2) + 1
         ind2 = ind1+2
@@ -361,41 +380,13 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
         
         ! through diag 
         call z_rot3_swapdiag(.TRUE.,QD(ind1:ind2),bulge)
-        
-        !print*, "MITTE 4c d_spr1_factor",jj,ii
-        
-!!$        ! update U
-!!$        t(1,1) = U(ii-1)
-!!$        t(2,1) = U(ii)
-!!$        t1(1,1) = cmplx(bulge(1),bulge(2),kind=8)
-!!$        t1(2,1) = cmplx(bulge(3),0d0,kind=8)
-!!$        t1(1,2) = -t1(2,1)
-!!$        t1(2,2) = conjg(t1(1,1))
-!!$        U((ii-1):(ii)) = matmul(t1,U((ii-1):(ii)))        
-!!$
-!!$        print*, "U", U(ii-1), U(ii)
-!!$        t(1,2) = U(ii-1)
-!!$        t(2,2) = U(ii)
-!!$        
-!!$        !print*,"update U", U(ii-1), U(ii)
-!!$        print*, cmplx(bulge(1),bulge(2))*U(ii-1), cmplx(bulge(3),0d0,kind=8)*U(ii)
-!!$        print*, cmplx(bulge(1),-bulge(2))*U(ii), -cmplx(bulge(3),0d0,kind=8)*U(ii-1)
+
+        ! update U
         t1(1,1) = cmplx(bulge(1),bulge(2),kind=8)*U(ii-1) - &
              &cmplx(bulge(3),0d0,kind=8)*U(ii)
         U(ii) = cmplx(bulge(1),-bulge(2),kind=8)*U(ii) + &
              &cmplx(bulge(3),0d0,kind=8)*U(ii-1)
         U(ii-1) = t1(1,1)
-!!$        print*,"update U", U(ii-1), U(ii)
-
-!!$        t1(1,1) = cmplx(bulge(1),bulge(2),kind=8)*t(1,1) - &
-!!$             &cmplx(bulge(3),0d0,kind=8)*t(2,1)
-!!$        U(ii) = cmplx(bulge(1),-bulge(2),kind=8)*t(2,1) + &
-!!$             &cmplx(bulge(3),0d0,kind=8)*t(1,1)
-!!$        U(ii-1) = t1(1,1)
-!!$        print*,"U", U(ii-1), U(ii)
-!!$        print*,"diffU", abs(U(ii-1)-t(1,2)), abs(U(ii)-t(2,2))
-
-
 
         ! update eigenvectors
         if (VEC) then
@@ -410,33 +401,29 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
         call z_rot3_swapdiag(.TRUE.,LD(ind1:ind2),bulge)
         
      end do
-     !print*, "MITTE 4d d_spr1_factor",jj
      
      ! fusion at bottom
      call z_unifact_mergebulge(.TRUE.,Q(1:3),QD(1:4),bulge)
      
-     !print*, "MITTE 4e d_spr1_factor",jj
      ! update LD(1:2)
      t1(1,1) = cmplx(LD(1),LD(2),kind=8)*cmplx(bulge(1),bulge(2),kind=8)
      call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),LD(1),LD(2),nrm)
      
-     !print*, "MITTE 4f d_spr1_factor",jj
      ! update LD(3:4)
      t1(1,1) = cmplx(LD(3),LD(4),kind=8)*cmplx(bulge(1),-bulge(2),kind=8)
      call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),LD(3),LD(4),nrm)
-     !print*, "MITTE 4g d_spr1_factor",jj
      
   end do
 
-  !print*, "LD(N)", LD(2*N-1), LD(2*N)
+  ! move (cr,-s) from the right to the Q on the left
+  ! update eigenvectors
   if (VEC) then
      t1(1,1) = cmplx(cr,-s,kind=8)
      Z(1:N,N) = Z(1:N,N)*t1(1,1)
   end if
+  ! update LD
   t1(1,1) = cmplx( LD(2*N-1), LD(2*N), kind=8) * cmplx(cr,s,kind=8);
   call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),LD(2*N-1),LD(2*N),nrm)
-  !print*, "LD(N)", LD(2*N-1), LD(2*N)
-
 
   ! merge LD in QD
   do ii=1,N-1
@@ -445,74 +432,57 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
      call z_rot3_swapdiag(.FALSE.,LD(ind1:(ind1+3)),Q(ind2:(ind2+2)))
   end do
   do ii=1,N
-     t1(1,1) = cmplx(LD(2*ii-1),LD(2*ii),kind=8)
-     ! update U
-     !U(ii) = conjg(t1(1,1))*U(ii)
-     ! update eigenvectors
-     !if (VEC) then
-     !   Z(:,ii) = Z(:,ii)*t1(1,1)
-     !end if
-     
-     t1(1,1) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*t1(1,1)
-     call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*ii-1),QD(2*ii),nrm)
-     
+     t1(1,1) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*cmplx(LD(2*ii-1),LD(2*ii),kind=8)
+     call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*ii-1),QD(2*ii),nrm)     
   end do
 
 
-
-
-
-
-
-
-
-
-  if (DEBUGOUT) then
-
-     ! check H, form H
-     H = 0d0
-     do ii=1,N
-        H(ii,ii) = 1d0
-     end do
-     do ii=1,N
-        H(ii,N) = H(ii,N)+U(ii)
-        print*, "H U", ii, H(ii,N), U(ii)
-     end do
-!!$  print*, "RiR"
-!!$  do ii=1,N
-!!$     print*, ii, H(ii,1:N)
-!!$  end do
-
-
-     ! Apply QD from the left
-     do ii=1,N
-        H(ii,:) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*H(ii,:)
-     end do
-     ! Apply Q from the left
-     do ii=N-1,1,-1
-        t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
-        t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
-        t(1,2) = -t(2,1)
-        t(2,2) = conjg(t(1,1))
-        H(ii:(ii+1),:) = matmul(t,H(ii:(ii+1),:))
-     end do
-     
-     print*, "H"
-     do ii=1,N
-        print*, ii, H(ii,1:N)
-     end do
-     
-     print*, "Second ZGEEV"
-     call zgeev('N','N', N, H, N, HQ, Z, 1, Z, 1, WORK, 5*N, RWORK, INFO)
-     
-     ! EIGENVALUES ARE PERTURBED HERE
-     
-     do ii=1,N
-        print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
-             &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
-     end do
-
-  end if
+!!$  if (DEBUGOUT) then
+!!$
+!!$     ! check H, form H
+!!$     H = 0d0
+!!$     do ii=1,N
+!!$        H(ii,ii) = 1d0
+!!$     end do
+!!$     do ii=1,N
+!!$        H(ii,N) = H(ii,N)+U(ii)
+!!$        print*, "H U", ii, H(ii,N), U(ii)
+!!$     end do
+!!$!  print*, "RiR"
+!!$!  do ii=1,N
+!!$!     print*, ii, H(ii,1:N)
+!!$!  end do
+!!$
+!!$
+!!$     ! Apply QD from the left
+!!$     do ii=1,N
+!!$        H(ii,:) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*H(ii,:)
+!!$     end do
+!!$     ! Apply Q from the left
+!!$     do ii=N-1,1,-1
+!!$        t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
+!!$        t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
+!!$        t(1,2) = -t(2,1)
+!!$        t(2,2) = conjg(t(1,1))
+!!$        H(ii:(ii+1),:) = matmul(t,H(ii:(ii+1),:))
+!!$     end do
+!!$     
+!!$     print*, "H"
+!!$     do ii=1,N
+!!$        print*, ii, H(ii,1:N)
+!!$     end do
+!!$     
+!!$     print*, "Second ZGEEV"
+!!$     call zgeev('N','N', N, H, N, HQ, Z, 1, Z, 1, WORK, 5*N, RWORK, INFO)
+!!$     
+!!$     ! EIGENVALUES ARE PERTURBED HERE
+!!$     
+!!$     do ii=1,N
+!!$        print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
+!!$             &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
+!!$     end do
+!!$
+!!$  end if
 
   QC = 0d0
   QB = 0d0

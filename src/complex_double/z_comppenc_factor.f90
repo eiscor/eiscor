@@ -61,7 +61,7 @@ subroutine z_comppenc_factor(QZ,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)
   
   ! compute variables
   integer :: ii
-  real(8) :: phr, phi, nrm, beta
+  !real(8) :: phr, phi, nrm, beta
   complex(8) :: temp
   
   ! initialize info

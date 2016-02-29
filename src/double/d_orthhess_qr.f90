@@ -63,9 +63,9 @@ subroutine d_orthhess_qr(VEC,ID,N,H,WORK,M,Z,ITS,INFO)
   real(8), intent(inout) :: H(N,N), Z(M,N)
   
   ! compute variables
-  logical :: flg
-  integer :: ii,cpair
-  real(8) :: c,s
+  !logical :: flg
+  integer :: ii!,cpair
+  !real(8) :: c,s
   
   ! initialize INFO
   INFO = 0

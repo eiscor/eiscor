@@ -39,7 +39,7 @@ subroutine z_unifact_mergebulge(TOP,Q,D,B)
   real(8), intent(inout) :: Q(3), D(4), B(3)
   
   ! compute variables
-  integer :: k,ii
+  !integer :: k,ii
   real(8) :: c1r, c1i, s1
   real(8) :: c2r, c2i, s2
   real(8) :: c3r, c3i, s3r, s3i

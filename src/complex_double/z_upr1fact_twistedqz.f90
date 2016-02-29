@@ -96,8 +96,8 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   
   ! compute variables
   logical :: flg
-  integer :: ii, jj, kk
-  integer :: STR, STP, ZERO, ITMAX, ITCNT
+  integer :: ii, jj
+  integer :: STR, STP, ZERO, ITMAX, ITCNT!, ITCNT2, qq
   
   ! initialize info
   INFO = 0
@@ -115,11 +115,12 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
  
   ! check factorization
   call z_upr1fact_factorcheck(QZ,N,Q,D1,C1,B1,D2,C2,B2,INFO)
-  if (INFO.NE.0) then
+  if (INFO.NE.0) then    
     ! print error message in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"N, Q, D1, C1, B1, D2, C2 or B2 is invalid",INFO,INFO)
     end if
+    print*, INFO
     INFO = -1
     return
   end if
@@ -173,9 +174,10 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   ZERO = 0
   ITMAX = 20*N
   ITCNT = -1
+!!$  ITCNT2 = 0
   
   ! iteration loop
-  do kk=1,ITMAX
+  do jj=1,ITMAX
 
     ! check for completion
     if(STP <= 0)then    
@@ -227,47 +229,70 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)) &
     ,Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)),ZERO)
     
+    if (ZERO.GT.0) then
+       !print*, "deflation", ZERO, ZERO+STR, STR, STP, ITCNT
+      ITS(STR+ZERO-1) = ITS(STR+ZERO-1) + ITCNT
+      ITCNT = 0
+!!$      qq = 0
+!!$      do ii=1,N-1
+!!$         qq = qq + ITS(ii)
+!!$         print*, ii, ITS(ii)
+!!$      end do
+!!$      print*, qq, ITCNT, ITCNT2, jj
+!!$      print*, ""
+    end if
+    
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
     
       ! update indices
-      ITS(STR+ZERO-1) = ITCNT
-      ITCNT = 0
       STP = STP - 1
       ZERO = 0
       STR = 1
+
+      !print*, "new index", ZERO, STR, STP
+
     
     ! if 2x2 block remove and check again
-    else if(STP == (STR+ZERO))then
-    
-      ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
-      end if
-
-      ! call 2x2 deflation
-      call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)) &
-      ,D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
-      ,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)) &
-      ,C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)) &
-      ,N,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
-    
-      ! update indices
-      ITCNT = ITCNT + 1
- 
-      ! update indices
-!      ITS(STR+STP-1) = ITCNT
-!      ITCNT = 0
-!      STP = STP - 2
-!      ZERO = 0
-!      STR = 1
+!!$    else if(STP == (STR+ZERO))then
+!!$
+!!$       print*, "2x2", STR,STP
+!!$    
+!!$      ! check STR
+!!$      if (STR <= ZERO) then
+!!$        STR = ZERO+1
+!!$      end if
+!!$
+!!$      ! call 2x2 deflation
+!!$      call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)) &
+!!$      ,D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
+!!$      ,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)) &
+!!$      ,C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)) &
+!!$      ,N,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
+!!$    
+!!$      ! update indices
+!!$      if (ITCNT.EQ.-1) then 
+!!$        ITCNT = 1 
+!!$      else
+!!$         ITCNT = ITCNT + 1
+!!$      end if
+!!$      !ITCNT2 = ITCNT2 + 1
+!!$
+!!$      ! update indices
+!!$      !      ITS(STR+STP-1) = ITCNT
+!!$      !      ITCNT = 0
+!!$      !      STP = STP - 2
+!!$      !      ZERO = 0
+!!$      !      STR = 1
     
     ! if greater than 2x2 chase a bulge
     else
 
       ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      if (ZERO.GT.0) then
+        STR = STR+ZERO        
+        ZERO = 0
+        !print*, "new index", ZERO, STR, STP
       end if
 
       ! perform singleshift iteration
@@ -283,15 +308,34 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
       else
         ITCNT = ITCNT + 1
       end if
+!!$      ITCNT2 = ITCNT2 + 1
 
     end if
     
     ! if ITMAX hit
-    if (kk == ITMAX) then
+    if (jj == ITMAX) then
       INFO = 1
-      ITS(STR+STP-1) = ITCNT
+      ITS(min(STR+STP-1,N-1)) = ITS(min(STR+STP-1,N-1)) + ITCNT
+      ITCNT = 0
+      print*, "hit ITMAX"
+!!$      qq = 0
+!!$      do ii=1,N-1
+!!$         qq = qq + ITS(ii)
+!!$         print*, ii, ITS(ii)
+!!$      end do
+!!$      print*, qq, ITCNT, ITCNT2, jj
+!!$      print*, ""
     end if
-    
+
   end do
+  
+  ! print*, ITCNT
+  
+!!$  qq = 0
+!!$  do ii=1,N-1
+!!$     qq = qq + ITS(ii)
+!!$     print*, ii, ITS(ii)
+!!$  end do
+!!$  print*, qq, ITCNT, ITCNT2, jj
 
 end subroutine z_upr1fact_twistedqz

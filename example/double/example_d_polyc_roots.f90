@@ -13,7 +13,7 @@ program example_d_polyc_roots
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 16
+  integer, parameter :: N = 10
   integer :: ii, jj, ij
   real(8) :: COEFFS(N), RESIDUALS(N), a, b, RES(N,3)
   complex(8) :: ROOTS(N), E(4096), C(N+3), ac

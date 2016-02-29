@@ -114,6 +114,8 @@ subroutine z_upr1fact_singleshift(QZ,P,Q,D1,C1,B1,D2,C2,B2,SHFT)
       
   ! compute eigenvalues and eigenvectors
   call z_2x2array_eig(.TRUE.,R1(2:3,2:3),R2(2:3,2:3),H,K)
+
+  !print*, R1(3,3)/R2(3,3), R1(2,2)/R2(2,2)
           
   ! wilkinson shift
   if(abs(R1(3,3)/R2(3,3)-rho) < abs(R1(2,2)/R2(2,2)-rho))then
@@ -127,4 +129,18 @@ subroutine z_upr1fact_singleshift(QZ,P,Q,D1,C1,B1,D2,C2,B2,SHFT)
     SHFT = cmplx(1d9,0d0,kind=8) ! not sure if this is a good idea?
   end if
 
+!!$  if (abs(R1(3,3)/R2(3,3)-R1(2,2)/R2(2,2)).LT.1e-6) then
+!!$     if (abs(R1(3,3)/R2(3,3)).LT.abs(R1(2,2)/R2(2,2))) then
+!!$        shft = R1(3,3)/R2(3,3)
+!!$     else
+!!$        shft = R1(2,2)/R2(2,2)
+!!$     end if
+!!$     print*, R1(3,3)/R2(3,3), R1(2,2)/R2(2,2)
+!!$     print*, cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-R1(3,3)/R2(3,3))&
+!!$          &/(cmplx(1d0,0d0,kind=8)+R1(3,3)/R2(3,3)),&
+!!$          &cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-R1(2,2)/R2(2,2))&
+!!$          &/(cmplx(1d0,0d0,kind=8)+R1(2,2)/R2(2,2))
+!!$  end if
+
+  !print*, R1(2,2)/R2(2,2), R1(3,3)/R2(3,3)
 end subroutine z_upr1fact_singleshift

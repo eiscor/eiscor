@@ -50,6 +50,28 @@ subroutine z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
   real(8), parameter :: tol = EISCOR_DBL_EPS
   real(8) :: qr, qi, dr, di, cr, ci, s, nrm
   
+!!$  if (N.GT.5) then
+!!$     print*, Q(3*N-3)
+!!$  end if
+!!$
+!!$  if (N.EQ.2) then
+!!$     print*, Q(3)
+!!$  end if
+!!$
+!!$  if (N.EQ.3) then
+!!$     print*, Q(3), Q(6)
+!!$  end if
+!!$
+!!$  if (N.EQ.4) then
+!!$     print*, Q(3), Q(6), Q(9)
+!!$  end if
+!!$
+!!$  if (N.EQ.5) then
+!!$     print*, Q(3), Q(6), Q(9), Q(12)
+!!$  end if
+
+  ZERO = 0
+
   ! check for deflation
   do ii=1,(N-1)
   
