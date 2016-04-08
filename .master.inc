@@ -6,9 +6,12 @@ PATCH := 0
 VERSION := $(MAJOR).$(MINOR).$(PATCH)
 
 # change library extension based on OS
-ifeq ($(findstring Windows_NT,$(OS)),Windows_NT)
+UNAME := $(shell uname)
+ifeq ($(findstring Windows_NT,$(UNAME)),Windows_NT)
 	SLIB := dll
-else ifeq ($(findstring darwin,$(OSTYPE)),darwin)
+else ifeq ($(findstring Darwin,$(UNAME)),Darwin)
+	SLIB := dylib
+else ifeq ($(findstring darwin,$(UNAME)),darwin)
 	SLIB := dylib
 else
 	SLIB := so
