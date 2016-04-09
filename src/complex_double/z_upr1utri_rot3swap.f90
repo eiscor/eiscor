@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_upr1fact_rot3throughtri
+! z_upr1utri_rot3swap
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -31,7 +31,7 @@
 !                    generator for rotation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
+subroutine z_upr1utri_rot3swap(DIR,D,C,B,G)
 
   implicit none
   
@@ -121,4 +121,4 @@ subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
   
   end if
 
-end subroutine z_upr1fact_rot3throughtri
+end subroutine z_upr1utri_rot3swap

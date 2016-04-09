@@ -1,17 +1,17 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! test_z_upr1fact_rot3throughtri
+! test_z_upr1utri_rot3swap
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine z_upr1fact_rot3throughtri. 
+! This program tests the subroutine z_upr1utri_rot3swap. 
 ! The following tests are run (once with 'L2R' and once with 'R2L'):
 !
 ! 1)  D = I, C = B = all [0, -1; 1, 0] and G = [1/sqrt(2) 0 1/sqrt(2)]
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program test_z_upr1fact_rot3throughtri
+program test_z_upr1utri_rot3swap
 
   implicit none
 
@@ -60,10 +60,10 @@ program test_z_upr1fact_rot3throughtri
     Gold = G
     
     ! call 
-    call z_upr1fact_rot3throughtri(.TRUE.,D,C,B,G)
+    call z_upr1utri_rot3swap(.TRUE.,D,C,B,G)
     
     ! call 
-    call z_upr1fact_rot3throughtri(.FALSE.,D,C,B,G)
+    call z_upr1utri_rot3swap(.FALSE.,D,C,B,G)
 
     ! check results
     if (maxval(abs(Dold-D)) > tol) then
@@ -85,4 +85,4 @@ program test_z_upr1fact_rot3throughtri
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
 
-end program test_z_upr1fact_rot3throughtri
+end program test_z_upr1utri_rot3swap

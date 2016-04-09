@@ -1,12 +1,11 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_upr1fact_extracttri
+! z_upr1utri_decompress
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine constructs the triangular matrix in the schur 
-! decomposition of an upper triangular matrix that is the sum of a 
-! unitary matrix and a rank one matrix. This sum is stored as a product 
+! This routine decompresses a unitary plus rank one upper-triangular 
+! matrix (upr1utri). Such a matrix is stored as a product 
 ! of two sequences of Givens' rotations and a complex unimodular 
 ! diagonal matrix. 
 !
@@ -40,7 +39,7 @@
 !                    if DIAG == .FALSE. entire triangular part is constructed
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_extracttri(DIAG,N,D,C,B,T)
+subroutine z_upr1utri_decompress(DIAG,N,D,C,B,T)
 
   implicit none
   
@@ -122,4 +121,4 @@ subroutine z_upr1fact_extracttri(DIAG,N,D,C,B,T)
   
   end if  
   
-end subroutine z_upr1fact_extracttri
+end subroutine z_upr1utri_decompress
