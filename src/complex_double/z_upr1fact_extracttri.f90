@@ -21,7 +21,7 @@
 !  N               INTEGER
 !                    dimension of matrix
 !
-!  D               REAL(8) array of dimension (2*(N+1))
+!  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
 !                    on output contains the eigenvalues
 !
@@ -47,7 +47,7 @@ subroutine z_upr1fact_extracttri(DIAG,N,D,C,B,T)
   ! input variables
   logical, intent(in) :: DIAG
   integer, intent(in) :: N
-  real(8), intent(in) :: D(2*(N+1)), C(3*N), B(3*N)
+  real(8), intent(in) :: D(2*N), C(3*N), B(3*N)
   complex(8), intent(inout) :: T(N,N)
   
   ! compute variables
@@ -90,14 +90,15 @@ subroutine z_upr1fact_extracttri(DIAG,N,D,C,B,T)
     p = g
     do ii=1,(N-1)
       ind = 3*(ii-1)
-      T(1,ii) = T(1,ii)-(g*cmplx(B(ind+1),B(ind+2),kind=8)+cmplx(C(ind+1),-C(ind+2),kind=8) &
-      *B(ind+3)/C(ind+3))/p
+      T(1,ii) = T(1,ii)-(g*cmplx(B(ind+1),B(ind+2),kind=8)+&
+                cmplx(C(ind+1),-C(ind+2),kind=8)*B(ind+3)/C(ind+3))/p
       p = p*C(ind+3)
-      g = cmplx(B(ind+1),-B(ind+2),kind=8)*cmplx(C(ind+1),-C(ind+2),kind=8)-g*B(ind+3)*C(ind+3)
+      g = cmplx(B(ind+1),-B(ind+2),kind=8)*cmplx(C(ind+1),-C(ind+2),kind=8)-&
+          g*B(ind+3)*C(ind+3)
     end do
     ind = 3*(N-1)
-    T(1,N) = T(1,N)-(g*cmplx(B(ind+1),B(ind+2),kind=8)+cmplx(C(ind+1),-C(ind+2),kind=8) &
-    *B(ind+3)/C(ind+3))/p
+    T(1,N) = T(1,N)-(g*cmplx(B(ind+1),B(ind+2),kind=8)+&
+             cmplx(C(ind+1),-C(ind+2),kind=8)*B(ind+3)/C(ind+3))/p
     
     ! apply C
     do ii=1,(N-1)
@@ -110,8 +111,8 @@ subroutine z_upr1fact_extracttri(DIAG,N,D,C,B,T)
       T(ii,ii) = temp(1,1)*T(ii,ii) + temp(1,2)*T(ii+1,ii)
       T(ii+1,ii) = cmplx(0d0,0d0,kind=8)
     end do
-    T(N,N) = T(N,N)*cmplx(C(3*(N-1)+1),C(3*(N-1)+2),kind=8) + cmplx(B(3*(N-1)+3),0d0,kind=8) &
-    *cmplx(-C(3*(N-1)+3),0d0,kind=8)
+    T(N,N) = T(N,N)*cmplx(C(3*(N-1)+1),C(3*(N-1)+2),kind=8) + &
+             cmplx(B(3*(N-1)+3),0d0,kind=8)*cmplx(-C(3*(N-1)+3),0d0,kind=8)
     
     ! apply D
     do ii=1,N

@@ -42,10 +42,56 @@ program test_z_rot3_fusion
   ! call fusion
   call z_rot3_fusion(.TRUE.,G1,G2)
 
-!  if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
-!     call u_test_failed(__LINE__)
-!  end if
+  ! check G1
+  if (abs(G1(1)+4d0/sqrt(5684d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (abs(G1(2)-48d0/sqrt(5684d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (abs(G1(3)-58d0/sqrt(5684d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
 
+  ! check G2
+  if (abs(G2(1)-10d0/sqrt(116d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (abs(G2(2)-4d0/sqrt(116d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (G2(3).NE.0d0) then
+     call u_test_failed(__LINE__)
+  end if
+
+  ! set variables
+  call z_rot3_vec3gen(1d0,2d0,3d0,G1(1),G1(2),G1(3),nrm)
+  call z_rot3_vec3gen(3d0,2d0,1d0,G2(1),G2(2),G2(3),nrm)
+
+  ! call fusion
+  call z_rot3_fusion(.FALSE.,G1,G2)
+
+  ! check G1
+  if (abs(G1(1)-10d0/sqrt(116d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (abs(G1(2)+4d0/sqrt(116d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (G1(3).NE.0d0) then
+     call u_test_failed(__LINE__)
+  end if
+
+  ! check G2
+  if (abs(G2(1)+36d0/sqrt(5684d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (abs(G2(2)-32d0/sqrt(5684d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
+  if (abs(G2(3)-58d0/sqrt(5684d0))>tol) then
+     call u_test_failed(__LINE__)
+  end if
 
 
   ! stop timer

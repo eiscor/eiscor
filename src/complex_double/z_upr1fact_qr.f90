@@ -1,29 +1,24 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_upr1fact_twistedqz
+! z_upr1fact_qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the generalized Schur decomposition of an 
-! extended upper-hessenberg, upper-triangular pencil. Both the hessenberg
-! and triangular matrices are the sum of a unitary matrix and a rank 
-! one matrix. These matrices are stored in 5 sequences of rotations 
-! and 2 unimodular diagonal matrices.
+! This routine computes the Schur decomposition of an 
+! extended upper-hessenberg matrix. Both the matrix
+! is the sum of a unitary matrix and a rank 
+! one matrix. These matrices are stored in 3 sequences of rotations 
+! and 1 unimodular diagonal matrix.
 !
-! The hessenberg part is stored as H = Q*D1*C1*B1
-! The triangular part is stored as S = D2*C2*B2
+! The hessenberg part is stored as H = Q*D*C*B
 !
-! The matrices V and W are the left and right Schur vectors respectively.
-! Namely, V*(H,S)W is upper-triangular.
+! The matrices V are the right Schur vectors.
+! Namely, V*HV is upper-triangular.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
-!
-!  QZ              LOGICAL
-!                    .TRUE.: second triangular factor is assumed nonzero
-!                    .FALSE.: second triangular factor is assumed to be identity
 !
 !  VEC             LOGICAL
 !                    .TRUE.: compute schurvector
@@ -46,21 +41,20 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D1,D2           REAL(8) arrays of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
+!  D               REAL(8) arrays of dimension (2*(N+1))
+!                    array of generators for complex diagonal matrix
+!                    in the upper-triangular factor
 !
-!  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
+!  C,B             REAL(8) arrays of dimension (3*N)
 !                    array of generators for upper-triangular parts
-!                    of the pencil
+!
+!  M               INTEGER
+!                    leading dimension of V matrix
 !
 ! OUTPUT VARIABLES:
 !
 !  V              COMPLEX(8) array of dimension (M,N)
 !                   right schur vectors
-!
-!  W              COMPLEX(8) array of dimension (M,N)
-!                   left schur vectors
 !
 !  ITS            INTEGER array of dimension (N-1)
 !                   Contains the number of iterations per deflation
@@ -69,22 +63,21 @@
 !                   INFO = 2 implies no convergence 
 !                   INFO = 1 random seed initialization failed
 !                   INFO = 0 implies successful computation
-!                   INFO = -1 implies N, Q, D1, C1, B1, D2, C2 or B2 is invalid
+!                   INFO = -1 implies N, Q, D, C or B is invalid
 !                   INFO = -14 implies V is invalid
 !                   INFO = -15 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: QZ, VEC, ID
-  integer, intent(in) :: N
+  logical, intent(in) :: VEC, ID
+  integer, intent(in) :: M,N
   logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
-  real(8), intent(inout) :: D2(2*(N+1)), C2(3*N), B2(3*N)
-  complex(8), intent(inout) :: V(N,N), W(N,N)
+  real(8), intent(inout) :: Q(3*(N-1)), D(2*(N+1)), C(3*N), B(3*N)
+  complex(8), intent(inout) :: V(M,N)
   integer, intent(inout) :: INFO, ITS(N-1)
   interface
     function FUN(m,flags)
@@ -107,18 +100,19 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"Failed to initialize random seed",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,&
+           "Failed to initialize random seed",INFO,INFO)
     end if
     INFO = 1
     return
   end if
  
   ! check factorization
-  call z_upr1fact_factorcheck(QZ,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+  call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
-      call u_infocode_check(__FILE__,__LINE__,"N, Q, D1, C1, B1, D2, C2 or B2 is invalid",INFO,INFO)
+      call u_infocode_check(__FILE__,__LINE__,"N, Q, D, C or B is invalid",INFO,INFO)
     end if
     INFO = -1
     return
@@ -126,7 +120,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   
   ! check V
   if (VEC.AND..NOT.ID) then
-    call z_2Darray_check(N,N,V,flg)
+    call z_2Darray_check(M,N,V,flg)
     if (.NOT.flg) then
       INFO = -14
       ! print error message in debug mode
@@ -137,36 +131,16 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     end if
   end if   
   
-  ! check W
-  if (QZ.AND.VEC.AND..NOT.ID) then
-    call z_2Darray_check(N,N,W,flg)
-    if (.NOT.flg) then
-      INFO = -15
-      ! print error message in debug mode
-      if (DEBUG) then
-        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,INFO)
-      end if
-      return
-    end if
-  end if
- 
   ! initialize storage
   ITS = 0
   
   if (VEC.AND.ID) then
     V = cmplx(0d0,0d0,kind=8)
-    do ii=1,n
+    do ii=1,min(M,N)
       V(ii,ii) = cmplx(1d0,0d0,kind=8)
     end do
   end if   
   
-  if (QZ.AND.VEC.AND.ID) then
-    W = cmplx(0d0,0d0,kind=8)
-    do ii=1,n
-      W(ii,ii) = cmplx(1d0,0d0,kind=8)
-    end do
-  end if   
- 
   ! initialize indices
   STR = 1
   STP = N-1
@@ -294,4 +268,4 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     
   end do
 
-end subroutine z_upr1fact_twistedqz
+end subroutine z_upr1fact_qr

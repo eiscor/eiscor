@@ -49,8 +49,8 @@ subroutine z_rot3_fusion(FLAG,G1,G2)
   ! compute givens product
   c3r = c1r*c2r - c1i*c2i - s1*s2
   c3i = c1r*c2i + c1i*c2r
-  s3r = s1*c2r + s2*c1r
-  s3i = -(s1*c2i - s2*c1i)
+  s3r = s1*c2r + c1r*s2
+  s3i = s1*c2i - c1i*s2
      
   ! compute phase
   call d_rot2_vec2gen(s3r,s3i,phr,phi,nrm)
@@ -61,7 +61,7 @@ subroutine z_rot3_fusion(FLAG,G1,G2)
       ! update G1
       c2r = c3r*phr + c3i*phi
       c2i = -c3r*phi + c3i*phr
-      s2 = nrm
+      s2 = s3r*phr + s3i*phi
       call z_rot3_vec3gen(c2r,c2i,s2,G1(1),G1(2),G1(3),nrm)
 
       ! set G2
@@ -73,14 +73,14 @@ subroutine z_rot3_fusion(FLAG,G1,G2)
   else
 
       ! update G2
-      c2r = c3r*phr + c3i*phi
-      c2i = -c3r*phi + c3i*phr
-      s2 = nrm
+      c2r = c3r*phr - c3i*phi
+      c2i = c3r*phi + c3i*phr
+      s2 = s3r*phr + s3i*phi
       call z_rot3_vec3gen(c2r,c2i,s2,G2(1),G2(2),G2(3),nrm)
 
       ! set G2
       G1(1) = phr
-      G1(2) = phi
+      G1(2) = -phi
       G1(3) = 0d0
 
   end if
