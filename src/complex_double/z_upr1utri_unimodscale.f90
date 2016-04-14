@@ -26,7 +26,7 @@
 !  B               REAL(8) array of dimension (3)
 !                    array of generators for upper-triangular parts
 !
-!  SCL             REAL(8) 
+!  SCL             COMPLEX(8) 
 !                    unimodular scalar
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
