@@ -127,7 +127,7 @@ subroutine z_upr1fact_deflationcheck(VEC,N,P,Q,D,C,B,M,V,ZERO)
 
         ! update eigenvectors
         if (VEC) then
-          V(:,ZERO+1) = V(:,ZERO+1)*cmplx(qr,qi,kind=8)
+          V(:,ZERO+1) = V(:,ZERO+1)*cmplx(qr,-qi,kind=8)
         end if
 
       ! P(ZERO) == 1
