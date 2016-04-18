@@ -52,6 +52,19 @@ subroutine z_upr1fact_singleshift(P,Q,D,C,B,SHFT)
   R2(2,2) = cmplx(1d0,0d0,kind=8)
   R2(3,3) = cmplx(1d0,0d0,kind=8)
 
+!print*,""
+!print*,"R1"
+!print*,R1(1,:)
+!print*,R1(2,:)
+!print*,R1(3,:)
+!print*,""
+!print*,""
+!print*,"R2"
+!print*,R2(1,:)
+!print*,R2(2,:)
+!print*,R2(3,:)
+!print*,""
+
   ! apply first Q
   if (P(2)) then 
 

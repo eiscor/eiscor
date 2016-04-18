@@ -158,31 +158,32 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
       exit
     end if
 
-!print*,""
-!print*,"Inside QR"
-!print*,"STR:",STR
-!print*,"STP:",STP
-!print*,"Q"
-!do ii=1,(N-1)
-!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-!end do
-!print*,""
-!print*,"D"
-!do ii=1,N
-!print*,D(2*ii-1),D(2*ii)
-!end do
-!print*,""
-!print*,"C"
-!do ii=1,(N)
-!print*,C(3*ii-2),C(3*ii-1),C(3*ii)
-!end do
-!print*,""
-!print*,"B"
-!do ii=1,(N)
-!print*,B(3*ii-2),B(3*ii-1),B(3*ii)
-!end do
-!print*,""
-!pause
+print*,""
+print*,"Inside QR"
+print*,"STR:",STR
+print*,"STP:",STP
+print*,"Q"
+do ii=1,(N-1)
+print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+end do
+print*,""
+print*,"D"
+do ii=1,N
+print*,D(2*ii-1),D(2*ii)
+end do
+print*,""
+print*,"C"
+do ii=1,(N)
+print*,C(3*ii-2),C(3*ii-1),C(3*ii)
+end do
+print*,""
+print*,"B"
+do ii=1,(N)
+print*,B(3*ii-2),B(3*ii-1),B(3*ii)
+end do
+print*,""
+write(*,*) "Press enter to continue."
+read(*,*)
 
     ! check for deflation
     call z_upr1fact_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &
@@ -208,11 +209,10 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
       end if
 
       ! perform singleshift iteration
-!      call z_upr1fact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)) &
-!      ,Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &
-!      ,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)) &
-!      ,D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)) &
-!      ,B2((3*STR-2):(3*STP+3)),N,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
+      call z_upr1fact_singlestep(VEC,FUN,STP-STR+2,P(STR:(STP-1)) &
+      ,Q((3*STR-2):(3*STP)),D((2*STR-1):(2*STP+2)) &
+      ,C((3*STR-2):(3*STP+3)),B((3*STR-2):(3*STP+3)) &
+      ,M,V(:,STR:(STP+1)),ITCNT)
      
       ! update indices
       if (ITCNT.EQ.-1) then 
