@@ -50,22 +50,128 @@ subroutine z_upr1fact_endchase(VEC,N,P,Q,D,C,B,M,V,G,FLAG)
   ! input variables
   logical, intent(in) :: VEC, FLAG
   integer, intent(in) :: M, N
-  logical, intent(in) :: P(N-2)
+  logical, intent(inout) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D(2*N), C(3*N), B(3*N), G(3)
   complex(8), intent(inout) :: V(M,N)
   
   ! compute variables
 !  integer :: 
-!  real(8) :: 
-!  complex(8) :: 
+  real(8) :: G1(3), G2(3), G3(3)
+  complex(8) :: A(2,2) 
   
   ! if N > 2 we do final turnover based on P(N-2) and FLAG
   if (N.GT.2) then
 
-print*,""
-print*,"WARNING: This case is not yet supported!"
-print*,""
-stop
+    ! set cores for turnover based on P(N-2)
+    ! hess 
+    if (.NOT.P(N-2)) then
+   
+      G1 = Q(3*(N-2)-2:3*(N-2))
+      G2 = Q(3*(N-1)-2:3*(N-1))
+      G3 = G
+
+    ! invhess
+    else
+
+      G1 = G
+      G2 = Q(3*(N-1)-2:3*(N-1))
+      G3 = Q(3*(N-2)-2:3*(N-2))
+
+    end if
+
+    ! compute turnover
+    call z_rot3_turnover(G1,G2,G3)
+  
+    ! bottom fusion based on FLAG
+    ! hess
+    if (.NOT.FLAG) then
+   
+      ! update Q
+      Q(3*(N-2)-2:3*(N-2)) = G1
+      Q(3*(N-1)-2:3*(N-1)) = G2
+
+      ! update V
+      if (VEC) then
+       
+        A(1,1) = cmplx(G3(1),G3(2),kind=8)
+        A(2,1) = cmplx(G3(3),0d0,kind=8)
+        A(1,2) = cmplx(-G3(3),0d0,kind=8)
+        A(2,2) = cmplx(G3(1),-G3(2),kind=8)
+ 
+        V(:,N-1:N) = matmul(V(:,N-1:N),A)
+
+      end if
+
+      ! pass G3 through upper-triangular part
+      call z_upr1utri_rot3swap(.FALSE.,D(2*(N-1)-1:2*N), &
+                               C(3*(N-1)-2:3*N),B(3*(N-1)-2:3*N),G3)
+
+      ! fuse G3 with Q
+      call z_rot3_fusion(.TRUE.,Q(3*(N-1)-2:3*(N-1)),G3)
+
+      ! scale rows of upper-triangular part
+      call z_upr1utri_unimodscale(.TRUE.,D(2*(N-1)-1:2*(N-1)), &
+                                  C(3*(N-1)-2:3*(N-1)), & 
+                                  B(3*(N-1)-2:3*(N-1)), &
+                                  cmplx(G3(1),G3(2),kind=8))
+      call z_upr1utri_unimodscale(.TRUE.,D(2*N-1:2*N), &
+                                  C(3*N-2:3*N), & 
+                                  B(3*N-2:3*N), &
+                                  cmplx(G3(1),-G3(2),kind=8))
+
+    ! invhess
+    else
+
+      ! update Q
+      Q(3*(N-2)-2:3*(N-2)) = G1
+      Q(3*(N-1)-2:3*(N-1)) = G3
+
+      ! pass G2 through upper-triangular part
+      call z_upr1utri_rot3swap(.TRUE.,D(2*(N-1)-1:2*N), &
+                               C(3*(N-1)-2:3*N),B(3*(N-1)-2:3*N),G2)
+
+      ! update V using G2inv
+      if (VEC) then
+       
+        A(1,1) = cmplx(G2(1),-G2(2),kind=8)
+        A(2,1) = cmplx(-G2(3),0d0,kind=8)
+        A(1,2) = cmplx(G2(3),0d0,kind=8)
+        A(2,2) = cmplx(G2(1),G2(2),kind=8)
+ 
+        V(:,N-1:N) = matmul(V(:,N-1:N),A)
+
+      end if
+
+      ! fuse G2 with Q
+      call z_rot3_fusion(.FALSE.,G2,Q(3*(N-1)-2:3*(N-1)))
+
+      ! move G2 to the otherside and update V
+      if (VEC) then
+       
+        V(:,N-1) = V(:,N-1)*cmplx(G2(1),G2(2),kind=8)
+        V(:,N) = V(:,N)*cmplx(G2(1),-G2(2),kind=8)
+
+      end if
+
+      ! scale columns of upper-triangular part
+      call z_upr1utri_unimodscale(.FALSE.,D(2*(N-1)-1:2*(N-1)), &
+                                  C(3*(N-1)-2:3*(N-1)), & 
+                                  B(3*(N-1)-2:3*(N-1)), &
+                                  cmplx(G2(1),G2(2),kind=8))
+      call z_upr1utri_unimodscale(.FALSE.,D(2*N-1:2*N), &
+                                  C(3*N-2:3*N), & 
+                                  B(3*N-2:3*N), &
+                                  cmplx(G2(1),-G2(2),kind=8))
+
+    end if
+
+    ! update position flag
+    if (N.GT.3) then
+      P(N-3) = P(N-2)
+    end if
+
+    ! update P
+    P(N-2) = FLAG
 
   ! if N == 2 we do a single fusion
   else

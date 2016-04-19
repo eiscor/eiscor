@@ -171,7 +171,7 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
     call z_upr1utri_unimodscale(.TRUE.,D(3:4),C(4:6),B(4:6), &
                                 cmplx(G(1),-G(2),kind=8))
 
-    ! replace G with Ginv as bulge core 
+    ! replace G with Ginv as misfit
     G = Ginv
 
   end if
