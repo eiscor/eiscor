@@ -26,13 +26,12 @@ program test_z_upr1fact_qr
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**3
+  integer, parameter :: N = 2**2
   real(8) :: tol
   integer :: ii, INFO, ITS(N-1)
   logical :: P(N-2)
-  real(8) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
-  real(8) :: D2(2*(N+1)), C2(3*N), B2(3*N)
-  complex(8) :: temp,V(N,N), W(N,N)
+  real(8) :: Q(3*(N-1)), D(2*N), C(3*N), B(3*N)
+  complex(8) :: V(N,N)
   interface
     function l_upr1fact_hess(m,flags)
       logical :: l_upr1fact_hess
@@ -82,23 +81,22 @@ program test_z_upr1fact_qr
     end do     
   
     ! set valid D
-    D1 = 0d0
-    do ii=1,(N+1)
-      D1(2*ii-1) = 1d0
-    end do
-    D1(2*N-1) = (-1d0)**(N-1)
-    D2 = 0d0
-
-    ! set valid C1 and B1
-    C1 = 0d0
+    D = 0d0
     do ii=1,N
-      C1(3*ii) = -1d0
+      D(2*ii-1) = 1d0
     end do
-    B1 = -C1
+    D(2*N-1) = (-1d0)**(N-1)
+
+    ! set valid C and B
+    C = 0d0
+    do ii=1,N
+      C(3*ii) = -1d0
+    end do
+    B = -C
     
     ! call twisted QZ
-    call z_upr1fact_qr(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess &
-    ,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+    call z_upr1fact_qr(.TRUE.,.TRUE.,l_upr1fact_hess &
+    ,N,P,Q,D,C,B,N,V,ITS,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
@@ -106,7 +104,7 @@ program test_z_upr1fact_qr
     end if
 
     do ii=1,(N)
-      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
+      temp = -cmplx(D(2*ii-1),D(2*ii),kind=8)*B(3*ii)/C(3*ii)
       if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
         call u_test_failed(__LINE__)
       end if
@@ -114,255 +112,243 @@ program test_z_upr1fact_qr
 
   ! end check 1)
 
-  ! check 2)
-    ! set INFO
-    INFO = 0
-    
-    ! set P
-    P = .TRUE.
-    
-    ! set valid Q
-    Q = 0d0
-    do ii=1,(N-1)
-      Q(3*ii) = 1d0
-    end do     
-  
-    ! set valid D
-    D1 = 0d0
-    do ii=1,(N+1)
-      D1(2*ii-1) = 1d0
-    end do
-    D1(2*N-1) = (-1d0)**(N-1)
-    D2 = 0d0
-
-    ! set valid C1 and B1
-    C1 = 0d0
-    do ii=1,N
-      C1(3*ii) = -1d0
-    end do
-    B1 = -C1
-    
-    ! call twisted QZ
-    call z_upr1fact_qr(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_inversehess &
-    ,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
-
-    do ii=1,(N)
-      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
-        call u_test_failed(__LINE__)
-      end if
-    end do
-
-  ! end check 2)
-
-  ! check 3)
-    ! set INFO
-    INFO = 0
-    
-    ! set P
-    do ii=1,(N-2)
-      if (mod(ii,2).EQ.1) then 
-        P(ii) = .FALSE.
-      else 
-        P(ii) = .TRUE.
-      end if
-    end do    
-
-    ! set valid Q
-    Q = 0d0
-    do ii=1,(N-1)
-      Q(3*ii) = 1d0
-    end do     
-  
-    ! set valid D
-    D1 = 0d0
-    do ii=1,(N+1)
-      D1(2*ii-1) = 1d0
-    end do
-    D1(2*N-1) = (-1d0)**(N-1)
-    D2 = 0d0
-
-    ! set valid C1 and B1
-    C1 = 0d0
-    do ii=1,N
-      C1(3*ii) = -1d0
-    end do
-    B1 = -C1
-    
-    ! call twisted QZ
-    call z_upr1fact_qr(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_cmv &
-    ,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
-
-    do ii=1,(N)
-      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
-        call u_test_failed(__LINE__)
-      end if
-    end do
-
-  ! end check 3)
-
-  ! check 4)
-    ! set INFO
-    INFO = 0
-    
-    ! set P
-    P = .FALSE.
-    
-    ! set valid Q
-    Q = 0d0
-    do ii=1,(N-1)
-      Q(3*ii) = 1d0
-    end do     
-  
-    ! set valid D1 and D2
-    D1 = 0d0
-    do ii=1,(N+1)
-      D1(2*ii-1) = 1d0
-    end do
-    D2 = D1
-    D2(2*N-1) = (-1d0)**(N-1)
-
-    ! set valid C1, B1, C2 and B2
-    C1 = 0d0
-    do ii=1,N
-      C1(3*ii) = -1d0
-    end do
-    B1 = -C1
-    C2 = C1
-    B2 = B1
-    
-    ! call twisted QZ
-    call z_upr1fact_qr(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess &
-    ,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
-
-    do ii=1,(N)
-      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-      temp = -temp/(cmplx(D2(2*ii-1),D2(2*ii),kind=8)*B2(3*ii)/C2(3*ii))
-      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
-        call u_test_failed(__LINE__)
-      end if
-    end do
-
-  ! end check 4)
-  
-  ! check 5)
-    ! set INFO
-    INFO = 0
-    
-    ! set P
-    P = .TRUE.
-    
-    ! set valid Q
-    Q = 0d0
-    do ii=1,(N-1)
-      Q(3*ii) = 1d0
-    end do     
-  
-    ! set valid D1 and D2
-    D1 = 0d0
-    do ii=1,(N+1)
-      D1(2*ii-1) = 1d0
-    end do
-    D2 = D1
-    D2(2*N-1) = (-1d0)**(N-1)
-
-    ! set valid C1, B1, C2 and B2
-    C1 = 0d0
-    do ii=1,N
-      C1(3*ii) = -1d0
-    end do
-    B1 = -C1
-    C2 = C1
-    B2 = B1
-    
-    ! call twisted QZ
-    call z_upr1fact_qr(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_inversehess &
-    ,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
-
-    do ii=1,(N)
-      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-      temp = -temp/(cmplx(D2(2*ii-1),D2(2*ii),kind=8)*B2(3*ii)/C2(3*ii))
-      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
-        call u_test_failed(__LINE__)
-      end if
-    end do
-
-  ! end check 5)
-
-  ! check 6)
-    ! set INFO
-    INFO = 0
-    
-    ! set P
-    do ii=1,(N-2)
-      if (mod(ii,2).EQ.1) then 
-        P(ii) = .FALSE.
-      else 
-        P(ii) = .TRUE.
-      end if
-    end do    
-
-    ! set valid Q
-    Q = 0d0
-    do ii=1,(N-1)
-      Q(3*ii) = 1d0
-    end do     
-  
-    ! set valid D
-    D2 = 0d0
-    do ii=1,(N+1)
-      D2(2*ii-1) = 1d0
-    end do
-    D1 = D2
-    D1(2*N-1) = (-1d0)**(N-1)
-
-    ! set valid C1 and B1
-    C1 = 0d0
-    do ii=1,N
-      C1(3*ii) = -1d0
-    end do
-    B1 = -C1
-    C2 = C1
-    B2 = B1
-    
-    ! call twisted QZ
-    call z_upr1fact_qr(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_cmv &
-    ,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-    
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
-
-    do ii=1,(N)
-      temp = -cmplx(D1(2*ii-1),D1(2*ii),kind=8)*B1(3*ii)/C1(3*ii)
-      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
-        call u_test_failed(__LINE__)
-      end if
-    end do
-
-  ! end check 6)
+!  ! check 2)
+!    ! set INFO
+!    INFO = 0
+!    
+!    ! set P
+!    P = .TRUE.
+!    
+!    ! set valid Q
+!    Q = 0d0
+!    do ii=1,(N-1)
+!      Q(3*ii) = 1d0
+!    end do     
+!  
+!    ! set valid D
+!    D = 0d0
+!    do ii=1,N
+!      D(2*ii-1) = 1d0
+!    end do
+!    D(2*N-1) = (-1d0)**(N-1)
+!    D = 0d0
+!
+!    ! set valid C and B
+!    C = 0d0
+!    do ii=1,N
+!      C(3*ii) = -1d0
+!    end do
+!    B = -C
+!    
+!    ! call twisted QZ
+!    call z_upr1fact_qr(.FALSE.,l_upr1fact_inversehess &
+!    ,N,P,Q,D,C,B,N,V,ITS,INFO)
+!    
+!    ! check INFO
+!    if (INFO.NE.0) then
+!      call u_test_failed(__LINE__)
+!    end if
+!
+!    do ii=1,(N)
+!      temp = -cmplx(D(2*ii-1),D(2*ii),kind=8)*B(3*ii)/C(3*ii)
+!      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
+!        call u_test_failed(__LINE__)
+!      end if
+!    end do
+!
+!  ! end check 2)
+!
+!  ! check 3)
+!    ! set INFO
+!    INFO = 0
+!    
+!    ! set P
+!    do ii=1,(N-2)
+!      if (mod(ii,2).EQ.1) then 
+!        P(ii) = .FALSE.
+!      else 
+!        P(ii) = .TRUE.
+!      end if
+!    end do    
+!
+!    ! set valid Q
+!    Q = 0d0
+!    do ii=1,(N-1)
+!      Q(3*ii) = 1d0
+!    end do     
+!  
+!    ! set valid D
+!    D = 0d0
+!    do ii=1,N
+!      D(2*ii-1) = 1d0
+!    end do
+!    D(2*N-1) = (-1d0)**(N-1)
+!
+!    ! set valid C and B
+!    C = 0d0
+!    do ii=1,N
+!      C(3*ii) = -1d0
+!    end do
+!    B = -C
+!    
+!    ! call twisted QZ
+!    call z_upr1fact_qr(.FALSE.,l_upr1fact_cmv &
+!    ,N,P,Q,D,C,B,N,V,ITS,INFO)
+!    
+!    ! check INFO
+!    if (INFO.NE.0) then
+!      call u_test_failed(__LINE__)
+!    end if
+!
+!    do ii=1,(N)
+!      temp = -cmplx(D(2*ii-1),D(2*ii),kind=8)*B(3*ii)/C(3*ii)
+!      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
+!        call u_test_failed(__LINE__)
+!      end if
+!    end do
+!
+!  ! end check 3)
+!
+!  ! check 4)
+!    ! set INFO
+!    INFO = 0
+!    
+!    ! set P
+!    P = .FALSE.
+!    
+!    ! set valid Q
+!    Q = 0d0
+!    do ii=1,(N-1)
+!      Q(3*ii) = 1d0
+!    end do     
+!  
+!    ! set valid D and D
+!    D = 0d0
+!    do ii=1,N
+!      D(2*ii-1) = 1d0
+!    end do
+!
+!    ! set valid C, B, C2 and B2
+!    C = 0d0
+!    do ii=1,N
+!      C(3*ii) = -1d0
+!    end do
+!    B = -C
+!    
+!    ! call twisted QZ
+!    call z_upr1fact_qr(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess &
+!    ,N,P,Q,D,C,B,N,V,ITS,INFO)
+!    
+!    ! check INFO
+!    if (INFO.NE.0) then
+!      call u_test_failed(__LINE__)
+!    end if
+!
+!    do ii=1,(N)
+!      temp = -cmplx(D(2*ii-1),D(2*ii),kind=8)*B(3*ii)/C(3*ii)
+!      temp = -temp/cmplx(D(2*ii-1),D(2*ii),kind=8)
+!      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
+!        call u_test_failed(__LINE__)
+!      end if
+!    end do
+!
+!  ! end check 4)
+!  
+!  ! check 5)
+!    ! set INFO
+!    INFO = 0
+!    
+!    ! set P
+!    P = .TRUE.
+!    
+!    ! set valid Q
+!    Q = 0d0
+!    do ii=1,(N-1)
+!      Q(3*ii) = 1d0
+!    end do     
+!  
+!    ! set valid D 
+!    D = 0d0
+!    do ii=1,N
+!      D(2*ii-1) = 1d0
+!    end do
+!
+!    ! set valid C, B, C2 and B2
+!    C = 0d0
+!    do ii=1,N
+!      C(3*ii) = -1d0
+!    end do
+!    B = -C
+!    
+!    ! call twisted QZ
+!    call z_upr1fact_qr(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_inversehess &
+!    ,N,P,Q,D,C,B,N,V,ITS,INFO)
+!    
+!    ! check INFO
+!    if (INFO.NE.0) then
+!      call u_test_failed(__LINE__)
+!    end if
+!
+!    do ii=1,(N)
+!      temp = -cmplx(D(2*ii-1),D(2*ii),kind=8)*B(3*ii)/C(3*ii)
+!      temp = -temp/cmplx(D(2*ii-1),D(2*ii),kind=8)
+!      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
+!        call u_test_failed(__LINE__)
+!      end if
+!    end do
+!
+!  ! end check 5)
+!
+!  ! check 6)
+!    ! set INFO
+!    INFO = 0
+!    
+!    ! set P
+!    do ii=1,(N-2)
+!      if (mod(ii,2).EQ.1) then 
+!        P(ii) = .FALSE.
+!      else 
+!        P(ii) = .TRUE.
+!      end if
+!    end do    
+!
+!    ! set valid Q
+!    Q = 0d0
+!    do ii=1,(N-1)
+!      Q(3*ii) = 1d0
+!    end do     
+!  
+!    ! set valid D
+!    D = 0d0
+!    do ii=1,N
+!      D(2*ii-1) = 1d0
+!    end do
+!    D(2*N-1) = (-1d0)**(N-1)
+!
+!    ! set valid C and B
+!    C = 0d0
+!    do ii=1,N
+!      C(3*ii) = -1d0
+!    end do
+!    B = -C
+!    
+!    ! call twisted QZ
+!    call z_upr1fact_qr(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_cmv &
+!    ,N,P,Q,D,C,B,N,V,ITS,INFO)
+!    
+!    ! check INFO
+!    if (INFO.NE.0) then
+!      call u_test_failed(__LINE__)
+!    end if
+!
+!    do ii=1,(N)
+!      temp = -cmplx(D(2*ii-1),D(2*ii),kind=8)*B(3*ii)/C(3*ii)
+!      if (abs(temp**N-cmplx(1d0,0d0,kind=8)) >= tol) then
+!        call u_test_failed(__LINE__)
+!      end if
+!    end do
+!
+!  ! end check 6)
 
   ! stop timer
   call system_clock(count=c_stop)

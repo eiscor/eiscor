@@ -162,6 +162,11 @@ print*,""
 print*,"Inside QR"
 print*,"STR:",STR
 print*,"STP:",STP
+print*,"P"
+do ii=1,(N-2)
+print*,P(ii)
+end do
+print*,""
 print*,"Q"
 do ii=1,(N-1)
 print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)

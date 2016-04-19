@@ -66,6 +66,7 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
   ! compute shift
   ! random shift
   if ((mod(ITCNT+1,16) == 0).OR.(ITCNT.LT.0)) then
+  !if (.FALSE.) then
     call random_number(G(1))
     call random_number(G(2))
     shift = cmplx(G(1),G(2),kind=8)
@@ -106,14 +107,15 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
     call z_upr1fact_singleshift(tp,tq,td,tc,tb,shift)
 
   end if
+ 
+!shift = cmplx(-9.999d0,0d0,kind=8)
+
+print*,""
+print*," shift =",shift
+print*,""
 
   ! build bulge
-  if (N.LT.3) then
-    tq = 0d0; tq(1:3) = Q(1:3); tq(4) = 1d0
-  else
-    tq = Q
-  end if
-  call z_upr1fact_buildbulge(P(1),tq,D(1:4),C(1:6),B(1:6),shift,G)
+  call z_upr1fact_buildbulge(P(1),Q(1:3),D(1:4),C(1:6),B(1:6),shift,G)
 
   ! set Ginv
   Ginv(1) = G(1)

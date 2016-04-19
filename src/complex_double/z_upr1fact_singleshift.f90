@@ -111,7 +111,7 @@ subroutine z_upr1fact_singleshift(P,Q,D,C,B,SHFT)
   rho = R1(3,3)/R2(3,3) 
       
   ! compute eigenvalues and eigenvectors
-  call z_2x2array_eig(.TRUE.,R1(2:3,2:3),R2(2:3,2:3),H,K)
+  call z_2x2array_eig(.FALSE.,R1(2:3,2:3),R2(2:3,2:3),H,K)
           
   ! wilkinson shift
   if(abs(R1(3,3)/R2(3,3)-rho) < abs(R1(2,2)/R2(2,2)-rho))then
@@ -119,7 +119,7 @@ subroutine z_upr1fact_singleshift(P,Q,D,C,B,SHFT)
   else
     SHFT = R1(2,2)/R2(2,2)
   end if
-    
+
   ! avoid INFs and NANs
   if ((SHFT.NE.SHFT).OR.(abs(SHFT) > EISCOR_DBL_INF)) then
     SHFT = cmplx(1d9,0d0,kind=8) ! not sure if this is a good idea?

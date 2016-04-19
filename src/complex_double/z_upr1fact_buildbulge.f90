@@ -15,7 +15,7 @@
 !  P               LOGICAL 
 !                    position flag for Q
 !
-!  Q               REAL(8) array of dimension (6)
+!  Q               REAL(8) array of dimension (3)
 !                    array of generators for first sequence of rotations
 !
 !  D               REAL(8) arrays of dimension (4)
@@ -42,7 +42,7 @@ subroutine z_upr1fact_buildbulge(P,Q,D,C,B,SHFT,G)
   
   ! input variables
   logical, intent(in) :: P
-  real(8), intent(in) :: Q(6), D(4), C(6), B(6)
+  real(8), intent(in) :: Q(3), D(4), C(6), B(6)
   complex(8), intent(in) :: SHFT
   real(8), intent(inout) :: G(3)
   
