@@ -70,15 +70,8 @@ program test_z_upr1fact_qr2x2
     B = -C
 
     ! decompress
-    call z_upr1utri_decompress(.FALSE.,N,D,C,B,T)
+    call z_upr1fact_decompress(N,P,Q,D,C,B,H)
    
-    ! set H
-    H(1,1) = cmplx(Q(1),Q(2),kind=8)
-    H(2,1) = cmplx(Q(3),0d0,kind=8)
-    H(1,2) = -H(2,1)
-    H(2,2) = conjg(H(1,1))
-    H = matmul(H,T)
-    
     ! call twisted qr
     call z_upr1fact_qr(.TRUE.,.TRUE.,l_upr1fact_hess &
     ,N,P,Q,D,C,B,N,V,ITS,INFO)
@@ -135,15 +128,8 @@ program test_z_upr1fact_qr2x2
     B = -C
 
     ! decompress
-    call z_upr1utri_decompress(.FALSE.,N,D,C,B,T)
+    call z_upr1fact_decompress(N,P,Q,D,C,B,H)
    
-    ! set H
-    H(1,1) = cmplx(Q(1),Q(2),kind=8)
-    H(2,1) = cmplx(Q(3),0d0,kind=8)
-    H(1,2) = -H(2,1)
-    H(2,2) = conjg(H(1,1))
-    H = matmul(H,T)
-    
     ! call twisted qr
     call z_upr1fact_qr(.TRUE.,.TRUE.,l_upr1fact_hess &
     ,N,P,Q,D,C,B,N,V,ITS,INFO)
@@ -202,15 +188,8 @@ program test_z_upr1fact_qr2x2
     B = -C
 
     ! decompress
-    call z_upr1utri_decompress(.FALSE.,N,D,C,B,T)
+    call z_upr1fact_decompress(N,P,Q,D,C,B,H)
    
-    ! set H
-    H(1,1) = cmplx(Q(1),Q(2),kind=8)
-    H(2,1) = cmplx(Q(3),0d0,kind=8)
-    H(1,2) = -H(2,1)
-    H(2,2) = conjg(H(1,1))
-    H = matmul(H,T)
-    
     ! call twisted qr
     call z_upr1fact_qr(.TRUE.,.TRUE.,l_upr1fact_hess &
     ,N,P,Q,D,C,B,N,V,ITS,INFO)

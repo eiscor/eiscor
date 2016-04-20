@@ -158,37 +158,37 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
       exit
     end if
 
-print*,""
-print*,"Inside QR"
-print*,"STR:",STR
-print*,"STP:",STP
-print*,"P"
-do ii=1,(N-2)
-print*,P(ii)
-end do
-print*,""
-print*,"Q"
-do ii=1,(N-1)
-print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-end do
-print*,""
-print*,"D"
-do ii=1,N
-print*,D(2*ii-1),D(2*ii)
-end do
-print*,""
-print*,"C"
-do ii=1,(N)
-print*,C(3*ii-2),C(3*ii-1),C(3*ii)
-end do
-print*,""
-print*,"B"
-do ii=1,(N)
-print*,B(3*ii-2),B(3*ii-1),B(3*ii)
-end do
-print*,""
-write(*,*) "Press enter to continue."
-read(*,*)
+!print*,""
+!print*,"Inside QR"
+!print*,"STR:",STR
+!print*,"STP:",STP
+!print*,"P"
+!do ii=1,(N-2)
+!print*,P(ii)
+!end do
+!print*,""
+!print*,"Q"
+!do ii=1,(N-1)
+!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+!end do
+!print*,""
+!print*,"D"
+!do ii=1,N
+!print*,D(2*ii-1),D(2*ii)
+!end do
+!print*,""
+!print*,"C"
+!do ii=1,(N)
+!print*,C(3*ii-2),C(3*ii-1),C(3*ii)
+!end do
+!print*,""
+!print*,"B"
+!do ii=1,(N)
+!print*,B(3*ii-2),B(3*ii-1),B(3*ii)
+!end do
+!print*,""
+!write(*,*) "Press enter to continue."
+!read(*,*)
 
     ! check for deflation
     call z_upr1fact_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &

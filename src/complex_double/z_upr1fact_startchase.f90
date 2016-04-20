@@ -110,9 +110,9 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
  
 !shift = cmplx(-9.999d0,0d0,kind=8)
 
-print*,""
-print*," shift =",shift
-print*,""
+!print*,""
+!print*," shift =",shift
+!print*,""
 
   ! build bulge
   call z_upr1fact_buildbulge(P(1),Q(1:3),D(1:4),C(1:6),B(1:6),shift,G)

@@ -92,7 +92,7 @@ subroutine z_upr1fact_singlestep(VEC,FUN,N,P,Q,D,C,B,M,V,ITCNT)
 
     ! move misfit down one row
     call z_upr1fact_chasedown(VEC,P(ii:ii+1),Q((ir1-3):(ir2-3)),D(id1:id2), & 
-                              C(ir1:ir2),B(ir1:ir2),M,V(:,ii:ii+1),MISFIT)
+                              C(ir1:ir2),B(ir1:ir2),M,V(:,ii+1:ii+2),MISFIT)
 
   end do
 
