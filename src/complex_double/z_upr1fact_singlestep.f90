@@ -79,7 +79,7 @@ subroutine z_upr1fact_singlestep(VEC,FUN,N,P,Q,D,C,B,M,V,ITCNT)
   end if  
 
   ! initialize core chasing
-  call z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,MISFIT)
+  call z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V(:,1:2),ITCNT,MISFIT)
   
   ! core chasing loop
   do ii=1,(N-3)

@@ -115,7 +115,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     ind2 = ind1+3
      
     ! through diag
-    call z_rot3_swapdiag(.FALSE.,D(ind1:ind2),bulge)
+    call z_rot3_swapdiag(D(ind1:ind2),bulge)
 
     ! set indices
     ind1 = 3*(ii-1) + 1

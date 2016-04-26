@@ -6,9 +6,8 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This program tests the subroutine z_upr1utri_rot3swap. 
-! The following tests are run (once with 'L2R' and once with 'R2L'):
 !
-! 1)  D = I, C = B = all [0, -1; 1, 0] and G = [1/sqrt(2) 0 1/sqrt(2)]
+! 1)  random D, C and B
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_upr1utri_rot3swap
@@ -19,8 +18,9 @@ program test_z_upr1utri_rot3swap
   real(8), parameter :: tol = 2d0*EISCOR_DBL_EPS ! accuracy (tolerance)
 
   ! compute variables
-  real(8) :: Dold(4), Cold(6), Bold(6), Gold(3)
-  real(8) :: D(4), C(6), B(6), G(3)
+  real(8) :: nrm, D(4), C(6), B(6), G(3)
+  complex(8) :: T(2,2), Told(2,2)
+  complex(8) :: A(2,2), Aold(2,2)
 
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -35,49 +35,44 @@ program test_z_upr1utri_rot3swap
   !!!!!!!!!!!!!!!!!!!!
   ! check 1)
  
-    ! set variables
-    D(1) = 1d0
-    D(2) = 0d0
-    D(3) = 1d0
-    D(4) = 0d0
+  ! set variables
+  call d_rot2_vec2gen(1d0,-3d0,D(1),D(2),nrm)
+  call d_rot2_vec2gen(-17d0,3d0,D(3),D(4),nrm)
 
-    C(1) = 0d0
-    C(2) = 0d0
-    C(3) = 1d0
-    C(4) = 0d0
-    C(5) = 0d0
-    C(6) = 1d0
-    
-    B = C
-    
-    G(1) = 1d0/sqrt(2d0)
-    G(2) = 0d0
-    G(3) = G(1)
-    
-    Dold = D
-    Cold = C
-    Bold = B
-    Gold = G
-    
-    ! call 
-    call z_upr1utri_rot3swap(.TRUE.,D,C,B,G)
-    
-    ! call 
-    call z_upr1utri_rot3swap(.FALSE.,D,C,B,G)
+  call z_rot3_vec3gen(1d0,2d0,3d0,C(1),C(2),C(3),nrm)
+  call z_rot3_vec3gen(9d0,2d0,5d0,C(4),C(5),C(6),nrm)
+  
+  call z_rot3_vec3gen(11d0,-2d0,3d0,B(1),B(2),B(3),nrm)
+  call z_rot3_vec3gen(-3d0,47d0,5d0,B(4),B(5),B(6),nrm)
+  
+  call z_rot3_vec3gen(11d0,19d0,-7d0,G(1),G(2),G(3),nrm)
+  
+  ! fill Aold
+  Aold(1,1) = cmplx(G(1),G(2),kind=8)
+  Aold(2,1) = cmplx(G(3),0d0,kind=8)
+  Aold(1,2) = -Aold(2,1)
+  Aold(2,2) = conjg(Aold(1,1))
+  
+  ! fill Told
+  call z_upr1utri_decompress(.FALSE.,2,D,C,B,Told)
 
-    ! check results
-    if (maxval(abs(Dold-D)) > tol) then
-      call u_test_failed(__LINE__)
-    end if
-    if (maxval(abs(Cold-C)) > tol) then
-      call u_test_failed(__LINE__)
-    end if  
-    if (maxval(abs(Bold-B)) > tol) then
-      call u_test_failed(__LINE__)
-    end if  
-    if (maxval(abs(Gold-G)) > tol) then
-      call u_test_failed(__LINE__)
-    end if    
+  ! call 
+  call z_upr1utri_rot3swap(.FALSE.,D,C,B,G)
+  
+  ! fill A
+  A(1,1) = cmplx(G(1),G(2),kind=8)
+  A(2,1) = cmplx(G(3),0d0,kind=8)
+  A(1,2) = -A(2,1)
+  A(2,2) = conjg(A(1,1))
+  
+  ! fill T
+  call z_upr1utri_decompress(.FALSE.,2,D,C,B,T)
+
+  ! check results
+  A = abs(matmul(Told,Aold)-matmul(A,T))
+  if (maxval(dble(A)) > tol) then
+    call u_test_failed(__LINE__)
+  end if
 
   ! stop timer
   call system_clock(count=c_stop)

@@ -31,19 +31,13 @@
 !  C,B             REAL(8) arrays of dimension (3*N)
 !                    array of generators for upper-triangular parts
 !
-!  INFO           INTEGER
-!                   INFO = 1 implies no convergence 
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies 
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_compmat_compress(N,P,COEFFS,Q,D,C,B,INFO)       
+subroutine z_compmat_compress(N,P,COEFFS,Q,D,C,B)       
 
   implicit none
   
   ! input variables
   integer, intent(in) :: N
-  integer, intent(inout) :: INFO
   logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D(2*N), C(3*N), B(3*N)
   complex(8), intent(inout) :: COEFFS(N)
@@ -52,9 +46,6 @@ subroutine z_compmat_compress(N,P,COEFFS,Q,D,C,B,INFO)
   integer :: ii
   real(8) :: phr, phi, nrm, beta
   complex(8) :: temp
-  
-  ! initialize info
-  INFO = 0
   
   ! initialize Q
   Q = 0d0

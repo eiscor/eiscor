@@ -106,7 +106,7 @@ subroutine z_unifact_mergebulge(TOP,N,Q,D,B)
   else
   
     ! pass through diag
-    call z_rot3_swapdiag(.FALSE.,D((2*N-3):(2*N)),B)
+    call z_rot3_swapdiag(D((2*N-3):(2*N)),B)
     
     ! set inputs  
     c2r = B(1)

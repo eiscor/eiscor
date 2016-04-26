@@ -40,23 +40,15 @@ subroutine z_upr1utri_unimodscale(ROW,D,C,B,SCL)
   complex(8), intent(in) :: SCL
  
   ! compute variables
-  logical :: SYM
   real(8) :: nrm
   complex(8) :: temp
-
-  ! check to see if C and B are symmetric. if so we can avoid updating them
-  if ((C(1).EQ.B(1)).AND.(C(2).EQ.-B(2)).AND.(C(3).EQ.-B(3))) then
-    SYM = .TRUE.
-  else
-    SYM = .FALSE.
-  end if 
 
   ! update D regardless of row or column
   temp = SCL*cmplx(D(1),D(2),kind=8)
   call d_rot2_vec2gen(dble(temp),aimag(temp),D(1),D(2),nrm)
   
-  ! update B and C if SYM == .FALSE.
-  if ((.NOT.SYM).AND.(.NOT.ROW)) then
+  ! update B and C
+  if (.NOT.ROW) then
 
       ! update B
     temp = SCL*cmplx(B(1),B(2),kind=8)
