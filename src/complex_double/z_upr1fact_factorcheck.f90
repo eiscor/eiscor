@@ -5,9 +5,9 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks the factorization input into z_upr1fact_twistedqz
-! to make sure it represents an extended hessenberg triangular pencil
-! to machine precision. 
+! This routine checks the factorization of a factored unitary plus
+! rank one (upr1fact) matrix to make sure it represents an extended 
+! hessenberg triangular matrix to machine precision. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -19,12 +19,12 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) arrays of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
+!  D               REAL(8) arrays of dimension (2*N)
+!                    array of generators for complex diagonal matrix
+!                    in the upper-triangular factor
 !
 !  C,B             REAL(8) arrays of dimension (3*N)
-!                    array of generators for upper-triangular parts of the pencil
+!                    array of generators for upper-triangular part
 !
 ! OUTPUT VARIABLES:
 !

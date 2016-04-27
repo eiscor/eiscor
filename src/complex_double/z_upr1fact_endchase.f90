@@ -5,8 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine initializes one iteration of Francis' singleshift 
-! algorithm for a upr1 factorization. 
+! This routine finaalizes one iteration of Francis' singleshift 
+! algorithm for a factored unitary plus rank one (upr1fact) matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -32,7 +32,7 @@
 !                    array of generators for upper-triangular part
 !
 !  M               INTEGER
-!                    leading dimesnion of V and W
+!                    leading dimesnion of V 
 !
 !  V               COMPLEX(8) array of dimension (M,N)
 !                    right schur vectors

@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! test_z_upr1fact_qr3x3
+! test_z_upr1fact_3x3qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -15,7 +15,7 @@
 ! 3) check roots of unity with cmv QR
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program test_z_upr1fact_qr3x3
+program test_z_upr1fact_3x3qr
 
   implicit none
   
@@ -281,4 +281,4 @@ program test_z_upr1fact_qr3x3
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
   
      
-end program test_z_upr1fact_qr3x3
+end program test_z_upr1fact_3x3qr

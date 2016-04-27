@@ -5,17 +5,14 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the generalized Schur decomposition of an 
-! extended upper-hessenberg, upper-triangular pencil. Both the hessenberg
-! and triangular matrices are the sum of a unitary matrix and a rank 
-! one matrix. These matrices are stored in 5 sequences of rotations 
-! and 2 unimodular diagonal matrices.
+! This routine computes the Schur decomposition of a factored unitary
+! plus rank one (upr1fact) matrix. Such a matrix is stored as 3 sequences 
+! of rotations and a unimodular diagonal matrix.
 !
-! The hessenberg part is stored as H = Q*D1*C1*B1
-! The triangular part is stored as S = D2*C2*B2
+! The extended hessenberg matrix H = Q(P)*D*C*B
 !
-! The matrices V and W are the left and right Schur vectors respectively.
-! Namely, V*(H,S)W is upper-triangular.
+! The columns of V are the right Schur vectors.
+! Namely, V*HV is upper-triangular.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -42,13 +39,12 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) arrays of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
+!  D               REAL(8) arrays of dimension (2*N)
+!                    array of generators for complex diagonal matrix
+!                    in the upper-triangular factor
 !
 !  C,B             REAL(8) arrays of dimension (3*N)
-!                    array of generators for upper-triangular parts
-!                    of the pencil
+!                    array of generators for upper-triangular part
 !
 !  M               INTEGER
 !                    leading dimension of V
@@ -157,38 +153,6 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
     if(STP <= 0)then    
       exit
     end if
-
-!print*,""
-!print*,"Inside QR"
-!print*,"STR:",STR
-!print*,"STP:",STP
-!print*,"P"
-!do ii=1,(N-2)
-!print*,P(ii)
-!end do
-!print*,""
-!print*,"Q"
-!do ii=1,(N-1)
-!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
-!end do
-!print*,""
-!print*,"D"
-!do ii=1,N
-!print*,D(2*ii-1),D(2*ii)
-!end do
-!print*,""
-!print*,"C"
-!do ii=1,(N)
-!print*,C(3*ii-2),C(3*ii-1),C(3*ii)
-!end do
-!print*,""
-!print*,"B"
-!do ii=1,(N)
-!print*,B(3*ii-2),B(3*ii-1),B(3*ii)
-!end do
-!print*,""
-!write(*,*) "Press enter to continue."
-!read(*,*)
 
     ! check for deflation
     call z_upr1fact_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &

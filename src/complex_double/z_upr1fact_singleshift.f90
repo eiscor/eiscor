@@ -5,8 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes a set of two by two diagonal blocks of a 
-! unitary plus rank one matrix pencil stored in factored form.
+! This routine computes a shift for a factored unitary plus rank one
+! (upr1fact) matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -19,11 +19,11 @@
 !                    array of generators for first sequence of rotations
 !
 !  D               REAL(8) arrays of dimension (6)
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
+!                    array of generators for complex diagonal matrix
+!                    in the upper-triangular factor
 !
 !  C,B             REAL(8) arrays of dimension (9)
-!                    array of generators for upper-triangular parts of the pencil
+!                    array of generators for upper-triangular part
 !
 ! OUTPUT VARIABLES:
 !

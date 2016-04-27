@@ -5,8 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the first transformation for a sinlge shift
-! iteration on a upr1 pencil.
+! This routine computes the first transformation for a single shift
+! iteration on a factored unitary plus rank one (upr1fact) matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -19,12 +19,11 @@
 !                    array of generators for first sequence of rotations
 !
 !  D               REAL(8) arrays of dimension (4)
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
+!                    array of generators for complex diagonal matrix
+!                    in the upper-triangular factor
 !
 !  C,B             REAL(8) arrays of dimension (6)
-!                    array of generators for upper-triangular parts
-!                    of the pencil
+!                    array of generators for upper-triangular matrix
 !
 !  SHFT            COMPLEX(8) 
 !                    contains the shift needed for the first transformation

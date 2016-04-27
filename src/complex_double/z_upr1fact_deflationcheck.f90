@@ -5,10 +5,9 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks for deflations in a unitary upper hessenberg 
-! matrix that is stored as a product of givens rotations and a complex 
-! diagonal matrix. When a deflation occurs the corresponding rotation
-! is set to the identity matrix.
+! This routine checks for deflations in a factored unitary plus rank
+! one (upr1fact) matrix. When a deflation occurs the corresponding 
+! rotation in the unitary part is set to the identity matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -26,11 +25,15 @@
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
-!                    generators must be orthogonal to working precision
 !
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
-!                    generators must be orthogonal to working precision
+!
+!  C               REAL(8) array of dimension (3*N)
+!                    array of generators for first sequence of rotations
+!
+!  B               REAL(8) array of dimension (3*N)
+!                    array of generators for second sequence of rotations
 !
 !  M               INTEGER
 !                    leading dimension of V

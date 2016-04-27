@@ -5,8 +5,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine initializes one iteration of Francis' singleshift 
-! algorithm for a upr1 factorization. 
+! This routine chases the a single misfit core transformation down 
+! one row in a factored unitary plus rank one (upr1fact) matrix. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !

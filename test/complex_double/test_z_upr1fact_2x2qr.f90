@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! test_z_upr1fact_qr2x2
+! test_z_upr1fact_2x2qr
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -15,7 +15,7 @@
 ! 3) nonunitary example
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program test_z_upr1fact_qr2x2
+program test_z_upr1fact_2x2qr
 
   implicit none
   
@@ -94,8 +94,7 @@ program test_z_upr1fact_qr2x2
     H = matmul(conjg(transpose(V)),V)
     H(1,1) = H(1,1) - cmplx(1d0,0d0,kind=8)
     H(2,2) = H(2,2) - cmplx(1d0,0d0,kind=8)
-    H = abs(H)
-    if (maxval(dble(H)) >= tol) then   
+    if (maxval(dble(abs(H))) >= tol) then   
       call u_test_failed(__LINE__)
     end if
 
@@ -228,4 +227,4 @@ program test_z_upr1fact_qr2x2
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
   
      
-end program test_z_upr1fact_qr2x2
+end program test_z_upr1fact_2x2qr

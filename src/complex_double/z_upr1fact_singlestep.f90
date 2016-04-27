@@ -6,7 +6,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes one iteration of Francis' singleshift 
-! algorithm on a upr1 pencil. 
+! algorithm on a factored unitary plus rank one (upr1fact) matrix.. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -29,11 +29,11 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
 !
-!  D               REAL(8) arrays of dimension (2*(N+1))
-!                    array of generators for complex diagonal matrices
+!  D               REAL(8) arrays of dimension (2*N)
+!                    array of generators for complex diagonal matrix
 !
 !  C,B             REAL(8) arrays of dimension (3*N)
-!                    array of generators for upper-triangular parts of the pencil
+!                    array of generators for upper-triangular part
 !
 !  M               INTEGER
 !                    leading dimesnion of V and W

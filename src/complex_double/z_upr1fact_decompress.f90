@@ -4,6 +4,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
+! This routine decompresses a factored unitary plus rank one 
+! (upr1fact) matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -16,19 +18,16 @@
 !                    array of position flags
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
-!                    array of generators for second sequence of Givens' 
-!                    rotations
+!                    array of generators for the unitary rotations
 !
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
 !
 !  C               REAL(8) array of dimension (3*N)
-!                    array of generators for second sequence of Givens' 
-!                    rotations
+!                    array of generators for first sequence of rotations
 !
 !  B               REAL(8) array of dimension (3*N)
-!                    array of generators for third sequence of Givens' 
-!                    rotations
+!                    array of generators for second sequence of rotations
 !
 ! OUTPUT VARIABLES:
 !

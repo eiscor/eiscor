@@ -6,7 +6,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine initializes one iteration of Francis' singleshift 
-! algorithm for a upr1 factorization. 
+! algorithm for a factored unitary plus rank one (upr1fact) matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -25,7 +25,7 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
 !
-!  D               REAL(8) arrays of dimension (2*(N+1))
+!  D               REAL(8) arrays of dimension (2*N)
 !                    array of generators for complex diagonal matrix
 !
 !  C,B             REAL(8) arrays of dimension (3*N)
