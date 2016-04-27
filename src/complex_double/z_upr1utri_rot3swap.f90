@@ -5,9 +5,9 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine passes a rotation through an upper-triangular matrix 
-! stored as the product of a diagonal matrix and 2 sequences of 
-! rotations.
+! This routine passes a rotation through an unitary plus rank one
+! upper-triangular matrix (upr1utri) stored as the product of a diagonal 
+! matrix and 2 sequences of rotations.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -18,17 +18,17 @@
 !                    .FALSE.: pass rotation from right to left
 !
 !  D               REAL(8) array of dimension (4)
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
+!                    array of generators for complex diagonal matrice
+!                    in the upper-triangular matrix
 !
 !  C               REAL(8) array of dimension (6)
-!                    array of generators for upper-triangular parts
+!                    first array of generators for upper-triangular part
 !
 !  B               REAL(8) array of dimension (6)
-!                    array of generators for upper-triangular parts
+!                    second array of generators for upper-triangular part
 !
 !  G               REAL(8) array of dimension (3)
-!                    generator for rotation
+!                    generators for rotation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1utri_rot3swap(DIR,D,C,B,G)

@@ -6,7 +6,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine scales either a row or column of a unitary plus rank
-! one upper-triangular matrix by a complex unimodular number.
+! one upper-triangular matrix (upr1utri) by a complex unimodular scalar.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -17,17 +17,17 @@
 !                    .FALSE.: scale column
 !
 !  D               REAL(8) array of dimension (2)
-!                    array of generators for complex diagonal matrices
-!                    in the upper-triangular factors
+!                    array of generators for complex diagonal matrix
+!                    in the upper-triangular factor
 !
 !  C               REAL(8) array of dimension (3)
-!                    array of generators for upper-triangular parts
+!                    first array of generators for upper-triangular part
 !
 !  B               REAL(8) array of dimension (3)
-!                    array of generators for upper-triangular parts
+!                    second array of generators for upper-triangular part
 !
 !  SCL             COMPLEX(8) 
-!                    unimodular scalar
+!                    scalar, assumed unimodular
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1utri_unimodscale(ROW,D,C,B,SCL)

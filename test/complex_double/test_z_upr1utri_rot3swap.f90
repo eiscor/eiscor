@@ -7,7 +7,7 @@
 !
 ! This program tests the subroutine z_upr1utri_rot3swap. 
 !
-! 1)  random D, C and B
+! 1)  semi-random D, C and B
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_upr1utri_rot3swap

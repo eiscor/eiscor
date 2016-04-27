@@ -22,15 +22,12 @@
 !
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
-!                    on output contains the eigenvalues
 !
 !  C               REAL(8) array of dimension (3*N)
-!                    array of generators for second sequence of Givens' 
-!                    rotations
+!                    array of generators for first sequence of rotations
 !
 !  B               REAL(8) array of dimension (3*N)
-!                    array of generators for third sequence of Givens' 
-!                    rotations
+!                    array of generators for third sequence of rotations
 !
 ! OUTPUT VARIABLES:
 !

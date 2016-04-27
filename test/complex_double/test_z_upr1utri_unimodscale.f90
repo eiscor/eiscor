@@ -6,7 +6,7 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This program tests the subroutine z_upr1utri_unimodscale. 
-! The following tests are run (once with 'L2R' and once with 'R2L'):
+! The following tests are run (both for row and column scaling):
 !
 ! 1)  D = 0-1i, C = B = [1+0i,1]/sqrt(2) and SCL = 0+1i
 !
