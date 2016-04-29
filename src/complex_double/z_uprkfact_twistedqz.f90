@@ -166,10 +166,13 @@ subroutine z_uprkfact_twistedqz(QZ,VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,
     else if(STP == (STR+ZERO))then
     
       ! call 2x2 deflation
-      call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)),D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
-      ,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)),C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)),N &
-      ,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
+      !call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)),D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
+      !,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)),C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)),N &
+      !,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
+      call z_uprkfact_2x2deflation(QZ,VEC,N,K,STP,Q,D1,C1, &
+      &B1,D2,C2,B2,N,V,W)
     
+
       ! update indices
       ITS(STR+STP-1) = ITCNT
       ITCNT = 0

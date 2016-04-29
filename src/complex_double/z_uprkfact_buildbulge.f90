@@ -71,7 +71,7 @@ subroutine z_uprkfact_buildbulge(QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
   
 
   ! get 2x2 blocks
-  call z_uprkfact_2x2diagblocks(.TRUE.,.FALSE.,QZ,N,K,ROW+1,P,Q,D1,C1,B1,D2,C2,B2,A,B)
+  call z_uprkfact_2x2diagblocks(.TRUE.,.FALSE.,QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,A,B)
      
   ! set B to I of not QZ
   if (.NOT.QZ) then
@@ -84,8 +84,8 @@ subroutine z_uprkfact_buildbulge(QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
   if (.NOT.P(ROW)) then
    
     ! first column of A
-    vec1(1) = cmplx(Q(1),Q(2),kind=8)*A(1,1)
-    vec1(2) = cmplx(Q(3),0d0,kind=8)*A(1,1)
+    vec1(1) = cmplx(Q(3*ROW-2),Q(3*ROW-1),kind=8)*A(1,1)
+    vec1(2) = cmplx(Q(3*ROW),0d0,kind=8)*A(1,1)
     
     ! first column of B
     vec2(1) = B(1,1)
@@ -95,8 +95,8 @@ subroutine z_uprkfact_buildbulge(QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
   else
     
     ! Q*e1
-    vec2(1) = cmplx(Q(1),-Q(2),kind=8)
-    vec2(2) = cmplx(-Q(3),0d0,kind=8)
+    vec2(1) = cmplx(Q(3*ROW-2),-Q(3*ROW-1),kind=8)
+    vec2(2) = cmplx(-Q(3*ROW),0d0,kind=8)
     
     ! back solve with A
     vec2(2) = vec2(2)/A(2,2)
