@@ -1,12 +1,12 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_upr1fact_singlestep 
+! z_uprkfact_singlestep 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes one iteration of Francis' singleshift 
-! algorithm on a upr1 pencil. 
+! algorithm on a uprk pencil. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -26,6 +26,9 @@
 !
 !  N               INTEGER
 !                    dimension of matrix
+!
+!  K               INTEGER
+!                    number of triangulars/rank
 !
 !  P               LOGICAL array of dimension (N-2)
 !                    array of position flags for Q
@@ -59,16 +62,17 @@
 !                   Contains the number of iterations since last deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
+subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
+     &D2,C2,B2,M,V,W,ITCNT)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: QZ, VEC
-  integer, intent(in) :: M, N
+  integer, intent(in) :: M, N, K, STR, STP
   logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
-  real(8), intent(inout) :: D2(2*(N+1)), C2(3*N), B2(3*N)
+  real(8), intent(inout) :: Q(3*K*(N-1)), D1(2*K*(N+1)), C1(3*K*N), B1(3*K*N)
+  real(8), intent(inout) :: D2(2*K*(N+1)), C2(3*K*N), B2(3*K*N)
   complex(8), intent(inout) :: V(M,N), W(M,N)
   integer, intent(in) :: ITCNT
   interface
@@ -80,7 +84,7 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   end interface
   
   ! compute variables
-  integer :: ii, ir1, ir2, id1, id2
+  integer :: ii!, ir1, ir2, id1, id2
   logical :: final_flag
   real(8) :: G1(3), G2(3), G3(3)
   complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2)
@@ -99,10 +103,16 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   else
   
     ! get 2x2 blocks
-    ir2 = 3*N; ir1 = ir2-5
-    id2 = 2*N; id1 = id2-3
-    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2),Q((ir1-3):(ir2-3)) &
-    ,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+    !ir2 = 3*N; ir1 = ir2-5
+    !id2 = 2*N; id1 = id2-3
+    !call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2),Q((ir1-3):(ir2-3)) &
+    !,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+    !ir2 = 3*STP+3; ir1 = ir2-5
+    !id2 = 2*STP+2; id1 = id2-3
+    !call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(STP-1),Q((ir1-3):(ir2-3)) &
+    !,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+    call z_uprkfact_2x2diagblocks(.FALSE.,.TRUE.,QZ,N,K,STP,P,Q &
+    ,D1,C1,B1,D2,C2,B2,A,B)
   
     ! if not QZ
     if (.NOT.QZ) then
@@ -136,9 +146,21 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
 
   end if
 
+  print*, "shift", shift
+
   ! build bulge
-  call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
-  ,D2(1:4),C2(1:6),B2(1:6),shift,G2)
+  !call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
+  !,D2(1:4),C2(1:6),B2(1:6),shift,G2)
+  !ir1 = 3*(STR-1)+1
+  !ir2 = ir1 + 5
+  !id1 = 2*(STR-1)+1
+  !id2 = id1 + 3
+  !call z_upr1fact_buildbulge(QZ,P(STR),Q(ir1:ir2),D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2) &
+  !,D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),shift,G2)
+  !call z_upr1fact_buildbulge(QZ,P(STR),Q(ir1:ir2),D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2) &
+  !,D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),shift,G2)
+  call z_uprkfact_buildbulge(QZ,N,K,STR,P,Q,D1,C1,B1, &
+       &D2,C2,B2,shift,G2)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -148,12 +170,13 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   if (QZ) then
   
     ! chase bulge
-    do ii=1,(N-1)
+    do ii=STR,STP
     
 
     end do  
-
+  
     print*, W(1,1)
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! iteration for QR
@@ -181,42 +204,45 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     ! merge with Q if necessary
     if (.NOT.P(1)) then
     
-      ! merge from left
-      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G1)
-      
-      ! set G1 for turnover
-      G1(1) = Q(1)
-      G1(2) = Q(2)
-      G1(3) = Q(3)
+       ! merge from left
+       !call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G1)
+       call z_uprkfact_mergebulge(.TRUE.,N,STR,STP,P,Q,D1,G1) 
+       
+       ! set G1 for turnover
+       G1(1) = Q(3*STR-2)
+       G1(2) = Q(3*STR-1)
+       G1(3) = Q(3*STR)
 
     end if
     
     ! pass G2 through triangular part
-    call z_upr1fact_rot3throughtri(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G2)
-    
+    !call z_upr1fact_rot3throughtri(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G2)
+    call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D1,C1,B1,G2,STR)
+
     ! set G3 for turnover
     G3 = G2
     
     ! merge with Q if necessary
     if (P(1)) then
     
-      ! merge from left
-      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G2)
-      
-      ! set G3 for turnover
-      G3(1) = Q(1)
-      G3(2) = Q(2)
-      G3(3) = Q(3)
+       ! merge from left
+       !call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G2)
+       call z_uprkfact_mergebulge(.TRUE.,N,STR,STP,P,Q,D1,G2) 
+       
+       ! set G3 for turnover
+       G3(1) = Q(3*STR-2)
+       G3(2) = Q(3*STR-1)
+       G3(3) = Q(3*STR)
 
     end if
     
     ! set G2 for turnover
-    G2(1) = Q(4)
-    G2(2) = Q(5)
-    G2(3) = Q(6)    
+    G2(1) = Q(3*STR+1)
+    G2(2) = Q(3*STR+2)
+    G2(3) = Q(3*STR+3)    
   
     ! chase bulge
-    do ii=1,(N-3)
+    do ii=STR,(STP-2)
     
       ! execute turnover of G1G2G3
       call z_rot3_turnover(G1,G2,G3)
@@ -259,8 +285,9 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
         end if
         
         ! pass G3 through upper triangular part
-        call z_upr1fact_rot3throughtri(.FALSE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
-        ,B1((3*ii+1):(3*ii+6)),G3)
+        !call z_upr1fact_rot3throughtri(.FALSE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        !     ,B1((3*ii+1):(3*ii+6)),G3)
+        call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D1,C1,B1,G3,ii+1)
         
       ! inverse hess
       else
@@ -274,8 +301,9 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
         Q(3*ii+3) = G3(3)  
         
         ! pass G2 through upper triangular part
-        call z_upr1fact_rot3throughtri(.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
-        ,B1((3*ii+1):(3*ii+6)),G2)
+        !call z_upr1fact_rot3throughtri(.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        !,B1((3*ii+1):(3*ii+6)),G2)
+        call z_uprkfact_rot3throughalltri(.TRUE.,N,K,D1,C1,B1,G2,ii+1)
         
         ! update V
         if (VEC) then
@@ -305,21 +333,21 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
     call z_rot3_turnover(G1,G2,G3)
       
     ! set P(N-1)
-    P(N-2) = final_flag
+    P(STP-1) = final_flag
     
     ! finish transformation based on P(N-1)
     ! hess
-    if (.NOT.P(N-2)) then
+    if (.NOT.P(STP-1)) then
     
-      ! set Q(N-2)
-      Q(3*(N-2)-2) = G1(1)
-      Q(3*(N-2)-1) = G1(2)
-      Q(3*(N-2)) = G1(3)   
+      ! set Q(STP-1)
+      Q(3*(STP-1)-2) = G1(1)
+      Q(3*(STP-1)-1) = G1(2)
+      Q(3*(STP-1)) = G1(3)   
       
-      ! set Q(N-1)
-      Q(3*(N-1)-2) = G2(1)
-      Q(3*(N-1)-1) = G2(2)
-      Q(3*(N-1)) = G2(3)  
+      ! set Q(STP)
+      Q(3*(STP)-2) = G2(1)
+      Q(3*(STP)-1) = G2(2)
+      Q(3*(STP)) = G2(3)  
       
       ! update V
       if (VEC) then
@@ -329,33 +357,36 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
         A(1,2) = -A(2,1)
         A(2,2) = conjg(A(1,1))
           
-        V(:,(N-1):N) = matmul(V(:,(N-1):N),A)
+        V(:,(STP):(STP+1)) = matmul(V(:,(STP):(STP+1)),A)
          
       end if    
     
       ! pass G3 through upper triangular part
-      call z_upr1fact_rot3throughtri(.FALSE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
-      ,B1((3*N-5):(3*N)),G3)
-        
+      !call z_upr1fact_rot3throughtri(.FALSE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      !,B1((3*N-5):(3*N)),G3)
+      call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D1,C1,B1,G3,STP)
+    
       ! merge bulge 
-      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G3)
+      !call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G3)
+      call z_uprkfact_mergebulge(.FALSE.,N,STR,STP,P,Q,D1,G3) 
       
     ! inverse hess
     else
     
-      ! set Q(N-2)
-      Q(3*(N-2)-2) = G1(1)
-      Q(3*(N-2)-1) = G1(2)
-      Q(3*(N-2)) = G1(3)   
+      ! set Q(STP-1)
+      Q(3*(STP-1)-2) = G1(1)
+      Q(3*(STP-1)-1) = G1(2)
+      Q(3*(STP-1)) = G1(3)   
       
-      ! set Q(N-1)
-      Q(3*(N-1)-2) = G3(1)
-      Q(3*(N-1)-1) = G3(2)
-      Q(3*(N-1)) = G3(3)  
+      ! set Q(STP)
+      Q(3*(STP)-2) = G3(1)
+      Q(3*(STP)-1) = G3(2)
+      Q(3*(STP)) = G3(3)  
       
       ! pass G2 through upper triangular part
-      call z_upr1fact_rot3throughtri(.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
-      ,B1((3*N-5):(3*N)),G2)
+      !call z_upr1fact_rot3throughtri(.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      !,B1((3*N-5):(3*N)),G2)
+      call z_uprkfact_rot3throughalltri(.TRUE.,N,K,D1,C1,B1,G2,STP)
         
       ! update V
       if (VEC) then
@@ -370,10 +401,11 @@ subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
       end if  
       
       ! merge bulge 
-      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
+      !call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
+      call z_uprkfact_mergebulge(.FALSE.,N,STR,STP,P,Q,D1,G2) 
       
     end if
     
   end if
   
-end subroutine z_upr1fact_singlestep
+end subroutine z_uprkfact_singlestep

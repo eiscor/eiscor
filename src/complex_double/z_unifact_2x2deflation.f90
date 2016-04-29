@@ -43,7 +43,7 @@ subroutine z_unifact_2x2deflation(VEC,Q,D,M,Z)
   complex(8), intent(inout) :: Z(M,2)
   
   ! compute variables
-  real(8) :: nrm, G1(3), G2(3), G3(3), Qt(6)
+  real(8) :: nrm, Qt(6)
   complex(8) :: A(2,2), Zt(2,2)
   
   ! compute 2x2 blocks

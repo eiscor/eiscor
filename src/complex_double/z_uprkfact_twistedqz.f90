@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_upr1fact_twistedqz
+! z_uprkfact_twistedqz
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -40,6 +40,9 @@
 !  N               INTEGER
 !                    dimension of matrix
 !
+!  K               INTEGER
+!                    rank, i.e., number of upper triangulars
+!
 !  P               LOGICAL array of dimension (N-2)
 !                    array of position flags for Q
 !
@@ -73,18 +76,18 @@
 !                   INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+subroutine z_uprkfact_twistedqz(QZ,VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: QZ, VEC, ID
-  integer, intent(in) :: N
+  integer, intent(in) :: N,K
   logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
-  real(8), intent(inout) :: D2(2*(N+1)), C2(3*N), B2(3*N)
+  real(8), intent(inout) :: Q(3*K*(N-1)), D1(2*K*(N+1)), C1(3*N*K), B1(3*N*K)
+  real(8), intent(inout) :: D2(2*K*(N+1)), C2(3*N*K), B2(3*N*K)
   complex(8), intent(inout) :: V(N,N), W(N,N)
-  integer, intent(inout) :: INFO, ITS(N-1)
+  integer, intent(inout) :: INFO, ITS(N)
   interface
     function FUN(m,flags)
       logical :: FUN
@@ -122,7 +125,7 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   STP = N-1
   ZERO = 0
   ITMAX = 20*N
-  ITCNT = 0
+  ITCNT = -1
   
   ! iteration loop
   do kk=1,ITMAX
@@ -135,17 +138,30 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     ! check for deflation
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
     ,D1((2*STR-1):(2*STP+2)),ZERO)
+
+    print*, Q(3*STP)
+    
+    if (ZERO.GT.0) then
+       !print*, "deflation", ZERO, ZERO+STR, STR, STP, ITCNT
+      ITS(STR+ZERO-1) = ITS(STR+ZERO-1) + ITCNT
+      ITCNT = 0
+!!$      qq = 0
+!!$      do ii=1,N-1
+!!$         qq = qq + ITS(ii)
+!!$         print*, ii, ITS(ii)
+!!$      end do
+!!$      print*, qq, ITCNT, ITCNT2, jj
+!!$      print*, ""
+    end if
     
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
     
       ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
       STP = STP - 1
       ZERO = 0
       STR = 1
-    
+
     ! if 2x2 block remove and check again
     else if(STP == (STR+ZERO))then
     
@@ -165,17 +181,25 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     else
 
       ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      if (ZERO.GT.0) then
+        STR = STR+ZERO        
+        ZERO = 0
+        !print*, "new index", ZERO, STR, STP
       end if
 
       ! perform singleshift iteration
-      call z_upr1fact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &
-      ,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)) &
-      ,B2((3*STR-2):(3*STP+3)),N,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
+      !call z_uprkfact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &
+      !,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)) &
+      !,B2((3*STR-2):(3*STP+3)),N,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)      
+      call z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,&
+           &C1,B1,D2,C2,B2,N,V,W,ITCNT)
      
       ! update indices
-      ITCNT = ITCNT + 1
+      if (ITCNT.EQ.-1) then 
+        ITCNT = 1 
+      else
+        ITCNT = ITCNT + 1
+      end if
  
     end if
     
@@ -183,8 +207,10 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
     if (kk == ITMAX) then
       INFO = 1
       ITS(STR+STP-1) = ITCNT
+      ITCNT = 0
+      print*, "hit ITMAX"
     end if
     
   end do
 
-end subroutine z_upr1fact_twistedqz
+end subroutine z_uprkfact_twistedqz
