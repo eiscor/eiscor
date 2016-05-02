@@ -104,8 +104,8 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     A(1,2) = -A(2,1)
     A(2,2) = conjg(A(1,1))
     
-    B(1,1) = cmplx(G3(3*ROW-2),G3(3*ROW-1),kind=8)
-    B(2,1) = cmplx(G3(3*ROW),0d0,kind=8)
+    B(1,1) = cmplx(G3(1),G3(2),kind=8)
+    B(2,1) = cmplx(G3(3),0d0,kind=8)
     B(1,2) = -B(2,1)
     B(2,2) = conjg(B(1,1))
     
@@ -114,8 +114,8 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     ! update V
     if (VEC) then
     
-      B(1,1) = cmplx(G1(3*ROW-2),G1(3*ROW-1),kind=8)
-      B(2,1) = cmplx(G1(3*ROW),0d0,kind=8)
+      B(1,1) = cmplx(G1(1),G1(2),kind=8)
+      B(2,1) = cmplx(G1(3),0d0,kind=8)
       B(1,2) = -B(2,1)
       B(2,2) = conjg(B(1,1))
       
@@ -123,8 +123,8 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
     end if
 
-    B(1,1) = cmplx(G1(3*ROW-2),-G1(3*ROW-1),kind=8)
-    B(2,1) = cmplx(-G1(3*ROW),0d0,kind=8)
+    B(1,1) = cmplx(G1(1),-G1(2),kind=8)
+    B(2,1) = cmplx(-G1(3),0d0,kind=8)
     B(1,2) = -B(2,1)
     B(2,2) = conjg(B(1,1))    
 
@@ -143,7 +143,9 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
   ! compute generalized Schur decomposition
   else
-  
+     
+     print*, "Code not adapted for rkk and QZ"
+     
     ! generalized schur decomposition
     call z_2x2array_eig(QZ,A,B,Vt,Wt)
       

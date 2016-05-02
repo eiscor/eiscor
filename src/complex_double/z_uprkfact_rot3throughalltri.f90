@@ -57,7 +57,7 @@ subroutine z_uprkfact_rot3throughalltri(DIR,N,K,D,C,B,G,ROW)
   integer :: ind0,ind1
 
 
-  print*, ROW
+  !print*, ROW
   if (DIR) then
      do kc=1,k
         ind0 = (kc-1)*2*(N+1)+(ROW-1)*2

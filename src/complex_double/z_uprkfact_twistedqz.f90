@@ -139,7 +139,7 @@ subroutine z_uprkfact_twistedqz(QZ,VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
     ,D1((2*STR-1):(2*STP+2)),ZERO)
 
-    print*, Q(3*STP)
+    !print*, Q(3*STP)
     
     if (ZERO.GT.0) then
        !print*, "deflation", ZERO, ZERO+STR, STR, STP, ITCNT

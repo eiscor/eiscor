@@ -59,8 +59,8 @@ subroutine z_uprkfact_rot3through1tri(DIR,N,K,KC,D,C,B,G,ROW)
   ind0 = (KC-1)*2*(N+1)+(ROW-1)*2
   ind1 = (KC-1)*3*N+(ROW-1)*3
 
-  print*, KC, ROW
-
+  !print*, KC, ROW
+  
   call z_upr1fact_rot3throughtri(DIR,&
        &D((ind0+1):(ind0+4)),&
        &C((ind1+1):(ind1+6)),&

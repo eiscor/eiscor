@@ -146,7 +146,7 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
 
   end if
 
-  print*, "shift", shift
+  !print*, "shift", shift
 
   ! build bulge
   !call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &

@@ -74,55 +74,111 @@ subroutine z_uprkfact_2x2diagblocks(TOP,HESS,QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,A,
   complex(8) :: AA(2,2),BB(2,2)
   integer :: ir1,ir2,id1,id2, ir3,ir4,id3,id4, ii
 
-  if (TOP) then
-     ir1 = 3*(ROW-1)+1; ir2 = ir1+5
-     id1 = 2*(ROW-1)+1; id2 = id1+3
-     
-     call z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P(ROW),Q(ir1:ir2),&
+  if (N.EQ.2) then
+     if (TOP) then
+        ir1 = 3*(ROW-1)+1; ir2 = ir1+5
+        id1 = 2*(ROW-1)+1; id2 = id1+3
+        
+        
+
+        call z_upr1fact_2x2diagblocks(TOP,HESS,QZ,.FALSE.,Q(ir1:ir2),&
+             &D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),&
+             &D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+        
+        do ii=2,K
+           ir3 = 3*(ii-1)*N+3*(ROW-1)+1; ir4 = ir1+5
+           id3 = 2*(ii-1)*(N+1)+2*(ROW-1)+1; id4 = id1+3
+           
+           !ir4 = 3*(ii-1)*N+3*ROW+3; ir3 = ir4-5
+           !id4 = 2*(ii-1)*(N+1)+2*ROW+2; id3 = id4-3
+           
+           call z_upr1fact_2x2diagblocks(TOP,.FALSE.,QZ,.FALSE.,Q(ir1:ir2),&
+                &D1(id3:id4),C1(ir3:ir4),B1(ir3:ir4),&
+                &D2(id3:id4),C2(ir3:ir4),B2(ir3:ir4),AA,BB)
+           
+           A = matmul(A,AA)
+           
+           if (QZ) then
+              B = matmul(B,BB)
+           end if
+        end do
+        
+        
+     else
+        ir2 = 3*ROW+3; ir1 = ir2-5
+        id2 = 2*ROW+2; id1 = id2-3
+        
+        call z_upr1fact_2x2diagblocks(TOP,HESS,QZ,.FALSE.,Q((ir1-3):(ir2-3)),&
           &D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),&
           &D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+        
+        do ii=2,K
+           ir4 = 3*(ii-1)*N+3*ROW+3; ir3 = ir4-5
+           id4 = 2*(ii-1)*(N+1)+2*ROW+2; id3 = id4-3
+           
+           call z_upr1fact_2x2diagblocks(TOP,.FALSE.,QZ,.FALSE.,Q((ir1-3):(ir2-3)),&
+                &D1(id3:id4),C1(ir3:ir4),B1(ir3:ir4),&
+                &D2(id3:id4),C2(ir3:ir4),B2(ir3:ir4),AA,BB)
+           
+           A = matmul(A,AA)
+           
+           if (QZ) then
+              B = matmul(B,BB)
+           end if
+        end do
+     end if
      
-     do ii=2,K
-        ir3 = 3*(ii-1)*N+3*(ROW-1)+1; ir4 = ir1+5
-        id3 = 2*(ii-1)*(N+1)+2*(ROW-1)+1; id4 = id1+3
-     
-        !ir4 = 3*(ii-1)*N+3*ROW+3; ir3 = ir4-5
-        !id4 = 2*(ii-1)*(N+1)+2*ROW+2; id3 = id4-3
-        
-        call z_upr1fact_2x2diagblocks(TOP,.FALSE.,QZ,P(ROW),Q(ir1:ir2),&
-             &D1(id3:id4),C1(ir3:ir4),B1(ir3:ir4),&
-             &D2(id3:id4),C2(ir3:ir4),B2(ir3:ir4),AA,BB)
-        
-        A = matmul(A,AA)
-        
-        if (QZ) then
-           B = matmul(B,BB)
-        end if
-     end do
-
-
   else
-     ir2 = 3*ROW+3; ir1 = ir2-5
-     id2 = 2*ROW+2; id1 = id2-3
-     
-     call z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P(ROW-1),Q((ir1-3):(ir2-3)),&
-          &D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),&
-          &D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
-     
-     do ii=2,K
-        ir4 = 3*(ii-1)*N+3*ROW+3; ir3 = ir4-5
-        id4 = 2*(ii-1)*(N+1)+2*ROW+2; id3 = id4-3
+     if (TOP) then
+        ir1 = 3*(ROW-1)+1; ir2 = ir1+5
+        id1 = 2*(ROW-1)+1; id2 = id1+3
         
-        call z_upr1fact_2x2diagblocks(TOP,.FALSE.,QZ,P(ROW-1),Q((ir1-3):(ir2-3)),&
-             &D1(id3:id4),C1(ir3:ir4),B1(ir3:ir4),&
-             &D2(id3:id4),C2(ir3:ir4),B2(ir3:ir4),AA,BB)
+        call z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P(ROW),Q(ir1:ir2),&
+             &D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),&
+             &D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
         
-        A = matmul(A,AA)
+        do ii=2,K
+           ir3 = 3*(ii-1)*N+3*(ROW-1)+1; ir4 = ir1+5
+           id3 = 2*(ii-1)*(N+1)+2*(ROW-1)+1; id4 = id1+3
+           
+           !ir4 = 3*(ii-1)*N+3*ROW+3; ir3 = ir4-5
+           !id4 = 2*(ii-1)*(N+1)+2*ROW+2; id3 = id4-3
+           
+           call z_upr1fact_2x2diagblocks(TOP,.FALSE.,QZ,P(ROW),Q(ir1:ir2),&
+                &D1(id3:id4),C1(ir3:ir4),B1(ir3:ir4),&
+                &D2(id3:id4),C2(ir3:ir4),B2(ir3:ir4),AA,BB)
+           
+           A = matmul(A,AA)
+           
+           if (QZ) then
+              B = matmul(B,BB)
+           end if
+        end do
         
-        if (QZ) then
-           B = matmul(B,BB)
-        end if
-     end do
+        
+     else
+        ir2 = 3*ROW+3; ir1 = ir2-5
+        id2 = 2*ROW+2; id1 = id2-3
+        
+        call z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P(ROW-1),Q((ir1-3):(ir2-3)),&
+             &D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),&
+             &D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+        
+        do ii=2,K
+           ir4 = 3*(ii-1)*N+3*ROW+3; ir3 = ir4-5
+           id4 = 2*(ii-1)*(N+1)+2*ROW+2; id3 = id4-3
+           
+           call z_upr1fact_2x2diagblocks(TOP,.FALSE.,QZ,P(ROW-1),Q((ir1-3):(ir2-3)),&
+                &D1(id3:id4),C1(ir3:ir4),B1(ir3:ir4),&
+                &D2(id3:id4),C2(ir3:ir4),B2(ir3:ir4),AA,BB)
+           
+           A = matmul(A,AA)
+           
+           if (QZ) then
+              B = matmul(B,BB)
+           end if
+        end do
+     end if
   end if
 
 end subroutine z_uprkfact_2x2diagblocks
