@@ -16,7 +16,7 @@ program example_z_uprkfact_randommatr
   
   ! compute variables
   integer, parameter :: dd = 30
-  integer, parameter :: k = 20
+  integer, parameter :: k = 100
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
   integer :: N = dd*k
@@ -222,12 +222,15 @@ program example_z_uprkfact_randommatr
            end if
         end do
         !print*, "fusion row", row, "N", N, "col", col
+        !print*, (col-1)*3*(N-1)+1,(col*3*(N-1)),&
+        !     &((col-1)*2*(N+1)+1),((col-1)*2*(N+1)+2*N)
+
         ! fuse rotation into current rotation
         call z_uprkfact_rot3through1tri(.FALSE.,N,k,col,D,C,B,bulge,row)
         !call z_upr1fact_mergebulge(.FALSE.,N,.FALSE.,&
         !     &Q(((col-1)*3*(N-1)+1):(col*3*(N-1))),&
         !     &D(((col-1)*2*(N+1)+1):(col*2*(N+1))),bulge)
-        call z_upr1fact_mergebulge(.FALSE.,N,.FALSE.,&
+        call z_upr1fact_mergebulge(.FALSE.,N,P,&
              &Q(((col-1)*3*(N-1)+1):(col*3*(N-1))),&
              &D(((col-1)*2*(N+1)+1):((col-1)*2*(N+1)+2*N)),bulge)
      end do
