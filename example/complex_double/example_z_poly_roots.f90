@@ -47,7 +47,7 @@ program example_z_poly_roots
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
   print*,""
-  print*,"example_z_unifact_knowneigs:"
+  print*,"example_z_poly_roots"
   print*,""
 
   TABLE_B = -1d0
@@ -64,7 +64,7 @@ program example_z_poly_roots
      case (3) ! Wilkinson Polynomial 20
         N = 20
      case (4)  ! monic polynomial roots [-2.1:0.2:1.7]
-        N = 21
+        N = 20
      case (5) ! inverse Wilkinson Polynomial 10
         N = 10
      case (6) ! inverse Wilkinson Polynomial 15
@@ -317,7 +317,6 @@ program example_z_poly_roots
         COEFFS( 19) = cmplx( 5.701842040814797397D-01, 0.000000000000000000D+00,kind=8)
         COEFFS( 20) = cmplx(-4.749807885322501061D-03, 0.000000000000000000D+00,kind=8)
         COEFFS( 21) = cmplx(-4.737933365609194557D-03, 0.000000000000000000D+00,kind=8)
-
 
      case (5)  ! inverse Wilkinson polynomial degree 10
         print*, "inverse Wilkinson polynomial degree", 10

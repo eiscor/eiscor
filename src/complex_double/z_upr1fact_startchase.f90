@@ -65,7 +65,7 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
   
   ! compute shift
   ! random shift
-  if (mod(ITCNT+1,16) == 0) then
+  if ((mod(ITCNT,20).EQ.0).AND.(ITCNT.GT.0)) then
     call random_number(G(1))
     call random_number(G(2))
     shift = cmplx(G(1),G(2),kind=8)
