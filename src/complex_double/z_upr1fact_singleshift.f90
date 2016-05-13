@@ -112,7 +112,7 @@ subroutine z_upr1fact_singleshift(P,Q,D,C,B,SHFT)
       
   ! compute eigenvalues and eigenvectors
   call z_2x2array_eig(.TRUE.,R1(2:3,2:3),R2(2:3,2:3),H,K)
-          
+
   ! wilkinson shift
   if(abs(R1(3,3)/R2(3,3)-rho) < abs(R1(2,2)/R2(2,2)-rho))then
     SHFT = R1(3,3)/R2(3,3)

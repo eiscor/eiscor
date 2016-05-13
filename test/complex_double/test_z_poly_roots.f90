@@ -87,6 +87,32 @@ program test_z_poly_roots
   ! end check 2)
 
 
+  ! check 3)
+  ! set valid COEFFS
+  COEFFS(1) = cmplx(1d0,0d0,kind=8)
+  COEFFS(2) = cmplx(-10d0,0d0,kind=8)
+  COEFFS(3) = cmplx(35d0,0d0,kind=8)
+  COEFFS(4) = cmplx(-50d0,0d0,kind=8)
+  COEFFS(5) = cmplx(24d0,0d0,kind=8)
+
+  ! call roots
+  call z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
+  
+  ! check INFO
+  if (INFO.NE.0) then
+    call u_test_failed(__LINE__)
+  end if
+
+  ! check residuals
+  do ii=1,N
+    if (RESIDUALS(ii) >= 10d0*tol) then
+      call u_test_failed(__LINE__)
+    end if
+  end do
+
+  ! end check 3)
+
+
   ! stop timer
   call system_clock(count=c_stop)
   

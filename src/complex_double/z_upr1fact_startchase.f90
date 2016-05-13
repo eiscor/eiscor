@@ -32,7 +32,7 @@
 !                    array of generators for upper-triangular part
 !
 !  M               INTEGER
-!                    leading dimesnion of V and W
+!                    leading dimesnion of V
 !
 !  V               COMPLEX(8) array of dimension (M,N)
 !                    right schur vectors
@@ -65,8 +65,7 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
   
   ! compute shift
   ! random shift
-  if ((mod(ITCNT+1,16) == 0).OR.(ITCNT.LT.0)) then
-  !if (.FALSE.) then
+  if (mod(ITCNT+1,16) == 0) then
     call random_number(G(1))
     call random_number(G(2))
     shift = cmplx(G(1),G(2),kind=8)
@@ -107,7 +106,11 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
     call z_upr1fact_singleshift(tp,tq,td,tc,tb,shift)
 
   end if
- 
+
+!print*,""
+!print*," shift =",shift
+!print*,""
+
   ! build bulge
   call z_upr1fact_buildbulge(P(1),Q(1:3),D(1:4),C(1:6),B(1:6),shift,G)
 

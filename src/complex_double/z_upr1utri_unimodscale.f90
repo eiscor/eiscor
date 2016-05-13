@@ -52,13 +52,11 @@ subroutine z_upr1utri_unimodscale(ROW,D,C,B,SCL)
 
       ! update B
     temp = SCL*cmplx(B(1),B(2),kind=8)
-    call d_rot2_vec2gen(dble(temp),aimag(temp),B(1),B(2),nrm)
-    B(1:2) = B(1:2)*nrm
+    call z_rot3_vec3gen(dble(temp),aimag(temp),B(3),B(1),B(2),B(3),nrm)
         
     ! update C
     temp = conjg(SCL)*cmplx(C(1),C(2),kind=8)
-    call d_rot2_vec2gen(dble(temp),aimag(temp),C(1),C(2),nrm)
-    C(1:2) = C(1:2)*nrm
+    call z_rot3_vec3gen(dble(temp),aimag(temp),C(3),C(1),C(2),C(3),nrm)
   
   end if
 

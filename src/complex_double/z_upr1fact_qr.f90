@@ -144,7 +144,7 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
   STP = N-1
   ZERO = 0
   ITMAX = 20*N
-  ITCNT = -1
+  ITCNT = 0
   
   ! iteration loop
   do kk=1,ITMAX
@@ -153,6 +153,16 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
     if(STP <= 0)then    
       exit
     end if
+
+!print*,""
+!print*,"Inside QR"
+!print*,"Q"
+!do ii=1,N-1
+!print*,Q(3*ii-2:3*ii)
+!end do
+!print*,""
+!write(*,*) "Press enter to continue"
+!read(*,*)
 
     ! check for deflation
     call z_upr1fact_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &
