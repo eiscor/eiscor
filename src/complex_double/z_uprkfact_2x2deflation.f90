@@ -77,13 +77,19 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
   complex(8) :: A(2,2), B(2,2), Vt(2,2), Wt(2,2)
   
   P = .FALSE.
+  
+  !print*, "2x2", N, K, ROW
 
   ! compute 2x2 blocks
   !Qt = 0d0; Qt(1:3) = Q; Qt(4) = 1d0
   !call z_upr1fact_2x2diagblocks(.TRUE.,.TRUE.,QZ,.FALSE.,Qt,D1,C1,B1,D2,C2,B2,A,B)
-  call z_uprkfact_2x2diagblocks(.TRUE.,.TRUE.,QZ,N,K,ROW,P,Q &
-    ,D1,C1,B1,D2,C2,B2,A,B)
-
+  if (ROW.EQ.N-1) then
+     call z_uprkfact_2x2diagblocks(.FALSE.,.TRUE.,QZ,N,K,ROW,P,Q &
+          ,D1,C1,B1,D2,C2,B2,A,B)
+  else
+     call z_uprkfact_2x2diagblocks(.TRUE.,.TRUE.,QZ,N,K,ROW,P,Q &
+          ,D1,C1,B1,D2,C2,B2,A,B)
+  end if
   ! compute standard Schur decomposition
   if (.NOT.QZ) then
   
@@ -143,11 +149,12 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
   ! compute generalized Schur decomposition
   else
-     
-     print*, "Code not adapted for rkk and QZ"
-     
+          
     ! generalized schur decomposition
     call z_2x2array_eig(QZ,A,B,Vt,Wt)
+    
+    !print*, "2x2 deflation", A(1,1)/B(1,1), A(2,2)/B(2,2)
+
       
     ! replace Vt with rotation G1
     call z_rot3_vec4gen(dble(Wt(1,1)),aimag(Wt(1,1)),dble(Wt(2,1)),aimag(Wt(2,1)),G1(1),G1(2),G1(3),nrm)
@@ -157,7 +164,7 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
     ! pass G1 through right triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,D2,C2,B2,G3)
+    call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D2,C2,B2,G3,ROW)
     
     ! equivalence transform
     A(1,1) = cmplx(G2(1),G2(2),kind=8)
@@ -173,19 +180,19 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     A = matmul(transpose(conjg(A)),B)
     
     ! deflate into D2
-    A(1,1) = A(1,1)*cmplx(D2(1),D2(2),kind=8)
-    call d_rot2_vec2gen(dble(A(1,1)),aimag(A(1,1)),D2(1),D2(2),nrm)
+    A(1,1) = A(1,1)*cmplx(D2(2*ROW-1),D2(2*ROW),kind=8)
+    call d_rot2_vec2gen(dble(A(1,1)),aimag(A(1,1)),D2(2*ROW-1),D2(2*ROW),nrm)
     
-    A(2,2) = A(2,2)*cmplx(D2(3),D2(4),kind=8)
-    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D2(3),D2(4),nrm)
+    A(2,2) = A(2,2)*cmplx(D2(2*ROW+1),D2(2*ROW+2),kind=8)
+    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D2(2*ROW+1),D2(2*ROW+2),nrm)
     
     ! pass G1 through left triangular factor
     G3 = G1
-    call z_upr1fact_rot3throughtri(.FALSE.,D1,C1,B1,G3)
+    call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D1,C1,B1,G3,ROW)
     
     ! equivalence transform of Q
-    A(1,1) = cmplx(Q(1),Q(2),kind=8)
-    A(2,1) = cmplx(Q(3),0d0,kind=8)
+    A(1,1) = cmplx(Q(3*ROW-2),Q(3*ROW-1),kind=8)
+    A(2,1) = cmplx(Q(3*ROW),0d0,kind=8)
     A(1,2) = -A(2,1)
     A(2,2) = conjg(A(1,1))
     
@@ -203,16 +210,16 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
     
     A = matmul(B,A)
     
-    Q(1) = 1d0
-    Q(2) = 0d0
-    Q(3) = 0d0
+    Q(3*ROW-2) = 1d0
+    Q(3*ROW-1) = 0d0
+    Q(3*ROW) = 0d0
     
     ! deflate into D1
-    A(1,1) = A(1,1)*cmplx(D1(1),D1(2),kind=8)
-    call d_rot2_vec2gen(dble(A(1,1)),aimag(A(1,1)),D1(1),D1(2),nrm)
+    A(1,1) = A(1,1)*cmplx(D1(2*ROW-1),D1(2*ROW),kind=8)
+    call d_rot2_vec2gen(dble(A(1,1)),aimag(A(1,1)),D1(2*ROW-1),D1(2*ROW),nrm)
     
-    A(2,2) = A(2,2)*cmplx(D1(3),D1(4),kind=8)
-    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D1(3),D1(4),nrm)
+    A(2,2) = A(2,2)*cmplx(D1(2*ROW+1),D1(2*ROW+2),kind=8)
+    call d_rot2_vec2gen(dble(A(2,2)),aimag(A(2,2)),D1(2*ROW+1),D1(2*ROW+2),nrm)
     
     ! update vecs
     if (VEC) then

@@ -63,7 +63,7 @@ subroutine z_uprkfact_rot3throughalltri(DIR,N,K,D,C,B,G,ROW)
         ind0 = (kc-1)*2*(N+1)+(ROW-1)*2
         ind1 = (kc-1)*3*N+(ROW-1)*3
         
-        call z_upr1fact_rot3throughtri(DIR,&
+        call z_upr1fact_rot3throughtri(.TRUE.,&
              &D((ind0+1):(ind0+4)),&
              &C((ind1+1):(ind1+6)),&
              &B((ind1+1):(ind1+6)),G)
@@ -73,7 +73,7 @@ subroutine z_uprkfact_rot3throughalltri(DIR,N,K,D,C,B,G,ROW)
         ind0 = (kc-1)*2*(N+1)+(ROW-1)*2
         ind1 = (kc-1)*3*N+(ROW-1)*3
         
-        call z_upr1fact_rot3throughtri(DIR,&
+        call z_upr1fact_rot3throughtri(.FALSE.,&
              &D((ind0+1):(ind0+4)),&
              &C((ind1+1):(ind1+6)),&
              &B((ind1+1):(ind1+6)),G)

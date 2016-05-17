@@ -42,6 +42,9 @@
 !  N               INTEGER
 !                    dimension of matrix
 !
+!  M               INTEGER
+!                    column of the spike
+!
 !  U               COMPLEX(8) array of dimension (N)
 !                    coefficients for left triangular factor
 !
@@ -59,13 +62,13 @@
 !                   INFO = 0 implies successful computation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1_factoridpspike(ID,N,U,D,C,B,INFO)
+subroutine z_upr1_factoridpspike(ID,N,M,U,D,C,B,INFO)
 
   implicit none
   
   ! input variables
   logical, intent(in) :: ID
-  integer, intent(in) :: N
+  integer, intent(in) :: N, M
   complex(8), intent(inout) :: U(N)
   real(8), intent(inout) :: D(2*(N+1)), C(3*N), B(3*N)
   integer, intent(inout) :: INFO
@@ -91,31 +94,43 @@ subroutine z_upr1_factoridpspike(ID,N,U,D,C,B,INFO)
   C = 0d0
 
   ! compute the phase of last coefficient
-  call d_rot2_vec2gen(dble(U(N)),aimag(U(N)),phr,phi,beta)
+  call d_rot2_vec2gen(dble(U(M)),aimag(U(M)),phr,phi,beta)
  
   ! store in D
   if (ID) then
-     D(2*N-1) = phr
-     D(2*N) = phi
+     D(2*M-1) = phr
+     D(2*M) = phi
      D(2*N+1) = phr
      D(2*N+2) = -phi
   else
-     temp = cmplx(D(2*N-1),D(2*N),kind=8)*cmplx(phr,phi,kind=8)
-     call d_rot2_vec2gen(dble(temp),aimag(temp),D(2*N-1),D(2*N),nrm)
+     temp = cmplx(D(2*M-1),D(2*M),kind=8)*cmplx(phr,phi,kind=8)
+     call d_rot2_vec2gen(dble(temp),aimag(temp),D(2*M-1),D(2*M),nrm)
      temp = cmplx(D(2*N+1),D(2*N+2),kind=8)*cmplx(phr,-phi,kind=8)
-     call d_rot2_vec2gen(dble(temp),aimag(temp),D(2*N+1),D(2*N+2),nrm)
+     call d_rot2_vec2gen(dble(temp),aimag(temp),D(2*M+1),D(2*M+2),nrm)
   end if
 
-  ! initialize bottom of C
-  call d_rot2_vec2gen(beta,-1d0,C(3*N-2),C(3*N),nrm)
+  if (M.EQ.N) then
+     ! initialize bottom of C
+     call d_rot2_vec2gen(beta,-1d0,C(3*N-2),C(3*N),nrm)
+     ! initialize bottom of B
+     B(3*N-2) = C(3*N)
+     B(3*N) = C(3*N-2)
+  else
+     do ii=N,M+1,-1
+        C(3*ii) = 1d0
+        B(3*ii) = -1d0
+     end do
+     ! initialize bottom of C
+     call d_rot2_vec2gen(beta,-1d0,C(3*M-2),C(3*M),nrm)
+     ! initialize bottom of B
+     B(3*M-2) = C(3*M)
+     B(3*M) = C(3*M-2)     
+  end if
 
-  ! initialize bottom of B
-  B(3*N-2) = C(3*N)
-  B(3*N) = C(3*N-2)
 
   ! roll up U into B and C
   temp = cmplx(nrm,0d0,kind=8)
-  do ii = 1,(N-1)
+  do ii = 1+N-M,(N-1)
 
     ! compute new C
     call z_rot3_vec4gen(dble(U(N-ii)),aimag(U(N-ii)),dble(temp),aimag(temp) &

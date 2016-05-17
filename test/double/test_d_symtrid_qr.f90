@@ -28,13 +28,11 @@ program test_d_symtrid_qr
   logical, parameter :: sca = .TRUE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! compute variables
-  integer :: M
   integer :: ii, jj, INFO
   real(8) :: WORK(5*N), D(N), E(N-1), eig(N), t, t1, t2, t3, nrm
-  real(8) :: Ds(N), Es(N-1), pi = EISCOR_DBL_PI
+  real(8) :: Ds(N), Es(N-1)
   complex(8) :: Z(N,N), v(N)
   integer :: ITS(N-1)
-  logical :: backward
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -113,14 +111,14 @@ program test_d_symtrid_qr
   t2 = 0d0
   do ii=1,N
      ! jj  1
-     v(1) = (Ds(1)-D(ii))*Z(1+N*(ii-1),1) + Es(1)*Z(2+N*(ii-1),1)
+     v(1) = (Ds(1)-D(ii))*Z(1,ii) + Es(1)*Z(2,ii)
      do jj=2,N-1
-        v(jj) = (Ds(jj)-D(ii))*Z(jj+N*(ii-1),1) + &
-             & Es(jj)*Z(jj+1+N*(ii-1),1) + &
-             & Es(jj-1)*Z(jj-1+N*(ii-1),1)
+        v(jj) = (Ds(jj)-D(ii))*Z(jj,ii) + &
+             & Es(jj)*Z(jj+1,ii) + &
+             & Es(jj-1)*Z(jj-1,ii)
      end do
-     v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
-          & Es(N-1)*Z(N-1+N*(ii-1),1)
+     v(N) = (Ds(N)-D(ii))*Z(N,ii) + &
+          & Es(N-1)*Z(N-1,ii)
 
      t3 = 0d0
      do jj=1,N
@@ -162,14 +160,14 @@ program test_d_symtrid_qr
   t2 = 0d0
   do ii=1,N
      ! jj  1
-     v(1) = (Ds(1)-D(ii))*Z(1+N*(ii-1),1) + Es(1)*Z(2+N*(ii-1),1)
+     v(1) = (Ds(1)-D(ii))*Z(1,ii) + Es(1)*Z(2,ii)
      do jj=2,N-1
-        v(jj) = (Ds(jj)-D(ii))*Z(jj+N*(ii-1),1) + &
-             & Es(jj)*Z(jj+1+N*(ii-1),1) + &
-             & Es(jj-1)*Z(jj-1+N*(ii-1),1)
+        v(jj) = (Ds(jj)-D(ii))*Z(jj,ii) + &
+             & Es(jj)*Z(jj+1,ii) + &
+             & Es(jj-1)*Z(jj-1,ii)
      end do
-     v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
-          & Es(N-1)*Z(N-1+N*(ii-1),1)
+     v(N) = (Ds(N)-D(ii))*Z(N,ii) + &
+          & Es(N-1)*Z(N-1,ii)
 
      t3 = 0d0
      do jj=1,N
@@ -212,14 +210,14 @@ program test_d_symtrid_qr
   t2 = 0d0
   do ii=1,N
      ! jj  1
-     v(1) = (Ds(1)-D(ii))*Z(1+N*(ii-1),1) + Es(1)*Z(2+N*(ii-1),1)
+     v(1) = (Ds(1)-D(ii))*Z(1,ii) + Es(1)*Z(2,ii)
      do jj=2,N-1
-        v(jj) = (Ds(jj)-D(ii))*Z(jj+N*(ii-1),1) + &
-             & Es(jj)*Z(jj+1+N*(ii-1),1) + &
-             & Es(jj-1)*Z(jj-1+N*(ii-1),1)
+        v(jj) = (Ds(jj)-D(ii))*Z(jj,ii) + &
+             & Es(jj)*Z(jj+1,ii) + &
+             & Es(jj-1)*Z(jj-1,ii)
      end do
-     v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
-          & Es(N-1)*Z(N-1+N*(ii-1),1)
+     v(N) = (Ds(N)-D(ii))*Z(N,ii) + &
+          & Es(N-1)*Z(N-1,ii)
 
      t3 = 0d0
      do jj=1,N
@@ -262,14 +260,14 @@ program test_d_symtrid_qr
   t2 = 0d0
   do ii=1,N
      ! jj  1
-     v(1) = (Ds(1)-D(ii))*Z(1+N*(ii-1),1) + Es(1)*Z(2+N*(ii-1),1)
+     v(1) = (Ds(1)-D(ii))*Z(1,ii) + Es(1)*Z(2,ii)
      do jj=2,N-1
-        v(jj) = (Ds(jj)-D(ii))*Z(jj+N*(ii-1),1) + &
-             & Es(jj)*Z(jj+1+N*(ii-1),1) + &
-             & Es(jj-1)*Z(jj-1+N*(ii-1),1)
+        v(jj) = (Ds(jj)-D(ii))*Z(jj,ii) + &
+             & Es(jj)*Z(jj+1,ii) + &
+             & Es(jj-1)*Z(jj-1,ii)
      end do
-     v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
-          & Es(N-1)*Z(N-1+N*(ii-1),1)
+     v(N) = (Ds(N)-D(ii))*Z(N,ii) + &
+          & Es(N-1)*Z(N-1,ii)
 
      t3 = 0d0
      do jj=1,N
@@ -313,14 +311,14 @@ program test_d_symtrid_qr
   t2 = 0d0
   do ii=1,N
      ! jj  1
-     v(1) = (Ds(1)-D(ii))*Z(1+N*(ii-1),1) + Es(1)*Z(2+N*(ii-1),1)
+     v(1) = (Ds(1)-D(ii))*Z(1,ii) + Es(1)*Z(2,ii)
      do jj=2,N-1
-        v(jj) = (Ds(jj)-D(ii))*Z(jj+N*(ii-1),1) + &
-             & Es(jj)*Z(jj+1+N*(ii-1),1) + &
-             & Es(jj-1)*Z(jj-1+N*(ii-1),1)
+        v(jj) = (Ds(jj)-D(ii))*Z(jj,ii) + &
+             & Es(jj)*Z(jj+1,ii) + &
+             & Es(jj-1)*Z(jj-1,ii)
      end do
-     v(N) = (Ds(N)-D(ii))*Z(N+N*(ii-1),1) + &
-          & Es(N-1)*Z(N-1+N*(ii-1),1)
+     v(N) = (Ds(N)-D(ii))*Z(N,ii) + &
+          & Es(N-1)*Z(N-1,ii)
 
      t3 = 0d0
      do jj=1,N

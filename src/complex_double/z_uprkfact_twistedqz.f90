@@ -139,7 +139,9 @@ subroutine z_uprkfact_twistedqz(QZ,VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,
     call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
     ,D1((2*STR-1):(2*STP+2)),ZERO)
 
-    !print*, Q(3*STP)
+    !if (ZERO.GT.0) then
+    !   print*, "DEFLATION", STR, STP, ZERO, ITCNT
+    !end if
     
     if (ZERO.GT.0) then
        !print*, "deflation", ZERO, ZERO+STR, STR, STP, ITCNT
@@ -164,6 +166,8 @@ subroutine z_uprkfact_twistedqz(QZ,VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,
 
     ! if 2x2 block remove and check again
     else if(STP == (STR+ZERO))then
+
+      !print*, "2x2", STR, ZERO, STP
     
       ! call 2x2 deflation
       !call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)),D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
@@ -173,8 +177,13 @@ subroutine z_uprkfact_twistedqz(QZ,VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,
       &B1,D2,C2,B2,N,V,W)
     
 
+      !print*, STR, STP
       ! update indices
-      ITS(STR+STP-1) = ITCNT
+      if (STR+STP-1.GT.N) then
+         ITS(N) = ITS(N) + ITCNT
+      else
+         ITS(STR+STP-1) = ITCNT
+      end if
       ITCNT = 0
       STP = STP - 2
       ZERO = 0
@@ -189,6 +198,8 @@ subroutine z_uprkfact_twistedqz(QZ,VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,
         ZERO = 0
         !print*, "new index", ZERO, STR, STP
       end if
+
+      !print*, "normal", STR, STP
 
       ! perform singleshift iteration
       !call z_uprkfact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &

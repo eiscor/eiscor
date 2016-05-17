@@ -64,8 +64,8 @@ subroutine z_uprkfact_2x2diagblocks(TOP,HESS,QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,A,
   implicit none
   
   ! input variables
-  logical, intent(in) :: TOP, HESS, QZ, P(N-2)
   integer, intent(in) :: N, K, ROW
+  logical, intent(in) :: TOP, HESS, QZ, P(N-2)
   real(8), intent(inout) :: Q(3*K*(N-1)), D1(2*K*(N+1)), C1(3*K*N), B1(3*K*N)
   real(8), intent(inout) :: D2(2*K*(N+1)), C2(3*K*N), B2(3*K*N)
   complex(8), intent(inout) :: A(2,2), B(2,2)
@@ -73,6 +73,8 @@ subroutine z_uprkfact_2x2diagblocks(TOP,HESS,QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,A,
   ! compute variables
   complex(8) :: AA(2,2),BB(2,2)
   integer :: ir1,ir2,id1,id2, ir3,ir4,id3,id4, ii
+
+  !print*, "N, K, ROW", N, K, ROW
 
   if (N.EQ.2) then
      if (TOP) then

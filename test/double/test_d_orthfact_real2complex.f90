@@ -51,7 +51,9 @@ program test_d_orthfact_real2complex
     theta = 2d0*PI*dble(ii-5d-1)/dble(N)
     Q(4*(ii-1)+1) = cos(theta)
     Q(4*(ii-1)+2) = sin(theta)
-    Q(4*(ii-1)+3) = 1d0
+    if (ii.NE.N/2) then
+       Q(4*(ii-1)+3) = 1d0
+    end if
   end do
 
   ! initialize D

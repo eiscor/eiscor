@@ -143,16 +143,17 @@ subroutine d_orthhess_real2complex(VEC,N,H,M,Z,E,V,INFO)
       end if
 
       ! check to see that next rotation is identity
-      if ((ind.LT.(N-1)).AND.(H(ind+1,ind+2).NE.0)) then
-        INFO = -3
-        ! print error message in debug mode
-        if (DEBUG) then
-          call u_infocode_check(__FILE__,__LINE__  &
-          ,"Not a valid real Schur form.",INFO,INFO)
-        end if
-        return
+      if (ind.LT.(N-1)) then
+         if (H(ind+1,ind+2).NE.0) then
+            INFO = -3
+            ! print error message in debug mode
+            if (DEBUG) then
+               call u_infocode_check(__FILE__,__LINE__  &
+                    ,"Not a valid real Schur form.",INFO,INFO)
+            end if
+            return
+         end if
       end if
-
       ! update ind 
       ind = ind + 2
 

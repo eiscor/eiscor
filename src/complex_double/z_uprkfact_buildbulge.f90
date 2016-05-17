@@ -58,8 +58,8 @@ subroutine z_uprkfact_buildbulge(QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
   implicit none
   
   ! input variables
-  logical, intent(in) :: QZ, P(N-2)
   integer, intent(in) :: N, K, ROW
+  logical, intent(in) :: QZ, P(N-2)
   real(8), intent(inout) :: Q(3*K*(N-1)), D1(2*K*(N+1)), C1(3*K*N), B1(3*K*N)
   real(8), intent(inout) :: D2(2*K*(N+1)), C2(3*K*N), B2(3*K*N)
   complex(8), intent(in) :: SHFT
@@ -72,7 +72,7 @@ subroutine z_uprkfact_buildbulge(QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
 
   ! get 2x2 blocks
   call z_uprkfact_2x2diagblocks(.TRUE.,.FALSE.,QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,A,B)
-     
+
   ! set B to I of not QZ
   if (.NOT.QZ) then
     B = cmplx(0d0,0d0,kind=8)
@@ -106,7 +106,7 @@ subroutine z_uprkfact_buildbulge(QZ,N,K,ROW,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
     vec1(1) = 1d0/B(1,1)
     vec1(2) = 0d0
   
-  end if
+ end if
   
   ! insert shift
   vec1 = vec1 - SHFT*vec2
