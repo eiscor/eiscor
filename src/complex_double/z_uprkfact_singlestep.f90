@@ -170,7 +170,7 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   if (QZ) then
 
-    ! update V
+    ! update W
     if (VEC) then
       
       A(1,1) = cmplx(G2(1),G2(2),kind=8)
@@ -178,7 +178,7 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
       A(1,2) = -A(2,1)
       A(2,2) = conjg(A(1,1))
       
-      V(:,1:2) = matmul(V(:,1:2),A)
+      W(:,STR:STR+1) = matmul(W(:,STR:STR+1),A)
       
     end if
    
@@ -200,7 +200,7 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
 
     end if
 
-    ! invert G1
+    ! invert G2
     G2(1) = G2(1)
     G2(2) = -G2(2)
     G2(3) = -G2(3)
@@ -213,6 +213,18 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
     G2(2) = -G2(2)
     G2(3) = -G2(3)
     
+    ! update V
+    if (VEC) then
+      
+      A(1,1) = cmplx(G2(1),G2(2),kind=8)
+      A(2,1) = cmplx(G2(3),0d0,kind=8)
+      A(1,2) = -A(2,1)
+      A(2,2) = conjg(A(1,1))
+      
+      V(:,STR:STR+1) = matmul(V(:,STR:STR+1),A)
+      
+    end if
+   
     ! pass G2 through triangular part A
     call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D1,C1,B1,G2,STR)
 
@@ -269,6 +281,18 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
         G2(2) = Q(3*ii+5)
         G2(3) = Q(3*ii+6)
 
+        ! update W
+        if (VEC) then
+          
+          A(1,1) = cmplx(G3(1),G3(2),kind=8)
+          A(2,1) = cmplx(G3(3),0d0,kind=8)
+          A(1,2) = -A(2,1)
+          A(2,2) = conjg(A(1,1))
+          
+          W(:,(ii+1):(ii+2)) = matmul(W(:,(ii+1):(ii+2)),A)
+          
+        end if
+
         ! invert G3
         G3(1) = G3(1)
         G3(2) = -G3(2)
@@ -299,7 +323,11 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
         
       ! inverse hess
       else
-      
+         
+        if (VEC) then
+           print*, "not implemented"
+        end if
+
         ! set P(ii)
         P(ii) = P(ii+1)
         
@@ -370,6 +398,18 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
       Q(3*(STP)-1) = G2(2)
       Q(3*(STP)) = G2(3)  
       
+      ! update W
+      if (VEC) then
+         
+         A(1,1) = cmplx(G3(1),G3(2),kind=8)
+         A(2,1) = cmplx(G3(3),0d0,kind=8)
+         A(1,2) = -A(2,1)
+         A(2,2) = conjg(A(1,1))
+         
+         W(:,(STP):(STP+1)) = matmul(W(:,(STP):(STP+1)),A)
+         
+      end if
+
       ! invert G3
       G3(1) = G3(1)
       G3(2) = -G3(2)
@@ -443,7 +483,7 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
         A(1,2) = -A(2,1)
         A(2,2) = conjg(A(1,1))
           
-        V(:,N:(N+1)) = matmul(V(:,N:(N+1)),A)
+        V(:,STP:(STP+1)) = matmul(V(:,STP:(STP+1)),A)
          
       end if  
       
@@ -468,7 +508,7 @@ subroutine z_uprkfact_singlestep(QZ,VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,&
       A(1,2) = -A(2,1)
       A(2,2) = conjg(A(1,1))
       
-      V(:,1:2) = matmul(V(:,1:2),A)
+      V(:,STR:STR+1) = matmul(V(:,STR:STR+1),A)
       
     end if
     

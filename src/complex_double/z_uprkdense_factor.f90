@@ -88,7 +88,7 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
   integer, intent(inout) :: INFO
 
   ! compute variables
-  complex(8) :: A(N,K), B(N,K)
+  complex(8) :: A(N,K), B(N,K), H(2,2)
   complex(8) :: MV(N,N), MW(N,N)
   real(8) :: bulge(3)
   complex(8) :: hc, Gf(2,2)
@@ -146,6 +146,22 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
     Q(3*ii) = 1d0
   end do
 
+  ! initalize V
+  if (VEC .AND. ID) then
+     V = cmplx(0d0,0d0,kind=8)
+     do ii=1,N
+        V(ii,ii) = cmplx(1d0,0d0,kind=8)
+     end do
+  end if
+
+  ! initalize W
+  if (QZ .AND. VEC .AND. ID) then
+     W = cmplx(0d0,0d0,kind=8)
+     do ii=1,N
+        W(ii,ii) = cmplx(1d0,0d0,kind=8)
+     end do
+  end if
+
   if (DEBUG) then
      print*, "updated A"
      do ii=1,N
@@ -174,87 +190,87 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      end do
   end if
 
-  if (DEBUG) then
-     ! Check V
-     do ll = 1,k
-        call z_upr1fact_extracttri(.FALSE.,N,&
-             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),&
-             &C1(((ll-1)*3*N+1):(ll*3*N)),&
-             &B1(((ll-1)*3*N+1):(ll*3*N)),MV)
-        do jj = N-1,1,-1
-           ! Apply Q(jj)
-           Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
-           Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
-           Gf(1,2) = -Gf(2,1)
-           Gf(2,2) = conjg(Gf(1,1))
-           
-           MV((jj):(jj+1),:) = matmul(Gf,MV((jj):(jj+1),:))
-        end do
-        if (ll.EQ.1) then
-           V = MV
-        else
-           V = matmul(V,MV)
-        end if
-     end do
-     print*, "V before reduction"
-     do ii=1,N
-        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") V(ii,:)
-        print*, ""
-     end do
-     
-     ! Check W
-     do ll = 1,k
-        call z_upr1fact_extracttri(.FALSE.,N,&
-             &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
-             &B2(((ll-1)*3*N+1):(ll*3*N)),V)
-        if (ll.EQ.1) then
-           W = V
-        else
-           W = matmul(W,V)
-        end if
-     end do
-     print*, "W"
-     do ii=1,N
-        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") V(ii,:)
-        print*, ""
-        !write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") W(ii,:)
-     end do
-
-     ! check factorization
-     ! Form upper triangulars and multiply them together
-     MV = cmplx(0d0,0d0,kind=8)
-     MW = cmplx(0d0,0d0,kind=8)
-     do ll = 1,N
-        MV(ll,ll) = cmplx(1d0,0d0,kind=8)
-     end do
-     do ll = 1,k
-        call z_upr1fact_extracttri(.false.,N,&
-             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
-             &B1(((ll-1)*3*N+1):(ll*3*N)),MW)
-        ! Apply Q
-        do jj = N-1,1,-1
-           ! Apply Q(jj)
-           Gf(1,1) = cmplx(Q((ll-1)*(N-1)+3*jj-2),Q((ll-1)*(N-1)+3*jj-1),kind=8)
-           Gf(2,1) = cmplx(Q((ll-1)*(N-1)+3*jj),0d0,kind=8)
-           Gf(1,2) = -Gf(2,1)
-           Gf(2,2) = conjg(Gf(1,1))
-           
-           MW((jj):(jj+1),:) = matmul(Gf,MW((jj):(jj+1),:))
-        end do
-        
-        ! print*, "MW", ll
-        ! do jj = 1,N
-        !    print*, jj, MW(jj,:)
-        ! end do
-        
-        MV = matmul(MV,MW)
-     end do
-     
-     print*, "MV"
-     do jj = 1,N
-        print*, jj, MV(jj,:)
-     end do
-  end if
+!!$  if (DEBUG) then
+!!$     ! Check V
+!!$     do ll = 1,k
+!!$        call z_upr1fact_extracttri(.FALSE.,N,&
+!!$             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),&
+!!$             &C1(((ll-1)*3*N+1):(ll*3*N)),&
+!!$             &B1(((ll-1)*3*N+1):(ll*3*N)),MV)
+!!$        do jj = N-1,1,-1
+!!$           ! Apply Q(jj)
+!!$           Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
+!!$           Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
+!!$           Gf(1,2) = -Gf(2,1)
+!!$           Gf(2,2) = conjg(Gf(1,1))
+!!$           
+!!$           MV((jj):(jj+1),:) = matmul(Gf,MV((jj):(jj+1),:))
+!!$        end do
+!!$        if (ll.EQ.1) then
+!!$           V = MV
+!!$        else
+!!$           V = matmul(V,MV)
+!!$        end if
+!!$     end do
+!!$     print*, "V before reduction"
+!!$     do ii=1,N
+!!$        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") V(ii,:)
+!!$        print*, ""
+!!$     end do
+!!$     
+!!$     ! Check W
+!!$     do ll = 1,k
+!!$        call z_upr1fact_extracttri(.FALSE.,N,&
+!!$             &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
+!!$             &B2(((ll-1)*3*N+1):(ll*3*N)),V)
+!!$        if (ll.EQ.1) then
+!!$           W = V
+!!$        else
+!!$           W = matmul(W,V)
+!!$        end if
+!!$     end do
+!!$     print*, "W"
+!!$     do ii=1,N
+!!$        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") V(ii,:)
+!!$        print*, ""
+!!$        !write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") W(ii,:)
+!!$     end do
+!!$
+!!$     ! check factorization
+!!$     ! Form upper triangulars and multiply them together
+!!$     MV = cmplx(0d0,0d0,kind=8)
+!!$     MW = cmplx(0d0,0d0,kind=8)
+!!$     do ll = 1,N
+!!$        MV(ll,ll) = cmplx(1d0,0d0,kind=8)
+!!$     end do
+!!$     do ll = 1,k
+!!$        call z_upr1fact_extracttri(.false.,N,&
+!!$             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
+!!$             &B1(((ll-1)*3*N+1):(ll*3*N)),MW)
+!!$        ! Apply Q
+!!$        do jj = N-1,1,-1
+!!$           ! Apply Q(jj)
+!!$           Gf(1,1) = cmplx(Q((ll-1)*(N-1)+3*jj-2),Q((ll-1)*(N-1)+3*jj-1),kind=8)
+!!$           Gf(2,1) = cmplx(Q((ll-1)*(N-1)+3*jj),0d0,kind=8)
+!!$           Gf(1,2) = -Gf(2,1)
+!!$           Gf(2,2) = conjg(Gf(1,1))
+!!$           
+!!$           MW((jj):(jj+1),:) = matmul(Gf,MW((jj):(jj+1),:))
+!!$        end do
+!!$        
+!!$        ! print*, "MW", ll
+!!$        ! do jj = 1,N
+!!$        !    print*, jj, MW(jj,:)
+!!$        ! end do
+!!$        
+!!$        MV = matmul(MV,MW)
+!!$     end do
+!!$     
+!!$     print*, "MV"
+!!$     do jj = 1,N
+!!$        print*, jj, MV(jj,:)
+!!$     end do
+!!$  end if
      
      
   ! reduce to Hessenberg * Triangular * ... * Triangular form
@@ -284,11 +300,19 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
            col = col - 1
            ! update col if left most sequence was passed
            if (col==0) then
-              ! update (left) eigenvectors 
-              !!!!!!!!!!!!!!!!!!!!!!!!!
-              ! not implemented
-              !!!!!!!!!!!!!!!!!!!!!!!!!
               if (QZ) then
+                 ! update (left) eigenvectors 
+                 ! update W
+                 if (VEC) then
+                    
+                    H(1,1) = cmplx(bulge(1),bulge(2),kind=8)
+                    H(2,1) = cmplx(bulge(3),0d0,kind=8)
+                    H(1,2) = -H(2,1)
+                    H(2,2) = conjg(H(1,1))
+                    
+                    W(:,row+1:row+2) = matmul(W(:,row+1:row+2),H)
+                    
+                 end if
                  ! invert bulge
                  bulge(1) = bulge(1)
                  bulge(2) = -bulge(2) 
@@ -301,9 +325,18 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
                  bulge(3) = -bulge(3)
               end if
               ! update (right) eigenvectors 
-              !!!!!!!!!!!!!!!!!!!!!!!!!
-              ! not implemented
-              !!!!!!!!!!!!!!!!!!!!!!!!!
+              ! update V
+              if (VEC) then
+                 
+                 H(1,1) = cmplx(bulge(1),bulge(2),kind=8)
+                 H(2,1) = cmplx(bulge(3),0d0,kind=8)
+                 H(1,2) = -H(2,1)
+                 H(2,2) = conjg(H(1,1))
+                 
+                 V(:,row+1:row+2) = matmul(V(:,row+1:row+2),H)
+                 
+              end if
+
               ! pass through triangulars without rotations in front
               ! through A
               do col = k,ii+1,-1
@@ -328,43 +361,43 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      end do
   end do
 
-  if (DEBUG) then
-     ! check factorization
-     ! Form upper triangulars and multiply them together
-     MV = cmplx(0d0,0d0,kind=8)
-     MW = cmplx(0d0,0d0,kind=8)
-     do ll = 1,N
-        MV(ll,ll) = cmplx(1d0,0d0,kind=8)
-     end do
-     do ll = 1,k
-        call z_upr1fact_extracttri(.false.,N,&
-             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
-             &B1(((ll-1)*3*N+1):(ll*3*N)),MW)
-        MV = matmul(MV,MW)
-     end do
-     ! Apply Q
-     do jj = N-1,1,-1
-        ! Apply Q(jj)
-        Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
-        Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
-        Gf(1,2) = -Gf(2,1)
-        Gf(2,2) = conjg(Gf(1,1))
-        
-        MV((jj):(jj+1),:) = matmul(Gf,MV((jj):(jj+1),:))
-     end do
-     
-     do jj = 1,N
-        print*, jj, MV(jj,:)
-     end do
-
-     lwork = 5*N
-     call zgeev('N','N', N, MV, N, REIGS2, MW, N, MW, N, WORK, lwork, RWORK, INFO)
-     
-     print*, "Eigenvalues after reduction to upper Hessenberg times triangular form"
-     do jj = 1,N
-        print*, REIGS2(jj)
-     end do     
-  end if
+!!$  if (DEBUG) then
+!!$     ! check factorization
+!!$     ! Form upper triangulars and multiply them together
+!!$     MV = cmplx(0d0,0d0,kind=8)
+!!$     MW = cmplx(0d0,0d0,kind=8)
+!!$     do ll = 1,N
+!!$        MV(ll,ll) = cmplx(1d0,0d0,kind=8)
+!!$     end do
+!!$     do ll = 1,k
+!!$        call z_upr1fact_extracttri(.false.,N,&
+!!$             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
+!!$             &B1(((ll-1)*3*N+1):(ll*3*N)),MW)
+!!$        MV = matmul(MV,MW)
+!!$     end do
+!!$     ! Apply Q
+!!$     do jj = N-1,1,-1
+!!$        ! Apply Q(jj)
+!!$        Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
+!!$        Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
+!!$        Gf(1,2) = -Gf(2,1)
+!!$        Gf(2,2) = conjg(Gf(1,1))
+!!$        
+!!$        MV((jj):(jj+1),:) = matmul(Gf,MV((jj):(jj+1),:))
+!!$     end do
+!!$     
+!!$     do jj = 1,N
+!!$        print*, jj, MV(jj,:)
+!!$     end do
+!!$
+!!$     lwork = 5*N
+!!$     call zgeev('N','N', N, MV, N, REIGS2, MW, N, MW, N, WORK, lwork, RWORK, INFO)
+!!$     
+!!$     print*, "Eigenvalues after reduction to upper Hessenberg times triangular form"
+!!$     do jj = 1,N
+!!$        print*, REIGS2(jj)
+!!$     end do     
+!!$  end if
   
   
 end subroutine z_uprkdense_factor

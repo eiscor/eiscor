@@ -69,7 +69,7 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
   real(8), intent(inout) :: Q(3*K*(N-1)), D1(2*K*(N+1)), C1(3*K*N), B1(3*K*N)
   real(8), intent(inout) :: D2(2*K*(N+1)), C2(3*K*N), B2(3*K*N)
   integer, intent(in) :: M 
-  complex(8), intent(inout) :: V(M,2), W(M,2)
+  complex(8), intent(inout) :: V(M,N), W(M,N)
   
   ! compute variables
   logical ::  P(N-2)
@@ -125,7 +125,7 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
       B(1,2) = -B(2,1)
       B(2,2) = conjg(B(1,1))
       
-      V = matmul(V,B)
+      V(:,ROW:(ROW+1)) = matmul(V(:,ROW:(ROW+1)),B)
     
     end if
 
@@ -230,7 +230,7 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
       B(1,2) = -B(2,1)
       B(2,2) = conjg(B(1,1))
       
-      W = matmul(W,B) 
+      V(:,ROW:(ROW+1)) = matmul(V(:,ROW:(ROW+1)),B) 
       
       ! update W
       B(1,1) = cmplx(G2(1),G2(2),kind=8)
@@ -238,7 +238,7 @@ subroutine z_uprkfact_2x2deflation(QZ,VEC,N,K,ROW,Q,D1,C1,B1,D2,C2,B2,M,V,W)
       B(1,2) = -B(2,1)
       B(2,2) = conjg(B(1,1))
       
-      V = matmul(V,B)
+      W(:,ROW:(ROW+1)) = matmul(W(:,ROW:(ROW+1)),B)
     
     end if
   
