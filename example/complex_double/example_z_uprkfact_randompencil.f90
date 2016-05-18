@@ -16,7 +16,7 @@ program example_z_uprkfact_randommatr
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 500
+  integer, parameter :: dd = 50
   integer, parameter :: k = 5
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
@@ -130,106 +130,108 @@ program example_z_uprkfact_randommatr
   ! Start Times
   call system_clock(count=c_start)
 
-  call z_uprkdense_factor(.TRUE.,.FALSE.,.FALSE.,N,k,MA,MB,P,Q,&
-       &D1,C1,B1,D2,C2,B2,V,W,INFO)
-  if (INFO.NE.0) then
-     print*, "Info code from z_uprkdense_factor: ", INFO
-  end if
+  call z_uprkdense_qz(.TRUE.,.FALSE.,N,k,MA,MB,EIGSA,EIGSB,V,W,INFO)
 
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! check factorization
-  do ll = 1,k
-     call z_upr1fact_extracttri(.FALSE.,N,&
-          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
-          &B1(((ll-1)*3*N+1):(ll*3*N)),VL)
-     if (ll.EQ.1) then
-        V = VL
-     else
-        V = matmul(V,VL)
-     end if     
-  end do
-  ! Apply Q
-  do jj = N-1,1,-1
-     ! Apply Q(jj)
-     Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
-     Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
-     Gf(1,2) = -Gf(2,1)
-     Gf(2,2) = conjg(Gf(1,1))
-     
-     V((jj):(jj+1),:) = matmul(Gf,V((jj):(jj+1),:))
-  end do
-
-  do ll = 1,k
-     call z_upr1fact_extracttri(.FALSE.,N,&
-          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
-          &B2(((ll-1)*3*N+1):(ll*3*N)),VR)
-     if (ll.EQ.1) then
-        W = VR
-     else
-        W = matmul(W,VR)
-     end if     
-  end do
-
-  if (DEBUG) then
-     ! Check V and W
-     print*, "V"
-     do ii=1,N
-        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") V(ii,:)
-     end do
-     
-     print*, "W"
-     do ii=1,N
-        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") W(ii,:)
-     end do
-
-     call zggev('N','N', N, V, N, W, N, REIGSA, REIGSB, &
-          &VL, N, VR, N, WORK, lwork, RWORK, INFO)     
-     
-     do jj= 1,N
-        REIGS(jj) = REIGSA(jj)/REIGSB(jj)
-        print*, jj, REIGS(jj),REIGSA(jj),REIGSB(jj)
-     end do
-  end if
-
-  
-
-
-  call z_uprkfact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_upperhess,N,k,&
-       &P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  if (INFO.NE.0) then
-     print*, "Info code from z_uprkfact_twistedqz: ", INFO
-  end if
-
-  it = 0
-  do ll = 1,N
-     it = it + ITS(ll)
-     !print*, ITS(ll)
-  end do
-  print*, "Iterations per eigenvalue: ", (1d0*it)/N
-
-  do ll = 1,k
-     call z_upr1fact_extracttri(.TRUE.,N,&
-          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
-          &B1(((ll-1)*3*N+1):(ll*3*N)),V)
-     EIGSA(((ll-1)*N+1):ll*N) = V(1:N,1)
-  end do
-  do ll = 2,k
-     do ii=1,N
-        EIGSA(ii) = EIGSA(ii)*EIGSA((ll-1)*N+ii)     
-     end do
-  end do
-
-  do ll = 1,k
-     call z_upr1fact_extracttri(.TRUE.,N,&
-          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
-          &B2(((ll-1)*3*N+1):(ll*3*N)),V)
-     EIGSB(((ll-1)*N+1):ll*N) = V(1:N,1)
-  end do
-  do ll = 2,k
-     do ii=1,N
-        EIGSB(ii) = EIGSB(ii)*EIGSB((ll-1)*N+ii)     
-     end do
-  end do
+!!$  call z_uprkdense_factor(.TRUE.,.FALSE.,.FALSE.,N,k,MA,MB,P,Q,&
+!!$       &D1,C1,B1,D2,C2,B2,V,W,INFO)
+!!$  if (INFO.NE.0) then
+!!$     print*, "Info code from z_uprkdense_factor: ", INFO
+!!$  end if
+!!$
+!!$  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!$  ! check factorization
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.FALSE.,N,&
+!!$          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B1(((ll-1)*3*N+1):(ll*3*N)),VL)
+!!$     if (ll.EQ.1) then
+!!$        V = VL
+!!$     else
+!!$        V = matmul(V,VL)
+!!$     end if     
+!!$  end do
+!!$  ! Apply Q
+!!$  do jj = N-1,1,-1
+!!$     ! Apply Q(jj)
+!!$     Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
+!!$     Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
+!!$     Gf(1,2) = -Gf(2,1)
+!!$     Gf(2,2) = conjg(Gf(1,1))
+!!$     
+!!$     V((jj):(jj+1),:) = matmul(Gf,V((jj):(jj+1),:))
+!!$  end do
+!!$
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.FALSE.,N,&
+!!$          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B2(((ll-1)*3*N+1):(ll*3*N)),VR)
+!!$     if (ll.EQ.1) then
+!!$        W = VR
+!!$     else
+!!$        W = matmul(W,VR)
+!!$     end if     
+!!$  end do
+!!$
+!!$  if (DEBUG) then
+!!$     ! Check V and W
+!!$     print*, "V"
+!!$     do ii=1,N
+!!$        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") V(ii,:)
+!!$     end do
+!!$     
+!!$     print*, "W"
+!!$     do ii=1,N
+!!$        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") W(ii,:)
+!!$     end do
+!!$
+!!$     call zggev('N','N', N, V, N, W, N, REIGSA, REIGSB, &
+!!$          &VL, N, VR, N, WORK, lwork, RWORK, INFO)     
+!!$     
+!!$     do jj= 1,N
+!!$        REIGS(jj) = REIGSA(jj)/REIGSB(jj)
+!!$        print*, jj, REIGS(jj),REIGSA(jj),REIGSB(jj)
+!!$     end do
+!!$  end if
+!!$
+!!$  
+!!$
+!!$
+!!$  call z_uprkfact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_upperhess,N,k,&
+!!$       &P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+!!$  if (INFO.NE.0) then
+!!$     print*, "Info code from z_uprkfact_twistedqz: ", INFO
+!!$  end if
+!!$
+!!$  it = 0
+!!$  do ll = 1,N
+!!$     it = it + ITS(ll)
+!!$     !print*, ITS(ll)
+!!$  end do
+!!$  print*, "Iterations per eigenvalue: ", (1d0*it)/N
+!!$
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.TRUE.,N,&
+!!$          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B1(((ll-1)*3*N+1):(ll*3*N)),V)
+!!$     EIGSA(((ll-1)*N+1):ll*N) = V(1:N,1)
+!!$  end do
+!!$  do ll = 2,k
+!!$     do ii=1,N
+!!$        EIGSA(ii) = EIGSA(ii)*EIGSA((ll-1)*N+ii)     
+!!$     end do
+!!$  end do
+!!$
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.TRUE.,N,&
+!!$          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B2(((ll-1)*3*N+1):(ll*3*N)),V)
+!!$     EIGSB(((ll-1)*N+1):ll*N) = V(1:N,1)
+!!$  end do
+!!$  do ll = 2,k
+!!$     do ii=1,N
+!!$        EIGSB(ii) = EIGSB(ii)*EIGSB((ll-1)*N+ii)     
+!!$     end do
+!!$  end do
 
   do ii=1,N
      EIGS(ii) = EIGSA(ii)/EIGSB(ii)     

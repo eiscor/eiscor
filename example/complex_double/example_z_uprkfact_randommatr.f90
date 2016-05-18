@@ -15,7 +15,7 @@ program example_z_uprkfact_randommatr
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 500
+  integer, parameter :: dd = 50
   integer, parameter :: k = 5
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
@@ -95,36 +95,38 @@ program example_z_uprkfact_randommatr
   ! Start Times
   call system_clock(count=c_start)
 
-  call z_uprkdense_factor(.FALSE.,.FALSE.,.FALSE.,N,k,MA,MB,P,Q,D,C,B,D2,C2,B2,V,W,INFO)
-  if (INFO.NE.0) then
-     print*, "Info code from z_uprkdense_factor: ", INFO
-  end if
+  call z_uprkdense_qz(.FALSE.,.FALSE.,N,k,MA,MB,EIGS,EIGS,V,W,INFO)
 
-  call z_uprkfact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_upperhess,N,k,&
-       &P,Q,D,C,B,D2,C2,B2,V,W,ITS,INFO)
-  if (INFO.NE.0) then
-     print*, "Info code from z_uprkfact_twistedqz: ", INFO
-  end if
-
-  it = 0
-  do ll = 1,N
-     it = it + ITS(ll)
-     !print*, ITS(ll)
-  end do
-  print*, "Iterations per eigenvalue: ", (1d0*it)/N
-
-  do ll = 1,k
-     call z_upr1fact_extracttri(.TRUE.,N,&
-          &D(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C(((ll-1)*3*N+1):(ll*3*N)),&
-          &B(((ll-1)*3*N+1):(ll*3*N)),V)
-     EIGS(((ll-1)*N+1):ll*N) = V(1:N,1)
-  end do
-  do ll = 2,k
-     do ii=1,N
-        !print*, ii, ll, EIGS((ll-1)*N+ii)         
-        EIGS(ii) = EIGS(ii)*EIGS((ll-1)*N+ii)     
-     end do
-  end do
+!!$  call z_uprkdense_factor(.FALSE.,.FALSE.,.FALSE.,N,k,MA,MB,P,Q,D,C,B,D2,C2,B2,V,W,INFO)
+!!$  if (INFO.NE.0) then
+!!$     print*, "Info code from z_uprkdense_factor: ", INFO
+!!$  end if
+!!$
+!!$  call z_uprkfact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_upperhess,N,k,&
+!!$       &P,Q,D,C,B,D2,C2,B2,V,W,ITS,INFO)
+!!$  if (INFO.NE.0) then
+!!$     print*, "Info code from z_uprkfact_twistedqz: ", INFO
+!!$  end if
+!!$
+!!$  it = 0
+!!$  do ll = 1,N
+!!$     it = it + ITS(ll)
+!!$     !print*, ITS(ll)
+!!$  end do
+!!$  print*, "Iterations per eigenvalue: ", (1d0*it)/N
+!!$
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.TRUE.,N,&
+!!$          &D(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B(((ll-1)*3*N+1):(ll*3*N)),V)
+!!$     EIGS(((ll-1)*N+1):ll*N) = V(1:N,1)
+!!$  end do
+!!$  do ll = 2,k
+!!$     do ii=1,N
+!!$        !print*, ii, ll, EIGS((ll-1)*N+ii)         
+!!$        EIGS(ii) = EIGS(ii)*EIGS((ll-1)*N+ii)     
+!!$     end do
+!!$  end do
 
   call system_clock(count=c_stop)
 
