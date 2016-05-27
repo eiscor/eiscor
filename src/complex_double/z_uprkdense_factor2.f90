@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_uprkdense_factor.f90
+! z_uprkdense_factor2.f90
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -72,7 +72,7 @@
 !                    INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
+subroutine z_uprkdense_factor2(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      &C1,B1,D2,C2,B2,V,W,INFO)
 
   implicit none
@@ -89,51 +89,31 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 
   ! compute variables
   complex(8) :: A(N,K), B(N,K), H(2,2)
-!  complex(8) :: MV(N,N), MW(N,N)
-  real(8) :: bulge(3)
-  complex(8) :: hc!, Gf(2,2)
-  !complex(8) :: REIGS2(N), WORK(5*N)
-  !real(8) :: RWORK(2*N)
-  integer :: ii, jj, ll, row, col!, lwork
+  real(8) :: bulge(3), D0(2*K*(N+1)),dr,di,dr1,di1,dr2,di2,nrm
+  complex(8) :: hc(K)
+  integer :: ii, jj, ll, row, col, ind0
+
+  complex(8) :: MV(N,N), MW(N,N)
+  complex(8) :: REIGS2(N), WORK(5*N)
+  real(8) :: RWORK(2*N)
+  integer :: lwork
 
   ! initialize info
   INFO = 0
   
-!!$  ! check N
-!!$  if (N < 2) then
-!!$    INFO = -1
-!!$    ! print error in debug mode
-!!$    if (DEBUG) then
-!!$      call u_infocode_check(__FILE__,__LINE__,"N must be at least 2",INFO,INFO)
-!!$    end if
-!!$    return
-!!$  end if
-!!$  
-!!$  ! check H
-!!$  call z_2Darray_check(N,N,H,flg)
-!!$  if (.NOT.flg) then
-!!$    INFO = -2
-!!$    ! print error in debug mode
-!!$    if (DEBUG) then
-!!$      call u_infocode_check(__FILE__,__LINE__,"H is invalid",INFO,INFO)
-!!$    end if
-!!$    return
-!!$  end if  
-  
-
   A = Ain
   B = Bin
 
   ! split A into k upper unitary plus rank 1 upper Hessenberg matrices with one
   ! non-zero, non-unity column in the last column (stored in A)
-  do ii = 2,k
-     do jj = 1,(N-ii+1)
-        A(jj,ii) = A(jj+ii-1,ii)
-     end do
-     do jj = (N-ii+2),N
-        A(jj,ii) = cmplx(0d0,0d0,kind=8)
-     end do
-  end do
+!!$  do ii = 2,k
+!!$     do jj = 1,(N-ii+1)
+!!$        A(jj,ii) = A(jj+ii-1,ii)
+!!$     end do
+!!$     do jj = (N-ii+2),N
+!!$        A(jj,ii) = cmplx(0d0,0d0,kind=8)
+!!$     end do
+!!$  end do
 
   
   ! fill P
@@ -143,6 +123,12 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
   Q = 0d0
   do ii = 1,k*(N-1)
     Q(3*ii) = 1d0
+  end do
+
+  ! initialize D0
+  D0 = 0d0
+  do ii = 1,k*(N+1)
+    D0(2*ii-1) = 1d0
   end do
 
   ! initalize V
@@ -168,20 +154,28 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      end do
   end if
 
+!!$     do ii=1,N
+!!$        print*, A(ii,:)
+!!$     end do
+
   ! initalize unitary-plus-rank-1 upper triangulars A
-  do ll = 1,k
-     hc = A(1,ll)
-     A(1:N-1,ll) = A(2:N,ll) 
-     A(N,ll) = hc*(-1)**(N+1)
-     call z_upr1_factoridpspike(.TRUE.,N,N,A(1:N,ll),&
+  do ll = 1,K
+     hc(1:K) = A(1:K,ll)
+     A(1:N-K,ll) = A(K+1:N,ll) 
+     A(N-K+1:N,ll) = hc(1:K)*(-1)**(N+1)
+  end do
+
+!!$  print*, ""
+!!$     do ii=1,N
+!!$        print*, A(ii,:)
+!!$     end do
+
+  do ll = 1,K
+     call z_upr1_factoridpspike(.TRUE.,N,N+1-ll,A(1:N,k+1-ll),&
           &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),&
           &C1(((ll-1)*3*N+1):(ll*3*N)),&
           &B1(((ll-1)*3*N+1):(ll*3*N)),INFO)
   end do
-
-!!$     do ii=1,N
-!!$        print*, A(ii,:)
-!!$     end do
 
   ! initalize unitary-plus-rank-1 upper triangulars B
   if (QZ) then
@@ -191,34 +185,37 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
              &C2(((ll-1)*3*N+1):(ll*3*N)),&
              &B2(((ll-1)*3*N+1):(ll*3*N)),INFO)
      end do
-  end if
-
-!!$  if (DEBUG) then
+  end if   
+     
+!!$!  if (DEBUG) then
 !!$     ! Check V
 !!$     do ll = 1,k
 !!$        call z_upr1fact_extracttri(.FALSE.,N,&
 !!$             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),&
 !!$             &C1(((ll-1)*3*N+1):(ll*3*N)),&
 !!$             &B1(((ll-1)*3*N+1):(ll*3*N)),MV)
-!!$        do jj = N-1,1,-1
-!!$           ! Apply Q(jj)
-!!$           Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
-!!$           Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
-!!$           Gf(1,2) = -Gf(2,1)
-!!$           Gf(2,2) = conjg(Gf(1,1))
-!!$           
-!!$           MV((jj):(jj+1),:) = matmul(Gf,MV((jj):(jj+1),:))
-!!$        end do
 !!$        if (ll.EQ.1) then
 !!$           V = MV
 !!$        else
 !!$           V = matmul(V,MV)
 !!$        end if
 !!$     end do
+!!$     do ll = k,1,-1
+!!$        do jj = N-1,1,-1
+!!$           ! Apply Q(jj)
+!!$           H(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
+!!$           H(2,1) = cmplx(Q(3*jj),0d0,kind=8)
+!!$           H(1,2) = -H(2,1)
+!!$           H(2,2) = conjg(H(1,1))
+!!$           
+!!$           V((jj):(jj+1),:) = matmul(H,V((jj):(jj+1),:))
+!!$        end do
+!!$     end do
+!!$
 !!$     print*, "V before reduction"
 !!$     do ii=1,N
 !!$        write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") V(ii,:)
-!!$        print*, ""
+!!$        print*, V(ii,:)
 !!$     end do
 !!$     
 !!$     ! Check W
@@ -238,7 +235,7 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 !!$        print*, ""
 !!$        !write (*,"(ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3,ES13.4E3)") W(ii,:)
 !!$     end do
-!!$
+
 !!$     ! check factorization
 !!$     ! Form upper triangulars and multiply them together
 !!$     MV = cmplx(0d0,0d0,kind=8)
@@ -253,12 +250,12 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 !!$        ! Apply Q
 !!$        do jj = N-1,1,-1
 !!$           ! Apply Q(jj)
-!!$           Gf(1,1) = cmplx(Q((ll-1)*(N-1)+3*jj-2),Q((ll-1)*(N-1)+3*jj-1),kind=8)
-!!$           Gf(2,1) = cmplx(Q((ll-1)*(N-1)+3*jj),0d0,kind=8)
-!!$           Gf(1,2) = -Gf(2,1)
-!!$           Gf(2,2) = conjg(Gf(1,1))
+!!$           H(1,1) = cmplx(Q((ll-1)*(N-1)+3*jj-2),Q((ll-1)*(N-1)+3*jj-1),kind=8)
+!!$           H(2,1) = cmplx(Q((ll-1)*(N-1)+3*jj),0d0,kind=8)
+!!$           H(1,2) = -H(2,1)
+!!$           H(2,2) = conjg(H(1,1))
 !!$           
-!!$           MW((jj):(jj+1),:) = matmul(Gf,MW((jj):(jj+1),:))
+!!$           MW((jj):(jj+1),:) = matmul(H,MW((jj):(jj+1),:))
 !!$        end do
 !!$        
 !!$        ! print*, "MW", ll
@@ -273,36 +270,28 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 !!$     do jj = 1,N
 !!$        print*, jj, MV(jj,:)
 !!$     end do
-!!$  end if
-     
-     
+!  end if
+
+
   ! reduce to Hessenberg * Triangular * ... * Triangular form
   ! remove rotations from Q_ii starting with k
   do ii = k,2,-1
      ! remove rotation jj
      do jj = 1,(N-1)
         col = ii-1 ! rotation right of col th upper triangular
-        !print*, col
-        !print*, "bulge", (3*col*(N-1)+3*(jj-1)+1),(3*col*(N-1)+3*jj)
         bulge = Q((3*col*(N-1)+3*(jj-1)+1):(3*col*(N-1)+3*jj))
         do row = jj,N-2 ! first row of the rotation
-           ! pass through upper triangular
-           call z_uprkfact_rot3through1tri(.FALSE.,N,k,col,D1,C1,B1,bulge,row)
-           !call z_upr1fact_rot3throughtri(.FALSE.,&
-           !     &D(((col-1)*2*(N+1)+(row-1)*2+1):((col-1)*2*(N+1)+row*2)),&
-           !     &C(((col-1)*3*N+1):(col*3*N)),&
-           !     &B(((col-1)*3*N+1):(col*3*N)),bulge)
+           ! pass through diagonal D0
+           ind0 = (col-1)*2*(N+1)+(row-1)*2
+           call z_rot3_swapdiag(.FALSE.,D0((ind0+1):(ind0+4)),bulge)
            ! turnover through Q
-           !print*, col
-           !print*, "turnover", 3*(col-1)*(N-1)+3*(row-1)+1, 3*(col-1)*(N-1)+3*row,&
-           !     & 3*(col-1)*(N-1)+3*(row-1)+4, 3*(col-1)*(N-1)+3*row+3
            call z_rot3_turnover(&
                 &Q((3*(col-1)*(N-1)+3*(row-1)+1):(3*(col-1)*(N-1)+3*row)),&
                 &Q((3*(col-1)*(N-1)+3*(row-1)+4):(3*(col-1)*(N-1)+3*row+3)),bulge)
            ! update col
            col = col - 1
            ! update col if left most sequence was passed
-           if (col==0) then
+           if (col.EQ.0) then
               if (QZ) then
                  ! update (left) eigenvectors 
                  ! update W
@@ -342,65 +331,47 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 
               ! pass through triangulars without rotations in front
               ! through A
+              call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D1,C1,B1,bulge,row+1)
               do col = k,ii+1,-1
-                 !print*, "just triangle col", col, "row", row, "ii", ii, "jj", jj
-                 call z_uprkfact_rot3through1tri(.FALSE.,N,k,col,D1,C1,B1,bulge,row+1)
+                 ind0 = (col-1)*2*(N+1)+(row+1-1)*2
+                 call z_rot3_swapdiag(.FALSE.,D0((ind0+1):(ind0+4)),bulge)
               end do
+              col = ii
               !print*, "after update col", col, "ii", ii, "jj", jj
+              
            end if
         end do
-        !print*, "fusion row", row, "N", N, "col", col
-        !print*, (col-1)*3*(N-1)+1,(col*3*(N-1)),&
-        !     &((col-1)*2*(N+1)+1),((col-1)*2*(N+1)+2*N)
-
+        ! swap a last time
+        ind0 = (col-1)*2*(N+1)+(row-1)*2
+        call z_rot3_swapdiag(.FALSE.,D0((ind0+1):(ind0+4)),bulge)
         ! fuse rotation into current rotation
-        call z_uprkfact_rot3through1tri(.FALSE.,N,k,col,D1,C1,B1,bulge,row)
-        !call z_upr1fact_mergebulge(.FALSE.,N,.FALSE.,&
-        !     &Q(((col-1)*3*(N-1)+1):(col*3*(N-1))),&
-        !     &D(((col-1)*2*(N+1)+1):(col*2*(N+1))),bulge)
         call z_upr1fact_mergebulge(.FALSE.,N,P,&
              &Q(((col-1)*3*(N-1)+1):(col*3*(N-1))),&
-             &D1(((col-1)*2*(N+1)+1):((col-1)*2*(N+1)+2*N)),bulge)
+             &D0(((col-1)*2*(N+1)+1):((col-1)*2*(N+1)+2*N)),bulge)
      end do
   end do
 
-!!$  if (DEBUG) then
-!!$     ! check factorization
-!!$     ! Form upper triangulars and multiply them together
-!!$     MV = cmplx(0d0,0d0,kind=8)
-!!$     MW = cmplx(0d0,0d0,kind=8)
-!!$     do ll = 1,N
-!!$        MV(ll,ll) = cmplx(1d0,0d0,kind=8)
-!!$     end do
-!!$     do ll = 1,k
-!!$        call z_upr1fact_extracttri(.false.,N,&
-!!$             &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
-!!$             &B1(((ll-1)*3*N+1):(ll*3*N)),MW)
-!!$        MV = matmul(MV,MW)
-!!$     end do
-!!$     ! Apply Q
-!!$     do jj = N-1,1,-1
-!!$        ! Apply Q(jj)
-!!$        Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
-!!$        Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
-!!$        Gf(1,2) = -Gf(2,1)
-!!$        Gf(2,2) = conjg(Gf(1,1))
-!!$        
-!!$        MV((jj):(jj+1),:) = matmul(Gf,MV((jj):(jj+1),:))
-!!$     end do
-!!$     
-!!$     do jj = 1,N
-!!$        print*, jj, MV(jj,:)
-!!$     end do
-!!$
-!!$     lwork = 5*N
-!!$     call zgeev('N','N', N, MV, N, REIGS2, MW, N, MW, N, WORK, lwork, RWORK, INFO)
-!!$     
-!!$     print*, "Eigenvalues after reduction to upper Hessenberg times triangular form"
-!!$     do jj = 1,N
-!!$        print*, REIGS2(jj)
-!!$     end do     
-!!$  end if
-  
-  
-end subroutine z_uprkdense_factor
+  ! fuse D0 into D1
+  do ii=1,N+1
+     dr = D0(2*ii-1)
+     di = D0(2*ii)
+     do col = 2,K
+        dr1 = dr
+        di1 = di
+        dr2 = D0((col-1)*2*(N+1)+2*ii-1)
+        di2 = D0((col-1)*2*(N+1)+2*ii)
+     
+        dr = dr1*dr2 - di1*di2
+        di = dr1*di2 + di1*dr2
+     end do
+     dr1 = dr
+     di1 = di
+     dr2 = D1(2*ii-1)
+     di2 = D1(2*ii)
+     
+     dr = dr1*dr2 - di1*di2
+     di = dr1*di2 + di1*dr2
+     call d_rot2_vec2gen(dr,di,D1(2*ii-1),D1(2*ii),nrm) 
+  end do
+
+end subroutine z_uprkdense_factor2

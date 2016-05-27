@@ -1,6 +1,6 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! example_z_uprkfact_randommatr
+! example_z_uprkfact_randommatr2
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -9,13 +9,13 @@
 ! using the QR part of z_uprkfact_twistedqz
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program example_z_uprkfact_randommatr
+program example_z_uprkfact_randommatr2
 
 
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 50
+  integer, parameter :: dd = 5
   integer, parameter :: k = 30
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
@@ -50,7 +50,7 @@ program example_z_uprkfact_randommatr
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
   print*,""
-  print*,"example_z_uprkfact_randommatr:"
+  print*,"example_z_uprkfact_randommatr2:"
   print*, "K", k, "degree", dd
   print*,""
   
@@ -64,15 +64,19 @@ program example_z_uprkfact_randommatr
   call z_2Darray_random_normal(N,k,MA)
 
 
-  ! make P0 lower triangular
-  do ii=1,k-1
-     do jj=ii+1,k
+  ! make P0 upper triangular
+  do ii=2,k
+     do jj=1,ii-1
         MA(ii,jj)=cmplx(0d0,0d0,kind=8)
      end do
   end do
   MB = MA
   MC = MA
   
+!!$  do ii=1,N
+!!$     print*, ii, MA(ii,:)
+!!$  end do
+!!$  print*, ""
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! compute roots with LAPACK
   call system_clock(count=c_start2)
@@ -101,7 +105,7 @@ program example_z_uprkfact_randommatr
   ! Start Times
   call system_clock(count=c_start)
 
-  call z_uprkdense_qz(.FALSE.,.FALSE.,N,k,MA,MB,EIGS,EIGS,V,W,INFO)
+  call z_uprkdense_qz2(.FALSE.,.FALSE.,N,k,MA,MB,EIGS,EIGS,V,W,INFO)
 
   call system_clock(count=c_stop)
 
@@ -128,6 +132,11 @@ program example_z_uprkfact_randommatr
   if (N.LT.100) then
      print*, "Runtime unstructured QR solver (LAPACK) ",(dble(c_stop2-c_start2)/dble(c_rate))
   end if
+
+  ! check maxerr
+  if (abs(maxerr) >= 1d-12) then
+    call u_test_failed(__LINE__)
+  end if  
   
 
   MA = MC
@@ -135,7 +144,7 @@ program example_z_uprkfact_randommatr
   ! Schur decomposition
   call system_clock(count=c_start3)
 
-  call z_uprkdense_factor(.FALSE.,.TRUE.,.TRUE.,N,k,MA,MB,P,Q,D,C,B,D2,C2,B2,V,W,INFO)
+  call z_uprkdense_factor2(.FALSE.,.TRUE.,.TRUE.,N,k,MA,MB,P,Q,D,C,B,D2,C2,B2,V,W,INFO)
   if (INFO.NE.0) then
      print*, "Info code from z_uprkdense_factor: ", INFO
   end if
@@ -253,4 +262,4 @@ program example_z_uprkfact_randommatr
   deallocate(D2,C2,B2,V,W,EIGS,REIGS,REIGS2)
   deallocate(WORK,RWORK,W2,CD,Vt,W3)
 
-end program example_z_uprkfact_randommatr
+end program example_z_uprkfact_randommatr2

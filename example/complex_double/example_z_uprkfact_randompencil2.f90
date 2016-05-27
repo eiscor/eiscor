@@ -54,7 +54,7 @@ program example_z_uprkfact_randompencil
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! print banner
   print*,""
-  print*,"example_z_uprkfact_randompencil:"
+  print*,"example_z_uprkfact_randompencil2:"
   print*, "K", k, "degree", dd
   print*,""
   
@@ -73,8 +73,8 @@ program example_z_uprkfact_randompencil
 
 
   ! make P0 lower triangular
-  do ii=1,k-1
-     do jj=ii+1,k
+  do ii=2,k
+     do jj=1,ii-1
         MA(ii,jj)=cmplx(0d0,0d0,kind=8)
      end do
   end do
@@ -126,7 +126,7 @@ program example_z_uprkfact_randompencil
   ! Start Times
   call system_clock(count=c_start)
 
-  call z_uprkdense_qz(.TRUE.,.FALSE.,N,k,MA,MB,EIGSA,EIGSB,V,W,INFO)
+  call z_uprkdense_qz2(.TRUE.,.FALSE.,N,k,MA,MB,EIGSA,EIGSB,V,W,INFO)
 
   do ii=1,N
      EIGS(ii) = EIGSA(ii)/EIGSB(ii)     
@@ -164,7 +164,7 @@ program example_z_uprkfact_randompencil
   ! Schur decomposition
   call system_clock(count=c_start3)
 
-  call z_uprkdense_factor(.TRUE.,.TRUE.,.TRUE.,N,k,MA,MB,P,Q,&
+  call z_uprkdense_factor2(.TRUE.,.TRUE.,.TRUE.,N,k,MA,MB,P,Q,&
        &D1,C1,B1,D2,C2,B2,V,W,INFO)
   if (INFO.NE.0) then
      print*, "Info code from z_uprkdense_factor: ", INFO
