@@ -16,10 +16,10 @@ program example_z_uprkfact_randompencil
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 30
-  integer, parameter :: k = 30
-  logical, parameter :: output=.FALSE.
-  !logical, parameter :: output=.TRUE.
+  integer, parameter :: dd = 2
+  integer, parameter :: k = 2
+  !logical, parameter :: output=.FALSE.
+  logical, parameter :: output=.TRUE.
   integer :: N = dd*k
   integer :: ii, jj, ll, INFO, lwork, it
   complex(8), allocatable :: MA(:,:),MB(:,:), EIGS(:), REIGS(:), EIGSA(:), EIGSB(:)
@@ -217,6 +217,16 @@ program example_z_uprkfact_randompencil
 
   TA = matmul(W,matmul(TA,Vt))
 
+!!$  print*, "CDA"
+!!$  do ii =1,N
+!!$     print*, CDA(ii,:)
+!!$  end do
+!!$
+!!$  print*, "TA"
+!!$  do ii =1,N
+!!$     print*, TA(ii,:)
+!!$  end do
+
   h = 0d0
   do jj=1,N
      do ii=1,N
@@ -230,6 +240,15 @@ program example_z_uprkfact_randompencil
 
   TB = matmul(W,matmul(TB,Vt))
 
+!!$  print*, "CDB"
+!!$  do ii =1,N
+!!$     print*, CDB(ii,:)
+!!$  end do
+!!$
+!!$  print*, "TB"
+!!$  do ii =1,N
+!!$     print*, TB(ii,:)
+!!$  end do
 
   h = 0d0
   do jj=1,N

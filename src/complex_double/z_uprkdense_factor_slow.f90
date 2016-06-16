@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_uprkdense_factor.f90
+! z_uprkdense_factor_slow.f90
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -72,7 +72,7 @@
 !                    INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
+subroutine z_uprkdense_factor_slow(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      &C1,B1,D2,C2,B2,V,W,INFO)
 
   implicit none
@@ -277,10 +277,10 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      
      
   ! reduce to Hessenberg * Triangular * ... * Triangular form
-  ! remove rotations in row jj
-  do jj = 1,(N-1)
-     ! remove rotation from Q_ii starting with k
-     do ii = k,2,-1
+  ! remove rotations from Q_ii starting with k
+  do ii = k,2,-1
+     ! remove rotation jj
+     do jj = 1,(N-1)
         col = ii-1 ! rotation right of col th upper triangular
         !print*, col
         !print*, "bulge", (3*col*(N-1)+3*(jj-1)+1),(3*col*(N-1)+3*jj)
@@ -342,12 +342,11 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 
               ! pass through triangulars without rotations in front
               ! through A
-              !do col = k,ii+1,-1
-              !   !print*, "just triangle col", col, "row", row, "ii", ii, "jj", jj
-              !   call z_uprkfact_rot3through1tri(.FALSE.,N,k,col,D1,C1,B1,bulge,row+1)
-              !end do
+              do col = k,ii+1,-1
+                 !print*, "just triangle col", col, "row", row, "ii", ii, "jj", jj
+                 call z_uprkfact_rot3through1tri(.FALSE.,N,k,col,D1,C1,B1,bulge,row+1)
+              end do
               !print*, "after update col", col, "ii", ii, "jj", jj
-              col = k
            end if
         end do
         !print*, "fusion row", row, "N", N, "col", col
@@ -404,4 +403,4 @@ subroutine z_uprkdense_factor(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 !!$  end if
   
   
-end subroutine z_uprkdense_factor
+end subroutine z_uprkdense_factor_slow

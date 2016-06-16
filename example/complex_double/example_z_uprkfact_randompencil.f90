@@ -16,8 +16,8 @@ program example_z_uprkfact_randompencil
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 30
-  integer, parameter :: k = 30
+  integer, parameter :: dd = 20
+  integer, parameter :: k = 20
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
   integer :: N = dd*k
@@ -158,171 +158,212 @@ program example_z_uprkfact_randompencil
      print*, "Runtime unstructured QR solver (LAPACK) ",(dble(c_stop2-c_start2)/dble(c_rate))
   end if
 
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ! Start Times
+  ! slow variant
   MA = MC
   MB = MD
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! Schur decomposition
-  call system_clock(count=c_start3)
+  call system_clock(count=c_start)
 
-  call z_uprkdense_factor(.TRUE.,.TRUE.,.TRUE.,N,k,MA,MB,P,Q,&
-       &D1,C1,B1,D2,C2,B2,V,W,INFO)
-  if (INFO.NE.0) then
-     print*, "Info code from z_uprkdense_factor: ", INFO
+  call z_uprkdense_qz_slow(.TRUE.,.FALSE.,N,k,MA,MB,EIGSA,EIGSB,V,W,INFO)
+
+  do ii=1,N
+     EIGS(ii) = EIGSA(ii)/EIGSB(ii)     
+  end do
+
+  call system_clock(count=c_stop)
+
+  maxerr = 0d0
+  do ii = 1,N
+    jj = 1
+    h = abs(EIGS(ii)-REIGS(jj))
+    do ll = 2,N
+       if (h>abs(EIGS(ii)-REIGS(ll))) then
+          jj = ll
+          h = abs(EIGS(ii)-REIGS(jj))
+       end if
+    end do
+    if (N.LT.100) then
+       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))
+    end if
+    if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
+       maxerr = abs(EIGS(ii)-REIGS(jj))
+    end if
+  end do
+
+  print*, "Maxmimal error vs. LAPACK", maxerr
+  print*, "Runtime   structured QR solver (eiscor_slow) ",(dble(c_stop-c_start)/dble(c_rate))
+  if (N.LT.100) then
+     print*, "Runtime unstructured QR solver (LAPACK) ",(dble(c_stop2-c_start2)/dble(c_rate))
   end if
 
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! check factorization
-  do ll = 1,k
-     call z_upr1fact_extracttri(.FALSE.,N,&
-          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
-          &B1(((ll-1)*3*N+1):(ll*3*N)),TL)
-     if (ll.EQ.1) then
-        TA = TL
-     else
-        TA = matmul(TA,TL)
-     end if     
-  end do
-  do ll = 1,k
-     call z_upr1fact_extracttri(.FALSE.,N,&
-          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
-          &B2(((ll-1)*3*N+1):(ll*3*N)),TL)
-     if (ll.EQ.1) then
-        TB = TL
-     else
-        TB = matmul(TB,TL)
-     end if     
-  end do
 
-  ! Apply Q
-  do jj = N-1,1,-1
-     ! Apply Q(jj)
-     Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
-     Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
-     Gf(1,2) = -Gf(2,1)
-     Gf(2,2) = conjg(Gf(1,1))
-     
-     TA((jj):(jj+1),:) = matmul(Gf,TA((jj):(jj+1),:))
-  end do
-
-  do ii = 1,N
-     do jj = 1,N
-        Vt(ii,jj) = conjg(V(jj,ii))
-     end do
-  end do
-  do ii = 1,N
-     do jj = 1,N
-        Wt(ii,jj) = conjg(W(jj,ii))
-     end do
-  end do
-
-  TA = matmul(W,matmul(TA,Vt))
-
-  h = 0d0
-  do jj=1,N
-     do ii=1,N
-        if (output.AND.abs(TA(ii,jj)-CDA(ii,jj)).GT.1d-13) then
-           print*, ii, jj, TA(ii,jj), CDA(ii,jj), abs(TA(ii,jj)-CDA(ii,jj))
-        end if
-        h = h + abs(TA(ii,jj)-CDA(ii,jj))**2
-     end do
-  end do
-  print*, "Backward Error (factorization, TA): ", sqrt(h)
-
-  TB = matmul(W,matmul(TB,Vt))
-
-
-  h = 0d0
-  do jj=1,N
-     do ii=1,N
-        if (output.AND.abs(TB(ii,jj)-CDB(ii,jj)).GT.1d-13) then
-           print*, ii, jj, TB(ii,jj), CDB(ii,jj), abs(TB(ii,jj)-CDB(ii,jj))
-        end if
-        h = h + abs(TB(ii,jj)-CDB(ii,jj))**2
-     end do
-  end do
-  print*, "Backward Error (factorization, TB): ", sqrt(h)
-
-
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  ! (twisted) Hessenberg QZ
-  call z_uprkfact_twistedqz(.TRUE.,.TRUE.,.FALSE.,l_upr1fact_upperhess,N,k,&
-       &P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  if (INFO.NE.0) then
-     print*, "Info code from z_uprkfact_twistedqz: ", INFO
-  end if
-
-  it = 0
-  do ll = 1,N
-     it = it + ITS(ll)
-     !print*, ITS(ll)
-  end do
-  print*, "Iterations per eigenvalue: ", (1d0*it)/N
-
-  do ll = 1,k
-     call z_upr1fact_extracttri(.FALSE.,N,&
-          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
-          &B1(((ll-1)*3*N+1):(ll*3*N)),TL)
-     if (ll.EQ.1) then
-        TA = TL
-     else
-        TA = matmul(TA,TL)
-     end if     
-  end do
-  do ll = 1,k
-     call z_upr1fact_extracttri(.FALSE.,N,&
-          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
-          &B2(((ll-1)*3*N+1):(ll*3*N)),TL)
-     if (ll.EQ.1) then
-        TB = TL
-     else
-        TB = matmul(TB,TL)
-     end if     
-  end do
- 
-  do ii = 1,N
-     do jj = 1,N
-        Vt(ii,jj) = conjg(V(jj,ii))
-     end do
-  end do
-  do ii = 1,N
-     do jj = 1,N
-        Wt(ii,jj) = conjg(W(jj,ii))
-     end do
-  end do
-  call system_clock(count=c_stop3)
-
-  TA = matmul(W,matmul(TA,Vt))
-  h = 0d0
-  do jj=1,N
-     do ii=1,N
-        if (output.AND.abs(TA(ii,jj)-CDA(ii,jj)).GT.1d-13) then
-           print*, ii, jj, TA(ii,jj), CDA(ii,jj), abs(TA(ii,jj)-CDA(ii,jj))
-        end if
-        h = h + abs(TA(ii,jj)-CDA(ii,jj))**2
-     end do
-  end do
-  print*, "Backward Error (Schur decomposition, TA): ", sqrt(h)
-
-  TB = matmul(W,matmul(TB,Vt))
-  h = 0d0
-  do jj=1,N
-     do ii=1,N
-        if (output.AND.abs(TB(ii,jj)-CDB(ii,jj)).GT.1d-13) then
-           print*, ii, jj, TB(ii,jj), CDB(ii,jj), abs(TB(ii,jj)-CDB(ii,jj))
-        end if
-        h = h + abs(TB(ii,jj)-CDB(ii,jj))**2
-     end do
-  end do
-  print*, "Backward Error (Schur decomposition, TB): ", sqrt(h)
-  print*, "Runtime structured QR solver (eiscor) with eigenvectors ",(dble(c_stop3-c_start3)/dble(c_rate))
-
-  call zggev('N','N', N, TA, N, TB, N, REIGSA, REIGSB, &
-       &VL, N, VR, N, WORK, lwork, RWORK, INFO)  
-
-  do jj= 1,N
-     REIGS(jj) = REIGSA(jj)/REIGSB(jj)
-  end do
-
+  MA = MC
+  MB = MD
+!!$  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!$  ! Schur decomposition
+!!$  call system_clock(count=c_start3)
+!!$
+!!$  call z_uprkdense_factor(.TRUE.,.TRUE.,.TRUE.,N,k,MA,MB,P,Q,&
+!!$       &D1,C1,B1,D2,C2,B2,V,W,INFO)
+!!$  if (INFO.NE.0) then
+!!$     print*, "Info code from z_uprkdense_factor: ", INFO
+!!$  end if
+!!$
+!!$  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!$  ! check factorization
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.FALSE.,N,&
+!!$          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B1(((ll-1)*3*N+1):(ll*3*N)),TL)
+!!$     if (ll.EQ.1) then
+!!$        TA = TL
+!!$     else
+!!$        TA = matmul(TA,TL)
+!!$     end if     
+!!$  end do
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.FALSE.,N,&
+!!$          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B2(((ll-1)*3*N+1):(ll*3*N)),TL)
+!!$     if (ll.EQ.1) then
+!!$        TB = TL
+!!$     else
+!!$        TB = matmul(TB,TL)
+!!$     end if     
+!!$  end do
+!!$
+!!$  ! Apply Q
+!!$  do jj = N-1,1,-1
+!!$     ! Apply Q(jj)
+!!$     Gf(1,1) = cmplx(Q(3*jj-2),Q(3*jj-1),kind=8)
+!!$     Gf(2,1) = cmplx(Q(3*jj),0d0,kind=8)
+!!$     Gf(1,2) = -Gf(2,1)
+!!$     Gf(2,2) = conjg(Gf(1,1))
+!!$     
+!!$     TA((jj):(jj+1),:) = matmul(Gf,TA((jj):(jj+1),:))
+!!$  end do
+!!$
+!!$  do ii = 1,N
+!!$     do jj = 1,N
+!!$        Vt(ii,jj) = conjg(V(jj,ii))
+!!$     end do
+!!$  end do
+!!$  do ii = 1,N
+!!$     do jj = 1,N
+!!$        Wt(ii,jj) = conjg(W(jj,ii))
+!!$     end do
+!!$  end do
+!!$
+!!$  TA = matmul(W,matmul(TA,Vt))
+!!$
+!!$  h = 0d0
+!!$  do jj=1,N
+!!$     do ii=1,N
+!!$        if (output.AND.abs(TA(ii,jj)-CDA(ii,jj)).GT.1d-13) then
+!!$           print*, ii, jj, TA(ii,jj), CDA(ii,jj), abs(TA(ii,jj)-CDA(ii,jj))
+!!$        end if
+!!$        h = h + abs(TA(ii,jj)-CDA(ii,jj))**2
+!!$     end do
+!!$  end do
+!!$  print*, "Backward Error (factorization, TA): ", sqrt(h)
+!!$
+!!$  TB = matmul(W,matmul(TB,Vt))
+!!$
+!!$
+!!$  h = 0d0
+!!$  do jj=1,N
+!!$     do ii=1,N
+!!$        if (output.AND.abs(TB(ii,jj)-CDB(ii,jj)).GT.1d-13) then
+!!$           print*, ii, jj, TB(ii,jj), CDB(ii,jj), abs(TB(ii,jj)-CDB(ii,jj))
+!!$        end if
+!!$        h = h + abs(TB(ii,jj)-CDB(ii,jj))**2
+!!$     end do
+!!$  end do
+!!$  print*, "Backward Error (factorization, TB): ", sqrt(h)
+!!$
+!!$
+!!$  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!$  ! (twisted) Hessenberg QZ
+!!$  call z_uprkfact_twistedqz(.TRUE.,.TRUE.,.FALSE.,l_upr1fact_upperhess,N,k,&
+!!$       &P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+!!$  if (INFO.NE.0) then
+!!$     print*, "Info code from z_uprkfact_twistedqz: ", INFO
+!!$  end if
+!!$
+!!$  it = 0
+!!$  do ll = 1,N
+!!$     it = it + ITS(ll)
+!!$     !print*, ITS(ll)
+!!$  end do
+!!$  print*, "Iterations per eigenvalue: ", (1d0*it)/N
+!!$
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.FALSE.,N,&
+!!$          &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B1(((ll-1)*3*N+1):(ll*3*N)),TL)
+!!$     if (ll.EQ.1) then
+!!$        TA = TL
+!!$     else
+!!$        TA = matmul(TA,TL)
+!!$     end if     
+!!$  end do
+!!$  do ll = 1,k
+!!$     call z_upr1fact_extracttri(.FALSE.,N,&
+!!$          &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
+!!$          &B2(((ll-1)*3*N+1):(ll*3*N)),TL)
+!!$     if (ll.EQ.1) then
+!!$        TB = TL
+!!$     else
+!!$        TB = matmul(TB,TL)
+!!$     end if     
+!!$  end do
+!!$ 
+!!$  do ii = 1,N
+!!$     do jj = 1,N
+!!$        Vt(ii,jj) = conjg(V(jj,ii))
+!!$     end do
+!!$  end do
+!!$  do ii = 1,N
+!!$     do jj = 1,N
+!!$        Wt(ii,jj) = conjg(W(jj,ii))
+!!$     end do
+!!$  end do
+!!$  call system_clock(count=c_stop3)
+!!$
+!!$  TA = matmul(W,matmul(TA,Vt))
+!!$  h = 0d0
+!!$  do jj=1,N
+!!$     do ii=1,N
+!!$        if (output.AND.abs(TA(ii,jj)-CDA(ii,jj)).GT.1d-13) then
+!!$           print*, ii, jj, TA(ii,jj), CDA(ii,jj), abs(TA(ii,jj)-CDA(ii,jj))
+!!$        end if
+!!$        h = h + abs(TA(ii,jj)-CDA(ii,jj))**2
+!!$     end do
+!!$  end do
+!!$  print*, "Backward Error (Schur decomposition, TA): ", sqrt(h)
+!!$
+!!$  TB = matmul(W,matmul(TB,Vt))
+!!$  h = 0d0
+!!$  do jj=1,N
+!!$     do ii=1,N
+!!$        if (output.AND.abs(TB(ii,jj)-CDB(ii,jj)).GT.1d-13) then
+!!$           print*, ii, jj, TB(ii,jj), CDB(ii,jj), abs(TB(ii,jj)-CDB(ii,jj))
+!!$        end if
+!!$        h = h + abs(TB(ii,jj)-CDB(ii,jj))**2
+!!$     end do
+!!$  end do
+!!$  print*, "Backward Error (Schur decomposition, TB): ", sqrt(h)
+!!$  print*, "Runtime structured QR solver (eiscor) with eigenvectors ",(dble(c_stop3-c_start3)/dble(c_rate))
+!!$
+!!$  call zggev('N','N', N, TA, N, TB, N, REIGSA, REIGSB, &
+!!$       &VL, N, VR, N, WORK, lwork, RWORK, INFO)  
+!!$
+!!$  do jj= 1,N
+!!$     REIGS(jj) = REIGSA(jj)/REIGSB(jj)
+!!$  end do
+!!$
 
   if (output) then
      print*, "The Eigenvalues"
