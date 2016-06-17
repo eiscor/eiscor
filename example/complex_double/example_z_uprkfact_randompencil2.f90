@@ -16,10 +16,10 @@ program example_z_uprkfact_randompencil
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 2
-  integer, parameter :: k = 2
-  !logical, parameter :: output=.FALSE.
-  logical, parameter :: output=.TRUE.
+  integer, parameter :: dd = 20
+  integer, parameter :: k = 20
+  logical, parameter :: output=.FALSE.
+  !logical, parameter :: output=.TRUE.
   integer :: N = dd*k
   integer :: ii, jj, ll, INFO, lwork, it
   complex(8), allocatable :: MA(:,:),MB(:,:), EIGS(:), REIGS(:), EIGSA(:), EIGSB(:)
@@ -154,6 +154,44 @@ program example_z_uprkfact_randompencil
 
   print*, "Maxmimal error vs. LAPACK", maxerr
   print*, "Runtime   structured QR solver (eiscor) ",(dble(c_stop-c_start)/dble(c_rate))
+  if (N.LT.100) then
+     print*, "Runtime unstructured QR solver (LAPACK) ",(dble(c_stop2-c_start2)/dble(c_rate))
+  end if
+
+  MA = MC
+  MB = MD
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ! Slow variant
+  call system_clock(count=c_start)
+
+  call z_uprkdense_qz2_slow(.TRUE.,.FALSE.,N,k,MA,MB,EIGSA,EIGSB,V,W,INFO)
+
+  do ii=1,N
+     EIGS(ii) = EIGSA(ii)/EIGSB(ii)     
+  end do
+
+  call system_clock(count=c_stop)
+
+  maxerr = 0d0
+  do ii = 1,N
+    jj = 1
+    h = abs(EIGS(ii)-REIGS(jj))
+    do ll = 2,N
+       if (h>abs(EIGS(ii)-REIGS(ll))) then
+          jj = ll
+          h = abs(EIGS(ii)-REIGS(jj))
+       end if
+    end do
+    if (N.LT.100) then
+       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))
+    end if
+    if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
+       maxerr = abs(EIGS(ii)-REIGS(jj))
+    end if
+  end do
+
+  print*, "Maxmimal error vs. LAPACK", maxerr
+  print*, "Runtime   structured QR solver (eiscor_slow) ",(dble(c_stop-c_start)/dble(c_rate))
   if (N.LT.100) then
      print*, "Runtime unstructured QR solver (LAPACK) ",(dble(c_stop2-c_start2)/dble(c_rate))
   end if

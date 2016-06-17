@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_uprkdense_factor2.f90
+! z_uprkdense_factor2_slow.f90
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -72,7 +72,7 @@
 !                    INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkdense_factor2(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
+subroutine z_uprkdense_factor2_slow(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      &C1,B1,D2,C2,B2,V,W,INFO)
 
   implicit none
@@ -274,10 +274,10 @@ subroutine z_uprkdense_factor2(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
 
 
   ! reduce to Hessenberg * Triangular * ... * Triangular form
-  ! remove rotation jj
-  do jj = 1,(N-1)
-     ! remove rotations from Q_ii starting with k
-     do ii = k,2,-1
+  ! remove rotations from Q_ii starting with k
+  do ii = k,2,-1
+     ! remove rotation jj
+     do jj = 1,(N-1)
         col = ii-1 ! rotation right of col th upper triangular
         bulge = Q((3*col*(N-1)+3*(jj-1)+1):(3*col*(N-1)+3*jj))
         do row = jj,N-2 ! first row of the rotation
@@ -332,12 +332,11 @@ subroutine z_uprkdense_factor2(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
               ! pass through triangulars without rotations in front
               ! through A
               call z_uprkfact_rot3throughalltri(.FALSE.,N,K,D1,C1,B1,bulge,row+1)
-              !do col = k,ii+1,-1
-              !   ind0 = (col-1)*2*(N+1)+(row+1-1)*2
-              !   call z_rot3_swapdiag(.FALSE.,D0((ind0+1):(ind0+4)),bulge)
-              !end do
-              !col = ii
-              col = k
+              do col = k,ii+1,-1
+                 ind0 = (col-1)*2*(N+1)+(row+1-1)*2
+                 call z_rot3_swapdiag(.FALSE.,D0((ind0+1):(ind0+4)),bulge)
+              end do
+              col = ii
               !print*, "after update col", col, "ii", ii, "jj", jj
               
            end if
@@ -374,5 +373,5 @@ subroutine z_uprkdense_factor2(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
      di = dr1*di2 + di1*dr2
      call d_rot2_vec2gen(dr,di,D1(2*ii-1),D1(2*ii),nrm) 
   end do
-
-end subroutine z_uprkdense_factor2
+  
+end subroutine z_uprkdense_factor2_slow
