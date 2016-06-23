@@ -86,8 +86,6 @@ subroutine z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2)
   ! store in D1
   D1(2*N-1) = phr
   D1(2*N) = phi
-  D1(2*N+1) = phr
-  D1(2*N+2) = -phi
 
   ! initialize bottom of C1
   call d_rot2_vec2gen(beta,-1d0,C1(3*N-2),C1(3*N),nrm)
@@ -143,8 +141,6 @@ subroutine z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2)
   ! store in D2
   D2(2*N-1) = phr
   D2(2*N) = phi
-  D2(2*N+1) = phr
-  D2(2*N+2) = -phi
 
   ! initialize bottom of C2
   call d_rot2_vec2gen(beta,-1d0,C2(3*N-2),C2(3*N),nrm)

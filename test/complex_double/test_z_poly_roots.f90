@@ -16,7 +16,7 @@ program test_z_poly_roots
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**2
+  integer, parameter :: N = 2**3+1
   real(8), parameter :: pi = 3.14159265358979323846264338327950d0
   real(8) :: tol, scl
   integer :: ii, INFO, ARGS(N)
@@ -39,28 +39,28 @@ program test_z_poly_roots
 
 
   
-  ! check 1)
-  ! set valid COEFFS
-  COEFFS = cmplx(0d0,0d0,kind=8)
-  COEFFS(1) = cmplx(1d0,0d0,kind=8)
-  COEFFS(N+1) = cmplx(-1d0,0d0,kind=8)
-
-  ! call roots
-  call z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-    call u_test_failed(__LINE__)
-  end if
-
-  ! check residuals
-  do ii=1,N
-    if (RESIDUALS(ii) >= tol) then
-      call u_test_failed(__LINE__)
-    end if
-  end do
-
-  ! end check 1)
+ ! ! check 1)
+ ! ! set valid COEFFS
+ ! COEFFS = cmplx(0d0,0d0,kind=8)
+ ! COEFFS(1) = cmplx(1d0,0d0,kind=8)
+ ! COEFFS(N+1) = cmplx(-1d0,0d0,kind=8)
+ !
+ ! ! call roots
+ ! call z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
+ ! 
+ ! ! check INFO
+ ! if (INFO.NE.0) then
+ !   call u_test_failed(__LINE__)
+ ! end if
+ !
+ ! ! check residuals
+ ! do ii=1,N
+ !   if (RESIDUALS(ii) >= tol) then
+ !     call u_test_failed(__LINE__)
+ !   end if
+ ! end do
+ !
+ ! ! end check 1)
 
 
 
@@ -68,7 +68,7 @@ program test_z_poly_roots
   ! check 2)
   ! set valid COEFFS
   COEFFS = cmplx(1d0,0d0,kind=8)
-
+ 
   ! call roots
   call z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   
@@ -76,41 +76,41 @@ program test_z_poly_roots
   if (INFO.NE.0) then
     call u_test_failed(__LINE__)
   end if
-
+ 
   ! check residuals
   do ii=1,N
     if (RESIDUALS(ii) >= tol) then
       call u_test_failed(__LINE__)
     end if
   end do
-
+ 
   ! end check 2)
-
-
-  ! check 3)
-  ! set valid COEFFS
-  COEFFS(1) = cmplx(1d0,0d0,kind=8)
-  COEFFS(2) = cmplx(-10d0,0d0,kind=8)
-  COEFFS(3) = cmplx(35d0,0d0,kind=8)
-  COEFFS(4) = cmplx(-50d0,0d0,kind=8)
-  COEFFS(5) = cmplx(24d0,0d0,kind=8)
-
-  ! call roots
-  call z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
-  
-  ! check INFO
-  if (INFO.NE.0) then
-    call u_test_failed(__LINE__)
-  end if
-
-  ! check residuals
-  do ii=1,N
-    if (RESIDUALS(ii) >= 10d0*tol) then
-      call u_test_failed(__LINE__)
-    end if
-  end do
-
-  ! end check 3)
+ 
+ 
+!  ! check 3)
+!  ! set valid COEFFS
+!  COEFFS(1) = cmplx(1d0,0d0,kind=8)
+!  COEFFS(2) = cmplx(-10d0,0d0,kind=8)
+!  COEFFS(3) = cmplx(35d0,0d0,kind=8)
+!  COEFFS(4) = cmplx(-50d0,0d0,kind=8)
+!  COEFFS(5) = cmplx(24d0,0d0,kind=8)
+!
+!  ! call roots
+!  call z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
+!  
+!  ! check INFO
+!  if (INFO.NE.0) then
+!    call u_test_failed(__LINE__)
+!  end if
+!
+!  ! check residuals
+!  do ii=1,N
+!    if (RESIDUALS(ii) >= 10d0*tol) then
+!      call u_test_failed(__LINE__)
+!    end if
+!  end do
+!
+!  ! end check 3)
 
 
   ! stop timer
