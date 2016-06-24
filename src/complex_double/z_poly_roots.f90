@@ -63,6 +63,7 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
 
   ! fill P
   P = .FALSE.
+!  P(2:N-2:2) = .TRUE.
 
   ! fill V and W
   scl = maxval(abs(COEFFS))
@@ -75,6 +76,10 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
 
   ! compress companion pencil
   call z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2) 
+
+  ! call z_upr1fpen_qz
+  call z_upr1fpen_qz(.FALSE.,.FALSE.,l_upr1fact_hess, & 
+                     N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
 
   ! decompress 
   call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
