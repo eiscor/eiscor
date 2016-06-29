@@ -80,7 +80,7 @@ subroutine z_upr1fpen_singlestep(VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   end if  
 
   ! initialize core chasing
-  call z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,MISFIT)
+  call z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V(:,1:2),W(:,1:2),ITCNT,MISFIT)
   
   ! core chasing loop
   do ii=1,(N-3)
@@ -99,6 +99,6 @@ subroutine z_upr1fpen_singlestep(VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
   end do
 
   ! finish core chasing
-  call z_upr1fpen_endchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT,final_flag)
+  call z_upr1fpen_endchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V(:,N-1:N),W(:,N-1:N),MISFIT,final_flag)
   
 end subroutine z_upr1fpen_singlestep

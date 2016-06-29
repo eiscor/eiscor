@@ -96,6 +96,8 @@ do ii=1,N
 write(*,2000) T(ii,:)
 end do
 print*,""
+2000 format(9(es11.3,es10.3))
+
 
   ! free memory
   deallocate(P,Q,D1,C1,B1,D2,C2,B2,V,W,H,T,ITS)
@@ -133,7 +135,5 @@ print*,""
 !
 !  ! free memory
 !  deallocate(P,ITS,Q,D,C,B,V)
-
-2000 format(9(es11.3,es10.3))
 
 end subroutine z_poly_roots

@@ -32,9 +32,9 @@
 !                    arrays of generators for upper-triangular part
 !
 !  M               INTEGER
-!                    leading dimesnion of V
+!                    leading dimesnion of V and W
 !
-!  V,W               COMPLEX(8) arrays of dimension (M,N)
+!  V,W               COMPLEX(8) arrays of dimension (M,2)
 !                    left and right schur vectors
 !                    if VEC = .FALSE. unused
 !                    if VEC = .TRUE. update V and W to store schur vectors
@@ -55,96 +55,100 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
   logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D1(2*N), C1(3*N), B1(3*N)
   real(8), intent(inout) :: D2(2*N), C2(3*N), B2(3*N), G(3)
-  complex(8), intent(inout) :: V(M,N), W(M,N)
+  complex(8), intent(inout) :: V(M,2), W(M,2)
   
   ! compute variables
   integer :: ii, ir1, ir2, id1, id2
   logical :: final_flag, tp(2)
   real(8) :: nrm, Ginv(3)
-  real(8) :: tq(6), td(6), tc(9), tb(9)
+  real(8) :: tq(6), td1(6), tc1(9), tb1(9)
+  real(8) :: td2(6), tc2(9), tb2(9)
   complex(8) :: shift, A(2,2)
   
-!  ! compute shift
-!  ! random shift
-!  if ((mod(ITCNT,20).EQ.0).AND.(ITCNT.GT.0)) then
-!    call random_number(G(1))
-!    call random_number(G(2))
-!    shift = cmplx(G(1),G(2),kind=8)
-!          
-!  ! wilkinson shift
-!  else
-!  
-!    ! special case N = 2
-!    if (N.LT.3) then 
-!
-!      ! pad with identity
-!      tp = .FALSE.
-!      tq = 0d0; tq(1) =  1d0; tq(4:6) = Q
-!      td = 0d0; td(1) =  1d0; td(3:6) = D
-!      tc = 0d0; tc(3) =  1d0; tc(4:9) = C
-!      tb = 0d0; tb(3) = -1d0; tb(4:9) = B
-!    
-!    ! general case
-!    else 
-!
-!      ! store in temp arrays    
-!      if (N.EQ.3) then
-!        tp(1) = .FALSE.
-!        tp(2) = P(N-2)
-!      else
-!        tp = P((N-3):(N-2))
-!      end if
-!      ir2 = 3*N; ir1 = ir2-8
-!      id2 = 2*N; id1 = id2-5
-!      tq = Q((ir1):(ir2-3))
-!      td = D(id1:id2)
-!      tc = C(ir1:ir2)
-!      tb = B(ir1:ir2)
-!
-!    end if
-!
-!    ! compute wilkinson shift
-!    call z_upr1fpen_singleshift(tp,tq,td,tc,tb,shift)
-!
-!  end if
+  ! compute shift
+  ! random shift
+  if ((mod(ITCNT,15).EQ.0).AND.(ITCNT.GT.0)) then
+    call random_number(G(1))
+    call random_number(G(2))
+    shift = cmplx(G(1),G(2),kind=8)
+          
+  ! wilkinson shift
+  else
+  
+    ! special case N = 2
+    if (N.LT.3) then 
+
+      ! pad with identity
+      tp = .FALSE.
+      tq = 0d0; tq(1) =  1d0; tq(4:6) = Q
+      td1 = 0d0; td1(1) =  1d0; td1(3:6) = D1
+      tc1 = 0d0; tc1(3) =  1d0; tc1(4:9) = C1
+      tb1 = 0d0; tb1(3) = -1d0; tb1(4:9) = B1
+      td2 = 0d0; td2(1) =  1d0; td2(3:6) = D2
+      tc2 = 0d0; tc2(3) =  1d0; tc2(4:9) = C2
+      tb2 = 0d0; tb2(3) = -1d0; tb2(4:9) = B2
+    
+    ! general case
+    else 
+
+      ! store in temp arrays    
+      if (N.EQ.3) then
+        tp(1) = .FALSE.
+        tp(2) = P(N-2)
+      else
+        tp = P((N-3):(N-2))
+      end if
+      ir2 = 3*N; ir1 = ir2-8
+      id2 = 2*N; id1 = id2-5
+      tq = Q((ir1):(ir2-3))
+      td1 = D1(id1:id2)
+      tc1 = C1(ir1:ir2)
+      tb1 = B1(ir1:ir2)
+      td2 = D2(id1:id2)
+      tc2 = C2(ir1:ir2)
+      tb2 = B2(ir1:ir2)
+
+    end if
+
+    ! compute wilkinson shift
+    call z_upr1fpen_singleshift(tp,tq,td1,tc1,tb1,td2,tc2,tb2,shift)
+
+  end if
 
 !print*,""
 !print*," shift =",shift
 !print*,""
 
   ! fix shift for now
-  shift = cmplx(1d0,1d-4,kind=8)
+!  shift = cmplx(-1d0,1d-8,kind=8)
 
   ! build bulge
   call z_upr1fpen_buildbulge(P(1),Q(1:3),D1(1:4),C1(1:6),B1(1:6),D2(1:4),C2(1:6),B2(1:6),shift,G)
 
-print*,""
-print*," Inside startchase:"
-print*,G
-print*,""
+!print*,""
+!print*," G =",G
+!print*,""
 
   ! set Ginv
   Ginv(1) = G(1)
   Ginv(2) = -G(2)
   Ginv(3) = -G(3)
   
-  ! update V
-!  if (VEC) then
-!    
-!    A(1,1) = cmplx(G(1),G(2),kind=8)
-!    A(2,1) = cmplx(G(3),0d0,kind=8)
-!    A(1,2) = -A(2,1)
-!    A(2,2) = conjg(A(1,1))
-!    
-!    V(:,1:2) = matmul(V(:,1:2),A)
-!    
-!  end if
-  
   ! initialize turnover 
   ! hess
   if (.NOT.P(1)) then
   
     ! update left schurvectors with G
+    if (VEC) then
+      
+      A(1,1) = cmplx(G(1),G(2),kind=8)
+      A(2,1) = cmplx(G(3),0d0,kind=8)
+      A(1,2) = -A(2,1)
+      A(2,2) = conjg(A(1,1))
+      
+      W = matmul(W,A)
+      
+    end if
 
     ! copy Ginv into G
     G = Ginv
@@ -156,6 +160,12 @@ print*,""
     call z_upr1utri_rot3swap(.TRUE.,D2(1:4),C2(1:6),B2(1:6),G)
   
     ! update left schurvectors diagonal Ginv
+    if (VEC) then
+      
+      W(:,1) = W(:,1)*cmplx(Ginv(1),Ginv(2),kind=8)
+      W(:,2) = W(:,2)*cmplx(Ginv(1),-Ginv(2),kind=8)
+      
+    end if
 
     ! Ginv scales the rows of R2
     call z_upr1utri_unimodscale(.FALSE.,D2(1:2),C2(1:3),B2(1:3), &
@@ -168,6 +178,16 @@ print*,""
     G(3) = -G(3)
 
     ! update right schurvectors with G
+    if (VEC) then
+      
+      A(1,1) = cmplx(G(1),G(2),kind=8)
+      A(2,1) = cmplx(G(3),0d0,kind=8)
+      A(1,2) = -A(2,1)
+      A(2,2) = conjg(A(1,1))
+      
+      V = matmul(V,A)
+      
+    end if
 
     ! pass G through R1
     call z_upr1utri_rot3swap(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G)

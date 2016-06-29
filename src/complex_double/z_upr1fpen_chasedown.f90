@@ -85,6 +85,16 @@ subroutine z_upr1fpen_chasedown(VEC,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     Q(4:6) = G2
 
     ! update left schurvectors with G3
+    if (VEC) then 
+    
+      A(1,1) = cmplx(G3(1),G3(2),kind=8)
+      A(2,1) = cmplx(G3(3),0d0,kind=8)
+      A(1,2) = cmplx(-G3(3),0d0,kind=8)
+      A(2,2) = cmplx(G3(1),-G3(2),kind=8)
+
+      W = matmul(W,A)
+   
+    end if
 
     ! set MISFIT as inverse of G3
     MISFIT(1) = G3(1)
@@ -99,6 +109,16 @@ subroutine z_upr1fpen_chasedown(VEC,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     MISFIT(3) = -MISFIT(3)
     
     ! update right schurvectors with MISFIT
+    if (VEC) then
+    
+      A(1,1) = cmplx(MISFIT(1),MISFIT(2),kind=8)
+      A(2,1) = cmplx(MISFIT(3),0d0,kind=8)
+      A(1,2) = cmplx(-MISFIT(3),0d0,kind=8)
+      A(2,2) = cmplx(MISFIT(1),-MISFIT(2),kind=8)
+
+      V = matmul(V,A)
+   
+    end if
 
     ! pass MISFIT through R1
     call z_upr1utri_rot3swap(.FALSE.,D1,C1,B1,MISFIT)

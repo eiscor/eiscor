@@ -89,6 +89,7 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
   logical :: flg
   integer :: ii, jj, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
+complex(8) :: H(8,8), T(8,8)
   
   ! initialize info
   INFO = 0
@@ -129,16 +130,23 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
 !      return
 !    end if
 !  end if   
-!  
-!  ! initialize storage
-!  ITS = 0
-!  
-!  if (VEC.AND.ID) then
-!    V = cmplx(0d0,0d0,kind=8)
-!    do ii=1,n
-!      V(ii,ii) = cmplx(1d0,0d0,kind=8)
-!    end do
-!  end if   
+  
+  ! initialize storage
+  ITS = 0
+  
+  if (VEC.AND.ID) then
+    V = cmplx(0d0,0d0,kind=8)
+    do ii=1,n
+      V(ii,ii) = cmplx(1d0,0d0,kind=8)
+    end do
+  end if   
+  
+  if (VEC.AND.ID) then
+    W = cmplx(0d0,0d0,kind=8)
+    do ii=1,n
+      W(ii,ii) = cmplx(1d0,0d0,kind=8)
+    end do
+  end if   
   
   ! initialize indices
   STR = 1
@@ -147,6 +155,7 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
   ITMAX = 20*N
   ITCNT = 0
   
+2000 format(8(es11.3,es10.3))
   ! iteration loop
   do kk=1,ITMAX
 
@@ -165,10 +174,27 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
 !write(*,*) "Press enter to continue"
 !read(*,*)
 
+!call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
+!print*," inside twisted QZ"
+!print*," H"
+!do ii=1,N
+!write(*,2000) H(ii,:)
+!end do
+!print*,""
+!print*," T"
+!do ii=1,N
+!write(*,2000) T(ii,:)
+!end do
+!print*,""
+!write(*,*) "Press enter to continue"
+!read(*,*)
+
+
     ! check for deflation
-!    call z_upr1fpen_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &
-!         Q((3*STR-2):(3*STP)),D((2*STR-1):(2*STP+2)), &
-!         C((3*STR-2):(3*STP+3)),B((3*STR-2):(3*STP+3)),M,V(:,STR:STP+1),ZERO)
+    call z_upr1fpen_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &
+         Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)),C1((3*STR-2):(3*STP+3)), & 
+         B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)), & 
+         B2((3*STR-2):(3*STP+3)),M,V(:,STR:STP+1),W(:,STR:STP+1),ZERO)
     
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
