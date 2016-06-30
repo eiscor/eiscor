@@ -18,7 +18,7 @@ program example_z_uprkfact_scaledrandompencil_many
   ! compute variables
   integer, parameter :: dd = 3
   integer, parameter :: kpara = 100
-  real(8) :: norm
+  real(8) :: norm, norma, expo
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
   integer :: N = dd*kpara, maxnumber, k
@@ -33,7 +33,7 @@ program example_z_uprkfact_scaledrandompencil_many
   real(8), allocatable :: Q(:), D1(:), C1(:), B1(:)
   real(8), allocatable :: D2(:), C2(:), B2(:), RWORK(:)
   logical, allocatable :: P(:)
-  real(8) :: h, maxerr
+  real(8) :: h, maxerr, ru,rv,rw,s
   complex(8) :: Gf(2,2)
 
   ! real and imag part of eigenvalues
@@ -89,25 +89,37 @@ program example_z_uprkfact_scaledrandompencil_many
   !call u_fixedseed_initialize(INFO)  
   call u_randomseed_initialize(INFO)
 
-  do co2 = 1,9
+  do co2 = 1,10
      if (co2==1) then
         norm = 1d0
+        expo = 0        
      else if (co2==2) then
         norm = 1d1
+        expo = 1 
      else if (co2==3) then
         norm = 1d2
+        expo = 2 
      else if (co2==4) then
         norm = 1d3
+        expo = 3 
      else if (co2==5) then
-        norm = 1d4
+        norm = 1d4 
+        expo = 4 
      else if (co2==6) then
         norm = 1d5
+        expo = 5 
      else if (co2==7) then
         norm = 1d6
+        expo = 6 
      else if (co2==8) then
         norm = 1d7
+        expo = 7        
      else if (co2==9) then
         norm = 1d8
+        expo = 8
+     else if (co2==10) then
+        norm = 1d9
+        expo = 9
      else
         norm = 1d0
      end if
@@ -121,9 +133,29 @@ program example_z_uprkfact_scaledrandompencil_many
      write (7,*) ""
      write (7,*) "K", k, "degree", dd, "norm", norm
 
+
      do co = 1,maxnumber
-        call z_2Darray_random_normal(N,k,MA)
-        call z_2Darray_random_normal(N,k,MB)
+        
+        do ii=1,k
+           do jj=1,n
+        
+              call random_number(ru) ! uniform distribution in [0,1)
+              call random_number(rv) ! uniform distribution in [0,1)
+              call random_number(rw) ! uniform distribution in [0,1)
+              
+              s = (2d0*ru-1d0) * 10**(2d0*expo*rv-expo)
+              
+              MA(jj,ii) = cmplx(dcos(2.d0*EISCOR_DBL_PI*rw)*s, dsin(2.d0*EISCOR_DBL_PI*rw)*s, kind=8)
+              
+              call random_number(ru) ! uniform distribution in [0,1)
+              call random_number(rv) ! uniform distribution in [0,1)
+              call random_number(rw) ! uniform distribution in [0,1)
+              
+              s = (2d0*ru-1d0) * 10**(2d0*expo*rv-expo)
+              
+              MB(jj,ii) = cmplx(dcos(2.d0*EISCOR_DBL_PI*rw)*s, dsin(2.d0*EISCOR_DBL_PI*rw)*s, kind=8)
+           end do
+        end do
 
 
         ! standard distribution of coeffiecients
@@ -168,6 +200,7 @@ program example_z_uprkfact_scaledrandompencil_many
            end do
         end do
         
+        norma = sqrt(h) 
         
         MC = MA
         MD = MB
@@ -426,7 +459,7 @@ program example_z_uprkfact_scaledrandompencil_many
      end do
   end do
   print*, "Backward Error (Schur decomposition, TA): ", sqrt(h)
-  write(7,*) "(",co,",",sqrt(h),")%"
+  write(7,*) "(",norma,",",sqrt(h),")%"
   
   TB = matmul(W,matmul(TB,Vt))
   h = 0d0
@@ -441,7 +474,7 @@ program example_z_uprkfact_scaledrandompencil_many
   print*, "Backward Error (Schur decomposition, TB): ", sqrt(h)
   print*, "Runtime structured QR solver (eiscor) with eigenvectors ",(dble(c_stop3-c_start3)/dble(c_rate))
 
-  write(7,*) "(",co,",",sqrt(h),")%"
+  write(7,*) "(",norma,",",sqrt(h),")%"
 
 !!$  call zggev('N','N', N, TA, N, TB, N, REIGSA, REIGSB, &
 !!$       &VL, N, VR, N, WORK, lwork, RWORK, INFO)  
