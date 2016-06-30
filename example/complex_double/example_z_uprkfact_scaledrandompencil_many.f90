@@ -159,7 +159,7 @@ program example_z_uprkfact_scaledrandompencil_many
               h = h + abs(MA(ll,ii)+MB(ll-k,ii))**2
            end do
            
-           do ll=dd*k+1,dd*(k+1)
+           do ll=dd*k+1,(dd+1)*k
               h = h + abs(MB(ll-k,ii))**2
            end do
            do ll=1,N
