@@ -115,15 +115,25 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
 
   end if
 
-!print*,""
-!print*," shift =",shift
-!print*,""
-
   ! fix shift for now
-!  shift = cmplx(-1d0,1d-8,kind=8)
+!if (ITCNT.LT.2) then
+!  shift = cmplx(1.1d0,1d0,kind=8)/sqrt(2d0)
+!elseif (ITCNT.LT.4) then
+!  shift = cmplx(1d0,0d0,kind=8)
+!elseif (ITCNT.LT.6) then
+!  shift = cmplx(-1d0,0d0,kind=8)
+!end if
+
+print*,""
+print*," shift =",shift
+print*,""
 
   ! build bulge
   call z_upr1fpen_buildbulge(P(1),Q(1:3),D1(1:4),C1(1:6),B1(1:6),D2(1:4),C2(1:6),B2(1:6),shift,G)
+
+!G(1) = 1/sqrt(2d0)
+!G(2) = 0d0
+!G(3) = 1/sqrt(2d0)
 
 !print*,""
 !print*," G =",G
@@ -134,25 +144,25 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
   Ginv(2) = -G(2)
   Ginv(3) = -G(3)
   
+  ! update left schurvectors with G
+  if (VEC) then
+    
+    A(1,1) = cmplx(G(1),G(2),kind=8)
+    A(2,1) = cmplx(G(3),0d0,kind=8)
+    A(1,2) = -A(2,1)
+    A(2,2) = conjg(A(1,1))
+    
+    W = matmul(W,A)
+    
+  end if
+
+  ! copy Ginv into G
+  G = Ginv
+
   ! initialize turnover 
   ! hess
   if (.NOT.P(1)) then
   
-    ! update left schurvectors with G
-    if (VEC) then
-      
-      A(1,1) = cmplx(G(1),G(2),kind=8)
-      A(2,1) = cmplx(G(3),0d0,kind=8)
-      A(1,2) = -A(2,1)
-      A(2,2) = conjg(A(1,1))
-      
-      W = matmul(W,A)
-      
-    end if
-
-    ! copy Ginv into G
-    G = Ginv
-
     ! fuse Ginv and Q, Ginv is now a diagonal rotation
     call z_rot3_fusion(.FALSE.,Ginv,Q(1:3))
 
@@ -168,9 +178,9 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
     end if
 
     ! Ginv scales the rows of R2
-    call z_upr1utri_unimodscale(.FALSE.,D2(1:2),C2(1:3),B2(1:3), &
+    call z_upr1utri_unimodscale(.TRUE.,D2(1:2),C2(1:3),B2(1:3), &
                                 cmplx(Ginv(1),-Ginv(2),kind=8))
-    call z_upr1utri_unimodscale(.FALSE.,D2(3:4),C2(4:6),B2(4:6), &
+    call z_upr1utri_unimodscale(.TRUE.,D2(3:4),C2(4:6),B2(4:6), &
                                 cmplx(Ginv(1),Ginv(2),kind=8))
 
     ! invert G
@@ -192,24 +202,40 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
     ! pass G through R1
     call z_upr1utri_rot3swap(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G)
 
-!  ! inverse hess
-!  else
-!  
-!    ! pass G through triangular part
-!    call z_upr1utri_rot3swap(.FALSE.,D(1:4),C(1:6),B(1:6),G)
-!  
-!    ! fuse Q and G, G is now a diagonal rotation
-!    call z_rot3_fusion(.TRUE.,Q(1:3),G)
-!
-!    ! G scales the rows of the upper-triangular part
-!    call z_upr1utri_unimodscale(.TRUE.,D(1:2),C(1:3),B(1:3), &
-!                                cmplx(G(1),G(2),kind=8))
-!    call z_upr1utri_unimodscale(.TRUE.,D(3:4),C(4:6),B(4:6), &
-!                                cmplx(G(1),-G(2),kind=8))
-!
-!    ! replace G with Ginv as misfit
-!    G = Ginv
-!
+  ! inverse hess
+  else
+  
+    ! pass Ginv through R2
+    call z_upr1utri_rot3swap(.TRUE.,D2(1:4),C2(1:6),B2(1:6),Ginv)
+  
+    ! invert Ginv
+    Ginv(2) = -Ginv(2)
+    Ginv(3) = -Ginv(3)
+
+    ! update right schurvectors with Ginv
+    if (VEC) then
+      
+      A(1,1) = cmplx(Ginv(1),Ginv(2),kind=8)
+      A(2,1) = cmplx(Ginv(3),0d0,kind=8)
+      A(1,2) = -A(2,1)
+      A(2,2) = conjg(A(1,1))
+      
+      V = matmul(V,A)
+      
+    end if
+
+    ! pass Ginv through R1
+    call z_upr1utri_rot3swap(.FALSE.,D1(1:4),C1(1:6),B1(1:6),Ginv)
+
+    ! fuse Ginv and Q, Ginv is now a diagonal rotation
+    call z_rot3_fusion(.TRUE.,Q(1:3),Ginv)
+
+    ! Ginv scales the rows of R1
+    call z_upr1utri_unimodscale(.TRUE.,D1(1:2),C1(1:3),B1(1:3), &
+                                cmplx(Ginv(1),Ginv(2),kind=8))
+    call z_upr1utri_unimodscale(.TRUE.,D1(3:4),C1(4:6),B1(4:6), &
+                                cmplx(Ginv(1),-Ginv(2),kind=8))
+
   end if
   
 end subroutine z_upr1fpen_startchase

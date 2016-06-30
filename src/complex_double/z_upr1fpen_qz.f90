@@ -89,6 +89,7 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
   logical :: flg
   integer :: ii, jj, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
+complex(8) :: Hold(8,8), Told(8,8)
 complex(8) :: H(8,8), T(8,8)
   
   ! initialize info
@@ -156,6 +157,10 @@ complex(8) :: H(8,8), T(8,8)
   ITCNT = 0
   
 2000 format(8(es11.3,es10.3))
+call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
+
+
+
   ! iteration loop
   do kk=1,ITMAX
 
@@ -174,20 +179,45 @@ complex(8) :: H(8,8), T(8,8)
 !write(*,*) "Press enter to continue"
 !read(*,*)
 
-!call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
-!print*," inside twisted QZ"
-!print*," H"
-!do ii=1,N
-!write(*,2000) H(ii,:)
-!end do
-!print*,""
-!print*," T"
-!do ii=1,N
-!write(*,2000) T(ii,:)
-!end do
-!print*,""
-!write(*,*) "Press enter to continue"
-!read(*,*)
+call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
+print*," inside twisted QZ"
+print*," start:",str
+print*," stop:",stp
+print*," zero:",zero
+print*,""
+
+print*," P"
+print*,P
+print*,""
+
+print*," decompressed matrices"
+print*," H"
+do ii=1,N
+write(*,2000) H(ii,:)
+end do
+print*,""
+print*," T"
+do ii=1,N
+write(*,2000) T(ii,:)
+end do
+print*,""
+
+print*," equivalence transforms"
+H = abs(H-matmul(conjg(transpose(W)),matmul(Hold,V)))
+T = abs(T-matmul(conjg(transpose(W)),matmul(Told,V)))
+print*," H"
+do ii=1,N
+write(*,2000) H(ii,:)
+end do
+print*,""
+print*," T"
+do ii=1,N
+write(*,2000) T(ii,:)
+end do
+print*,""
+
+write(*,*) "Press enter to continue"
+read(*,*)
 
 
     ! check for deflation

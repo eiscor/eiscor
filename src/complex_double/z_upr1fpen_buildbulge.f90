@@ -78,15 +78,18 @@ subroutine z_upr1fpen_buildbulge(P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
     vec2(2) = vec2(2)/R1(2,2)
     vec2(1) = (vec2(1) - R1(1,2)*vec2(2))/R1(1,1)
     
+    ! multiply by R2
+    vec2 = matmul(R2,vec2)
+
     ! R2^-1 e1
-    vec1(1) = 1d0/R2(1,1)
-    vec1(2) = 0d0
+    vec1(1) = cmplx(1d0,0d0,kind=8)
+    vec1(2) = cmplx(0d0,0d0,kind=8)
   
   end if
   
   ! insert shift
   vec1 = vec1 - SHFT*vec2
-  
+
   ! compute eliminator
   call z_rot3_vec4gen(dble(vec1(1)),aimag(vec1(1)),dble(vec1(2)),&
                       aimag(vec1(2)),G(1),G(2),G(3),nrm)

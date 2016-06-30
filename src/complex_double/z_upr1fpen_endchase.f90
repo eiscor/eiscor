@@ -56,10 +56,8 @@ subroutine z_upr1fpen_endchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLAG)
   complex(8), intent(inout) :: V(M,2),W(M,2)
   
   ! compute variables
-!  integer :: 
   real(8) :: G1(3), G2(3), G3(3)
   complex(8) :: A(2,2) 
-complex(8) :: A2(2,2) 
   
   ! if N == 2 we do a single fusion
   if ( N.EQ.2 ) then
@@ -87,12 +85,12 @@ complex(8) :: A2(2,2)
     G3 = G
 
   ! invhess
-!  else
-!
-!    G1 = G
-!    G2 = Q(3*(N-1)-2:3*(N-1))
-!    G3 = Q(3*(N-2)-2:3*(N-2))
-!
+  else
+
+    G1 = G
+    G2 = Q(3*(N-1)-2:3*(N-1))
+    G3 = Q(3*(N-2)-2:3*(N-2))
+
   end if
 
   ! compute turnover
@@ -160,49 +158,73 @@ complex(8) :: A2(2,2)
                                 cmplx(G3(1),-G3(2),kind=8))
 
   ! invhess
-!  else
-!
-!    ! update Q
-!    Q(3*(N-2)-2:3*(N-2)) = G1
-!    Q(3*(N-1)-2:3*(N-1)) = G3
-!
-!    ! pass G2 through upper-triangular part
-!    call z_upr1utri_rot3swap(.TRUE.,D(2*(N-1)-1:2*N), &
-!                             C(3*(N-1)-2:3*N),B(3*(N-1)-2:3*N),G2)
-!
-!    ! update V using G2inv
-!    if (VEC) then
-!     
-!      A(1,1) = cmplx(G2(1),-G2(2),kind=8)
-!      A(2,1) = cmplx(-G2(3),0d0,kind=8)
-!      A(1,2) = cmplx(G2(3),0d0,kind=8)
-!      A(2,2) = cmplx(G2(1),G2(2),kind=8)
-!
-!      V(:,N-1:N) = matmul(V(:,N-1:N),A)
-!
-!    end if
-!
-!    ! fuse G2 with Q
-!    call z_rot3_fusion(.FALSE.,G2,Q(3*(N-1)-2:3*(N-1)))
-!
-!    ! move G2 to the otherside and update V
-!    if (VEC) then
-!     
-!      V(:,N-1) = V(:,N-1)*cmplx(G2(1),G2(2),kind=8)
-!      V(:,N) = V(:,N)*cmplx(G2(1),-G2(2),kind=8)
-!
-!    end if
-!
-!    ! scale columns of upper-triangular part
-!    call z_upr1utri_unimodscale(.FALSE.,D(2*(N-1)-1:2*(N-1)), &
-!                                C(3*(N-1)-2:3*(N-1)), & 
-!                                B(3*(N-1)-2:3*(N-1)), &
-!                                cmplx(G2(1),G2(2),kind=8))
-!    call z_upr1utri_unimodscale(.FALSE.,D(2*N-1:2*N), &
-!                                C(3*N-2:3*N), & 
-!                                B(3*N-2:3*N), &
-!                                cmplx(G2(1),-G2(2),kind=8))
-!
+  else
+
+    ! update Q
+    Q(3*(N-2)-2:3*(N-2)) = G1
+    Q(3*(N-1)-2:3*(N-1)) = G3
+
+    ! pass G2 through R1
+    call z_upr1utri_rot3swap(.TRUE.,D1(2*(N-1)-1:2*N), &
+                             C1(3*(N-1)-2:3*N),B1(3*(N-1)-2:3*N),G2)
+
+    ! invert G2
+    G2(2) = -G2(2)
+    G2(3) = -G2(3)
+
+    ! update right schurvectors using G2
+    if (VEC) then
+     
+      A(1,1) = cmplx(G2(1),G2(2),kind=8)
+      A(2,1) = cmplx(G2(3),0d0,kind=8)
+      A(1,2) = cmplx(-G2(3),0d0,kind=8)
+      A(2,2) = cmplx(G2(1),-G2(2),kind=8)
+
+      V = matmul(V,A)
+
+    end if
+
+    ! pass G2 through R2
+    call z_upr1utri_rot3swap(.FALSE.,D2(2*(N-1)-1:2*N), &
+                             C2(3*(N-1)-2:3*N),B2(3*(N-1)-2:3*N),G2)
+
+    ! update left schurvectors using G2
+    if (VEC) then
+     
+      A(1,1) = cmplx(G2(1),G2(2),kind=8)
+      A(2,1) = cmplx(G2(3),0d0,kind=8)
+      A(1,2) = cmplx(-G2(3),0d0,kind=8)
+      A(2,2) = cmplx(G2(1),-G2(2),kind=8)
+
+      W = matmul(W,A)
+
+    end if
+
+    ! invert G2
+    G2(2) = -G2(2)
+    G2(3) = -G2(3)
+
+    ! fuse G2 with Q, G2 is now diagonal
+    call z_rot3_fusion(.FALSE.,G2,Q(3*(N-1)-2:3*(N-1)))
+
+    ! update left schurvectors with G2
+    if (VEC) then
+     
+      W(:,1) = W(:,1)*cmplx(G2(1),G2(2),kind=8)
+      W(:,2) = W(:,2)*cmplx(G2(1),-G2(2),kind=8)
+
+    end if
+
+    ! scale rows of R2
+    call z_upr1utri_unimodscale(.TRUE.,D2(2*(N-1)-1:2*(N-1)), &
+                                C2(3*(N-1)-2:3*(N-1)), & 
+                                B2(3*(N-1)-2:3*(N-1)), &
+                                cmplx(G2(1),-G2(2),kind=8))
+    call z_upr1utri_unimodscale(.TRUE.,D2(2*N-1:2*N), &
+                                C2(3*N-2:3*N), & 
+                                B2(3*N-2:3*N), &
+                                cmplx(G2(1),G2(2),kind=8))
+
   end if
 
   ! update position flag

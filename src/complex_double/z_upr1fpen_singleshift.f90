@@ -120,7 +120,7 @@ subroutine z_upr1fpen_singleshift(P,Q,D1,C1,B1,D2,C2,B2,SHFT)
 
   ! avoid INFs and NANs
   if ((SHFT.NE.SHFT).OR.(abs(SHFT) > EISCOR_DBL_INF)) then
-    SHFT = cmplx(1d9,0d0,kind=8) ! not sure if this is a good idea?
+    SHFT = cmplx(0d0,0d0,kind=8) ! not sure if this is a good idea?
   end if
 
 end subroutine z_upr1fpen_singleshift

@@ -65,11 +65,11 @@ subroutine z_upr1fpen_chasedown(VEC,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     G3 = MISFIT
 
   ! invhess
-!  else
-!
-!    G1 = MISFIT
-!    G2 = Q(4:6)
-!    G3 = Q(1:3)
+  else
+
+    G1 = MISFIT
+    G2 = Q(4:6)
+    G3 = Q(1:3)
 
   end if
 
@@ -124,30 +124,51 @@ subroutine z_upr1fpen_chasedown(VEC,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     call z_upr1utri_rot3swap(.FALSE.,D1,C1,B1,MISFIT)
 
   ! invhess
-!  else
-!
-!    ! update Q
-!    Q(1:3) = G1
-!    Q(4:6) = G3
-!
-!    ! pass G2 through upper-triangular part
-!    call z_upr1utri_rot3swap(.TRUE.,D,C,B,G2)
-!
-!    ! update V using G2inv
-!    if (VEC) then
-!     
-!      A(1,1) = cmplx(G2(1),-G2(2),kind=8)
-!      A(2,1) = cmplx(-G2(3),0d0,kind=8)
-!      A(1,2) = cmplx(G2(3),0d0,kind=8)
-!      A(2,2) = cmplx(G2(1),G2(2),kind=8)
-!
-!      V = matmul(V,A)
-!
-!    end if
-!
-!    ! copy G2 to MISFIT
-!    MISFIT = G2
-!
+  else
+
+    ! update Q
+    Q(1:3) = G1
+    Q(4:6) = G3
+
+    ! pass G2 through R1
+    call z_upr1utri_rot3swap(.TRUE.,D1,C1,B1,G2)
+
+    ! invert G2
+    G2(2) = -G2(2)
+    G2(3) = -G2(3)
+
+    ! update right schurvectors using G2
+    if (VEC) then
+     
+      A(1,1) = cmplx(G2(1),G2(2),kind=8)
+      A(2,1) = cmplx(G2(3),0d0,kind=8)
+      A(1,2) = cmplx(-G2(3),0d0,kind=8)
+      A(2,2) = cmplx(G2(1),-G2(2),kind=8)
+
+      V = matmul(V,A)
+
+    end if
+
+    ! pass G2 through R2
+    call z_upr1utri_rot3swap(.FALSE.,D2,C2,B2,G2)
+
+    ! update left schurvectors using G2
+    if (VEC) then
+     
+      A(1,1) = cmplx(G2(1),G2(2),kind=8)
+      A(2,1) = cmplx(G2(3),0d0,kind=8)
+      A(1,2) = cmplx(-G2(3),0d0,kind=8)
+      A(2,2) = cmplx(G2(1),-G2(2),kind=8)
+
+      W = matmul(W,A)
+
+    end if
+
+    ! copy inverse of G2 to MISFIT
+    MISFIT(1) = G2(1)
+    MISFIT(2) = -G2(2)
+    MISFIT(3) = -G2(3)
+
   end if
 
   ! update position flag

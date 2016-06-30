@@ -100,22 +100,26 @@ subroutine z_upr1fpen_deflationcheck(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
              C1(3*ZERO-2:3*ZERO),B1(3*ZERO-2:3*ZERO),cmplx(qr,qi,kind=8))
 
       ! P(ZERO-1) == 1
-!      else
-!
-!        ! scale column of upper triangular part
-!        call z_upr1utri_unimodscale(.FALSE.,D(2*ZERO-1:2*ZERO), &
-!             C(3*ZERO-2:3*ZERO),B(3*ZERO-2:3*ZERO),cmplx(qr,qi,kind=8))
-!
-!        ! update eigenvectors
-!        if (VEC) then
-!          V(:,ZERO) = V(:,ZERO)*cmplx(qr,qi,kind=8)
-!        end if
+      else
+
+print*,"upper entry"
+
+        ! scale row of R2
+        call z_upr1utri_unimodscale(.TRUE.,D2(2*ZERO-1:2*ZERO), &
+             C2(3*ZERO-2:3*ZERO),B2(3*ZERO-2:3*ZERO),cmplx(qr,-qi,kind=8))
+
+        ! update left schurvectors
+        if (VEC) then
+          W(:,ZERO) = W(:,ZERO)*cmplx(qr,qi,kind=8)
+        end if
 
       end if
       
       ! lower entry of Q(ZERO)
       ! deflation at bottom
       if ( ZERO.EQ.(N-1) ) then
+
+print*,"lower entry"
 
         ! scale row of R1
         call z_upr1utri_unimodscale(.TRUE.,D1(2*ZERO+1:2*ZERO+2), &
@@ -126,21 +130,21 @@ subroutine z_upr1fpen_deflationcheck(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
       elseif ( .NOT.P(ZERO) ) then
 
         ! scale row of R2
-        call z_upr1utri_unimodscale(.FALSE.,D2(2*ZERO+1:2*ZERO+2), &
+        call z_upr1utri_unimodscale(.TRUE.,D2(2*ZERO+1:2*ZERO+2), &
              C2(3*ZERO+1:3*ZERO+3),B2(3*ZERO+1:3*ZERO+3),cmplx(qr,qi,kind=8))
 
         ! update left schurvectors
-!        if (VEC) then
-!          V(:,ZERO+1) = V(:,ZERO+1)*cmplx(qr,-qi,kind=8)
-!        end if
+        if (VEC) then
+          W(:,ZERO+1) = W(:,ZERO+1)*cmplx(qr,-qi,kind=8)
+        end if
 
       ! P(ZERO) == 1
-!      else
-!
-!        ! scale row of upper triangular part
-!        call z_upr1utri_unimodscale(.TRUE.,D(2*ZERO+1:2*ZERO+2), &
-!             C(3*ZERO+1:3*ZERO+3),B(3*ZERO+1:3*ZERO+3),cmplx(qr,-qi,kind=8))
-!
+      else
+
+        ! scale row of R1
+        call z_upr1utri_unimodscale(.TRUE.,D1(2*ZERO+1:2*ZERO+2), &
+             C1(3*ZERO+1:3*ZERO+3),B1(3*ZERO+1:3*ZERO+3),cmplx(qr,-qi,kind=8))
+
       end if
 
       ! exit loop 
