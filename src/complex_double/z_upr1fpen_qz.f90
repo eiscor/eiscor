@@ -169,26 +169,16 @@ call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
       exit
     end if
 
-!print*,""
-!print*,"Inside QR"
-!print*,"Q"
-!do ii=1,N-1
-!print*,Q(3*ii-2:3*ii)
-!end do
-!print*,""
-!write(*,*) "Press enter to continue"
-!read(*,*)
-
 call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
 print*," inside twisted QZ"
-print*," start:",str
-print*," stop:",stp
-print*," zero:",zero
-print*,""
+!print*," start:",str
+!print*," stop:",stp
+!print*," zero:",zero
+!print*,""
 
-print*," P"
-print*,P
-print*,""
+!print*," P"
+!print*,P
+!print*,""
 
 print*," decompressed matrices"
 print*," H"
@@ -202,22 +192,22 @@ write(*,2000) T(ii,:)
 end do
 print*,""
 
-print*," equivalence transforms"
-H = abs(H-matmul(conjg(transpose(W)),matmul(Hold,V)))
-T = abs(T-matmul(conjg(transpose(W)),matmul(Told,V)))
-print*," H"
-do ii=1,N
-write(*,2000) H(ii,:)
-end do
-print*,""
-print*," T"
-do ii=1,N
-write(*,2000) T(ii,:)
-end do
-print*,""
+!print*," equivalence transforms"
+!H = abs(H-matmul(conjg(transpose(W)),matmul(Hold,V)))
+!T = abs(T-matmul(conjg(transpose(W)),matmul(Told,V)))
+!print*," H"
+!do ii=1,N
+!write(*,2000) H(ii,:)
+!end do
+!print*,""
+!print*," T"
+!do ii=1,N
+!write(*,2000) T(ii,:)
+!end do
+!print*,""
 
-write(*,*) "Press enter to continue"
-read(*,*)
+!write(*,*) "Press enter to continue"
+!read(*,*)
 
 
     ! check for deflation

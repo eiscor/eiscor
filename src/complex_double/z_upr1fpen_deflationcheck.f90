@@ -102,8 +102,6 @@ subroutine z_upr1fpen_deflationcheck(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
       ! P(ZERO-1) == 1
       else
 
-print*,"upper entry"
-
         ! scale row of R2
         call z_upr1utri_unimodscale(.TRUE.,D2(2*ZERO-1:2*ZERO), &
              C2(3*ZERO-2:3*ZERO),B2(3*ZERO-2:3*ZERO),cmplx(qr,-qi,kind=8))
@@ -118,8 +116,6 @@ print*,"upper entry"
       ! lower entry of Q(ZERO)
       ! deflation at bottom
       if ( ZERO.EQ.(N-1) ) then
-
-print*,"lower entry"
 
         ! scale row of R1
         call z_upr1utri_unimodscale(.TRUE.,D1(2*ZERO+1:2*ZERO+2), &

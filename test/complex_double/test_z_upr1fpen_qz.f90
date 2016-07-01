@@ -64,119 +64,87 @@ program test_z_upr1fpen_qz
   
 
 
-2000 format(8(es11.3,es10.3))
+  ! check 1)
+    ! set INFO
+    INFO = 0
+    
+    ! set P
+    P = .FALSE.
+    
+    ! set valid Q
+    Q = 0d0
+    do ii=1,(N-1)
+      Q(3*ii) = 1d0
+    end do     
+  
+    ! set valid D1
+    D1 = 0d0
+    do ii=1,N
+      D1(2*ii-1) = 1d0
+    end do
+    D1(2*N-1) = (-1d0)**(N-1)
 
-!  ! check 1)
-!    ! set INFO
-!    INFO = 0
-!    
-!    ! set P
-!    P = .FALSE.
-!    
-!    ! set valid Q
-!    Q = 0d0
-!    do ii=1,(N-1)
-!      Q(3*ii) = 1d0
-!    end do     
-!  
-!    ! set valid D1
-!    D1 = 0d0
-!    do ii=1,N
-!      D1(2*ii-1) = 1d0
-!    end do
-!    D1(2*N-1) = (-1d0)**(N-1)
-!
-!    ! set valid C1 and B1
-!    C1 = 0d0
-!    do ii=1,N
-!      C1(3*ii) = -1d0
-!    end do
-!    B1 = -C1
-!
-!    ! set valid D2
-!    D2 = 0d0
-!    do ii=1,N
-!      D2(2*ii-1) = 1d0
-!    end do
-!
-!    ! set valid C2 and B2
-!    C2 = C1
-!    B2 = B1
-!
-!    ! decompress matrix
-!    call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
-!print*,""
-!print*,"H"
-!do ii=1,N
-!write(*,2000) Hold(ii,:)
-!end do
-!print*,""
-!print*,"T"
-!do ii=1,N
-!write(*,2000) Told(ii,:)
-!end do
-!print*,""
-!
-!    ! call twisted QZ
-!    call z_upr1fpen_qz(.TRUE.,.TRUE.,l_upr1fact_hess &
-!    ,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
-!!print*,"V"
-!!do ii=1,N
-!!write(*,2000) V(ii,:)
-!!end do
-!!print*,""
-!!print*,"W"
-!!do ii=1,N
-!!write(*,2000) W(ii,:)
-!!end do
-!!print*,""
-!    
-!    ! check INFO
-!    if (INFO.NE.0) then
-!      call u_test_failed(__LINE__)
-!    end if
-!
-!    ! check residuals
-!    call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
-!    H = abs(matmul(Hold,V)-matmul(W,H))
-!    if (maxval(dble(H)) >= tol) then
-!      call u_test_failed(__LINE__)
-!    end if
-!    T = abs(matmul(Told,V)-matmul(W,T))
-!    if (maxval(dble(T)) >= tol) then
-!      call u_test_failed(__LINE__)
-!    end if
-!!print*,"Residuals"
-!!do ii=1,N
-!!write(*,2000) H(ii,:)
-!!end do
-!!print*,""
-!!do ii=1,N
-!!write(*,2000) T(ii,:)
-!!end do
-!!print*,""
-!
-!    ! check orthogonality of V
-!    H = matmul(conjg(transpose(V)),V)
-!    do ii = 1,N
-!      H(ii,ii) = H(ii,ii) - cmplx(1d0,0d0,kind=8)
-!    end do
-!    H = abs(H)
-!    if (maxval(dble(H)) >= tol) then
-!      call u_test_failed(__LINE__)
-!    end if
-!
-!    ! check orthogonality of W
-!    H = matmul(conjg(transpose(W)),W)
-!    do ii = 1,N
-!      H(ii,ii) = H(ii,ii) - cmplx(1d0,0d0,kind=8)
-!    end do
-!    H = abs(H)
-!    if (maxval(dble(H)) >= tol) then
-!      call u_test_failed(__LINE__)
-!    end if
-!
-!  ! end check 1)
+    ! set valid C1 and B1
+    C1 = 0d0
+    do ii=1,N
+      C1(3*ii) = -1d0
+    end do
+    B1 = -C1
+
+    ! set valid D2
+    D2 = 0d0
+    do ii=1,N
+      D2(2*ii-1) = 1d0
+    end do
+
+    ! set valid C2 and B2
+    C2 = C1
+    B2 = B1
+
+    ! decompress matrix
+    call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
+
+    ! call twisted QZ
+    call z_upr1fpen_qz(.TRUE.,.TRUE.,l_upr1fact_hess &
+    ,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
+    
+    ! check INFO
+    if (INFO.NE.0) then
+      call u_test_failed(__LINE__)
+    end if
+
+    ! check residuals
+    call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
+    H = abs(matmul(Hold,V)-matmul(W,H))
+    if (maxval(dble(H)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+    T = abs(matmul(Told,V)-matmul(W,T))
+    if (maxval(dble(T)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+
+    ! check orthogonality of V
+    H = matmul(conjg(transpose(V)),V)
+    do ii = 1,N
+      H(ii,ii) = H(ii,ii) - cmplx(1d0,0d0,kind=8)
+    end do
+    H = abs(H)
+    if (maxval(dble(H)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+
+    ! check orthogonality of W
+    H = matmul(conjg(transpose(W)),W)
+    do ii = 1,N
+      H(ii,ii) = H(ii,ii) - cmplx(1d0,0d0,kind=8)
+    end do
+    H = abs(H)
+    if (maxval(dble(H)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+
+  ! end check 1)
 
 
 
@@ -220,31 +188,10 @@ program test_z_upr1fpen_qz
 
     ! decompress matrix
     call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
-!print*,""
-!print*,"H"
-!do ii=1,N
-!write(*,2000) Hold(ii,:)
-!end do
-!print*,""
-!print*,"T"
-!do ii=1,N
-!write(*,2000) Told(ii,:)
-!end do
-!print*,""
 
     ! call twisted QZ
     call z_upr1fpen_qz(.TRUE.,.TRUE.,l_upr1fact_inversehess &
     ,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
-!print*,"V"
-!do ii=1,N
-!write(*,2000) V(ii,:)
-!end do
-!print*,""
-!print*,"W"
-!do ii=1,N
-!write(*,2000) W(ii,:)
-!end do
-!print*,""
     
     ! check INFO
     if (INFO.NE.0) then
@@ -261,15 +208,6 @@ program test_z_upr1fpen_qz
     if (maxval(dble(T)) >= tol) then
       call u_test_failed(__LINE__)
     end if
-!print*,"Residuals"
-!do ii=1,N
-!write(*,2000) H(ii,:)
-!end do
-!print*,""
-!do ii=1,N
-!write(*,2000) T(ii,:)
-!end do
-!print*,""
 
     ! check orthogonality of V
     H = matmul(conjg(transpose(V)),V)
@@ -297,68 +235,92 @@ program test_z_upr1fpen_qz
 
 
 
-!  ! check 3)
-!    ! set INFO
-!    INFO = 0
-!    
-!    ! set P
-!    do ii=1,(N-2)
-!      if (mod(ii,2).EQ.1) then 
-!        P(ii) = .FALSE.
-!      else 
-!        P(ii) = .TRUE.
-!      end if
-!    end do    
-!
-!    ! set valid Q
-!    Q = 0d0
-!    do ii=1,(N-1)
-!      Q(3*ii) = 1d0
-!    end do     
-!  
-!    ! set valid D
-!    D = 0d0
-!    do ii=1,N
-!      D(2*ii-1) = 1d0
-!    end do
-!    D(2*N-1) = (-1d0)**(N-1)
-!
-!    ! set valid C and B
-!    C = 0d0
-!    do ii=1,N
-!      C(3*ii) = -1d0
-!    end do
-!    B = -C
-!    
-!    ! decompress matrix
-!    call z_upr1fpen_decompress(N,P,Q,D,C,B,H)
-!
-!    ! call twisted QZ
-!    call z_upr1fpen_qz(.TRUE.,.TRUE.,l_upr1fact_cmv &
-!    ,N,P,Q,D,C,B,N,V,ITS,INFO)
-!    
-!    ! check INFO
-!    if (INFO.NE.0) then
-!      call u_test_failed(__LINE__)
-!    end if
-!
-!    ! check residual
-!    call z_upr1utri_decompress(.FALSE.,N,D,C,B,T)
-!    H = abs(matmul(H,V)-matmul(V,T))
-!    if (maxval(dble(H)) >= tol) then
-!      call u_test_failed(__LINE__)
-!    end if
-!
-!    ! check orthogonality of V
-!    H = matmul(conjg(transpose(V)),V)
-!    do ii = 1,N
-!      H(ii,ii) = H(ii,ii) - cmplx(1d0,0d0,kind=8)
-!    end do
-!    H = abs(H)
-!    if (maxval(dble(H)) >= tol) then
-!      call u_test_failed(__LINE__)
-!    end if
-!
+  ! check 3)
+    ! set INFO
+    INFO = 0
+    
+    ! set P
+    do ii=1,(N-2)
+      if (mod(ii,2).EQ.1) then 
+        P(ii) = .FALSE.
+      else 
+        P(ii) = .TRUE.
+      end if
+    end do    
+
+    ! set valid Q
+    Q = 0d0
+    do ii=1,(N-1)
+      Q(3*ii) = 1d0
+    end do     
+  
+    ! set valid D1
+    D1 = 0d0
+    do ii=1,N
+      D1(2*ii-1) = 1d0
+    end do
+    D1(2*N-1) = (-1d0)**(N-1)
+
+    ! set valid C1 and B1
+    C1 = 0d0
+    do ii=1,N
+      C1(3*ii) = -1d0
+    end do
+    B1 = -C1
+
+    ! set valid D2
+    D2 = 0d0
+    do ii=1,N
+      D2(2*ii-1) = 1d0
+    end do
+
+    ! set valid C2 and B2
+    C2 = C1
+    B2 = B1
+
+    ! decompress matrix
+    call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
+
+    ! call twisted QZ
+    call z_upr1fpen_qz(.TRUE.,.TRUE.,l_upr1fact_cmv &
+    ,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
+    
+    ! check INFO
+    if (INFO.NE.0) then
+      call u_test_failed(__LINE__)
+    end if
+
+    ! check residuals
+    call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
+    H = abs(matmul(Hold,V)-matmul(W,H))
+    if (maxval(dble(H)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+    T = abs(matmul(Told,V)-matmul(W,T))
+    if (maxval(dble(T)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+
+    ! check orthogonality of V
+    H = matmul(conjg(transpose(V)),V)
+    do ii = 1,N
+      H(ii,ii) = H(ii,ii) - cmplx(1d0,0d0,kind=8)
+    end do
+    H = abs(H)
+    if (maxval(dble(H)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+
+    ! check orthogonality of W
+    H = matmul(conjg(transpose(W)),W)
+    do ii = 1,N
+      H(ii,ii) = H(ii,ii) - cmplx(1d0,0d0,kind=8)
+    end do
+    H = abs(H)
+    if (maxval(dble(H)) >= tol) then
+      call u_test_failed(__LINE__)
+    end if
+
 !  ! end check 3)
 
 

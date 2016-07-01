@@ -115,29 +115,12 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
 
   end if
 
-  ! fix shift for now
-!if (ITCNT.LT.2) then
-!  shift = cmplx(1.1d0,1d0,kind=8)/sqrt(2d0)
-!elseif (ITCNT.LT.4) then
-!  shift = cmplx(1d0,0d0,kind=8)
-!elseif (ITCNT.LT.6) then
-!  shift = cmplx(-1d0,0d0,kind=8)
-!end if
-
 print*,""
 print*," shift =",shift
 print*,""
 
   ! build bulge
   call z_upr1fpen_buildbulge(P(1),Q(1:3),D1(1:4),C1(1:6),B1(1:6),D2(1:4),C2(1:6),B2(1:6),shift,G)
-
-!G(1) = 1/sqrt(2d0)
-!G(2) = 0d0
-!G(3) = 1/sqrt(2d0)
-
-!print*,""
-!print*," G =",G
-!print*,""
 
   ! set Ginv
   Ginv(1) = G(1)
