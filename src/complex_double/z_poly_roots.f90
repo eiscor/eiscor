@@ -1,4 +1,3 @@
-#include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_poly_roots 
@@ -31,20 +30,19 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   
   ! input variables
   integer, intent(in) :: N
+  integer, intent(inout) :: INFO
   complex(8), intent(in) :: COEFFS(N+1)
   complex(8), intent(inout) :: ROOTS(N)
   real(8), intent(inout) :: RESIDUALS(N)
-  integer, intent(inout) :: INFO
   
   ! compute variables
-  integer :: ii, jj
+  integer :: ii
   real(8) :: scl
   logical, allocatable :: P(:)
   integer, allocatable :: ITS(:)
-  real(8), allocatable :: Q(:), D1(:), C1(:), B1(:)
-  real(8), allocatable :: D2(:), C2(:), B2(:)
-  complex(8), allocatable :: V(:), W(:)
-  complex(8), allocatable :: H(:,:), T(:,:)
+  real(8), allocatable :: Q(:),D1(:),C1(:),B1(:)
+  real(8), allocatable :: D2(:),C2(:),B2(:)
+  complex(8), allocatable :: V(:),W(:),T(:,:)
   interface
     function l_upr1fact_hess(m,flags)
       logical :: l_upr1fact_hess
@@ -52,18 +50,37 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
       logical, dimension(m-2), intent(in) :: flags
     end function l_upr1fact_hess
   end interface
+  interface
+    function l_upr1fact_inversehess(m,flags)
+      logical :: l_upr1fact_inversehess
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_inversehess
+  end interface
+  interface
+    function l_upr1fact_cmv(m,flags)
+      logical :: l_upr1fact_cmv
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_cmv
+  end interface
+  interface
+    function l_upr1fact_random(m,flags)
+      logical :: l_upr1fact_random
+      integer, intent(in) :: m
+      logical, dimension(m-2), intent(in) :: flags
+    end function l_upr1fact_random
+  end interface
   
   ! allocate memory
-  allocate(P(N-2),ITS(N-1),Q(3*(N-1)),D1(2*N),C1(3*N),B1(3*N))    
-  allocate(D2(2*N),C2(3*N),B2(3*N),V(N),W(N))    
-  allocate(H(N,N),T(N,N))    
+  allocate(P(N-2),ITS(N-1),Q(3*(N-1)),D1(2*(N+1)),C1(3*N),B1(3*N))    
+  allocate(V(N),W(N),D2(2*(N+1)),C2(3*N),B2(3*N))    
 
   ! initialize INFO
   INFO = 0
 
   ! fill P
   P = .FALSE.
-!  P(2:N-2:2) = .TRUE.
 
   ! fill V and W
   scl = maxval(abs(COEFFS))
@@ -74,66 +91,36 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   W = cmplx(0d0,0d0,kind=8)
   W(N) = COEFFS(1)/scl
 
-  ! compress companion pencil
-  call z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2) 
+  ! factor companion matrix
+  call z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2)
 
   ! call z_upr1fpen_qz
-  call z_upr1fpen_qz(.FALSE.,.FALSE.,l_upr1fact_hess, & 
-                     N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
+  call z_upr1fpen_qz(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
 
-  ! decompress 
-  call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
-
-  ! print pencil
+  ! extract roots
+  call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,V)
+  call z_upr1utri_decompress(.TRUE.,N,D2,C2,B2,W)
+  do ii=1,N
+    ROOTS(ii) = V(ii)/W(ii)
+  end do
+    
+  ! compute residuals
+  call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
+    
 print*,""
-print*,"H"
-do ii=1,N
-write(*,2000) H(ii,:)
+print*,""
+print*,"Inside Roots"
+print*,""
+print*,"INFO:",INFO
+print*,""
+print*,"Roots residuals and iterations"
+print*,ROOTS(1),RESIDUALS(1)
+do ii=1,(N-1)
+print*,ROOTS(ii+1),RESIDUALS(ii+1),ITS(ii)
 end do
 print*,""
-print*,"T"
-do ii=1,N
-write(*,2000) T(ii,:)
-end do
-print*,""
-2000 format(9(es11.3,es10.3))
-
 
   ! free memory
-  deallocate(P,Q,D1,C1,B1,D2,C2,B2,V,W,H,T,ITS)
-
-!  ! set V
-!  V(N) = ((-1d0)**(N))*COEFFS(N+1)/COEFFS(1)
-!  do ii=1,(N-1)
-!    V(ii) = -COEFFS(N+1-ii)/COEFFS(1)
-!  end do
-!
-!  ! factor companion matrix
-!  call z_compmat_compress(N,P,V,Q,D,C,B)       
-!
-!  ! call z_upr1fact_qr
-!  call z_upr1fact_qr(.FALSE.,.FALSE.,l_upr1fact_hess, & 
-!                     N,P,Q,D,C,B,N,V,ITS,INFO)
-!
-!  ! check INFO
-!  if (INFO.NE.0) then
-!    ! print error message in debug mode
-!    if (DEBUG) then
-!      call u_infocode_check(__FILE__,__LINE__, & 
-!           "z_upr1fact_qr failed to compute eigenvalues",INFO,INFO)
-!    end if
-!    INFO = 1
-!    deallocate(P,ITS,Q,D,C,B,V)
-!    return
-!  end if
-!
-!  ! extract roots
-!  call z_upr1utri_decompress(.TRUE.,N,D,C,B,ROOTS)
-!    
-!  ! compute residuals
-!  call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
-!
-!  ! free memory
-!  deallocate(P,ITS,Q,D,C,B,V)
+  deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W)
 
 end subroutine z_poly_roots

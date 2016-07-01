@@ -206,8 +206,8 @@ print*,""
 !end do
 !print*,""
 
-!write(*,*) "Press enter to continue"
-!read(*,*)
+write(*,*) "Press enter to continue"
+read(*,*)
 
 
     ! check for deflation
