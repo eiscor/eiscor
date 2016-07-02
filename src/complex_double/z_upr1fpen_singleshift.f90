@@ -1,36 +1,37 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_singleshift
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes a shift for a factored unitary plus rank one
 ! (upr1fpen) matrix.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
-!  P               LOGICAL array of dimension (2)
-!                    position flags for Q
+!  P               LOGICAL array of dimension (N-2)
+!                    array of position flags for Q
 !
-!  Q               REAL(8) array of dimension (6)
+!  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) arrays of dimension (6)
-!                    array of generators for complex diagonal matrix
-!                    in the upper-triangular factor
+!  D1,D2           REAL(8) arrays of dimension (2*N)
+!                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
-!  C,B             REAL(8) arrays of dimension (9)
-!                    array of generators for upper-triangular part
+!  C1,C2,B1,B2     REAL(8) arrays of dimension (3*N)
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 ! OUTPUT VARIABLES:
 !
 !  SHFT            COMPLEX(8)
 !                    shift
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_singleshift(P,Q,D1,C1,B1,D2,C2,B2,SHFT)
   
   implicit none
@@ -49,19 +50,6 @@ subroutine z_upr1fpen_singleshift(P,Q,D1,C1,B1,D2,C2,B2,SHFT)
   
   ! extract R2
   call z_upr1utri_decompress(.FALSE.,3,D2,C2,B2,R2)
-  
-!print*,""
-!print*,"R1"
-!print*,R1(1,:)
-!print*,R1(2,:)
-!print*,R1(3,:)
-!print*,""
-!print*,""
-!print*,"R2"
-!print*,R2(1,:)
-!print*,R2(2,:)
-!print*,R2(3,:)
-!print*,""
 
   ! apply first Q
   if (P(2)) then 

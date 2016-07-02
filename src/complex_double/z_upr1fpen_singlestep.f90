@@ -1,20 +1,20 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_singlestep 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes one iteration of Francis' singleshift 
 ! algorithm on a factored unitary plus rank one (upr1fpen) matrix.. 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE. update schurvectors
-!                    .FALSE. no schurvectors
+!                    .TRUE.: compute schurvector
+!                    .FALSE.: no schurvectors
 !
 !  FUN             LOGICAL FUNCTION FUN(N,P)
 !                    takes integer N and logical array P of 
@@ -27,26 +27,26 @@
 !                    array of position flags for Q
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
-!                    array of generators for givens rotations
+!                    array of generators for first sequence of rotations
 !
 !  D1,D2           REAL(8) arrays of dimension (2*N)
 !                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
 !  C1,C2,B1,B2     REAL(8) arrays of dimension (3*N)
-!                    arrays of generators for upper-triangular parts
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 !  M               INTEGER
-!                    leading dimesnion of V and W
+!                    leading dimension of V and W
 !
-!  V,W             COMPLEX(8) arrays of dimension (M,N)
-!                    left and right schur vectors
-!                    if VEC = .FALSE. unused
-!                    if VEC = .TRUE. update V and W
+!  V,W             COMPLEX(8) array of dimension (M,N)
+!                    right and left schurvectors 
 !
 !  ITCNT           INTEGER
 !                   Contains the number of iterations since last deflation
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_singlestep(VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
 
   implicit none

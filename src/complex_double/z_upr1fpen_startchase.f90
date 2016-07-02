@@ -1,20 +1,20 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_startchase 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine initializes one iteration of Francis' singleshift 
 ! algorithm for a factored unitary plus rank one (upr1fpen) matrix pencil.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE. update schurvectors
-!                    .FALSE. no schurvectors
+!                    .TRUE.: compute schurvector
+!                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -23,28 +23,28 @@
 !                    array of position flags for Q
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
-!                    array of generators for givens rotations
+!                    array of generators for first sequence of rotations
 !
 !  D1,D2           REAL(8) arrays of dimension (2*N)
-!                    arrays of generators for complex diagonal matrix
+!                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
 !  C1,C2,B1,B2     REAL(8) arrays of dimension (3*N)
-!                    arrays of generators for upper-triangular part
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 !  M               INTEGER
-!                    leading dimesnion of V and W
+!                    leading dimension of V and W
 !
-!  V,W               COMPLEX(8) arrays of dimension (M,2)
-!                    left and right schur vectors
-!                    if VEC = .FALSE. unused
-!                    if VEC = .TRUE. update V and W to store schur vectors
+!  V,W             COMPLEX(8) array of dimension (M,N)
+!                    right and left schurvectors 
 !
 ! OUTPUT VARIABLES:
 !
 !  G               REAL(8) array of dimension 3
 !                    generators for bulge core transformation
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
 
   implicit none

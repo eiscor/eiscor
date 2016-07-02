@@ -5,14 +5,9 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the Schur decomposition of a factored unitary
-! plus rank one (upr1fpen) matrix. Such a matrix is stored as 3 sequences 
-! of rotations and a unimodular diagonal matrix.
-!
-! The extended hessenberg matrix H = Q(P)*D*C*B
-!
-! The columns of V are the right Schur vectors.
-! Namely, V*HV is upper-triangular.
+! This routine computes the generalized schur decomposition of an extended
+! hessenberg triangular matrix pencil where both matrices in the pencil and
+! compressed unitary plus rank one matrices (upr1).
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !

@@ -1,21 +1,21 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_deflationcheck 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine checks for deflations in a factored unitary plus rank
 ! one (upr1fpen) matrix. When a deflation occurs the corresponding 
 ! rotation in the unitary part is set to the identity matrix.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: update eigenvectors
-!                    .FALSE.: ignore V matrix
+!                    .TRUE.: compute schurvector
+!                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -24,29 +24,28 @@
 !                    array of position flags for Q
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
-!                    array of generators for givens rotations
-!
-!  D               REAL(8) array of dimension (2*N)
-!                    array of generators for complex diagonal matrix
-!
-!  C               REAL(8) array of dimension (3*N)
 !                    array of generators for first sequence of rotations
 !
-!  B               REAL(8) array of dimension (3*N)
-!                    array of generators for second sequence of rotations
+!  D1,D2           REAL(8) arrays of dimension (2*N)
+!                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
+!
+!  C1,C2,B1,B2     REAL(8) arrays of dimension (3*N)
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 !  M               INTEGER
-!                    leading dimension of V
+!                    leading dimension of V and W
 !
-!  V               COMPLEX(8) array of dimension (M,N)
-!                    array of eigenvectors
+!  V,W             COMPLEX(8) array of dimension (M,N)
+!                    right and left schurvectors 
 !
 ! OUTPUT VARIABLES:
 !
 !  ZERO            INTEGER
 !                     on output contains index of newest deflation
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_deflationcheck(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
 
   implicit none

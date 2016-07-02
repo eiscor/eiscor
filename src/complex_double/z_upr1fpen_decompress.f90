@@ -1,13 +1,14 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#include "eiscor.h"
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_decompress
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine decompresses a factored unitary plus rank one 
 ! (upr1fpen) matrix pencil.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
@@ -15,26 +16,25 @@
 !                    dimension of matrix
 !
 !  P               LOGICAL array of dimension (N-2)
-!                    array of position flags
+!                    array of position flags for Q
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
-!                    array of generators for the unitary rotations
+!                    array of generators for first sequence of rotations
 !
 !  D1,D2           REAL(8) arrays of dimension (2*N)
 !                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
-!  C1,C2           REAL(8) arrays of dimension (3*N)
-!                    arrays of generators for first sequence of rotations
-!
-!  B1,B2           REAL(8) arrays of dimension (3*N)
-!                    arrays of generators for second sequence of rotations
+!  C1,C2,B1,B2     REAL(8) arrays of dimension (3*N)
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 ! OUTPUT VARIABLES:
 !
 !  H,T             COMPLEX(8) arrays of dimension (N,N)
 !                    extended hessenberg, triangular pencil
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
 
   implicit none

@@ -1,20 +1,20 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_endchase 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine finaalizes one iteration of Francis' singleshift 
 ! algorithm for a factored unitary plus rank one (upr1fpen) matrix.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE. update schurvectors
-!                    .FALSE. no schurvectors
+!                    .TRUE.: compute schurvector
+!                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -23,26 +23,26 @@
 !                    array of position flags for Q
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
-!                    array of generators for givens rotations
+!                    array of generators for first sequence of rotations
 !
-!  D               REAL(8) arrays of dimension (2*N)
-!                    array of generators for complex diagonal matrix
+!  D1,D2           REAL(8) arrays of dimension (2*N)
+!                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
-!  C,B             REAL(8) arrays of dimension (3*N)
-!                    array of generators for upper-triangular part
+!  C1,C2,B1,B2     REAL(8) arrays of dimension (3*N)
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 !  M               INTEGER
-!                    leading dimesnion of V 
+!                    leading dimension of V and W
 !
-!  V               COMPLEX(8) array of dimension (M,N)
-!                    right schur vectors
-!                    if VEC = .FALSE. unused
-!                    if VEC = .TRUE. update V to store right schurvectors 
+!  V,W             COMPLEX(8) array of dimension (M,2)
+!                    right and left schurvectors 
 !
 !  FLAG            LOGICAL                     
 !                    position flag for merging the misfit at the bottom
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_endchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLAG)
 
   implicit none
