@@ -1,9 +1,9 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_qz
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes the Schur decomposition of a factored unitary
 ! plus rank one (upr1fpen) matrix. Such a matrix is stored as 3 sequences 
@@ -14,7 +14,7 @@
 ! The columns of V are the right Schur vectors.
 ! Namely, V*HV is upper-triangular.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
@@ -40,31 +40,33 @@
 !                    array of generators for first sequence of rotations
 !
 !  D1,D2           REAL(8) arrays of dimension (2*N)
-!                    array of generators for complex diagonal matrix
-!                    in the upper-triangular factor
+!                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
 !  C1,C2,B1,B2     REAL(8) arrays of dimension (3*N)
-!                    array of generators for upper-triangular part
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 !  M               INTEGER
-!                    leading dimension of V
+!                    leading dimension of V and W
 !
 ! OUTPUT VARIABLES:
 !
-!  V,W            COMPLEX(8) array of dimension (M,N)
-!                   right schur vectors
+!  V,W             COMPLEX(8) array of dimension (M,N)
+!                    right and left schurvectors 
 !
-!  ITS            INTEGER array of dimension (N-1)
-!                   Contains the number of iterations per deflation
+!  ITS             INTEGER array of dimension (N-1)
+!                    Contains the number of iterations per deflation
 !
-!  INFO           INTEGER
-!                   INFO = 2 implies no convergence 
-!                   INFO = 1 random seed initialization failed
-!                   INFO = 0 implies successful computation
-!                   INFO = -1 implies N, Q, D, C, or B is invalid
-!                   INFO = -14 implies V is invalid
+!  INFO            INTEGER
+!                    INFO = 2 implies no convergence 
+!                    INFO = 1 random seed initialization failed
+!                    INFO = 0 implies successful computation
+!                    INFO = -1 implies N, Q, D1, C1, B1, D2, C2, or B2 is invalid
+!                    INFO = -14 implies V is invalid
+!                    INFO = -14 implies W is invalid
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
 
   implicit none
@@ -89,8 +91,6 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
   logical :: flg
   integer :: ii, jj, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
-complex(8) :: Hold(8,8), Told(8,8)
-complex(8) :: H(8,8), T(8,8)
   
   ! initialize info
   INFO = 0
@@ -156,11 +156,6 @@ complex(8) :: H(8,8), T(8,8)
   ITMAX = 20*N
   ITCNT = 0
   
-2000 format(8(es11.3,es10.3))
-call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
-
-
-
   ! iteration loop
   do kk=1,ITMAX
 
@@ -168,47 +163,6 @@ call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,Hold,Told)
     if(STP <= 0)then    
       exit
     end if
-
-call z_upr1fpen_decompress(N,P,Q,D1,C1,B1,D2,C2,B2,H,T)
-print*," inside twisted QZ"
-!print*," start:",str
-!print*," stop:",stp
-!print*," zero:",zero
-!print*,""
-
-!print*," P"
-!print*,P
-!print*,""
-
-print*," decompressed matrices"
-print*," H"
-do ii=1,N
-write(*,2000) H(ii,:)
-end do
-print*,""
-print*," T"
-do ii=1,N
-write(*,2000) T(ii,:)
-end do
-print*,""
-
-!print*," equivalence transforms"
-!H = abs(H-matmul(conjg(transpose(W)),matmul(Hold,V)))
-!T = abs(T-matmul(conjg(transpose(W)),matmul(Told,V)))
-!print*," H"
-!do ii=1,N
-!write(*,2000) H(ii,:)
-!end do
-!print*,""
-!print*," T"
-!do ii=1,N
-!write(*,2000) T(ii,:)
-!end do
-!print*,""
-
-write(*,*) "Press enter to continue"
-read(*,*)
-
 
     ! check for deflation
     call z_upr1fpen_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &

@@ -107,19 +107,6 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   ! compute residuals
   call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
     
-print*,""
-print*,""
-print*,"Inside Roots"
-print*,""
-print*,"INFO:",INFO
-print*,""
-print*,"Roots residuals and iterations"
-print*,ROOTS(1),RESIDUALS(1)
-do ii=1,(N-1)
-print*,ROOTS(ii+1),RESIDUALS(ii+1),ITS(ii)
-end do
-print*,""
-
   ! free memory
   deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W)
 

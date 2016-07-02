@@ -47,26 +47,22 @@ subroutine z_upr1fact_buildbulge(P,Q,D,C,B,SHFT,G)
   
   ! compute variables
   real(8) :: nrm
-  complex(8) :: R1(2,2), R2(2,2), vec1(2), vec2(2)
+  complex(8) :: R(2,2), vec1(2), vec2(2)
   
-  ! get R1
-  call z_upr1utri_decompress(.FALSE.,2,D,C,B,R1)
+  ! get R
+  call z_upr1utri_decompress(.FALSE.,2,D,C,B,R)
      
-  ! set R2 to I
-  R2 = cmplx(0d0,0d0,kind=8)
-  R2(1,1) = cmplx(1d0,0d0,kind=8); R2(2,2) = R2(1,1)
-
   ! compute first columns
   ! P == FALSE
   if (.NOT.P) then
    
-    ! first column of R1
-    vec1(1) = cmplx(Q(1),Q(2),kind=8)*R1(1,1)
-    vec1(2) = cmplx(Q(3),0d0,kind=8)*R1(1,1)
+    ! first column of R
+    vec1(1) = cmplx(Q(1),Q(2),kind=8)*R(1,1)
+    vec1(2) = cmplx(Q(3),0d0,kind=8)*R(1,1)
     
-    ! first column of R2
-    vec2(1) = R2(1,1)
-    vec2(2) = R2(2,1)
+    ! e1
+    vec2(1) = cmplx(1d0,0d0,kind=8)
+    vec2(2) = cmplx(0d0,0d0,kind=8)
   
   ! P == TRUE
   else
@@ -76,12 +72,12 @@ subroutine z_upr1fact_buildbulge(P,Q,D,C,B,SHFT,G)
     vec2(2) = cmplx(-Q(3),0d0,kind=8)
     
     ! back solve with R1
-    vec2(2) = vec2(2)/R1(2,2)
-    vec2(1) = (vec2(1) - R1(1,2)*vec2(2))/R1(1,1)
+    vec2(2) = vec2(2)/R(2,2)
+    vec2(1) = (vec2(1) - R(1,2)*vec2(2))/R(1,1)
     
-    ! R2^-1 e1
-    vec1(1) = 1d0/R2(1,1)
-    vec1(2) = 0d0
+    ! e1
+    vec1(1) = cmplx(1d0,0d0,kind=8)
+    vec1(2) = cmplx(0d0,0d0,kind=8)
   
   end if
   

@@ -115,10 +115,6 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
 
   end if
 
-print*,""
-print*," shift =",shift
-print*,""
-
   ! build bulge
   call z_upr1fpen_buildbulge(P(1),Q(1:3),D1(1:4),C1(1:6),B1(1:6),D2(1:4),C2(1:6),B2(1:6),shift,G)
 

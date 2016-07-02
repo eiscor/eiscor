@@ -1,35 +1,37 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_chasedown 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine chases the a single misfit core transformation down 
 ! one row in a factored unitary plus rank one (upr1fpen) matrix. 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE. update schurvectors
-!                    .FALSE. no schurvectors
+!                    .TRUE.: compute schurvector
+!                    .FALSE.: no schurvectors
 !
 !  P               LOGICAL array of dimension (2)
 !                    array of position flags for Q
 !
 !  Q               REAL(8) array of dimension (6)
-!                    array of generators for givens rotations
+!                    array of generators for first sequence of rotations
 !
 !  D1,D2           REAL(8) arrays of dimension (4)
-!                    array of generators for complex diagonal matrix
+!                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
 !  C1,C2,B1,B2     REAL(8) arrays of dimension (6)
-!                    array of generators for upper-triangular part
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 !  M               INTEGER
-!                    leading dimesnion of V and W
+!                    leading dimension of V and W
 !
 !  V,W             COMPLEX(8) array of dimension (M,2)
 !                    right schur vectors
@@ -39,7 +41,7 @@
 !  MISFIT          REAL(8) array of dimension (3)
 !                    array of generators for misfit
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_chasedown(VEC,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
 
   implicit none

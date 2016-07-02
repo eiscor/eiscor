@@ -109,7 +109,7 @@ program test_z_poly_roots
 
   ! check residuals
   do ii=1,N
-    if (RESIDUALS(ii) >= 10d0*tol) then
+    if (RESIDUALS(ii) >= 1d3*tol) then
       call u_test_failed(__LINE__)
     end if
   end do

@@ -1,28 +1,30 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_upr1fpen_buildbulge
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes the first transformation for a single shift
 ! iteration on a factored unitary plus rank one (upr1fpen) matrix pencil.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
-!  P               LOGICAL 
-!                    position flag for Q
+!  P               LOGICAL
+!                    array of position flags for Q
 !
-!  Q               REAL(8) array of dimension (3)
+!  Q               REAL(8) array of dimension (6)
 !                    array of generators for first sequence of rotations
 !
 !  D1,D2           REAL(8) arrays of dimension (4)
 !                    arrays of generators for complex diagonal matrices
+!                    in the upper-triangular factors
 !
 !  C1,C2,B1,B2     REAL(8) arrays of dimension (6)
-!                    arrays of generators for upper-triangular matrix
+!                    arrays of generators for unitary plus rank one
+!                    upper-trinagular matrices
 !
 !  SHFT            COMPLEX(8) 
 !                    contains the shift needed for the first transformation
@@ -33,7 +35,7 @@
 !                    on exit contains the generators for the first
 !                    transformation
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_buildbulge(P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
   
   implicit none
