@@ -1,14 +1,11 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_poly_roots_wo_residuals
+! z_poly_roots_wo_residuals 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes the roots of a polynomial expressed in the 
 ! monomial basis using the fast algorithm described in:
-!
-! This function does not compute residuals.
-!
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -27,17 +24,18 @@
 !                    computed roots
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_poly_roots_wo_residuals(N,COEFFS,ROOTS)
+subroutine z_poly_roots_wo_residuals(N,COEFFS,ROOTS,INFO)
 
   implicit none
   
   ! input variables
   integer, intent(in) :: N
+  integer, intent(inout) :: INFO
   complex(8), intent(in) :: COEFFS(N+1)
   complex(8), intent(inout) :: ROOTS(N)
   
   ! compute variables
-  integer :: ii, INFO
+  integer :: ii
   real(8) :: scl
   logical, allocatable :: P(:)
   integer, allocatable :: ITS(:)
@@ -75,7 +73,10 @@ subroutine z_poly_roots_wo_residuals(N,COEFFS,ROOTS)
   
   ! allocate memory
   allocate(P(N-2),ITS(N-1),Q(3*(N-1)),D1(2*(N+1)),C1(3*N),B1(3*N))    
-  allocate(V(N),W(N),D2(2*(N+1)),C2(3*N),B2(3*N),T(N,N))    
+  allocate(V(N),W(N),D2(2*(N+1)),C2(3*N),B2(3*N))    
+
+  ! initialize INFO
+  INFO = 0
 
   ! fill P
   P = .FALSE.
@@ -90,32 +91,19 @@ subroutine z_poly_roots_wo_residuals(N,COEFFS,ROOTS)
   W(N) = COEFFS(1)/scl
 
   ! factor companion matrix
-  call z_comppenc_factor(.TRUE.,N,P,V,W,Q,D1,C1,B1,D2,C2,B2,INFO)  
-    
-  ! call z_upr1fact_twistedqz
-  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-!  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_inversehess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-!  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_cmv,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-!  call z_upr1fact_twistedqz(.TRUE.,.FALSE.,.FALSE.,l_upr1fact_random,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-!  call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+  call z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2)
 
-  ! check INFO
-  if (INFO.NE.0) then
-    print*,""
-    print*,"INFO:",INFO
-    print*,""
-    deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W,T)
-    return  
-  end if
+  ! call z_upr1fpen_qz
+  call z_upr1fpen_qz(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
 
   ! extract roots
-  call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,V)
-  call z_upr1fact_extracttri(.TRUE.,N,D2,C2,B2,W)
+  call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,V)
+  call z_upr1utri_decompress(.TRUE.,N,D2,C2,B2,W)
   do ii=1,N
-     ROOTS(ii) = V(ii)/W(ii)
+    ROOTS(ii) = V(ii)/W(ii)
   end do
-
+        
   ! free memory
-  deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W,T)
+  deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W)
 
 end subroutine z_poly_roots_wo_residuals
