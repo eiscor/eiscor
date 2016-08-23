@@ -116,7 +116,11 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
   end if
 
   ! build bulge
-  call z_upr1fpen_buildbulge(P(1),Q(1:3),D1(1:4),C1(1:6),B1(1:6),D2(1:4),C2(1:6),B2(1:6),shift,G)
+  if (N.LE.2) then
+     call z_upr1fpen_buildbulge(.TRUE.,Q(1:3),D1(1:4),C1(1:6),B1(1:6),D2(1:4),C2(1:6),B2(1:6),shift,G)
+  else
+     call z_upr1fpen_buildbulge(P(1),Q(1:3),D1(1:4),C1(1:6),B1(1:6),D2(1:4),C2(1:6),B2(1:6),shift,G)
+  end if
 
   ! set Ginv
   Ginv(1) = G(1)
@@ -139,8 +143,49 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
   G = Ginv
 
   ! initialize turnover 
+  if (N.LE.2) then
+
+    ! fuse Ginv and Q, Ginv is now a diagonal rotation
+    call z_rot3_fusion(.FALSE.,Ginv,Q(1:3))
+
+    ! pass G through R2
+    call z_upr1utri_rot3swap(.TRUE.,D2(1:4),C2(1:6),B2(1:6),G)
+  
+    ! update left schurvectors diagonal Ginv
+    if (VEC) then
+      
+      W(:,1) = W(:,1)*cmplx(Ginv(1),Ginv(2),kind=8)
+      W(:,2) = W(:,2)*cmplx(Ginv(1),-Ginv(2),kind=8)
+      
+    end if
+
+    ! Ginv scales the rows of R2
+    call z_upr1utri_unimodscale(.TRUE.,D2(1:2),C2(1:3),B2(1:3), &
+                                cmplx(Ginv(1),-Ginv(2),kind=8))
+    call z_upr1utri_unimodscale(.TRUE.,D2(3:4),C2(4:6),B2(4:6), &
+                                cmplx(Ginv(1),Ginv(2),kind=8))
+
+    ! invert G
+    G(2) = -G(2)
+    G(3) = -G(3)
+
+    ! update right schurvectors with G
+    if (VEC) then
+      
+      A(1,1) = cmplx(G(1),G(2),kind=8)
+      A(2,1) = cmplx(G(3),0d0,kind=8)
+      A(1,2) = -A(2,1)
+      A(2,2) = conjg(A(1,1))
+      
+      V = matmul(V,A)
+      
+    end if
+
+    ! pass G through R1
+    call z_upr1utri_rot3swap(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G)
+
   ! hess
-  if (.NOT.P(1)) then
+  elseif (.NOT.P(1)) then
   
     ! fuse Ginv and Q, Ginv is now a diagonal rotation
     call z_rot3_fusion(.FALSE.,Ginv,Q(1:3))

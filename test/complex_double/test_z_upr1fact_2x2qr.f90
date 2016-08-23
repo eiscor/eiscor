@@ -23,7 +23,7 @@ program test_z_upr1fact_2x2qr
   integer, parameter :: N = 2
   real(8) :: tol
   integer :: ii, INFO, ITS(N-1)
-  logical :: P(N-2)
+  logical :: P(1)
   real(8) :: Q(3), D(4), C(6), B(6)
   complex(8) :: V(2,2), T(2,2), H(2,2)
   interface

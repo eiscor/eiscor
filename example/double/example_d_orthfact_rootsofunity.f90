@@ -14,7 +14,7 @@ program example_d_orthfact_rootsofunity
   
   ! compute variables
   integer, parameter :: N = 16
-  integer :: ii, INFO, cpair
+  integer :: ii, INFO
   real(8) :: Q(2*(N-1)), D(N), Z
   complex(8) :: E(N), V
   integer :: ITS(N-1)

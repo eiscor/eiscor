@@ -47,7 +47,7 @@ program test_d_orthfact_real2complex
 
   ! initialize H
   H = 0d0
-  do ii=1,(N/2)
+  do ii=1,(N/2)-1
     theta = 2d0*PI*dble(ii-5d-1)/dble(N)
     H(2*(ii-1)+1,2*(ii-1)+1) = cos(theta)
     H(2*(ii-1)+1,2*(ii-1)+2) = -sin(theta)

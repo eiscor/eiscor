@@ -14,7 +14,7 @@ program example_d_orthhess_gaussquad
   
   ! compute variables
   integer, parameter :: N = 16
-  integer :: ii, INFO, cpair
+  integer :: ii, INFO
   real(8) :: WORK(3*N), H(N,N), Z(1,N)
   complex(8) :: E(N), V(1,N)
   integer :: ITS(N-1)
