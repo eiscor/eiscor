@@ -57,9 +57,10 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   ! compute second rotation
   call d_rot2_vec2gen(a,b,c5,s5,nrm)
 
-  ! second column
-  a = -(-c1*s3-s1*c2*c3)*s5 + ((-s1*s3+c1*c2*c3)*c4 + s2*c3*s4)*c5
-  b = -(-s1*s3+c1*c2*c3)*s4 + s2*c3*c4
+  ! update 3rd column of 3x3 matrix for c6 and s6
+  b = c1*s2
+  a = c2*c4 + b*s4
+  b = (b*c4 - c2*s4)*c5 + s1*s2*s5
   
   ! compute first rotation
   call d_rot2_vec2gen(a,b,c6,s6,nrm)
