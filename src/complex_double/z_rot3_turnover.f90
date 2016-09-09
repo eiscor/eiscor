@@ -62,14 +62,17 @@ subroutine z_rot3_turnover(G1,G2,G3)
   
   ! compute first rotation
   call z_rot3_vec3gen(ar,ai,b,c4r,c4i,s4,nrm)
-  
+ 
   ! initialize c5r, c5i and s5
   ar = c1r*c3r - c1i*c3i - s1*c2r*s3
   ai = c1r*c3i + c1i*c3r - s1*c2i*s3
   b = nrm
   
   ! compute second rotation
-  call z_rot3_vec3gen(ar,ai,b,c5r,c5i,s5,nrm)
+  nrm = sqrt(ar*ar+ai*ai+b*b)
+  c5r = ar/nrm
+  c5i = ai/nrm
+  s5 = b/nrm
   
   ! initialize c6r, c6i and s6
   ar = c2r*c4r + c2i*c4i + c1r*s2*s4
@@ -77,9 +80,12 @@ subroutine z_rot3_turnover(G1,G2,G3)
   b = (s1*s5 + c1i*(c5i*c4r - c4i*c5r) + c1r*(c4i*c5i + c4r*c5r))*s2 & 
       - (c2i*c5i + c2r*c5r)*s4
   
-  ! compute third rotation
-  call z_rot3_vec3gen(ar,ai,b,c6r,c6i,s6,nrm)
-
+  ! compute second rotation
+  nrm = sqrt(ar*ar+ai*ai+b*b)
+  c6r = ar/nrm
+  c6i = ai/nrm
+  s6 = b/nrm
+  
   ! store output
   G1(1) = c5r
   G1(2) = c5i

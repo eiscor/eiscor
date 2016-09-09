@@ -55,15 +55,19 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   b = nrm
 
   ! compute second rotation
-  call d_rot2_vec2gen(a,b,c5,s5,nrm)
+  nrm = sqrt(a*a+b*b)
+  c5 = a/nrm
+  s5 = b/nrm
 
   ! update 3rd column of 3x3 matrix for c6 and s6
   b = c1*s2
   a = c2*c4 + b*s4
   b = (b*c4 - c2*s4)*c5 + s1*s2*s5
   
-  ! compute first rotation
-  call d_rot2_vec2gen(a,b,c6,s6,nrm)
+  ! compute third rotation
+  nrm = sqrt(a*a+b*b)
+  c6 = a/nrm
+  s6 = b/nrm
 
   ! set output
   Q1(1) = c5
