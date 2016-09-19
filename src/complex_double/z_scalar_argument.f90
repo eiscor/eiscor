@@ -42,24 +42,14 @@ subroutine z_scalar_argument(A,B,ARG,INFO)
   if (DEBUG) then
   
     ! check A
-    call d_scalar_nancheck(A,INFO)
+    call d_scalar_check(A,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
       return
     end if
-    call d_scalar_infcheck(A,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
-      return
-    end if   
 
     ! check B
-    call d_scalar_nancheck(B,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
-      return
-    end if
-    call d_scalar_infcheck(B,INFO)
+    call d_scalar_check(B,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
       return
