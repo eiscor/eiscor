@@ -97,7 +97,7 @@ subroutine d_symtrid_qr(VEC,ID,SCA,N,D,E,WORK,M,Z,ITS,INFO)
   end if
 
   ! factorize \Phi(T) and reduction to unitary Hessenberg form
-  call d_symtrid_factor(VEC,.FALSE.,SCA,N,D,E,WORK(1:(3*(N-3))),WORK((3*N+1):(5*N)),scale,M,Z,INFO)
+  call d_symtrid_factor3(VEC,.FALSE.,SCA,N,D,E,WORK(1:(3*(N-3))),WORK((3*N+1):(5*N)),scale,M,Z,INFO)
 
   ! check info
   if (INFO.NE.0) then 

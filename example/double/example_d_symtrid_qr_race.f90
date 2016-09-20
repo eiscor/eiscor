@@ -19,8 +19,8 @@ program example_d_symtrid_qr_race
   !integer, parameter :: problem = 3 ! random uniform  
   !integer, parameter :: problem = 4 ! random normal
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
-  integer, parameter :: N1 = 4
-  integer, parameter :: N2 = 4
+  integer, parameter :: N1 = 2
+  integer, parameter :: N2 = 1024
   real(8), parameter :: scale1 = 1d0
   real(8), parameter :: scale2 = 1d0
   real(8), parameter :: shift = 0d0

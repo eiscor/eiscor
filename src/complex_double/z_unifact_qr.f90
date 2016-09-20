@@ -70,7 +70,8 @@ subroutine z_unifact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   logical :: flg
   integer :: ii, jj, kk, ind1, ind2, ll, strt, k
   integer :: STR, STP, ZERO, ITMAX, ITCNT
-
+  complex(8) :: Zb(M,N)
+  
   ! initialize info
   INFO = 0
   
