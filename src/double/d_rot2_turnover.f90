@@ -25,7 +25,6 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   real(8), intent(inout) :: Q1(2), Q2(2), Q3(2)
 
   ! compute variables
-  real(8), parameter :: tol = EISCOR_DBL_EPS
   real(8) :: nrm
   real(8) :: a, b 
   real(8) :: c1, s1
@@ -43,32 +42,22 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   c3 = Q3(1)
   s3 = Q3(2)
   
-  ! initialize c4 and s4
+  ! compute first rotation
   a = s1*c3 + c1*c2*s3
   b = s2*s3
-  
-  ! compute first rotation
   call d_rot2_vec2gen(a,b,c4,s4,nrm)
 
-  ! initialize c5 and s5
+  ! compute second rotation
   a = c1*c3 - s1*c2*s3
   b = nrm
+  call d_rot2_vec2gen(a,b,c5,s5,nrm)
 
-  ! compute second rotation
-  nrm = sqrt(a*a+b*b)
-  c5 = a/nrm
-  s5 = b/nrm
-
-  ! update 3rd column of 3x3 matrix for c6 and s6
+  ! compute third rotation
   b = c1*s2
   a = c2*c4 + b*s4
   b = (b*c4 - c2*s4)*c5 + s1*s2*s5
+  call d_rot2_vec2gen(a,b,c6,s6,nrm)
   
-  ! compute third rotation
-  nrm = sqrt(a*a+b*b)
-  c6 = a/nrm
-  s6 = b/nrm
-
   ! set output
   Q1(1) = c5
   Q1(2) = s5
