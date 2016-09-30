@@ -20,7 +20,7 @@ program example_d_symtrid_qr_race
   !integer, parameter :: problem = 4 ! random normal
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
   integer, parameter :: N1 = 2
-  integer, parameter :: N2 = 1024
+  integer, parameter :: N2 = 4096
   real(8), parameter :: scale1 = 1d0
   real(8), parameter :: scale2 = 1d0
   real(8), parameter :: shift = 0d0
@@ -93,7 +93,7 @@ program example_d_symtrid_qr_race
 
      print*, Ds(1), Ds(N2), Es(1), EISCOR_DBL_EPS
   
-  do ll=1,1
+  do ll=1,2
      if (ll.EQ.1) then
         backward = .FALSE.
         print*, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"

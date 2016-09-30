@@ -14,15 +14,15 @@ program example_d_symtrid_qr_race_split
   implicit none
   
   ! compute variables
-  !integer, parameter :: problem = 1 ! [-0.5, 0, -0.5]  
+  integer, parameter :: problem = 1 ! [-0.5, 0, -0.5]  
   !integer, parameter :: problem = 2 ! osipov
   !integer, parameter :: problem = 3 ! random uniform  
   !integer, parameter :: problem = 4 ! random normal
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
-  integer, parameter :: problem = 6 ! cluster of [-0.5, 0, -0.5] with size=cluster
+  !integer, parameter :: problem = 6 ! cluster of [-0.5, 0, -0.5] with size=cluster
   integer, parameter :: cluster = 32 
-  integer, parameter :: N1 = 1024
-  integer, parameter :: N2 = 1024
+  integer, parameter :: N1 = 2
+  integer, parameter :: N2 = 4096
   real(8), parameter :: scale1 = 1d0
   real(8), parameter :: scale2 = 1d0
   real(8), parameter :: shift = 0d0
