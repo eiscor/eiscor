@@ -43,16 +43,19 @@ subroutine d_rot2_vec2gen(A,B,C,S,NRM)
   ! input variables
   real(8), intent(in) :: A,B
   real(8), intent(inout) :: C,S,NRM
+
+  ! compute difference fromm unity
+  NRM = A*A+B*B-1d0
   
   ! construct rotation
   if ((A.EQ.0).AND.(B.EQ.0)) then
      C = 1d0
      S = 0d0
      NRM = 0d0
-  else if (abs(A*A+B*B-1d0).LE.2*EISCOR_DBL_EPS) then
-     C =  A
-     S =  B
-     NRM =  1d0
+  else if (abs(NRM).LT.sqrt(EISCOR_DBL_EPS)) then
+     NRM =  1d0 + NRM/2
+     C =  A/NRM
+     S =  B/NRM
   else if (abs(A).GE.abs(B)) then
      S = B/A
      NRM = sign(sqrt(1d0 + S*S),A)

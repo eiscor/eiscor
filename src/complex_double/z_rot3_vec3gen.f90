@@ -54,6 +54,9 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
   nar = abs(AR)
   nai = abs(AI)
   nb = abs(B)
+
+  ! compute difference from unity
+  NRM = AR*AR+AI*AI+B*B-1d0
   
   ! AR = AI = B = 0
   if(nar.EQ.0 .AND. nai.EQ.0 .AND. nb.EQ.0)then
@@ -64,12 +67,12 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     NRM = 0d0
     
   ! [AR+iAI,B]^T is a unit vector to machine precision
-  else if(abs(AR*AR+AI*AI+B*B-1d0).LE.2*EISCOR_DBL_EPS)then
+  else if(abs(NRM).LT.sqrt(EISCOR_DBL_EPS))then
   
-    CR = AR
-    CI = AI
-    S = B
-    NRM = 1d0
+    NRM = 1d0 + NRM/2
+    CR = AR/NRM
+    CI = AI/NRM
+    S = B/NRM
     
   ! |AR| >= |B| and |AR| >= |AI| 
   else if(nar >= nb .AND. nar >= nai)then
