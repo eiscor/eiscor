@@ -311,14 +311,11 @@ subroutine d_symtrid_factor3(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
         Q((ind1+3):(ind2+3)) = hb
         
         ! set indices
-        ind1 = 2*(ii-2) + 1
-        ind2 = ind1+3
-       
-        ! through diag 
-        call z_rot3_swapdiag(.TRUE.,QD(ind1:ind2),bulge)
         !ind1 = 2*(ii-2) + 1
-        !ind2 = 3*(ii-2) + 1
-        !call z_upr1fact_rot3throughtri(.TRUE.,QD(ind1:ind1+3),QC(ind2:ind2+5),QB(ind2:ind2+5),bulge)
+        !ind2 = ind1+3
+        
+        ! through diag ! according to Raf the diagonal is 1 in the top part
+        !call z_rot3_swapdiag(.TRUE.,QD(ind1:ind2),bulge)
         
         ! update eigenvectors
         if (VEC) then

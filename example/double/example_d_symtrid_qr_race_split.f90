@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! example_d_symtrid_qr_1dlaplace
+! example_d_symtrid_qr_race_split
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -9,17 +9,19 @@
 ! [ -1 2 -1 ]. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program example_d_symtrid_qr_race
+program example_d_symtrid_qr_race_split
 
   implicit none
   
   ! compute variables
-  integer, parameter :: problem = 1 ! [-0.5, 0, -0.5]  
+  !integer, parameter :: problem = 1 ! [-0.5, 0, -0.5]  
   !integer, parameter :: problem = 2 ! osipov
   !integer, parameter :: problem = 3 ! random uniform  
   !integer, parameter :: problem = 4 ! random normal
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
-  integer, parameter :: N1 = 2
+  integer, parameter :: problem = 6 ! cluster of [-0.5, 0, -0.5] with size=cluster
+  integer, parameter :: cluster = 32 
+  integer, parameter :: N1 = 1024
   integer, parameter :: N2 = 1024
   real(8), parameter :: scale1 = 1d0
   real(8), parameter :: scale2 = 1d0
@@ -29,14 +31,14 @@ program example_d_symtrid_qr_race
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   integer :: N, M, MM, N3
   integer :: ii, jj, kk, ll, ij, INFO, IWORK(3+5*N2)
-  real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), eig(N2), t, t1, t2, t3, nrm, scale
-  real(8) :: Ds(N2), Es(N2), Hr(N2,N2), Zr(N2,N2), pi = EISCOR_DBL_PI
+  real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), eig(N2), t, t1, t2, t3, nrm, scale, scaleqr
+  real(8) :: WORKs(14*N2+N2*N2), Ds(N2), Es(N2), Hr(N2,N2), Zr(N2,N2), pi = EISCOR_DBL_PI
   complex(8) :: Z(N2,N2), H(N2,N2), v(N2), c1
   integer :: ITS(N2-1)
   logical :: backward
   
   ! timing variables
-  integer:: c_start, c_start2, c_stop, c_stop2, c_rate
+  integer:: c_start, c_start2, c_stop, c_stop2, c_rate, c_mid, c_mid2
   
   ! BLAS
   double precision :: dnrm2, dznrm2
@@ -84,6 +86,18 @@ program example_d_symtrid_qr_race
            call random_number(t1)
            Es(ii) = t * exp(10*t1)
         end do        
+     case (6) 
+        ! initialize T to be a block tridiagonal matrix of the form
+        !  2 -1
+        ! -1  2 -1
+        !     -1 2  eps
+        !        eps 2  -1
+        ! ...
+        Ds = 0d0
+        Es = -5d-1
+        do ii=cluster-1,N2,cluster
+           Es(ii) = 1e-10
+        end do
      end select
 
      do ii=1,N2
@@ -93,7 +107,7 @@ program example_d_symtrid_qr_race
 
      print*, Ds(1), Ds(N2), Es(1), EISCOR_DBL_EPS
   
-  do ll=1,1
+  do ll=1,2
      if (ll.EQ.1) then
         backward = .FALSE.
         print*, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
@@ -154,7 +168,23 @@ program example_d_symtrid_qr_race
               if (backward) then
                  call d_symtrid_qr(.TRUE.,.TRUE.,sca,N,D,E,WORK,N,Z,ITS,INFO)
               else
-                 call d_symtrid_qr(.FALSE.,.FALSE.,sca,N,D,E,WORK,1,Z,ITS,INFO)
+                 ! inline
+                 !call d_symtrid_qr(.FALSE.,.FALSE.,sca,N,D,E,WORK,1,Z,ITS,INFO)
+
+                 
+                 ! factorize \Phi(T) and reduction to unitary Hessenberg form
+                 call d_symtrid_factor3(.FALSE.,.FALSE.,SCA,N,D,E,WORK(1:(3*(N-3))),WORK((3*N+1):(5*N)),scaleqr,1,Z,INFO)
+                 
+                 ! check info
+                 if (INFO.NE.0) then 
+                    ! print error in debug mode
+                    if (DEBUG) then
+                       call u_infocode_check(__FILE__,__LINE__,"d_symtrid_factor failed",INFO,INFO)
+                    end if
+                    INFO = 1
+                    ! no eigenvalues found, no back transform necessary
+                 end if
+                 
               end if
            elseif (M.EQ.2) then
               ! run LAPACK
@@ -176,6 +206,60 @@ program example_d_symtrid_qr_race
            end if
         end do
 
+        
+        ! stop timer
+        call system_clock(count=c_mid)
+        WORKs = WORK
+        do ij = 1,N3
+           ! symtrid_qr
+           WORK = WORKs
+           if (M.EQ.1) then
+              ! call d_orthhess_qr
+              if (backward) then
+                 ! compute eigenvalues
+              else
+                 call z_unifact_qr(.FALSE.,.FALSE.,N,WORK(1:3*N-3),WORK((3*N+1):(5*N-1)),1,Z,ITS,INFO)
+                 
+                 ! check info
+                 if (INFO.NE.0) then 
+                    ! print error in debug mode
+                    if (DEBUG) then
+                       call u_infocode_check(__FILE__,__LINE__,"z_unifact_qr failed",INFO,INFO)
+                    end if
+                    INFO = 2
+                    ! since some of the eigenvalues have been found, the back transform is performed for all
+                    ! return
+                 end if
+              end if
+           end if
+        end do
+       
+        ! stop timer
+        call system_clock(count=c_mid2)
+        WORKs = WORK
+        do ij = 1,N3
+           ! symtrid_qr
+           WORK = WORKs
+           if (M.EQ.1) then
+              ! call d_orthhess_qr
+              if (backward) then
+                 ! back transformation
+              else
+                 ! back transformation
+                 do ii=1,N
+                    D(ii) = WORK(3*N+2*ii)/(1d0+WORK(3*N+2*ii-1))
+                 end do
+                 
+                 ! reverse scaling
+                 if (SCA) then
+                    do ii=1,N
+                       D(ii) = D(ii)*scaleqr
+                    end do
+                 end if
+              end if
+           end if
+        end do
+        
         ! check INFO
         if (INFO.NE.0) then
            print*,"d_symtrid_qr failed."
@@ -184,7 +268,7 @@ program example_d_symtrid_qr_race
         
         ! stop timer
         call system_clock(count=c_stop)
-        
+
         nrm = 0d0
         do ii=1,N
            if (abs(D(ii))>nrm) then
@@ -218,12 +302,12 @@ program example_d_symtrid_qr_race
               t1 = t1 + t**2
            end do
            t1 = t1/nrm
-           if ((dsqrt(t1)>1d-3*max(scale,1d0/scale)**2).OR.(t1.NE.t1)) then
-              do ii=1,N
-                 print*, ii, D(ii),eig(ii)
-              end do
-              call u_test_failed(__LINE__)
-           end if
+           !if ((dsqrt(t1)>1d-3*max(scale,1d0/scale)**2).OR.(t1.NE.t1)) then
+           !   do ii=1,N
+           !      print*, ii, D(ii),eig(ii)
+           !   end do
+           !   call u_test_failed(__LINE__)
+           !end if
         else 
            t1 = 0d0
            t1 = 0d0/t1
@@ -298,6 +382,9 @@ program example_d_symtrid_qr_race
            print*, "(",N, ",",t2,")% for ", dsqrt(t1), " time ", dble(c_stop-c_start)/dble(c_rate)/N3 
         else
            print*, "(",N, ",",dble(c_stop-c_start)/dble(c_rate)/N3,")% for err ", dsqrt(t1)
+           print*, "(",N, ",",dble(c_mid-c_start)/dble(c_rate)/N3,")% reduction"
+           print*, "(",N, ",",dble(c_mid2-c_mid)/dble(c_rate)/N3,")% qr"
+           print*, "(",N, ",",dble(c_stop-c_mid2)/dble(c_rate)/N3,")% backtransform"
         end if
 
         N = 2*N
@@ -313,4 +400,4 @@ program example_d_symtrid_qr_race
   ! print success
   call u_test_passed(dble(c_stop2-c_start2)/dble(c_rate))
 
-end program example_d_symtrid_qr_race
+end program example_d_symtrid_qr_race_split
