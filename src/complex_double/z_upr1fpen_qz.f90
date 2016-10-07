@@ -178,9 +178,12 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
     ! if greater than 1x1 chase a bulge
     else
 
-      ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      ! update STR
+      if (ZERO.GT.0) then
+         STR = STR + ZERO
+         ZERO = 0
+         ITS(STR+ZERO-1) = ITCNT
+         ITCNT = 0
       end if
 
       ! perform singleshift iteration
