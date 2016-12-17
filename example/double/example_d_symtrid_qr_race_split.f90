@@ -21,8 +21,8 @@ program example_d_symtrid_qr_race_split
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
   !integer, parameter :: problem = 6 ! cluster of [-0.5, 0, -0.5] with size=cluster
   integer, parameter :: cluster = 32 
-  integer, parameter :: N1 = 2
-  integer, parameter :: N2 = 4096
+  integer, parameter :: N1 = 32
+  integer, parameter :: N2 = 32
   real(8), parameter :: scale1 = 1d0
   real(8), parameter :: scale2 = 1d0
   real(8), parameter :: shift = 0d0

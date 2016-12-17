@@ -14,12 +14,15 @@ program example_d_symtrid_qr_race
   implicit none
   
   ! compute variables
-  integer, parameter :: problem = 1 ! [-0.5, 0, -0.5]  
+  !integer, parameter :: problem = 1 ! [-0.5, 0, -0.5]  
   !integer, parameter :: problem = 2 ! osipov
   !integer, parameter :: problem = 3 ! random uniform  
   !integer, parameter :: problem = 4 ! random normal
   !integer, parameter :: problem = 5 ! random a exp(10 b), a,b normally distributed
+  integer, parameter :: problem = 6 ! cluster of [-0.5, 0, -0.5] with size=cluster
+  integer, parameter :: cluster = 32 
   integer, parameter :: N1 = 2
+  !integer, parameter :: N2 = 1024
   integer, parameter :: N2 = 4096
   real(8), parameter :: scale1 = 1d0
   real(8), parameter :: scale2 = 1d0
@@ -29,7 +32,7 @@ program example_d_symtrid_qr_race
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   integer :: N, M, MM, N3
   integer :: ii, jj, kk, ll, ij, INFO, IWORK(3+5*N2)
-  real(8) :: WORK(14*N2+N2*N2), D(N2), E(N2), eig(N2), t, t1, t2, t3, nrm, scale
+  real(8) :: WORK(24*N2+N2*N2), D(N2), E(N2), eig(N2), t, t1, t2, t3, nrm, scale
   real(8) :: Ds(N2), Es(N2), Hr(N2,N2), Zr(N2,N2), pi = EISCOR_DBL_PI
   complex(8) :: Z(N2,N2), H(N2,N2), v(N2), c1
   integer :: ITS(N2-1)
@@ -37,7 +40,10 @@ program example_d_symtrid_qr_race
   
   ! timing variables
   integer:: c_start, c_start2, c_stop, c_stop2, c_rate
-  
+
+  real(8) :: vl, vu, D2(N2)
+  integer :: il, iu, ISUPPZ(2*N2), Nf
+
   ! BLAS
   double precision :: dnrm2, dznrm2
 
@@ -83,7 +89,20 @@ program example_d_symtrid_qr_race
            call random_number(t)
            call random_number(t1)
            Es(ii) = t * exp(10*t1)
-        end do        
+        end do
+     case (6) 
+        ! initialize T to be a block tridiagonal matrix of the form
+        !  2 -1
+        ! -1  2 -1
+        !     -1 2  eps
+        !        eps 2  -1
+        ! ...
+        Ds = 0d0
+        Es = -5d-1
+        do ii=cluster-1,N2,cluster
+           Es(ii) = 1e-10
+        end do
+
      end select
 
      do ii=1,N2
@@ -111,7 +130,7 @@ program example_d_symtrid_qr_race
      end if
      
 
-  do M=1,4
+  do M=1,5
     if (M.EQ.1) then
         print*,""
         print*,"example_d_symtrid_qr_1dlaplace:"
@@ -130,6 +149,10 @@ program example_d_symtrid_qr_race
          print*,""
          print*,"LAPACK DSTERF"
          print*,""         
+     elseif (M.EQ.5) then
+         print*,""
+         print*,"LAPACK DSTEGR"
+         print*,""         
      else
         exit
      end if
@@ -144,7 +167,12 @@ program example_d_symtrid_qr_race
         
         ! start timer
         call system_clock(count=c_start)
-        
+
+!!$        if ((M.LE.2).AND.(N.GE.256)) then
+!!$           N = 2*N
+!!$           cycle
+!!$        end if
+
         do ij = 1,N3
            ! symtrid_qr
            D = Ds
@@ -173,6 +201,21 @@ program example_d_symtrid_qr_race
            elseif (M.EQ.4) then
               ! run LAPACK
               call dsterf (N, D, E, INFO)
+           elseif (M.EQ.5) then
+              ! run LAPACK
+              if (backward) then
+                 call dstegr ('V','A', N, D, E, vl, vu, il, iu, EISCOR_DBL_EPS,&
+                      & Nf, D2, Zr, N, ISUPPZ, WORK, 18*N+N*N, IWORK, 10*N, INFO)
+              else
+                 call dstegr ('N','A', N, D, E, vl, vu, il, iu, EISCOR_DBL_EPS,&
+                      & Nf, D2, Zr, N, ISUPPZ, WORK, 18*N+N*N, IWORK, 10*N, INFO)
+              end if
+              if ((Nf.LT.N).OR.(INFO.NE.0)) then
+                 print*, "only",Nf, "eigenvalues found; info", INFO
+              end if
+              do ii=1,N
+                 D(ii) = D2(ii)
+              end do
            end if
         end do
 
@@ -235,7 +278,7 @@ program example_d_symtrid_qr_race
 
         ! computing backward error
         if (backward) then
-           if (M==1) then
+           if (M.EQ.1) then
               t2 = 0d0
               do ii=1,N
                  ! jj  1
