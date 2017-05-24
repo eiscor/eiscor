@@ -35,15 +35,15 @@ program test_d_1Darray_random_normal
 
   call d_1Darray_random_normal(3,A)
 
-  if (abs(A(1)+0.66808819570369726d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(1)-0.47761357716530684d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(2)+0.39181453064203980d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(2)-7.3805546426916641d-2)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(3)+2.5355156920362356d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(3)-0.75081696949437793d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 

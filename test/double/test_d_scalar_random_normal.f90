@@ -35,7 +35,7 @@ program test_d_scalar_random_normal
 
   call d_scalar_random_normal(A)
 
-  if (abs(A+0.66808819570369726d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A-0.47761357716530684d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 

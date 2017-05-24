@@ -35,27 +35,27 @@ program test_d_2Darray_random_normal
 
   call d_2Darray_random_normal(3,2,A)
 
-  if (abs(A(1,1)+0.66808819570369726d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(1,1)-0.47761357716530684d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(1,2)+0.39181453064203980d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(2,1)-0.75081696949437793d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(2,1)+2.5355156920362356d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(3,1)-1.0977344437214227d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(2,2)-0.60792575305475460d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(1,2)-7.3805546426916641d-2)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(3,1)-0.27405052576540079d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(2,2)+0.79659862878327770d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(3,2)-0.77196141468304724d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A(3,2)+1.6229037583856123d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 

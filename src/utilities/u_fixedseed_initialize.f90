@@ -26,7 +26,7 @@ subroutine u_fixedseed_initialize(INFO)
   integer, intent(inout) :: INFO
 
   ! compute variables                                                                                           
-  integer :: ii, n, m, clock
+  integer :: ii, n, clock
   integer, allocatable :: seed(:)
 
   ! initialize INFO                                                                                             
@@ -35,10 +35,8 @@ subroutine u_fixedseed_initialize(INFO)
   ! get size of see                                                                                             
   call random_seed(size = n)
 
-  m = min(12,n)
-
   ! allocate memory for seed                                                                                    
-  allocate(seed(m))
+  allocate(seed(n))
 
   ! check allocation                                                                                            
   if (allocated(seed).EQV..FALSE.) then
@@ -52,7 +50,7 @@ subroutine u_fixedseed_initialize(INFO)
   end if
 
   ! store seeds                                                                                                 
-  seed = 9 + 37 * (/ (ii - 1, ii = 1, n) /)
+  seed = n + 37 * (/ (ii - 1, ii = 1, n) /)
 
   ! set the generator                                                                                           
   call random_seed(put = seed)
