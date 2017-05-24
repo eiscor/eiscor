@@ -34,28 +34,28 @@ program test_z_1Darray_random_normal
   end if
 
   call z_1Darray_random_normal(6,A)
-  
-  if (abs(A(1)-cmplx(-0.66808819570369726d0, 0.50753608835290620d0, kind=8))>100*EISCOR_DBL_EPS) then
+
+  if (abs(A(1)-cmplx(0.47761357716530684d0,-1.0710694263009257d0, kind=8))>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
   
-  if (abs(A(2)-cmplx(-0.39181453064203980d0, 0.90969551610559185d0, kind=8))>100*EISCOR_DBL_EPS) then
+  if (abs(A(2)-cmplx(7.38055464269166406d-2,1.2244927626472537d0, kind=8))>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
   
-  if (abs(A(3)-cmplx(-2.5355156920362356d0, -0.94358596649153170d0, kind=8))>100*EISCOR_DBL_EPS) then
+  if (abs(A(3)-cmplx(0.75081696949437793d0,0.88892563777904299d0, kind=8))>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(A(4)-cmplx(0.60792575305475460d0, -1.6421048016782014d0, kind=8))>100*EISCOR_DBL_EPS) then
+  if (abs(A(4)-cmplx(-0.79659862878327770d0,1.0930703380490570d0, kind=8))>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
   
-  if (abs(A(5)-cmplx(0.27405052576540079d0, 0.92278425003955999d0, kind=8))>100*EISCOR_DBL_EPS) then
+  if (abs(A(5)-cmplx(1.0977344437214227d0,-1.0886786789374205d0, kind=8))>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
   
-  if (abs(A(6)-cmplx(0.77196141468304724d0, 0.10360858696343152d0, kind=8))>100*EISCOR_DBL_EPS) then
+  if (abs(A(6)-cmplx(-1.6229037583856123d0,-0.44858989349582140d0, kind=8))>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 

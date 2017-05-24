@@ -35,11 +35,11 @@ program test_z_scalar_random_normal
 
   call z_scalar_random_normal(A,B)
 
-  if (abs(A+0.66808819570369726d0)>100*EISCOR_DBL_EPS) then
+  if (abs(A-0.47761357716530684d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
-  if (abs(B-0.50753608835290620d0)>100*EISCOR_DBL_EPS) then
+  if (abs(B+1.0710694263009257d0)>100*EISCOR_DBL_EPS) then
      call u_test_failed(__LINE__)
   end if
 
