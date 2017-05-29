@@ -74,12 +74,13 @@ program example_z_unifact_knowneigs
         ! set indices
         ind = 3*(jj-1)
         ! through diag
-        call z_rot3_swapdiag(D(2*jj-1:2*jj+2),b1)
+        call z_rot3_swapdiag(.FALSE.,D(2*jj-1:2*jj+2),b1)
         call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b1)
      end do
-       ! fusion at bottom
-     call z_rot3_swapdiag(D((2*n-3):(2*n)),b1)
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b1)
+     ind = 3*(n-1)
+     ! fusion at bottom
+     call z_rot3_swapdiag(.FALSE.,D((2*n-3):(2*n)),b1)
+     call z_unifact_mergebulge(.FALSE.,Q((ind-2):(ind)),D((2*n-3):(2*n)),b1)
   end do
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
