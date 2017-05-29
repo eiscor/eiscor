@@ -93,7 +93,7 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
   INFO = 0
 
   ! initialize random seed
-  call u_randomseed_initialize(INFO)
+  !call u_randomseed_initialize(INFO)
   if (INFO.NE.0) then
     ! print error message in debug mode
     if (DEBUG) then
@@ -183,8 +183,11 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
     else
 
       ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      if (ZERO.GT.0) then
+         STR = STR + ZERO
+         ZERO = 0
+         ITS(STR+ZERO-1) = ITCNT
+         ITCNT = 0
       end if
 
       ! perform singleshift iteration
