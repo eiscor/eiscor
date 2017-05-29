@@ -101,14 +101,19 @@ subroutine z_upr1fpen_singleshift(P,Q,D1,C1,B1,D2,C2,B2,SHFT)
 
   ! wilkinson shift
   if(abs(R1(3,3)/R2(3,3)-rho) < abs(R1(2,2)/R2(2,2)-rho))then
-    SHFT = R1(3,3)/R2(3,3)
+     SHFT = R1(3,3)/R2(3,3)
+     ! SHFT = R1(3,3)
+     ! SHFT2 = R2(3,3)
   else
-    SHFT = R1(2,2)/R2(2,2)
+     SHFT = R1(2,2)/R2(2,2)
+     ! SHFT = R1(2,2)
+     ! SHFT2 = R2(2,2)
   end if
 
   ! avoid INFs and NANs
   if ((SHFT.NE.SHFT).OR.(abs(SHFT) > EISCOR_DBL_INF)) then
     SHFT = cmplx(0d0,0d0,kind=8) ! not sure if this is a good idea?
+    !SHFT2 = cmplx(0d0,0d0,kind=8) ! not sure if this is a good idea?
   end if
 
 end subroutine z_upr1fpen_singleshift

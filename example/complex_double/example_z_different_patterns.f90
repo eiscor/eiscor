@@ -34,7 +34,7 @@ program example_z_different_patterns
   integer, allocatable :: ITS(:)
   real(8), allocatable :: Q(:),D1(:),C1(:),B1(:)
   real(8), allocatable :: D2(:),C2(:),B2(:)
-  complex(8), allocatable :: V(:),W(:),T(:,:),TA(:,:),TB(:,:),TL(:,:),Vt(:,:),Wt(:,:)
+  complex(8), allocatable :: V(:),W(:),T(:,:)
   interface
     function l_upr1fact_hess(m,flags)
       logical :: l_upr1fact_hess

@@ -51,7 +51,7 @@ program example_z_poly_2roots_norm
   ! start timer
   call system_clock(count_rate=c_rate)
 
-  maxnumber = 1000
+  maxnumber = 10000
   
 
   N = dd
@@ -141,6 +141,7 @@ program example_z_poly_2roots_norm
      write (9,*) "% degree", dd, "norm", norm
 
 
+
      do co = 1,maxnumber
 
         call random_number(rv)
@@ -154,17 +155,16 @@ program example_z_poly_2roots_norm
               call random_number(rw) ! uniform distribution in [0,1)
               
               s = (2d0*ru-1d0) * 10**(2d0*expo*rv-expo)
-              s = max(1d0, expo * (1d3 ** (- rv)))
-              
+              s = max(1d-1, expo * (1d6 ** (- rv)))
+
               MA(jj,ii) = cmplx(dcos(2.d0*EISCOR_DBL_PI*rw)*s, dsin(2.d0*EISCOR_DBL_PI*rw)*s, kind=8)
-              
+
               call random_number(ru) ! uniform distribution in [0,1)
               call random_number(rv) ! uniform distribution in [0,1)
               call random_number(rw) ! uniform distribution in [0,1)
-              
+
               s = (2d0*ru-1d0) * 10**(2d0*expo*rv-expo)
-              s = max(1d0, expo * (1d2 ** (- rv)))
-                            
+              s = max(1d-1, expo * (1d6 ** (- rv)))                            
               
               MB(jj,ii) = cmplx(dcos(2.d0*EISCOR_DBL_PI*rw)*s, dsin(2.d0*EISCOR_DBL_PI*rw)*s, kind=8)
            end do
@@ -172,11 +172,11 @@ program example_z_poly_2roots_norm
 
 
         ! standard distribution of coeffiecients
-        do ii=1,1
-           do ll=1,dd*1-1
-              MB(ll,ii) = cmplx(0d0,0d0,kind=8)
-           end do
-        end do
+!!$        do ii=1,1
+!!$           do ll=1,dd*1-1
+!!$              MB(ll,ii) = cmplx(0d0,0d0,kind=8)
+!!$           end do
+!!$        end do
 
      
 !!$        ! scale columns to have norm norm
