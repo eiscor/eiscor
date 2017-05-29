@@ -50,44 +50,46 @@ subroutine z_scalar_argument(A,ARG)
       return
     end if
 
-    ! set Ar and Ai
-    Ar = dble(A)
-    Ai = aimag(A)
-  
-    ! compute arg 1
-    if ((abs(Ar).EQ.0d0).AND.(abs(Ai).EQ.0d0)) then
-       ARG = 0d0
+ end if
+
+ ! set Ar and Ai
+ Ar = dble(A)
+ Ai = aimag(A)
+ 
+ ! compute arg 1
+ if ((abs(Ar).EQ.0d0).AND.(abs(Ai).EQ.0d0)) then
+    ARG = 0d0
        
-       ! abs(Ar) > abs(Ai)
-    else if (abs(Ar) > abs(Ai)) then
-       
-       ! compute ARG between [-pi/2,pi/2]
-       ARG = atan(abs(Ai/Ar))
-       
-       ! abs(Ar) < abs(Ai)
-    else
-       
-       ! compute ARG between [-pi/2,pi/2]
-       ARG = atan(abs(Ar/Ai))
-       ARG = PI/2d0 - ARG
-       
-    end if
+    ! abs(Ar) > abs(Ai)
+ else if (abs(Ar) > abs(Ai)) then
     
-    ! correct for [0,2pi)
-    ! second quadrant
-    if ((Ai >= 0).AND.(Ar < 0)) then
-       ARG = PI-ARG
-       
-       ! third quadrant
-    else if ((Ai < 0).AND.(Ar < 0)) then
-       ARG = PI+ARG
-       
-       ! fourth quadrant
-    else if ((Ai < 0).AND.(Ar > 0)) then
-       ARG = 2d0*PI-ARG
-    end if
+    ! compute ARG between [-pi/2,pi/2]
+    ARG = atan(abs(Ai/Ar))
     
-    ! shift by pi
-    ARG = ARG - PI
+    ! abs(Ar) < abs(Ai)
+ else
+    
+    ! compute ARG between [-pi/2,pi/2]
+    ARG = atan(abs(Ar/Ai))
+    ARG = PI/2d0 - ARG
+    
+ end if
+ 
+ ! correct for [0,2pi)
+ ! second quadrant
+ if ((Ai >= 0).AND.(Ar < 0)) then
+    ARG = PI-ARG
+    
+    ! third quadrant
+ else if ((Ai < 0).AND.(Ar < 0)) then
+    ARG = PI+ARG
+    
+    ! fourth quadrant
+ else if ((Ai < 0).AND.(Ar > 0)) then
+    ARG = 2d0*PI-ARG
+ end if
+ 
+ ! shift by pi
+ ARG = ARG - PI
     
 end subroutine z_scalar_argument
