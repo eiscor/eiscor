@@ -55,8 +55,8 @@ subroutine u_randomseed_initialize(INFO)
   call system_clock(count=clock)
   
   ! store seeds        
-  seed = clock + 37 * (/ (ii - 1, ii = 1, n) /)
-  
+  seed = n + clock + 37 * (/ (ii - 1, ii = 1, n) /)
+
   ! set the generator
   call random_seed(put = seed)
   
