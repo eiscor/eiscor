@@ -50,14 +50,19 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   ! compute second rotation
   a = c1*c3 - s1*c2*s3
   b = nrm
-  call d_rot2_vec2gen(a,b,c5,s5,nrm)
+  call d_rot2_unitvec2gen(a,b,c5,s5)
 
   ! compute third rotation
-  b = c1*s2
-  a = c2*c4 + b*s4
-  b = (b*c4 - c2*s4)*c5 + s1*s2*s5
-  call d_rot2_vec2gen(a,b,c6,s6,nrm)
-  
+  ! s5 == 0 
+  a = c1*s2*s4 + c2*c4
+  if (s5.eq.0) then
+    b = c1*c4*s2/c5
+  ! all other cases
+  else
+    b = s1*s2/s5
+  end if  
+  call d_rot2_unitvec2gen(a,b,c6,s6)
+
   ! set output
   Q1(1) = c5
   Q1(2) = s5
