@@ -56,7 +56,7 @@ subroutine z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
   X = (AR*AR + AI*AI + B*B) - 1d0
   
   ! normalize
-  X  = .5*(2-X)
+  X  = 5d-1*(2d0-X)
   CR = AR*X
   CI = AI*X
   S  =  B*X
