@@ -12,7 +12,7 @@
 !    user input. The average compute time and the worst error are printed.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program benchmark_z_rot3_vec3gen
+program benchmark_z_rot3_unitvec3gen
 
   implicit none
 
@@ -74,7 +74,7 @@ program benchmark_z_rot3_vec3gen
       call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
       AR = CR
       AI = CI
-      S = S + EISCOR_DBL_EPS
+      B = S + EISCOR_DBL_EPS
       
     end do  
 
@@ -132,4 +132,4 @@ program benchmark_z_rot3_vec3gen
     ! print results
     call u_benchmark_print(total_time,ERROR)
 
-end program benchmark_z_rot3_vec3gen
+end program benchmark_z_rot3_unitvec3gen

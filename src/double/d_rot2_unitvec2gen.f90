@@ -52,7 +52,7 @@ subroutine d_rot2_unitvec2gen(A,B,C,S)
   X = (A*A + B*B) - 1d0
   
   ! construct rotation
-  X = .5*(2-X)
+  X = 5d-1*(2d0-X)
   C = A*X
   S = B*X
            

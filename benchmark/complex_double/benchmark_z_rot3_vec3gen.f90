@@ -17,7 +17,7 @@ program benchmark_z_rot3_vec3gen
   implicit none
 
   ! parameter
-  integer, parameter :: num_trials = 10**9 ! one billion trials
+  integer, parameter :: num_trials = 10**8 ! 100 million trials
 
   ! compute variables
   integer :: ii, n
