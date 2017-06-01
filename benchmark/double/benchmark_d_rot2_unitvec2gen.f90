@@ -1,12 +1,12 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! benchmark_d_rot2_vec2gen
+! benchmark_d_rot2_unitvec2gen
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program computes two benchmarks for subroutine d_rot2_vec2gen (generating
-! rotations).  
+! This program computes two benchmarks for subroutine d_rot2_unitvec2gen 
+! (generating rotations).  
 !
 ! 1) Time required for 100 million runs.
 !
