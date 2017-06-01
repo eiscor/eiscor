@@ -59,7 +59,7 @@ subroutine z_rot3_swapdiag(DIR,D,G)
     c1r = nrm
   
     ! renormalize
-    call z_rot3_vec3gen(c1r,c1i,s1,G(1),G(2),G(3),nrm) 
+    call z_rot3_unitvec3gen(c1r,c1i,s1,G(1),G(2),G(3)) 
     
   ! from right to left
   else
@@ -70,7 +70,7 @@ subroutine z_rot3_swapdiag(DIR,D,G)
     c1r = nrm
   
     ! renormalize
-    call z_rot3_vec3gen(c1r,c1i,s1,G(1),G(2),G(3),nrm)
+    call z_rot3_unitvec3gen(c1r,c1i,s1,G(1),G(2),G(3))
     
   end if
   
