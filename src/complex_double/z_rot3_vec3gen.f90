@@ -7,7 +7,7 @@
 !
 ! This routine computes the generators for a complex rotation represented
 ! by 3 real numbers: the real and imaginary parts of a complex cosine,
-! CR and CI, and a scrictly real sine, S. The CR, CI and S are 
+! CR and CI, and a strictly real sine, S. The CR, CI and S are 
 ! constructed to be parallel with the vector [AR+iAI,B]^T, where AR, 
 ! AI and B are real and i = sqrt(-1).
 !
@@ -55,9 +55,6 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
   nai = abs(AI)
   nb = abs(B)
 
-  ! compute difference from unity
-  NRM = AR*AR+AI*AI+B*B-1d0
-  
   ! AR = AI = B = 0
   if(nar.EQ.0 .AND. nai.EQ.0 .AND. nb.EQ.0)then
   
@@ -65,14 +62,6 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
     CI = 0d0
     S = 0d0
     NRM = 0d0
-    
-  ! [AR+iAI,B]^T is a unit vector to machine precision
-  else if(abs(NRM).LT.sqrt(EISCOR_DBL_EPS))then
-  
-    NRM = 1d0 + NRM/2
-    CR = AR/NRM
-    CI = AI/NRM
-    S = B/NRM
     
   ! |AR| >= |B| and |AR| >= |AI| 
   else if(nar >= nb .AND. nar >= nai)then
