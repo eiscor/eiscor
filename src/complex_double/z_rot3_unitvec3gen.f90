@@ -52,11 +52,10 @@ subroutine z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
   ! compute variables
   real(8) :: X
 
-  ! compute difference from unity
-  X = (AR*AR + AI*AI + B*B) - 1d0
+  ! compute difference from unity and approximate 1/sqrt(x)
+  X = 5d-1*(3d0 - (AR*AR + AI*AI + B*B))
   
-  ! normalize
-  X  = 5d-1*(2d0-X)
+  ! construct rotation
   CR = AR*X
   CI = AI*X
   S  =  B*X

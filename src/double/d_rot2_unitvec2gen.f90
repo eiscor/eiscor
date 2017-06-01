@@ -48,11 +48,10 @@ subroutine d_rot2_unitvec2gen(A,B,C,S)
   ! compute variables
   real(8) :: X
 
-  ! compute difference fromm unity
-  X = (A*A + B*B) - 1d0
-  
+  ! compute difference from unity and approximate 1/sqrt(x)
+  X = 5d-1*(3d0-(A*A + B*B))
+
   ! construct rotation
-  X = 5d-1*(2d0-X)
   C = A*X
   S = B*X
            
