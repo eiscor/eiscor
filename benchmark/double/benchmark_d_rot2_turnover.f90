@@ -1,28 +1,28 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! benchmark_z_rot3_vec3gen
+! benchmark_d_rot2_turnover
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program benchmarks the subroutine z_rot3_vec3gen. 
+! This program benchmarks the subroutine d_rot2_turnover. 
 ! The following benchmarks are run:
 !
-! 1) Compute one billion core transformations from uniformly generated 
+! 1) Compute ten million turnovers from uniformly generated 
 !    user input. The average compute time and the worst error are printed.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program benchmark_z_rot3_vec3gen
+program benchmark_d_rot2_turnover
 
   implicit none
 
   ! parameter
-  integer, parameter :: num_trials = 10**8 ! 100 million trials
+  integer, parameter :: num_trials = 10**7 ! ten million trials
 
   ! compute variables
   integer :: ii, n
   integer, allocatable :: seed(:)
-  real(8) :: AR, AI, B, CR, CI, S, NRM
+  real(8) :: G1(2), G2(2), G3(2), nrm
   real(8) :: base_time, total_time, ERROR
   
   ! timing variables
@@ -55,9 +55,6 @@ program benchmark_z_rot3_vec3gen
     ! set ERROR
     ERROR = 0d0
     
-    ! set generators
-    CR = 1d0; CI = 0d0; S = 0d0; NRM = 1d0
-    
     ! start timer
     call system_clock(count_rate=c_rate)
     call system_clock(count=c_start) 
@@ -65,15 +62,13 @@ program benchmark_z_rot3_vec3gen
     ! loop
     do ii=1,num_trials
       
-      ! set AR, AI, B
-      call random_number(AR)
-      call random_number(AI)
-      call random_number(B)
+      ! set G1
+      call random_number(G1(1))
+      call random_number(G1(2))
+      call d_rot2_vec2gen(G1(1),G1(2),G1(1),G1(2),nrm)
       
-      ! compute worst ERROR
-      ERROR = max(ERROR,abs(AR-NRM*CR))
-      ERROR = max(ERROR,abs(AI-NRM*CI))
-      ERROR = max(ERROR,abs(B-NRM*S))
+      ! set G2 and G3
+      G2 = G1; G3 = G1
       
     end do  
 
@@ -94,29 +89,25 @@ program benchmark_z_rot3_vec3gen
     ! loop
     do ii=1,num_trials
       
-      ! set AR, AI, B
-      call random_number(AR)
-      call random_number(AI)
-      call random_number(B)
+      ! set G1
+      call random_number(G1(1))
+      call random_number(G1(2))
+      call d_rot2_vec2gen(G1(1),G1(2),G1(1),G1(2),nrm)
       
-      ! compute core transformation
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      ! set G2 and G3
+      G2 = G1; G3 = G1
       
-      ! compute worst ERROR
-      ERROR = max(ERROR,abs(AR-NRM*CR))
-      ERROR = max(ERROR,abs(AI-NRM*CI))
-      ERROR = max(ERROR,abs(B-NRM*S))
-      
-      ! 9 more times to build up the average
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      ! compute 10 turnovers
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
+      call d_rot2_turnover(G1,G2,G3)
       
     end do  
 
@@ -132,4 +123,4 @@ program benchmark_z_rot3_vec3gen
     ! print results
     call u_benchmark_print(total_time,ERROR)
 
-end program benchmark_z_rot3_vec3gen
+end program benchmark_d_rot2_turnover
