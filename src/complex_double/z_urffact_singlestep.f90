@@ -71,9 +71,6 @@ subroutine z_urffact_singlestep(N,U,VV,ITCNT)
   else
     rho = rho/xx
   end if
-!print*,""
-!print*,"rho"
-!print*,rho
 
   ! initialize
   w = -rho
@@ -86,14 +83,19 @@ subroutine z_urffact_singlestep(N,U,VV,ITCNT)
   do ii=1,(N-1)
     cc = cc*zz/nn
     ss = VV(ii)/nn
+    xx = cc + ss
+    cc = cc/xx
+    ss = ss/xx
     w = -rho*conjg(w)*(z*z)/zz
+    xx = dble(w)**2 + aimag(w)**2
+    w = w*(3d0 - xx)/2
     z = U(ii+1) + w
     zz = dble(z)**2 + aimag(z)**2
     nn = VV(ii+1) + cc*zz
     U(ii) = conjg(rho)*(U(ii+1) - cc*z)
     VV(ii)   = ss*nn
     xx = dble(U(ii))**2 + aimag(U(ii))**2 + VV(ii)
-    U(ii) = 5d-1*U(ii)*(3d0 - xx)
+    U(ii) = U(ii)*(3d0 - xx)/2
     VV(ii) = VV(ii)*(2d0 - xx)
   end do
   
