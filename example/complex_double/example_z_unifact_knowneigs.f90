@@ -18,11 +18,11 @@ program example_z_unifact_knowneigs
   integer, parameter :: N = 16
   integer :: ii, INFO
   real(8) :: Q(3*(N-1)), D(2*N)
-  complex(8) :: Z
+  complex(8) :: Z, he, temp(2,2)
   integer :: ITS(N-1), ind, jj
   double precision :: rm,ro,rp,pi = 3.141592653589793239d0
   double precision :: diff, her
-  double precision :: nrm, b1(3)
+  double precision :: nrm,b1(3),b2(3),b3(3),tb(3),tol=1e-16
 
   ! real and imag part of eigenvalues
   double precision :: rev(N), iev(N)
@@ -77,9 +77,10 @@ program example_z_unifact_knowneigs
         call z_rot3_swapdiag(D(2*jj-1:2*jj+2),b1)
         call z_rot3_turnover(Q((ind+1):(ind+3)),Q((ind+4):(ind+6)),b1)
      end do
-       ! fusion at bottom
+     ind = 3*(n-1)
+     ! fusion at bottom
      call z_rot3_swapdiag(D((2*n-3):(2*n)),b1)
-     call z_unifact_mergebulge(.FALSE.,N,Q,D,b1)
+     call z_unifact_mergebulge(.FALSE.,N,Q((ind-2):(ind)),D((2*n-3):(2*n)),b1)
   end do
   
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

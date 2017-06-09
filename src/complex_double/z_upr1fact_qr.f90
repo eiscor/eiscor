@@ -188,10 +188,11 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
       end if
 
       ! perform singleshift iteration
-      call z_upr1fact_singlestep(VEC,FUN,STP-STR+2,P(STR:(STP-1)) &
+      call z_upr1fact_singlestep(.FALSE.,VEC,FUN,STP-STR+2,P(STR:(STP-1)) &
       ,Q((3*STR-2):(3*STP)),D((2*STR-1):(2*STP+2)) &
+      ,C((3*STR-2):(3*STP+3)),B((3*STR-2):(3*STP+3)),D((2*STR-1):(2*STP+2)) &
       ,C((3*STR-2):(3*STP+3)),B((3*STR-2):(3*STP+3)) &
-      ,M,V(:,STR:(STP+1)),ITCNT)
+      ,M,V(:,STR:(STP+1)),V(:,STR:(STP+1)),ITCNT)
      
       ! update indices
       if (ITCNT.EQ.-1) then 

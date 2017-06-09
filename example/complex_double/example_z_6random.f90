@@ -141,7 +141,7 @@ program example_z_uprkfpen_6random
   ! Start Times
   call system_clock(count=c_start)
 
-  call z_uprkdense_qz2(.FALSE.,N,K,MA,MB,N,EIGSA,EIGSB,V,W,TA,TB,INFO)
+  call z_uprkdense_qz2(.FALSE.,.FALSE.,N,K,MA,MB,N,EIGSA,EIGSB,V,W,TA,TB,INFO)
   !print*, "         No EIGSA                                                 EIGSB"
 
   do ii=1,N
@@ -398,7 +398,7 @@ program example_z_uprkfpen_6random
 !!$  call z_uprkutri_decompress(.FALSE.,N,K,1,N-1,D2,C2,B2,TB)
   do ll = 1,k
      ! z_uprkutri_decompress(DIAG,N,K,STR,STP,D,C,B,T)
-     call z_upr1utri_decompress(.FALSE.,.TRUE.,N,&
+     call z_upr1utri_decompress(.TRUE.,N,&
           &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
           &B1(((ll-1)*3*N+1):(ll*3*N)),TL)
      if (ll.EQ.1) then
@@ -408,7 +408,7 @@ program example_z_uprkfpen_6random
      end if     
   end do
   do ll = 1,k
-     call z_upr1utri_decompress(.FALSE.,.TRUE.,N,&
+     call z_upr1utri_decompress(.TRUE.,N,&
           &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
           &B2(((ll-1)*3*N+1):(ll*3*N)),TL)
      if (ll.EQ.1) then
@@ -486,7 +486,7 @@ program example_z_uprkfpen_6random
 !!$  call z_uprkutri_decompress(.FALSE.,N,K,1,N-1,D1,C1,B1,TA)
 !!$  call z_uprkutri_decompress(.FALSE.,N,K,1,N-1,D2,C2,B2,TB)
   do ll = 1,k
-     call z_upr1utri_decompress(.FALSE.,.TRUE.,N,&
+     call z_upr1utri_decompress(.TRUE.,N,&
           &D1(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C1(((ll-1)*3*N+1):(ll*3*N)),&
           &B1(((ll-1)*3*N+1):(ll*3*N)),TL)
      if (ll.EQ.1) then
@@ -496,7 +496,7 @@ program example_z_uprkfpen_6random
      end if     
   end do
   do ll = 1,k
-     call z_upr1utri_decompress(.FALSE.,.TRUE.,N,&
+     call z_upr1utri_decompress(.TRUE.,N,&
           &D2(((ll-1)*2*(N+1)+1):(ll*2*(N+1))),C2(((ll-1)*3*N+1):(ll*3*N)),&
           &B2(((ll-1)*3*N+1):(ll*3*N)),TL)
      if (ll.EQ.1) then

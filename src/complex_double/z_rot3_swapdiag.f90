@@ -14,10 +14,6 @@
 !
 ! INPUT VARIABLES:
 !
-!  DIR             LOGICAL
-!                    .TRUE.: pass rotation from left to right
-!                    .FALSE.: pass rotation from right to left
-!
 !  D               REAL(8) array of dimension (4)
 !                    array of generators for complex diagonal matrix
 !
@@ -25,12 +21,11 @@
 !                    generator for a Givens rotation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_rot3_swapdiag(DIR,D,G)
+subroutine z_rot3_swapdiag(D,G)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: DIR
   real(8), intent(inout) :: D(4), G(3)
   
   ! compute variables
@@ -50,30 +45,15 @@ subroutine z_rot3_swapdiag(DIR,D,G)
   d2r = D(3)
   d2i = D(4)  
   
-  ! from left to right
-  if (DIR)then
+  ! from right to left and left to right
+  ! pass through diagonal
+  nrm = (d1r*d2r + d1i*d2i)*c1r - (-d1r*d2i + d1i*d2r)*c1i
+  c1i = (d1r*d2r + d1i*d2i)*c1i + (-d1r*d2i + d1i*d2r)*c1r
+  c1r = nrm
   
-    ! pass through diagonal
-    nrm = (d1r*d2r + d1i*d2i)*c1r - (-d1r*d2i + d1i*d2r)*c1i
-    c1i = (d1r*d2r + d1i*d2i)*c1i + (-d1r*d2i + d1i*d2r)*c1r
-    c1r = nrm
-  
-    ! renormalize
-    call z_rot3_unitvec3gen(c1r,c1i,s1,G(1),G(2),G(3)) 
+  ! renormalize
+  call z_rot3_unitvec3gen(c1r,c1i,s1,G(1),G(2),G(3)) 
     
-  ! from right to left
-  else
-  
-    ! pass through diagonal
-    nrm = (d1r*d2r + d1i*d2i)*c1r - (-d1r*d2i + d1i*d2r)*c1i
-    c1i = (d1r*d2r + d1i*d2i)*c1i + (-d1r*d2i + d1i*d2r)*c1r
-    c1r = nrm
-  
-    ! renormalize
-    call z_rot3_unitvec3gen(c1r,c1i,s1,G(1),G(2),G(3))
-    
-  end if
-  
   ! set D
   D(1) = d2r 
   D(2) = d2i

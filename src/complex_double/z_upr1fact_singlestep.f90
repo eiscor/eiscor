@@ -6,11 +6,15 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes one iteration of Francis' singleshift 
-! algorithm on a factored unitary plus rank one (upr1fact) matrix.. 
+! algorithm on a upr1 pencil. 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
+!
+!  QZ              LOGICAL
+!                    .TRUE. second triangular factor is assumed nonzero
+!                    .FALSE. second triangular factor is assumed to be identity
 !
 !  VEC             LOGICAL
 !                    .TRUE. update schurvectors
@@ -29,11 +33,13 @@
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
 !
-!  D               REAL(8) arrays of dimension (2*N)
-!                    array of generators for complex diagonal matrix
+!  D1,D2           REAL(8) arrays of dimension (2*(N+1))
+!                    array of generators for complex diagonal matrices
+!                    If QZ = .FALSE., D2 is unused.
 !
-!  C,B             REAL(8) arrays of dimension (3*N)
-!                    array of generators for upper-triangular part
+!  C1,B1,C2,B2     REAL(8) arrays of dimension (3*N)
+!                    array of generators for upper-triangular parts of the pencil
+!                    If QZ = .FALSE., C2 and B2 are unused.
 !
 !  M               INTEGER
 !                    leading dimesnion of V and W
@@ -43,20 +49,27 @@
 !                    if VEC = .FALSE. unused
 !                    if VEC = .TRUE. update V to store right schurvectors 
 !
+!  W               COMPLEX(8) array of dimension (M,N)
+!                    left schur vectors
+!                    if QZ = .FALSE. unused
+!                    if VEC = .FALSE. unused
+!                    if VEC = .TRUE. update W to store left schurvectors
+!
 !  ITCNT           INTEGER
 !                   Contains the number of iterations since last deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_singlestep(VEC,FUN,N,P,Q,D,C,B,M,V,ITCNT)
+subroutine z_upr1fact_singlestep(QZ,VEC,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: VEC
+  logical, intent(in) :: QZ, VEC
   integer, intent(in) :: M, N
   logical, intent(inout) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2*N), C(3*N), B(3*N)
-  complex(8), intent(inout) :: V(M,N)
+  real(8), intent(inout) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
+  real(8), intent(inout) :: D2(2*(N+1)), C2(3*N), B2(3*N)
+  complex(8), intent(inout) :: V(M,N), W(M,N)
   integer, intent(in) :: ITCNT
   interface
     function FUN(m,flags)
@@ -69,34 +82,297 @@ subroutine z_upr1fact_singlestep(VEC,FUN,N,P,Q,D,C,B,M,V,ITCNT)
   ! compute variables
   integer :: ii, ir1, ir2, id1, id2
   logical :: final_flag
-  real(8) :: MISFIT(3)
+  real(8) :: G1(3), G2(3), G3(3)
+  complex(8) :: shift, rho, A(2,2), B(2,2), Vt(2,2), Wt(2,2)
   
   ! compute final_flag
-  if (N.LT.3) then 
-    final_flag = .FALSE.
-  else
-    final_flag = FUN(N,P)
-  end if  
-
-  ! initialize core chasing
-  call z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V(:,1:2),ITCNT,MISFIT)
+  final_flag = FUN(N,P)
   
-  ! core chasing loop
-  do ii=1,(N-3)
+  ! compute shift
+  ! random shift
+  if(mod(ITCNT+1,11) == 0)then
+    call random_number(G1(1))
+    call random_number(G1(2))
+    shift = cmplx(G1(1),G1(2),kind=8)
+          
+  ! wilkinson shift
+  else
+  
+    ! get 2x2 blocks
+    ir2 = 3*N; ir1 = ir2-5
+    id2 = 2*N; id1 = id2-3
+    call z_upr1fact_2x2diagblocks(.FALSE.,.TRUE.,QZ,P(N-2),Q((ir1-3):(ir2-3)) &
+    ,D1(id1:id2),C1(ir1:ir2),B1(ir1:ir2),D2(id1:id2),C2(ir1:ir2),B2(ir1:ir2),A,B)
+  
+    ! if not QZ
+    if (.NOT.QZ) then
+      B = cmplx(0d0,0d0,kind=8)
+      B(1,1) = cmplx(1d0,0d0,kind=8); B(2,2) = B(1,1)
+    end if
+    
+    ! store bottom right entries
+    shift = A(2,2)
+    rho = B(2,2)
+        
+    ! compute eigenvalues and eigenvectors
+    call z_2x2array_eig(QZ,A,B,Vt,Wt)
+          
+    ! choose wikinson shift
+    ! complex abs does not matter here
+    if(abs(A(2,2)-shift)+abs(B(2,2)-rho) < abs(A(1,1)-shift)+abs(B(1,1)-rho))then
+      shift = A(2,2)
+      rho = B(2,2)
+    else
+      shift = A(1,1)
+      rho = B(1,1)
+    end if
+    
+    ! avoid zero division
+    if ((dble(rho).EQ.0).AND.(aimag(rho).EQ.0)) then
+      shift = 1d16 ! not sure if this is a good idea?
+    else
+      shift = shift/rho
+    end if
 
-    ! compute indices
-    ir1 = 3*(ii)+1
-    ir2 = 3*(ii+2)
-    id1 = 2*(ii)+1
-    id2 = 2*(ii+2)
+  end if
 
-    ! move misfit down one row
-    call z_upr1fact_chasedown(VEC,P(ii:ii+1),Q((ir1-3):(ir2-3)),D(id1:id2), & 
-                              C(ir1:ir2),B(ir1:ir2),M,V(:,ii+1:ii+2),MISFIT)
+  ! build bulge
+  call z_upr1fact_buildbulge(QZ,P(1),Q(1:6),D1(1:4),C1(1:6),B1(1:6) &
+  ,D2(1:4),C2(1:6),B2(1:6),shift,G2)
 
-  end do
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! iteration for QZ
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if (QZ) then
+  
+    ! chase bulge
+    do ii=1,(N-1)
+    
 
-  ! finish core chasing
-  call z_upr1fact_endchase(VEC,N,P,Q,D,C,B,M,V,MISFIT,final_flag)
+    end do  
+  
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! iteration for QR
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  else
+  
+    ! update V
+    if (VEC) then
+      
+      A(1,1) = cmplx(G1(1),G1(2),kind=8)
+      A(2,1) = cmplx(G1(3),0d0,kind=8)
+      A(1,2) = -A(2,1)
+      A(2,2) = conjg(A(1,1))
+      
+      V(:,1:2) = matmul(V(:,1:2),A)
+      
+    end if
+    
+    ! set G1 as G2^-1 for turnover
+    G1(1) = G2(1)
+    G1(2) = -G2(2)
+    G1(3) = -G2(3)
+    
+    ! merge with Q if necessary
+    if (.NOT.P(1)) then
+    
+      ! merge from left
+      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G1)
+      
+      ! set G1 for turnover
+      G1(1) = Q(1)
+      G1(2) = Q(2)
+      G1(3) = Q(3)
+
+    end if
+    
+    ! pass G2 through triangular part
+    call z_upr1fact_rot3throughtri(.FALSE.,D1(1:4),C1(1:6),B1(1:6),G2)
+    
+    ! set G3 for turnover
+    G3 = G2
+    
+    ! merge with Q if necessary
+    if (P(1)) then
+    
+      ! merge from left
+      call z_upr1fact_mergebulge(.TRUE.,N,P,Q,D1(1:(2*N)),G2)
+      
+      ! set G3 for turnover
+      G3(1) = Q(1)
+      G3(2) = Q(2)
+      G3(3) = Q(3)
+
+    end if
+    
+    ! set G2 for turnover
+    G2(1) = Q(4)
+    G2(2) = Q(5)
+    G2(3) = Q(6)    
+  
+    ! chase bulge
+    do ii=1,(N-3)
+    
+      ! execute turnover of G1G2G3
+      call z_rot3_turnover(G1,G2,G3)
+      
+      ! set Q(ii)
+      Q(3*ii-2) = G1(1)
+      Q(3*ii-1) = G1(2)
+      Q(3*ii) = G1(3)
+      
+      ! prepare for next turnover based on P(ii+1)
+      ! hess
+      if (.NOT.P(ii+1)) then
+      
+        ! set P(ii)
+        P(ii) = P(ii+1)
+        
+        ! set Q(ii+1)
+        Q(3*ii+1) = G2(1)
+        Q(3*ii+2) = G2(2)
+        Q(3*ii+3) = G2(3)        
+ 
+        ! set G1 for turnover
+        G1 = G2     
+        
+        ! set G2 for turnover
+        G2(1) = Q(3*ii+4)
+        G2(2) = Q(3*ii+5)
+        G2(3) = Q(3*ii+6)
+        
+        ! update V
+        if (VEC) then
+          
+          A(1,1) = cmplx(G3(1),G3(2),kind=8)
+          A(2,1) = cmplx(G3(3),0d0,kind=8)
+          A(1,2) = -A(2,1)
+          A(2,2) = conjg(A(1,1))
+          
+          V(:,(ii+1):(ii+2)) = matmul(V(:,(ii+1):(ii+2)),A)
+          
+        end if
+        
+        ! pass G3 through upper triangular part
+        call z_upr1fact_rot3throughtri(.FALSE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        ,B1((3*ii+1):(3*ii+6)),G3)
+        
+      ! inverse hess
+      else
+      
+        ! set P(ii)
+        P(ii) = P(ii+1)
+        
+        ! set Q(ii+1)
+        Q(3*ii+1) = G3(1)
+        Q(3*ii+2) = G3(2)
+        Q(3*ii+3) = G3(3)  
+        
+        ! pass G2 through upper triangular part
+        call z_upr1fact_rot3throughtri(.TRUE.,D1((2*ii+1):(2*ii+4)),C1((3*ii+1):(3*ii+6)) &
+        ,B1((3*ii+1):(3*ii+6)),G2)
+        
+        ! update V
+        if (VEC) then
+          
+          A(1,1) = cmplx(G2(1),-G2(2),kind=8)
+          A(2,1) = cmplx(-G2(3),0d0,kind=8)
+          A(1,2) = -A(2,1)
+          A(2,2) = conjg(A(1,1))
+          
+          V(:,(ii+1):(ii+2)) = matmul(V(:,(ii+1):(ii+2)),A)
+          
+        end if
+
+        ! set G1 for turnover
+        G1 = G2    
+        
+        ! set G2 for turnover
+        G2(1) = Q(3*ii+4)
+        G2(2) = Q(3*ii+5)
+        G2(3) = Q(3*ii+6)
+        
+      end if
+
+    end do
+    
+    ! final turnover
+    call z_rot3_turnover(G1,G2,G3)
+      
+    ! set P(N-1)
+    P(N-2) = final_flag
+    
+    ! finish transformation based on P(N-1)
+    ! hess
+    if (.NOT.P(N-2)) then
+    
+      ! set Q(N-2)
+      Q(3*(N-2)-2) = G1(1)
+      Q(3*(N-2)-1) = G1(2)
+      Q(3*(N-2)) = G1(3)   
+      
+      ! set Q(N-1)
+      Q(3*(N-1)-2) = G2(1)
+      Q(3*(N-1)-1) = G2(2)
+      Q(3*(N-1)) = G2(3)  
+      
+      ! update V
+      if (VEC) then
+          
+        A(1,1) = cmplx(G3(1),G3(2),kind=8)
+        A(2,1) = cmplx(G3(3),0d0,kind=8)
+        A(1,2) = -A(2,1)
+        A(2,2) = conjg(A(1,1))
+          
+        V(:,(N-1):N) = matmul(V(:,(N-1):N),A)
+         
+      end if    
+    
+      ! pass G3 through upper triangular part
+      call z_upr1fact_rot3throughtri(.FALSE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      ,B1((3*N-5):(3*N)),G3)
+        
+      ! merge bulge 
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G3)
+      
+    ! inverse hess
+    else
+    
+      ! set Q(N-2)
+      Q(3*(N-2)-2) = G1(1)
+      Q(3*(N-2)-1) = G1(2)
+      Q(3*(N-2)) = G1(3)   
+      
+      ! set Q(N-1)
+      Q(3*(N-1)-2) = G3(1)
+      Q(3*(N-1)-1) = G3(2)
+      Q(3*(N-1)) = G3(3)  
+      
+      ! pass G2 through upper triangular part
+      call z_upr1fact_rot3throughtri(.TRUE.,D1((2*N-3):(2*N)),C1((3*N-5):(3*N)) &
+      ,B1((3*N-5):(3*N)),G2)
+        
+      ! update V
+      if (VEC) then
+          
+        A(1,1) = cmplx(G2(1),-G2(2),kind=8)
+        A(2,1) = cmplx(-G2(3),0d0,kind=8)
+        A(1,2) = -A(2,1)
+        A(2,2) = conjg(A(1,1))
+          
+        V(:,N:(N+1)) = matmul(V(:,N:(N+1)),A)
+         
+      end if  
+      
+      ! merge bulge 
+      call z_upr1fact_mergebulge(.FALSE.,N,P,Q,D1(1:(2*N)),G2)
+      
+    end if
+    
+  end if
   
 end subroutine z_upr1fact_singlestep
