@@ -24,8 +24,12 @@
 !                    .TRUE.: second triangular factor is assumed nonzero
 !                    .FALSE.: second triangular factor is assumed to be identity
 !
-!  VEC             LOGICAL
-!                    .TRUE.: compute schurvector
+!  VECR            LOGICAL
+!                    .TRUE.: compute right schurvectors (V)
+!                    .FALSE.: no schurvectors
+!
+!  VECL            LOGICAL
+!                    .TRUE.: compute left schurvectors (W)
 !                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
@@ -72,13 +76,13 @@
 !                    INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprk_compress_slow(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
+subroutine z_uprk_compress_slow(QZ,VECR,VECL,ID,N,K,Ain,Bin,P,Q,D1,&
      &C1,B1,D2,C2,B2,V,W,INFO)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: QZ, VEC, ID
+  logical, intent(in) :: QZ, VECR, VECL, ID
   integer, intent(in) :: N,K
   complex(8), intent(in) :: Ain(N,K), Bin(N,K)
   logical, intent(inout) :: P(N-2)
@@ -124,7 +128,7 @@ subroutine z_uprk_compress_slow(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
   end do
 
   ! initalize V
-  if (VEC .AND. ID) then
+  if (VECR .AND. ID) then
      V = cmplx(0d0,0d0,kind=8)
      do ii=1,N
         V(ii,ii) = cmplx(1d0,0d0,kind=8)
@@ -132,7 +136,7 @@ subroutine z_uprk_compress_slow(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
   end if
 
   ! initalize W
-  if (QZ .AND. VEC .AND. ID) then
+  if (QZ .AND. VECL .AND. ID) then
      W = cmplx(0d0,0d0,kind=8)
      do ii=1,N
         W(ii,ii) = cmplx(1d0,0d0,kind=8)
@@ -278,7 +282,7 @@ subroutine z_uprk_compress_slow(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
               if (QZ) then
                  ! update (left) eigenvectors 
                  ! update W
-                 if (VEC) then
+                 if (VECL) then
                     
                     H(1,1) = cmplx(bulge(1),bulge(2),kind=8)
                     H(2,1) = cmplx(bulge(3),0d0,kind=8)
@@ -301,7 +305,7 @@ subroutine z_uprk_compress_slow(QZ,VEC,ID,N,K,Ain,Bin,P,Q,D1,&
               end if
               ! update (right) eigenvectors 
               ! update V
-              if (VEC) then
+              if (VECR) then
                  
                  H(1,1) = cmplx(bulge(1),bulge(2),kind=8)
                  H(2,1) = cmplx(bulge(3),0d0,kind=8)

@@ -13,9 +13,10 @@
 !
 ! INPUT VARIABLES:
 !
-!  VEC             LOGICAL
+!  VECL            LOGICAL
 !                    .TRUE.: compute schurvector
 !                    .FALSE.: no schurvectors
+!                    right Schur vectors are not updated
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -46,13 +47,13 @@
 !                     on output contains index of newest deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_deflationcheck(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
+subroutine z_uprkfpen_deflationcheck(VECL,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
 
   implicit none
   
   ! input variables
   integer, intent(in) :: N, M, K, STR, STP
-  logical, intent(in) :: VEC, P(N-2)
+  logical, intent(in) :: VECL, P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D1(2*N*K), C1(3*N*K), B1(3*N*K)
   real(8), intent(inout) :: D2(2*N*K), C2(3*N*K), B2(3*N*K)
   complex(8), intent(inout) :: V(M,N), W(M,N)
@@ -111,7 +112,7 @@ subroutine z_uprkfpen_deflationcheck(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W
         ! .TRUE. means C2, B2 don't matter
 
         ! update left schurvectors
-        if (VEC) then
+        if (VECL) then
           W(:,ZERO) = W(:,ZERO)*cmplx(qr,qi,kind=8)
         end if
 
@@ -136,7 +137,7 @@ subroutine z_uprkfpen_deflationcheck(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W
         ! .TRUE. means C2, B2 don't matter
 
         ! update left schurvectors
-        if (VEC) then
+        if (VECL) then
           W(:,ZERO+1) = W(:,ZERO+1)*cmplx(qr,-qi,kind=8)
         end if
 

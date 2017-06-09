@@ -172,7 +172,7 @@ subroutine z_uprkfpen_qz(VECR,VECL,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,IN
           B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)), & 
           B2((3*STR-2):(3*STP+3)),M,V(:,STR:STP+1),W(:,STR:STP+1),ZERO)
      ! C1, B1, C2, B2 are not used.
-     !call z_uprkfpen_deflationcheck(VEC,N,K,STR,STP,P, &
+     !call z_uprkfpen_deflationcheck(VECL,N,K,STR,STP,P, &
      !     Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
      
      !print*, "STR", STR, Q(3*STR), Q(3*STR+3), Q(3*STP), "ZERO",ZERO

@@ -25,8 +25,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  VEC             LOGICAL
-!                    .TRUE.: compute schurvector
+!  VECR            LOGICAL
+!                    .TRUE.: compute right schurvectors (V)
+!                    .FALSE.: no schurvectors
+!
+!  VECL            LOGICAL
+!                    .TRUE.: compute left schurvectors (W)
 !                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
@@ -50,21 +54,21 @@
 !
 !  V               COMPLEX(8) array of dimension (N,N)
 !                    right schur vectors
-!                    ignored if VEC == .FALSE.
+!                    ignored if VECR == .FALSE.
 !
 !  W               COMPLEX(8) array of dimension (N,N)
 !                    left schur vectors
-!                    ignored if VEC == .FALSE.
+!                    ignored if VECL == .FALSE.
 !
 !  S               COMPLEX(8) array of dimension (N,N)
 !                    Upper triangular matrix which is the constant
 !                    term of the generalized Schur form of the pencil. 
-!                    ignored if VEC == .FALSE.
+!                    ignored if VECR == .FALSE.
 !
 !  T               COMPLEX(8) array of dimension (N,N)
 !                    Upper triangular matrix which is the linear
 !                    term of the generalized Schur form of the pencil. 
-!                    ignored if VEC == .FALSE.
+!                    ignored if VECL == .FALSE.
 !
 !  INFO            INTEGER
 !                    TBA   
@@ -76,12 +80,12 @@
 !                    INFO = -10 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkdense_qz2_slow(VEC,N,K,A,B,M,EIGSA,EIGSB,V,W,S,T,INFO)
+subroutine z_uprkdense_qz2_slow(VECR,VECL,N,K,A,B,M,EIGSA,EIGSB,V,W,S,T,INFO)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: VEC
+  logical, intent(in) :: VECR, VECL
   integer, intent(in) :: N, K, M 
   complex(8), intent(in) :: A(N,K), B(N,K)
   complex(8), intent(inout) :: V(M,N), W(M,N), S(N,N), T(N,N)
@@ -130,7 +134,7 @@ subroutine z_uprkdense_qz2_slow(VEC,N,K,A,B,M,EIGSA,EIGSB,V,W,S,T,INFO)
 !!$    return
 !!$  end if  
   
-  call z_uprk_compress2_slow(.TRUE.,VEC,.TRUE.,N,K,A,B,P,Q,&
+  call z_uprk_compress2_slow(.TRUE.,VECR,VECL,.TRUE.,N,K,A,B,P,Q,&
        &D1,C1,B1,D2,C2,B2,V,W,INFO)
   if (INFO.NE.0) then
      print*, "Info code from z_uprkdense_factor: ", INFO
@@ -149,7 +153,7 @@ subroutine z_uprkdense_qz2_slow(VEC,N,K,A,B,M,EIGSA,EIGSB,V,W,S,T,INFO)
   !print*, "B2",B2
   
 
-  call z_uprkfpen_qz(VEC,.FALSE.,l_upr1fact_hess,N,k,&
+  call z_uprkfpen_qz(VECR,VECL,.FALSE.,l_upr1fact_hess,N,k,&
        &P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
   if (INFO.NE.0) then
      print*, "Info code from z_uprkfpen_qz: ", INFO
@@ -157,7 +161,7 @@ subroutine z_uprkdense_qz2_slow(VEC,N,K,A,B,M,EIGSA,EIGSB,V,W,S,T,INFO)
      return
   end if
 
-  if (VEC) then
+  if (VECR) then
      call z_upr1utri_decompress(.FALSE.,N,&
           &D1(1:2*N),C1(1:(3*N)),&
           &B1(1:(3*N)),S)
@@ -187,7 +191,7 @@ subroutine z_uprkdense_qz2_slow(VEC,N,K,A,B,M,EIGSA,EIGSB,V,W,S,T,INFO)
      end do
   end if
 
-  if (VEC) then
+  if (VECL) then
      call z_upr1utri_decompress(.FALSE.,N,&
           &D2(1:(2*N)),C2(1:(3*N)),&
           &B2(1:(3*N)),T)
