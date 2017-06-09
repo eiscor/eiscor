@@ -1,17 +1,17 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! benchmark_d_rot2_vec2gen
+! benchmark_d_rot2_unitvec2gen
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program computes two benchmarks for subroutine d_rot2_vec2gen (generating
-! rotations).  
+! This program computes two benchmarks for subroutine d_rot2_unitvec2gen 
+! (generating rotations).  
 !
 ! 1) Time required for 100 million runs.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program benchmark_d_rot2_vec2gen
+program benchmark_d_rot2_unitvec2gen
 
   implicit none
 
@@ -61,9 +61,9 @@ program benchmark_d_rot2_vec2gen
     call random_number(a)
     call random_number(b)
      
-    ! compute worst ERROR
-    ERROR = max(ERROR,abs(a-nrm*c))
-    ERROR = max(ERROR,abs(b-nrm*s))
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    a = c
+    b = s + EISCOR_DBL_EPS
   end do
 
   ! stop timer
@@ -81,22 +81,22 @@ program benchmark_d_rot2_vec2gen
   do ii=1,notests
     call random_number(a)
     call random_number(b)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
      
-    ! compute worst ERROR
-    ERROR = max(ERROR,abs(a-nrm*c))
-    ERROR = max(ERROR,abs(b-nrm*s))
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    a = c
+    b = s + EISCOR_DBL_EPS
     
-    ! 9 more times to build up the average
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
-    call d_rot2_vec2gen(a,b,c,s,nrm)
+    ! 10 more times to build up the average
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
+    call d_rot2_unitvec2gen(a,b,c,s,nrm)
   end do
   
   ! stop timer
@@ -107,4 +107,4 @@ program benchmark_d_rot2_vec2gen
   ! print success
   call u_benchmark_print(t2,ERROR)
 
-end program benchmark_d_rot2_vec2gen
+end program benchmark_d_rot2_unitvec2gen

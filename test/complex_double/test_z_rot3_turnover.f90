@@ -117,6 +117,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   histo2(1:7,1)=histo(1:7)
   if (VERBOSE) then
@@ -562,6 +565,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -585,6 +591,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -608,6 +617,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -631,6 +643,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -654,6 +669,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -677,6 +695,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp),sin(rp),0d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -700,6 +721,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -723,6 +747,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -746,6 +773,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -769,6 +799,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm),Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -792,6 +825,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   if (.NOT. VERBOSE) then
      if (.NOT. pass_cur) then
@@ -815,6 +851,9 @@ program test_z_rot3_turnover
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(0d0,0d0,1d0,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
+if (.NOT. pass_cur) then
+exit
+end if
   end do
   histo2(1:7,8)=histo(1:7)
   if (VERBOSE) then
@@ -851,11 +890,11 @@ program test_z_rot3_turnover
   end if
 
   ! reference histogram, turnover passes test if histogram is better than this one
-  histot(1,:) = (/           0,           0,           0,           0,           0,      116000,      120000,       24000/)!
+  histot(1,:) = (/           0,           0,           0,           0,           0,      100000,      120000,       25000/)!
   histot(2,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
-  histot(3,:) = (/       15500,       27500,       39000,       59980,       36000,        3960,           0,       44000/)!
-  histot(4,:) = (/      103000,       90000,       80000,       60000,       80000,          40,           0,       50000/)!
-  histot(5,:) = (/        1500,        2500,        1000,          20,        4000,           0,           0,        2000/)!
+  histot(3,:) = (/       30000,       50000,       60000,       70000,       50000,       40000,           0,       60000/)!
+  histot(4,:) = (/      100000,       80000,       70000,       60000,       80000,         100,           0,       50000/)!
+  histot(5,:) = (/        1000,        1000,        1000,         100,        2000,           0,           0,        1000/)!
   histot(6,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
   histot(7,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
 
