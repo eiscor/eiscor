@@ -115,7 +115,21 @@ subroutine z_upr1utri_decompress(DIAG,N,D,C,B,T)
       ind = 2*(ii-1)
       T(ii,:) = T(ii,:)*cmplx(D(ind+1),D(ind+2),kind=8)
     end do
-  
+
+    ! check T
+    do ii=1,N
+       if ((abs(T(ii,ii)).LT.1d-100) .AND. (abs(T(ii,ii)).NE.0d0)) then
+          print*, "Strange diagonal T"
+          print*, "T",T
+          print*, "D",D
+          print*, "C", C
+          print*, "B",B
+          print*, ""
+          do ind = 1,N
+             print*, ind, -B(3*ind)/C(3*ind)
+          end do
+       end if
+    end do
   end if  
   
 end subroutine z_upr1utri_decompress

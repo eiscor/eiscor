@@ -53,23 +53,26 @@ program example_z_uprkfpen_2manyscaled
   ! start timer
   call system_clock(count_rate=c_rate)
 
-  if (iargc()>0) then
-     call getarg(1, arg)
-     read (arg,'(I10)') maxnumber
-     if (iargc()>1) then
-        call getarg(2, arg)
-        read (arg,'(I10)') k
-        print*, k
-        if (k.GT.kpara) then
-           k = kpara
-        end if
-     else
-        k = kpara
-     end if
-  else
-     maxnumber = -1
-     k = kpara
-  end if
+!!$  if (iargc()>0) then
+!!$     call getarg(1, arg)
+!!$     read (arg,'(I10)') maxnumber
+!!$     if (iargc()>1) then
+!!$        call getarg(2, arg)
+!!$        read (arg,'(I10)') k
+!!$        print*, k
+!!$        if (k.GT.kpara) then
+!!$           k = kpara
+!!$        end if
+!!$     else
+!!$        k = kpara
+!!$     end if
+!!$  else
+!!$     maxnumber = -1
+!!$     k = kpara
+!!$  end if
+
+  maxnumber = 10
+  k = kpara
 
   N = dd*k
   
@@ -83,9 +86,9 @@ program example_z_uprkfpen_2manyscaled
   allocate(TA(N,N), TB(N,N), TL(N,N), Vt(N,N), Wt(N,N))
 
 
-  open (unit=7, file="err.txt", status='unknown', access = 'append')
-  open (unit=8, file="errA.txt", status='unknown', access = 'append')
-  open (unit=9, file="errB.txt", status='unknown', access = 'append')
+  open (unit=7, file="err.txt", status='unknown', position = 'append')
+  open (unit=8, file="errA.txt", status='unknown', position = 'append')
+  open (unit=9, file="errB.txt", status='unknown', position = 'append')
 
 
   !call u_fixedseed_initialize(INFO)  

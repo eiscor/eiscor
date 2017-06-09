@@ -16,8 +16,8 @@ program example_z_uprkfpen_scaled
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 20
-  integer, parameter :: k = 20
+  integer, parameter :: dd = 10
+  integer, parameter :: k = 10
   real(8), parameter :: norm = 1
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
@@ -89,6 +89,8 @@ program example_z_uprkfpen_scaled
      end do
   end do
 
+  !MB(N,k)=cmplx(0d0,0d0,kind=8)
+  
 
   ! scale columns to have norm norm
   do ii=1,k

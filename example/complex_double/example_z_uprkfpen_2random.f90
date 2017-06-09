@@ -16,12 +16,12 @@ program example_z_uprkfpen_2random
   implicit none
   
   ! compute variables
-  integer, parameter :: dd = 30
-  integer, parameter :: k = 15
+  integer, parameter :: dd = 20
+  integer, parameter :: k = 8
   logical, parameter :: output=.FALSE.
   !logical, parameter :: output=.TRUE.
   integer :: N = dd*k
-  integer :: ii, jj, ll, INFO, lwork, it
+  integer :: ii, jj, ll, INFO, lwork, it, qq
   complex(8), allocatable :: MA(:,:),MB(:,:), EIGS(:), REIGS(:), EIGSA(:), EIGSB(:)
   complex(8), allocatable :: REIGS2(:), V(:,:),W(:,:), WORK(:)
   complex(8), allocatable :: CDA(:,:), CDB(:,:), MC(:,:), MD(:,:)
@@ -84,7 +84,22 @@ program example_z_uprkfpen_2random
         MB(N-k+ii,jj)=cmplx(0d0,0d0,kind=8)
      end do
   end do
+  
+  MC = MA
+  MD = MB
 
+  do qq=1,2
+  
+     if (qq.EQ.2) then
+        
+        MA = MC
+        MB = MD
+        
+        !MB(N,k)=cmplx(0d0,0d0,kind=8)
+        MA(1,1)=cmplx(0d0,0d0,kind=8)
+        
+     end if
+  
   MC = MA
   MD = MB
   
@@ -111,6 +126,7 @@ program example_z_uprkfpen_2random
   
   do jj= 1,N
      REIGS(jj) = REIGSA(jj)/REIGSB(jj)
+     !print*, "LAPACK", jj, REIGS(jj), REIGSA(jj), REIGSB(jj)
   end do
 
   if (output) then
@@ -130,38 +146,123 @@ program example_z_uprkfpen_2random
 
   do ii=1,N
      !print*, ii, EIGSA(ii), EIGSB(ii)
-     EIGS(ii) = EIGSA(ii)/EIGSB(ii)     
+     EIGS(ii) = EIGSA(ii)/EIGSB(ii)
+     !print*, ii, EIGS(ii), EIGSA(ii), EIGSB(ii)
   end do
 
   call system_clock(count=c_stop)
 
   maxerr = 0d0
-  !print*, "         No EIGS                                                  ",&
-  !       &"REIGS                                                  DIFF"
+  
   do ii = 1,N
-    jj = 1
-    h = abs(EIGS(ii)-REIGS(jj))
-    do ll = 2,N
-       if (h>abs(EIGS(ii)-REIGS(ll))) then
-          jj = ll
-          h = abs(EIGS(ii)-REIGS(jj))
-       end if
-    end do
-    if (N.LT.100) then
-       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))/abs(EIGS(jj))
-    end if
-    if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
-       maxerr = abs(EIGS(ii)-REIGS(jj))
-    end if
+     if (abs(EIGSB(ii)).LE.EISCOR_DBL_EPS*abs(EIGSA(ii))) then
+        jj = 1
+        h = abs(REIGSB(jj))
+        do ll = 2,N
+           if (h>abs(REIGSB(ll))) then
+              jj = ll
+              h = abs(REIGSB(jj))
+           end if
+        end do
+        if (abs(REIGSB(ii)).LE.EISCOR_DBL_EPS*abs(REIGSA(ii))) then
+           maxerr = EISCOR_DBL_INF
+        end if
+          
+     else  
+        jj = 1
+        do while ((jj.LE.N).AND.(REIGS(jj).NE.REIGS(jj)))
+           jj = jj+1
+        end do
+        h = abs(EIGS(ii)-REIGS(jj))
+        ll = 2
+        do while (ll.LE.N)
+           do while ((ll.LE.N).AND.(REIGS(ll).NE.REIGS(ll)))
+              ll = ll+1
+           end do
+           if (h>abs(EIGS(ii)-REIGS(ll))) then
+              jj = ll
+              h = abs(EIGS(ii)-REIGS(jj))
+           end if
+           ll = ll+1
+        end do
+        if (N.LT.100) then
+           print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))/abs(EIGS(jj))
+        end if
+        !if (abs(EIGS(ii)).EQ.abs(EIGS(ii))) then
+        !   if (abs(REIGS(jj)).EQ.abs(REIGS(jj))) then
+        if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
+           maxerr = abs(EIGS(ii)-REIGS(jj))
+        end if
+        !   end if
+        !end if
+     end if
+     
   end do
+  
 
-  print*, "Maxmimal error vs. LAPACK", maxerr
+  
+!!$  maxerr = 0d0
+!!$  !print*, "         No EIGS                                                  ",&
+!!$  !       &"REIGS                                                  DIFF"
+!!$  do ii = 1,N
+!!$    jj = 1
+!!$    h = abs(EIGS(ii)-REIGS(jj))
+!!$    do ll = 2,N
+!!$       if (h>abs(EIGS(ii)-REIGS(ll))) then
+!!$          jj = ll
+!!$          h = abs(EIGS(ii)-REIGS(jj))
+!!$       end if
+!!$    end do
+!!$    if (N.LT.100) then
+!!$       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))/abs(EIGS(jj))
+!!$    end if
+!!$    if (abs(EIGS(ii)).EQ.abs(EIGS(ii))) then
+!!$       if (abs(REIGS(jj)).EQ.abs(REIGS(jj))) then
+!!$          if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
+!!$             maxerr = abs(EIGS(ii)-REIGS(jj))
+!!$          end if
+!!$       end if
+!!$    end if
+!!$  end do
+!!$
+!!$  print*, "Maximal error vs. LAPACK", maxerr
+!!$
+!!$  maxerr = 0d0
+!!$  do ii = 1,N
+!!$    jj = 1
+!!$    h = abs(REIGS(ii)-EIGS(jj))
+!!$    do ll = 2,N
+!!$       if (h>abs(REIGS(ii)-EIGS(ll))) then
+!!$          jj = ll
+!!$          h = abs(REIGS(ii)-EIGS(jj))
+!!$       end if
+!!$    end do
+!!$    if (N.LT.100) then
+!!$       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))/abs(EIGS(jj))
+!!$    end if
+!!$    if (abs(EIGS(jj)).EQ.abs(EIGS(jj))) then
+!!$       if (abs(REIGS(ii)).EQ.abs(REIGS(ii))) then
+!!$          if (abs(REIGS(ii)-EIGS(jj)).GT.maxerr) then
+!!$             maxerr = abs(REIGS(ii)-EIGS(jj))
+!!$          end if
+!!$       end if
+!!$    end if
+!!$  end do
+
+  print*, "Maximal error vs. LAPACK", maxerr
   print*, "Runtime   structured QR solver (eiscor) ",(dble(c_stop-c_start)/dble(c_rate))
   if (N.LT.100) then
      print*, "Runtime unstructured QR solver (LAPACK) ",(dble(c_stop2-c_start2)/dble(c_rate))
   end if
 
 
+!  do ii = 1,N
+!     print*, "LAPACK",ii, REIGS(ii), REIGSA(ii), REIGSB(ii)
+!  end do
+!
+!    do ii = 1,N
+!     print*, "EISCOR",ii, EIGS(ii), EIGSA(ii), EIGSB(ii)
+!  end do
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! Start Times
@@ -174,29 +275,105 @@ program example_z_uprkfpen_2random
 
   do ii=1,N
      EIGS(ii) = EIGSA(ii)/EIGSB(ii)     
+     if (abs(EIGSB(ii))<1e-20) then
+        EIGS(ii) = cmplx(EISCOR_DBL_INF,EISCOR_DBL_INF,kind=8)
+     end if
   end do
 
   call system_clock(count=c_stop)
 
   maxerr = 0d0
+  
   do ii = 1,N
-    jj = 1
-    h = abs(EIGS(ii)-REIGS(jj))
-    do ll = 2,N
-       if (h>abs(EIGS(ii)-REIGS(ll))) then
-          jj = ll
-          h = abs(EIGS(ii)-REIGS(jj))
-       end if
-    end do
-    if (N.LT.100) then
-       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))
-    end if
-    if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
-       maxerr = abs(EIGS(ii)-REIGS(jj))
-    end if
+     if (abs(EIGSB(ii)).LE.EISCOR_DBL_EPS*abs(EIGSA(ii))) then
+        jj = 1
+        h = abs(REIGSB(jj))
+        do ll = 2,N
+           if (h>abs(REIGSB(ll))) then
+              jj = ll
+              h = abs(REIGSB(jj))
+           end if
+        end do
+        if (abs(REIGSB(ii)).LE.EISCOR_DBL_EPS*abs(REIGSA(ii))) then
+           maxerr = EISCOR_DBL_INF
+        end if
+          
+     else  
+        jj = 1
+        do while ((jj.LE.N).AND.(REIGS(jj).NE.REIGS(jj)))
+           jj = jj+1
+        end do
+        h = abs(EIGS(ii)-REIGS(jj))
+        ll = 2
+        do while (ll.LE.N)
+           do while ((ll.LE.N).AND.(REIGS(ll).NE.REIGS(ll)))
+              ll = ll+1
+           end do
+           if (h>abs(EIGS(ii)-REIGS(ll))) then
+              jj = ll
+              h = abs(EIGS(ii)-REIGS(jj))
+           end if
+           ll = ll+1
+        end do
+        if (N.LT.100) then
+           print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))/abs(EIGS(jj))
+        end if
+        !if (abs(EIGS(ii)).EQ.abs(EIGS(ii))) then
+        !   if (abs(REIGS(jj)).EQ.abs(REIGS(jj))) then
+        if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
+           maxerr = abs(EIGS(ii)-REIGS(jj))
+        end if
+        !   end if
+        !end if
+     end if
+     
   end do
+  print*, "Maximal error vs. LAPACK", maxerr
 
-  print*, "Maxmimal error vs. LAPACK", maxerr
+!!$  maxerr = 0d0
+!!$  do ii = 1,N
+!!$    jj = 1
+!!$    h = abs(EIGS(ii)-REIGS(jj))
+!!$    do ll = 2,N
+!!$       if (h>abs(EIGS(ii)-REIGS(ll))) then
+!!$          jj = ll
+!!$          h = abs(EIGS(ii)-REIGS(jj))
+!!$       end if
+!!$    end do
+!!$    if (N.LT.100) then
+!!$       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))
+!!$    end if
+!!$    if (abs(EIGS(ii)-REIGS(jj)).GT.maxerr) then
+!!$       maxerr = abs(EIGS(ii)-REIGS(jj))
+!!$    end if
+!!$  end do
+!!$
+!!$  print*, "Maximal error vs. LAPACK", maxerr
+!!$
+!!$  maxerr = 0d0
+!!$  do ii = 1,N
+!!$    jj = 1
+!!$    h = abs(REIGS(ii)-EIGS(jj))
+!!$    do ll = 2,N
+!!$       if (h>abs(REIGS(ii)-EIGS(ll))) then
+!!$          jj = ll
+!!$          h = abs(REIGS(ii)-EIGS(jj))
+!!$       end if
+!!$    end do
+!!$    if (N.LT.100) then
+!!$       print*, ii, EIGS(ii), REIGS(jj), abs(EIGS(ii)-REIGS(jj))/abs(EIGS(jj))
+!!$    end if
+!!$    if (abs(EIGS(jj)).EQ.abs(EIGS(jj))) then
+!!$       if (abs(REIGS(ii)).EQ.abs(REIGS(ii))) then
+!!$          if (abs(REIGS(ii)-EIGS(jj)).GT.maxerr) then
+!!$             maxerr = abs(REIGS(ii)-EIGS(jj))
+!!$          end if
+!!$       end if
+!!$    end if
+!!$  end do
+!!$
+!!$  print*, "Maximal error vs. LAPACK", maxerr
+
   print*, "Runtime   structured QR solver (eiscor_slow) ",(dble(c_stop-c_start)/dble(c_rate))
   if (N.LT.100) then
      print*, "Runtime unstructured QR solver (LAPACK) ",(dble(c_stop2-c_start2)/dble(c_rate))
@@ -381,7 +558,8 @@ program example_z_uprkfpen_2random
      end do
   end if
 
-
+end do
+  
   print*,""
   deallocate(MA,MB,rev,iev,ITS)
   deallocate(Q,D1,C1,B1,P)

@@ -104,6 +104,10 @@ subroutine z_uprkutri_decompress(DIAG,N,K,STR,STP,D,C,B,T)
         call z_upr1utri_decompress(.FALSE.,STP-STR+2,&
              &D(dind:dind2),C(ind:ind2),B(ind:ind2),T2)
 
+        !if (STR.EQ.STP) then
+        !   print*, ll, T2
+        !end if
+        
         T = matmul(T,T2)
      end do
   

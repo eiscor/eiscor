@@ -63,7 +63,7 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
   real(8) :: nrm, Ginv(3)
   real(8) :: tq(6), td1(6), tc1(9), tb1(9)
   real(8) :: td2(6), tc2(9), tb2(9)
-  complex(8) :: shift, A(2,2)
+  complex(8) :: shift, A(2,2), sha, shb
   
   ! compute shift
   ! random shift
@@ -77,12 +77,13 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
   else
   
     ! compute wilkinson shift
-    call z_uprkfpen_singleshift(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,shift)
+    call z_uprkfpen_singleshift(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,shift,sha,shb)
 
+    !print*, "Wilkin shift", shift
   end if
 
   ! build bulge
-  call z_uprkfpen_buildbulge(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,shift,G)
+  call z_uprkfpen_buildbulge(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,shift,sha,shb,G)
 
 
   ! set Ginv

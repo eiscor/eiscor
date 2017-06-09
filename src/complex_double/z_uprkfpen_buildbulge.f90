@@ -36,7 +36,7 @@
 !                    transformation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_buildbulge(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
+subroutine z_uprkfpen_buildbulge(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT,SHFTA,SHFTB,G)
   
   implicit none
   
@@ -45,7 +45,7 @@ subroutine z_uprkfpen_buildbulge(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
   logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D1(2*N*K), C1(3*N*K), B1(3*N*K)
   real(8), intent(inout) :: D2(2*N*K), C2(3*N*K), B2(3*N*K)
-  complex(8), intent(in) :: SHFT
+  complex(8), intent(in) :: SHFT, SHFTA, SHFTB
   real(8), intent(inout) :: G(3)
   
   ! compute variables
@@ -107,7 +107,7 @@ subroutine z_uprkfpen_buildbulge(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT,G)
   end if
   
   ! insert shift
-  vec1 = vec1 - SHFT*vec2
+  vec1 = SHFTB*vec1 - SHFTA*vec2
 
   ! compute eliminator
   call z_rot3_vec4gen(dble(vec1(1)),aimag(vec1(1)),dble(vec1(2)),&

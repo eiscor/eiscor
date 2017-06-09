@@ -32,7 +32,7 @@
 !                    shift
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_singleshift(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT)
+subroutine z_uprkfpen_singleshift(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT,SHFTA,SHFTB)
   
   implicit none
   
@@ -41,7 +41,7 @@ subroutine z_uprkfpen_singleshift(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT)
   logical, intent(in) :: P(N-2)
   real(8), intent(in) :: Q(3*(N-1)), D1(2*N*K), C1(3*N*K), B1(3*N*K)
   real(8), intent(in) :: D2(2*N*K), C2(3*N*K), B2(3*N*K)
-  complex(8), intent(inout) :: SHFT
+  complex(8), intent(inout) :: SHFT,SHFTA,SHFTB
   
   ! compute variables
   complex(8) :: rho, R1(3,3), R2(3,3), H(2,2), HK(2,2)
@@ -158,15 +158,38 @@ subroutine z_uprkfpen_singleshift(N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,SHFT)
   ! wilkinson shift
   if(abs(R1(3,3)/R2(3,3)-rho) < abs(R1(2,2)/R2(2,2)-rho))then
      SHFT = R1(3,3)/R2(3,3)
+     SHFTA = R1(3,3)
+     SHFTB = R2(3,3)
   else
      SHFT = R1(2,2)/R2(2,2)
+     SHFTA = R1(2,2)
+     SHFTB = R2(2,2)
   end if
   
   ! avoid INFs and NANs
   if ((SHFT.NE.SHFT).OR.(abs(SHFT) > EISCOR_DBL_INF)) then
      SHFT = cmplx(0d0,0d0,kind=8) ! not sure if this is a good idea?
+     SHFTA = cmplx(0d0,0d0,kind=8)
+     SHFTB = cmplx(1d0,0d0,kind=8)
   end if
   
   !print*, "shift", shft
 
+  !if (abs(SHFT)<0.001) then
+     ! extract R1
+     call z_uprkutri_decompress(.FALSE.,N,K,STP,STP,D1,C1,B1,H)
+     
+     ! extract R2
+     call z_uprkutri_decompress(.FALSE.,N,K,STP,STP,D2,C2,B2,HK)
+     !print*, H
+     !print*, HK
+     !
+     !do ind=1,K
+     !   print*, ind, C1((ind-1)*3*N+3*(STP-2)), C1((ind-1)*3*N+3*(STP-1)),&
+     !        & B1((ind-1)*3*N+3*(STP-2)), B1((ind-1)*3*N+3*(STP-1))
+     !   print*, ind, abs(B1((ind-1)*3*N+3*(STP-2))/C1((ind-1)*3*N+3*(STP-2))),&
+     !        & abs(B1((ind-1)*3*N+3*(STP-1))/C1((ind-1)*3*N+3*(STP-1)))
+     !end do
+  !end if
+  
 end subroutine z_uprkfpen_singleshift

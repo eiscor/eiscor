@@ -87,7 +87,7 @@ subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
 
    ! compute variables
    logical :: flg
-   integer :: ii, jj, kk
+   integer :: ii, jj, kk, ll
    integer :: STR, STP, ZERO, ITMAX, ITCNT
 
    ! initialize info
@@ -174,6 +174,18 @@ subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
      !print*, "STR", STR, Q(3*STR), Q(3*STR+3), Q(3*STP), "ZERO",ZERO
 
 
+     do ll=1,N+1
+        do ii=1,k
+           if (B1(3*(ll-1)+3*N*(ii-1)+3).EQ.0d0) then
+              print*, "identity in position", ll, ii, "in iteration", kk, "STR", STR, "STP", STP, "ZERO", ZERO
+              print*, "Q(3)", abs(Q(3)), "Q(3*STR)", abs(Q(3*STR))
+           end if
+        end do
+     end do
+     
+           
+     
+
      ! if 1x1 block remove and check again 
      if(STP == (STR+ZERO-1))then
 
@@ -189,10 +201,13 @@ subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
 
        ! update STR
        if (ZERO.GT.0) then
-         STR = STR + ZERO
-         ZERO = 0
+          STR = STR + ZERO
+          ZERO = 0
+          ITS(STR+ZERO-1) = ITCNT
+          ITCNT = 0
        end if
 
+       print*, "Singlestep"
        ! perform singleshift iteration
        call z_uprkfpen_singlestep(VEC,FUN,N,K,STR,STP,P,Q, &
             &D1,C1,B1, &
@@ -221,7 +236,7 @@ subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
    do ii=1,n-1
       ITCNT = ITCNT + ITS(ii)
    end do
-   print*, "number of iterations", ITCNT, "it/n", ITCNT/N
+   print*, "number of iterations", ITCNT, "it/n", (1d0*ITCNT)/N
 
 
 end subroutine z_uprkfpen_qz
