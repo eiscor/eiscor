@@ -12,8 +12,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  VEC             LOGICAL
-!                    .TRUE.: compute schurvector
+!  VECR            LOGICAL
+!                    .TRUE.: compute right schurvectors (V)
+!                    .FALSE.: no schurvectors
+!
+!  VECL            LOGICAL
+!                    .TRUE.: compute left schurvectors (W)
 !                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
@@ -45,12 +49,12 @@
 !                    generators for bulge core transformation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
+subroutine z_uprkfpen_startchase(VECR,VECL,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: VEC
+  logical, intent(in) :: VECR, VECL
   integer, intent(in) :: M, N, K, STR, STP, ITCNT
   logical, intent(in) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D1(2*N*K), C1(3*N*K), B1(3*N*K)
@@ -92,7 +96,7 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
   Ginv(3) = -G(3)
   
   ! update left schurvectors with G
-  if (VEC) then
+  if (VECL) then
     
     A(1,1) = cmplx(G(1),G(2),kind=8)
     A(2,1) = cmplx(G(3),0d0,kind=8)
@@ -116,7 +120,7 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
     call z_uprkutri_rot3swap(.TRUE.,N,K,1,K,D2,C2,B2,G,STR)
     
     ! update left schurvectors diagonal Ginv
-    if (VEC) then
+    if (VECL) then
       
       W(:,1) = W(:,1)*cmplx(Ginv(1),Ginv(2),kind=8)
       W(:,2) = W(:,2)*cmplx(Ginv(1),-Ginv(2),kind=8)
@@ -136,7 +140,7 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
     G(3) = -G(3)
 
     ! update right schurvectors with G
-    if (VEC) then
+    if (VECR) then
       
       A(1,1) = cmplx(G(1),G(2),kind=8)
       A(2,1) = cmplx(G(3),0d0,kind=8)
@@ -160,7 +164,7 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
     call z_uprkutri_rot3swap(.TRUE.,N,K,1,K,D2,C2,B2,G,STR)
   
     ! update left schurvectors diagonal Ginv
-    if (VEC) then
+    if (VECL) then
       
       W(:,1) = W(:,1)*cmplx(Ginv(1),Ginv(2),kind=8)
       W(:,2) = W(:,2)*cmplx(Ginv(1),-Ginv(2),kind=8)
@@ -179,7 +183,7 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
     G(3) = -G(3)
 
     ! update right schurvectors with G
-    if (VEC) then
+    if (VECR) then
       
       A(1,1) = cmplx(G(1),G(2),kind=8)
       A(2,1) = cmplx(G(3),0d0,kind=8)
@@ -204,7 +208,7 @@ subroutine z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITC
     Ginv(3) = -Ginv(3)
 
     ! update right schurvectors with Ginv
-    if (VEC) then
+    if (VECR) then
       
       A(1,1) = cmplx(Ginv(1),Ginv(2),kind=8)
       A(2,1) = cmplx(Ginv(3),0d0,kind=8)

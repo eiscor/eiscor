@@ -12,8 +12,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  VEC             LOGICAL
-!                    .TRUE.: compute schurvector
+!  VECR            LOGICAL
+!                    .TRUE.: compute right schurvectors (V)
+!                    .FALSE.: no schurvectors
+!
+!  VECL            LOGICAL
+!                    .TRUE.: compute left schurvectors (W)
 !                    .FALSE.: no schurvectors
 !
 !  P               LOGICAL array of dimension (2)
@@ -35,19 +39,19 @@
 !
 !  V,W             COMPLEX(8) array of dimension (M,2)
 !                    right schur vectors
-!                    if VEC = .FALSE. unused
-!                    if VEC = .TRUE. update V to store right schurvectors 
+!                    if VECR/L = .FALSE. unused
+!                    if VECR/L = .TRUE. update V/W to store right/left schurvectors 
 !
 !  MISFIT          REAL(8) array of dimension (3)
 !                    array of generators for misfit
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_chasedown(VEC,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
+subroutine z_uprkfpen_chasedown(VECR,VECL,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: VEC
+  logical, intent(in) :: VECR, VECL
   integer, intent(in) :: M, N, K, ii
   logical, intent(inout) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D1(2*N*K), C1(3*N*K), B1(3*N*K)
@@ -93,7 +97,7 @@ subroutine z_uprkfpen_chasedown(VEC,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     Q(ind2:ind2+2) = G2
 
     ! update left schurvectors with G3
-    if (VEC) then 
+    if (VECL) then 
     
       A(1,1) = cmplx(G3(1),G3(2),kind=8)
       A(2,1) = cmplx(G3(3),0d0,kind=8)
@@ -118,7 +122,7 @@ subroutine z_uprkfpen_chasedown(VEC,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     MISFIT(3) = -MISFIT(3)
     
     ! update right schurvectors with MISFIT
-    if (VEC) then
+    if (VECR) then
     
       A(1,1) = cmplx(MISFIT(1),MISFIT(2),kind=8)
       A(2,1) = cmplx(MISFIT(3),0d0,kind=8)
@@ -149,7 +153,7 @@ subroutine z_uprkfpen_chasedown(VEC,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     G2(3) = -G2(3)
 
     ! update right schurvectors using G2
-    if (VEC) then
+    if (VECR) then
      
       A(1,1) = cmplx(G2(1),G2(2),kind=8)
       A(2,1) = cmplx(G2(3),0d0,kind=8)
@@ -165,7 +169,7 @@ subroutine z_uprkfpen_chasedown(VEC,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,MISFIT)
     call z_uprkutri_rot3swap(.FALSE.,N,K,1,K,D2,C2,B2,G2,ii+1)
 
     ! update left schurvectors using G2
-    if (VEC) then
+    if (VECL) then
      
       A(1,1) = cmplx(G2(1),G2(2),kind=8)
       A(2,1) = cmplx(G2(3),0d0,kind=8)

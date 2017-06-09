@@ -12,8 +12,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  VEC             LOGICAL
-!                    .TRUE.: compute schurvector
+!  VECR            LOGICAL
+!                    .TRUE.: compute right schurvectors (V)
+!                    .FALSE.: no schurvectors
+!
+!  VECL            LOGICAL
+!                    .TRUE.: compute left schurvectors (W)
 !                    .FALSE.: no schurvectors
 !
 !  N               INTEGER
@@ -43,12 +47,12 @@
 !                    position flag for merging the misfit at the bottom
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_endchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLAG)
+subroutine z_uprkfpen_endchase(VECR,VECL,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLAG)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: VEC, FLAG
+  logical, intent(in) :: VECR, VECL, FLAG
   integer, intent(in) :: M, N, K, STR, STP
   logical, intent(inout) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D1(2*N), C1(3*N), B1(3*N)
@@ -110,7 +114,7 @@ subroutine z_uprkfpen_endchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLA
     Q(3*STP-2:3*STP) = G2
 
     ! update left schurvectors with G3
-    if (VEC) then 
+    if (VECL) then 
     
       A(1,1) = cmplx(G3(1),G3(2),kind=8)
       A(2,1) = cmplx(G3(3),0d0,kind=8)
@@ -135,7 +139,7 @@ subroutine z_uprkfpen_endchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLA
     G3(3) = -G3(3)
  
     ! update right schurvectors with G3
-    if (VEC) then
+    if (VECR) then
     
       A(1,1) = cmplx(G3(1),G3(2),kind=8)
       A(2,1) = cmplx(G3(3),0d0,kind=8)
@@ -183,7 +187,7 @@ subroutine z_uprkfpen_endchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLA
     G2(3) = -G2(3)
 
     ! update right schurvectors using G2
-    if (VEC) then
+    if (VECR) then
      
       A(1,1) = cmplx(G2(1),G2(2),kind=8)
       A(2,1) = cmplx(G2(3),0d0,kind=8)
@@ -200,7 +204,7 @@ subroutine z_uprkfpen_endchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLA
     call z_uprkutri_rot3swap(.FALSE.,N,K,1,K,D2,C2,B2,G2,STP)
 
     ! update left schurvectors using G2
-    if (VEC) then
+    if (VECL) then
      
       A(1,1) = cmplx(G2(1),G2(2),kind=8)
       A(2,1) = cmplx(G2(3),0d0,kind=8)
@@ -219,7 +223,7 @@ subroutine z_uprkfpen_endchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,G,FLA
     call z_rot3_fusion(.FALSE.,G2,Q(3*STP-2:3*STP))
 
     ! update left schurvectors with G2
-    if (VEC) then
+    if (VECL) then
      
       W(:,1) = W(:,1)*cmplx(G2(1),G2(2),kind=8)
       W(:,2) = W(:,2)*cmplx(G2(1),-G2(2),kind=8)

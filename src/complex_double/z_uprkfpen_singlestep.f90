@@ -12,8 +12,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  VEC             LOGICAL
-!                    .TRUE.: compute schurvector
+!  VECR            LOGICAL
+!                    .TRUE.: compute right schurvectors (V)
+!                    .FALSE.: no schurvectors
+!
+!  VECL            LOGICAL
+!                    .TRUE.: compute left schurvectors (W)
 !                    .FALSE.: no schurvectors
 !
 !  FUN             LOGICAL FUNCTION FUN(N,P)
@@ -47,12 +51,12 @@
 !                   Contains the number of iterations since last deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_singlestep(VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
+subroutine z_uprkfpen_singlestep(VECR,VECL,FUN,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT)
 
   implicit none
   
   ! input variables
-  logical, intent(in) :: VEC
+  logical, intent(in) :: VECR, VECL
   integer, intent(in) :: M, N, K, STR, STP
   logical, intent(inout) :: P(N-2)
   real(8), intent(inout) :: Q(3*(N-1)), D1(2*N*K), C1(3*N*K), B1(3*N*K)
@@ -80,14 +84,14 @@ subroutine z_uprkfpen_singlestep(VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W
   end if  
 
   ! initialize core chasing
-  call z_uprkfpen_startchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,&
+  call z_uprkfpen_startchase(VECR,VECL,N,K,STR,STP,P,Q,D1,C1,B1,&
        &D2,C2,B2,M,V(:,STR:STR+1),W(:,STR:STR+1),ITCNT,MISFIT)
   
   ! core chasing loop
   do ii=STR,(STP-2)
 
     ! move misfit down one row
-    call z_uprkfpen_chasedown(VEC,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,&
+    call z_uprkfpen_chasedown(VECR,VECL,N,K,ii,P,Q,D1,C1,B1,D2,C2,B2,&
          &M,V(:,ii+1:ii+2),W(:,ii+1:ii+2),MISFIT)
 
     !call z_upr1fpen_chasedown(VEC,P(ii:ii+1),Q((ir1-3):(ir2-3)),D1(id1:id2), & 
@@ -97,6 +101,6 @@ subroutine z_uprkfpen_singlestep(VEC,FUN,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V,W
   end do
 
   ! finish core chasing
-  call z_uprkfpen_endchase(VEC,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V(:,STP:STP+1),W(:,STP:STP+1),MISFIT,final_flag)
+  call z_uprkfpen_endchase(VECR,VECL,N,K,STR,STP,P,Q,D1,C1,B1,D2,C2,B2,M,V(:,STP:STP+1),W(:,STP:STP+1),MISFIT,final_flag)
   
 end subroutine z_uprkfpen_singlestep

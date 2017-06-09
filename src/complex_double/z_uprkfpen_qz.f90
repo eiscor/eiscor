@@ -13,8 +13,12 @@
 !
 ! INPUT VARIABLES:
 !
-!  VEC             LOGICAL
-!                    .TRUE.: compute schurvector
+!  VECR            LOGICAL
+!                    .TRUE.: compute right schurvectors (V)
+!                    .FALSE.: no schurvectors
+!
+!  VECL            LOGICAL
+!                    .TRUE.: compute left schurvectors (W)
 !                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
@@ -65,12 +69,12 @@
 !                    INFO = -14 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
+subroutine z_uprkfpen_qz(VECR,VECL,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
 
    implicit none
 
    ! input variables
-   logical, intent(in) :: VEC, ID
+   logical, intent(in) :: VECR, VECL, ID
    integer, intent(in) :: N, K, M
    logical, intent(inout) :: P(N-2)
    real(8), intent(inout) :: Q(3*(N-1)), D1(2*N*K), C1(3*N*K), B1(3*N*K)
@@ -133,14 +137,14 @@ subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
    ! initialize storage
    ITS = 0
 
-   if (VEC.AND.ID) then
+   if (VECR.AND.ID) then
      V = cmplx(0d0,0d0,kind=8)
      do ii=1,n
        V(ii,ii) = cmplx(1d0,0d0,kind=8)
      end do
    end if   
 
-   if (VEC.AND.ID) then
+   if (VECL.AND.ID) then
      W = cmplx(0d0,0d0,kind=8)
      do ii=1,n
        W(ii,ii) = cmplx(1d0,0d0,kind=8)
@@ -163,7 +167,7 @@ subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
      end if
 
      ! check for deflation
-     call z_upr1fpen_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &
+     call z_upr1fpen_deflationcheck(VECL,STP-STR+2,P(STR:(STP-1)), &
           Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)),C1((3*STR-2):(3*STP+3)), & 
           B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)), & 
           B2((3*STR-2):(3*STP+3)),M,V(:,STR:STP+1),W(:,STR:STP+1),ZERO)
@@ -209,7 +213,7 @@ subroutine z_uprkfpen_qz(VEC,ID,FUN,N,K,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
 
        print*, "Singlestep"
        ! perform singleshift iteration
-       call z_uprkfpen_singlestep(VEC,FUN,N,K,STR,STP,P,Q, &
+       call z_uprkfpen_singlestep(VECR,VECL,FUN,N,K,STR,STP,P,Q, &
             &D1,C1,B1, &
             &D2,C2,B2, &
             &M,V,W,ITCNT)
