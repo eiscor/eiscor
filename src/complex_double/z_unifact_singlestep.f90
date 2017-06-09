@@ -127,7 +127,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   call z_unifact_mergebulge(.TRUE.,Q(1:3),D(1:4),binv)
   
   ! bulge through diag
-  call z_rot3_swapdiag(.FALSE.,D(1:4),bulge)
+  call z_rot3_swapdiag(D(1:4),bulge)
 
   ! update eigenvectors
   if (VEC) then
@@ -167,7 +167,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     ind2 = ind1+3
      
     ! through diag
-    call z_rot3_swapdiag(.FALSE.,D(ind1:ind2),bulge)
+    call z_rot3_swapdiag(D(ind1:ind2),bulge)
 
   end do
   
