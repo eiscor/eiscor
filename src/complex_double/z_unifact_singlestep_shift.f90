@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_unifact_singlestep 
+! z_unifact_singlestep_shift 
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -37,7 +37,7 @@
 !                   Contains the number of iterations since last deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
+subroutine z_unifact_singlestep_shift(VEC,N,Q,D,M,Z,ITCNT,SHIFT)
 
   implicit none
   
@@ -47,61 +47,13 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   integer, intent(inout) :: ITCNT
   real(8), intent(inout) :: Q(3*(N-1)), D(2*N)
   complex(8), intent(inout) :: Z(M,N)
+  complex(8), intent(in) :: SHIFT
   
   ! compute variables
   integer :: ii, ind1, ind2
   real(8) :: s1, s2, ar, ai, br, bi, nrm
   real(8) :: bulge(3), binv(3), qt(6)
-  complex(8) :: shift
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
-  
-  ! compute a nonzero shift
-  ! random shift
-  if(mod(ITCNT+1,11) == 0)then
-    call random_number(s1)
-    call random_number(s2)
-    shift = cmplx(s1,s2,kind=8)
-          
-  ! wilkinson shift
-  else
- 
-    ! set generators if N == 2
-    if (N.EQ.2) then
-      qt(1) = 1d0; qt(2:3) = 0d0
-      qt(4:6) = Q
-    ! else if N > 2
-    else
-      qt = Q((3*N-8):(3*N-3))
-      nrm = sqrt(qt(1)**2+qt(2)**2)
-      if (nrm.EQ.0) then
-        qt(1) = 1d0; qt(2:3) = 0d0
-      else
-        qt(3) = 0d0; qt(1:2) = qt(1:2)/nrm
-      end if
-    end if
-
-    ! get 2x2 block
-    call z_unifact_2x2diagblock(.FALSE.,qt,D((2*N-3):(2*N)),block) 
-      
-    ! compute eigenvalues and eigenvectors
-    t1 = block
-    call z_2x2array_eig(.FALSE.,t1,t1,t2,t2)
-      
-    ! choose wikinson shift
-    ! complex abs does not matter here
-    if(abs(block(2,2)-t1(1,1)) < abs(block(2,2)-t1(2,2)))then
-      shift = t1(1,1)
-    else
-      shift = t1(2,2)
-    end if
-
-  end if
-        
-  ! project shift onto unit circle
-  ar = dble(shift)
-  ai = aimag(shift)
-  call d_rot2_vec2gen(ar,ai,br,bi,nrm)
-  shift = cmplx(br,bi,kind=8)
 
   ! set generators if N == 2
   if (N.EQ.2) then
@@ -180,4 +132,4 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   ! fusion at bottom
   call z_unifact_mergebulge(.FALSE.,Q((3*N-5):(3*N-3)),D((2*N-3):(2*N)),bulge)
   
-end subroutine z_unifact_singlestep
+end subroutine z_unifact_singlestep_shift

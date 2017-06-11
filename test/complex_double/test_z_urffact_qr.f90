@@ -15,7 +15,7 @@ program test_z_urffact_qr
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**13
+  integer, parameter :: N = 2**09
   real(8), parameter :: tol = (EISCOR_DBL_EPS)
   integer :: ii, jj, INFO, ITCNT(N-1)
   complex(8) :: U(N)
@@ -35,6 +35,7 @@ program test_z_urffact_qr
   call u_test_banner(__FILE__)
   
   
+print*,""
  
   ! Check 1)
   ! initialize U and VV
@@ -83,6 +84,7 @@ program test_z_urffact_qr
   ! compute maximum forward error
   small = 0d0
   do ii = 1,N
+!print*,U(ii),E(ii),abs(U(ii)-E(ii))
     if (abs(U(ii)-E(ii)) > small) then
       small = abs(U(ii)-E(ii))
     end if
