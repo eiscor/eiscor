@@ -56,7 +56,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -87,7 +87,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -122,7 +122,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -154,7 +154,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -189,7 +189,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -221,7 +221,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -257,7 +257,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
@@ -289,7 +289,7 @@ program test_z_rot3_swapdiag
   H(1,2) = -B(3)*cmplx(D(3),D(4),kind=8)
   H(2,2) = cmplx(B(1),-B(2),kind=8)*cmplx(D(3),D(4),kind=8)
 
-  call z_rot3_swapdiag(dir,D,B)
+  call z_rot3_swapdiag(D,B)
 
   if (abs(H(1,1)-cmplx(B(1),B(2),kind=8)*cmplx(D(1),D(2),kind=8))>tol) then
      call u_test_failed(__LINE__)
