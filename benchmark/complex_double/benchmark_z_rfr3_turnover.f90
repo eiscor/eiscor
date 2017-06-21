@@ -69,15 +69,6 @@ program benchmark_z_rfr3_turnover
       w = cmplx(cc,ss,kind=8)
       w = w/abs(w)
 
-      ! set CC and SS
-      call random_number(cc)
-      call random_number(ss)
-      cc = abs(cc)
-      ss = abs(ss)
-      nn = cc + ss
-      cc = cc/nn
-      ss = ss/nn
-
       ! set U and VV
       call random_number(cc)
       call random_number(ss)
@@ -93,6 +84,15 @@ program benchmark_z_rfr3_turnover
       call random_number(ss)
       rho = cmplx(cc,ss,kind=8)
       rho = rho/abs(rho)
+
+      ! set CC and SS
+      call random_number(cc)
+      call random_number(ss)
+      cc = abs(cc)
+      ss = abs(ss)
+      nn = cc + ss
+      cc = cc/nn
+      ss = ss/nn
 
     end do  
 
@@ -119,15 +119,6 @@ program benchmark_z_rfr3_turnover
       w = cmplx(cc,ss,kind=8)
       w = w/abs(w)
 
-      ! set CC and SS
-      call random_number(cc)
-      call random_number(ss)
-      cc = abs(cc)
-      ss = abs(ss)
-      nn = cc + ss
-      cc = cc/nn
-      ss = ss/nn
-
       ! set U and VV
       call random_number(cc)
       call random_number(ss)
@@ -143,6 +134,15 @@ program benchmark_z_rfr3_turnover
       call random_number(ss)
       rho = cmplx(cc,ss,kind=8)
       rho = rho/abs(rho)
+
+      ! set CC and SS
+      call random_number(cc)
+      call random_number(ss)
+      cc = abs(cc)
+      ss = abs(ss)
+      nn = cc + ss
+      cc = cc/nn
+      ss = ss/nn
 
       ! compute 10 turnovers
       call z_rfr3_turnover(w,cc,ss,u,vv,rho)
