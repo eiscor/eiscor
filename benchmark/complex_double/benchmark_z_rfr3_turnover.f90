@@ -84,6 +84,13 @@ program benchmark_z_rfr3_turnover
       rho = cmplx(cc,ss,kind=8)
       rho = rho/abs(rho)
 
+      ! set CC and SS
+      call random_number(cc)
+      call random_number(ss)
+      nn = cc + ss
+      cc = cc/nn
+      ss = ss/nn
+
     end do  
 
     ! stop timer
@@ -123,6 +130,13 @@ program benchmark_z_rfr3_turnover
       call random_number(ss)
       rho = cmplx(cc,ss,kind=8)
       rho = rho/abs(rho)
+
+      ! set CC and SS
+      call random_number(cc)
+      call random_number(ss)
+      nn = cc + ss
+      cc = cc/nn
+      ss = ss/nn
 
       ! compute 10 turnovers
       call z_rfr3_turnover(w,cc,ss,u,vv,rho)
