@@ -55,7 +55,7 @@ subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
   if (DIR) then
   
     ! through D
-    call z_rot3_swapdiag(DIR,D,G)
+    call z_rot3_swapdiag(D,G)
  
     ! through C and B, symmetric case
     if (SYM) then
@@ -117,7 +117,7 @@ subroutine z_upr1fact_rot3throughtri(DIR,D,C,B,G)
     end if
     
     ! through D
-    call z_rot3_swapdiag(DIR,D,G)
+    call z_rot3_swapdiag(D,G)
   
   end if
 
