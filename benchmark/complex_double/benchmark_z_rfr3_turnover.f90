@@ -72,6 +72,8 @@ program benchmark_z_rfr3_turnover
       ! set CC and SS
       call random_number(cc)
       call random_number(ss)
+      cc = abs(cc)
+      ss = abs(ss)
       nn = cc + ss
       cc = cc/nn
       ss = ss/nn
@@ -80,6 +82,7 @@ program benchmark_z_rfr3_turnover
       call random_number(cc)
       call random_number(ss)
       call random_number(vv)
+      vv = abs(vv)
       u = cmplx(cc,ss,kind=8)
       nn = abs(u)**2 + vv
       u = u/sqrt(nn)
@@ -119,6 +122,8 @@ program benchmark_z_rfr3_turnover
       ! set CC and SS
       call random_number(cc)
       call random_number(ss)
+      cc = abs(cc)
+      ss = abs(ss)
       nn = cc + ss
       cc = cc/nn
       ss = ss/nn
@@ -127,6 +132,7 @@ program benchmark_z_rfr3_turnover
       call random_number(cc)
       call random_number(ss)
       call random_number(vv)
+      vv = abs(vv)
       u = cmplx(cc,ss,kind=8)
       nn = abs(u)**2 + vv
       u = u/sqrt(nn)
