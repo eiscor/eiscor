@@ -1,28 +1,28 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! test_z_urffact_qr
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This program tests the subroutine z_urffact_qr. The following tests are run:
 !
-! 1) 
+! 1) Compute roots of unity and check forward error for various powers of 2
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_urffact_qr
 
   implicit none
   
   ! compute variables
-  integer, parameter :: N = 2**09
-  real(8), parameter :: tol = (EISCOR_DBL_EPS)
-  integer :: ii, jj, INFO, ITCNT(N-1)
-  complex(8) :: U(N)
+  integer, parameter :: MPOW = 10
+  integer, parameter :: N = 2**MPOW
+  real(8), parameter :: twopi = 2d0*EISCOR_DBL_PI
+  integer :: ii, INFO, jj, kk, M, id
+  complex(8) :: U(N), E(N), swap
   real(8) :: VV(N), A(N)
-  integer :: id
-  real(8) :: small, twopi
-  complex(8) :: swap, E(N)
+  integer :: ITS(N-1)
+  real(8) :: tol, small
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -34,66 +34,77 @@ program test_z_urffact_qr
   ! print banner
   call u_test_banner(__FILE__)
   
-  
-print*,""
- 
   ! Check 1)
-  ! initialize U and VV
-  U = cmplx(0d0,0d0,kind=8)
-  U(N) = cmplx(sign(1d0,(-1d0)**(N-1)),0d0,kind=8)
-  VV = 1d0
-  VV(N) = 0d0
+  ! loop through powers of 2
+  do kk=1,MPOW
+  
+    ! set current degree
+    M = 2**kk
+  
+    ! initialize U and VV
+    U = cmplx(0d0,0d0,kind=8)
+    U(M) = cmplx(sign(1d0,(-1d0)**(M-1)),0d0,kind=8)
+    VV = 1d0
+    VV(M) = 0d0
+
+    ! call dohfqr
+    call z_urffact_qr(M,U,VV,ITS,INFO)
+
+    ! check INFO
+    if (INFO.NE.0) then
+      call u_test_failed(__LINE__)
+    end if
     
-  ! call singlestep
-  call z_urffact_rfqr(N,U,VV,ITCNT,INFO)
-
-  ! compute by argument
-  do ii = 1,N
-    call z_scalar_argument(dble(U(ii)),aimag(U(ii)),A(ii),INFO)
-  end do
-
-  ! sort by argument
-  do ii = 1,N
-    small = 10d0
-    id = ii
-    do jj = ii,N
-      if ( A(jj) < small ) then
-        id = jj
-        small = A(id)
+    ! compute argument
+    do ii = 1,M
+      call z_scalar_argument(dble(U(ii)),aimag(U(ii)),A(ii),INFO)
+    end do
+  
+    ! sort by argument
+    do ii = 1,M
+      small = 10d0
+      id = ii
+      do jj = ii,M
+        if ( A(jj) < small ) then
+          id = jj
+          small = A(id)
+        end if
+      end do
+      A(id) = A(ii)
+      A(ii) = small
+      swap = U(id)
+      U(id) = U(ii)
+      U(ii) = swap
+    end do
+      
+    ! set tolerance
+    tol = dble(M)*EISCOR_DBL_EPS
+   
+    ! true eigenvalues
+    if ( abs(U(1)-cmplx(1d0,0d0,kind=8)) < tol ) then
+      id = 1
+    else
+      id = 0
+    end if
+    do ii = 1,M
+      small = twopi*dble(ii-id)/dble(M)
+      E(ii) = cmplx(cos(small),sin(small),kind=8)
+    end do
+  
+    ! compute maximum forward error
+    small = 0d0
+    do ii = 1,M
+      if (abs(U(ii)-E(ii)) > small) then
+        small = abs(U(ii)-E(ii))
       end if
     end do
-    A(id) = A(ii)
-    A(ii) = small
-    swap = U(id)
-    U(id) = U(ii)
-    U(ii) = swap
-  end do
-    
-  ! true eigenvalues
-  if ( abs(U(1)-cmplx(1d0,0d0,kind=8)) < dble(N)*(EISCOR_DBL_EPS) ) then
-    id = 1
-  else
-    id = 0
-  end if
-  twopi = 2d0*(EISCOR_DBL_PI)
-  do ii = 1,N
-    small = twopi*dble(ii-id)/dble(N)
-    E(ii) = cmplx(cos(small),sin(small),kind=8)
-  end do
 
-  ! compute maximum forward error
-  small = 0d0
-  do ii = 1,N
-!print*,U(ii),E(ii),abs(U(ii)-E(ii))
-    if (abs(U(ii)-E(ii)) > small) then
-      small = abs(U(ii)-E(ii))
-    end if
+    ! check maximum error
+    if (small >= tol) then
+      call u_test_failed(__LINE__)
+    end if  
+ 
   end do
-
-  ! check maximum error
-  if (small >= dble(N)*tol) then
-    call u_test_failed(__LINE__)
-  end if  
 
   ! stop timer
   call system_clock(count=c_stop)

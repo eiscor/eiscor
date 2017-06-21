@@ -1,29 +1,52 @@
 #include "eiscor.h"
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! z_urffact_singlestep 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! This routine computes one iteration of Francis' singleshift algorithm on a
 ! unitary upper hessenberg matrix that is stored as a product of givens
 ! rotations. 
+!                                                                               
+! | nu  0 | | u1       -v1 |
+! |  0  1 | | v1  conj(u1) | | u2       -v2 | 
+!                            | v2  conj(u2) | | u3       -v3 | | 1   0 |
+!                                             | v3  conj(u3) | | 0  u4 |                                   
+!                                                                               
+! The square root free algorithm only requires the storage of the vi^2,
+! so the arrays U and VV contain the following:
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  U(i) = ui
+! VV(i) = vi^2
+!
+! The input must satisfy the following:
+!
+!  |U(i)|^2 + VV(i) = 1
+!             VV(N) = 0
+!              |NU| = 1
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  N               INTEGER 
 !                    dimension of matrix, must be >= 2
 !
-!  U               REAL(8) array of dimension (3*N)
-!                    array of generators for givens rotations
+!  U               COMPLEX(8) array of dimension N
+!                    array of complex generators for Givens rotations
 !
-!  ITCNT           INTEGER
+!  VV              REAL(8) array of dimension N
+!                    array of real generators for Givens rotations
+!
+!  NU              COMPLEX(8)
+!                    unimodular phase 
+!
+!  ITCNT           INTEGER array of dimension N-1
 !                   Contains the number of iterations since last deflation
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_urffact_singlestep(N,U,VV,ITCNT)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
 
   implicit none
   
@@ -32,6 +55,7 @@ subroutine z_urffact_singlestep(N,U,VV,ITCNT)
   integer, intent(inout) :: ITCNT
   complex(8), intent(inout) :: U(N)
   real(8), intent(inout) :: VV(N)
+  complex(8), intent(in) :: NU
   
   ! compute variables
   integer :: ii
@@ -79,29 +103,25 @@ subroutine z_urffact_singlestep(N,U,VV,ITCNT)
 
   ! initialize
   w = -rho
-  z = U(1) + w
-  zz = dble(z)**2 + aimag(z)**2
-  nn = VV(1) + zz
-  cc = zz/nn
-  ss = VV(1)/nn
-  w = -rho*conjg(w)*((z*z)/zz)
-  xx = dble(w)**2 + aimag(w)**2
-  w = w*(3d0 - xx)/2
+  cc = 1d0
+  ss = 0d0
 
   ! main chasing loop
-  do ii=1,(N-1)
+  do ii=0,(N-1)
 
     ! set ut and vvt
-    ut = U(ii+1)
+    ut = NU*U(ii+1)
     vvt = VV(ii+1)
 
     ! turnover
     call z_rfr3_turnover(w,cc,ss,ut,vvt,rho)
 
     ! store ut and vvt
-    U(ii) = ut
-    VV(ii) = vvt
+    if ( ii > 0 ) then
+      U(ii) = conjg(NU)*ut
+      VV(ii) = vvt
+    end if
     
   end do
-  
+
 end subroutine z_urffact_singlestep

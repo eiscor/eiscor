@@ -3,31 +3,46 @@
 !
 ! z_urffact_deflationcheck 
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks for deflations in a unitary upper hessenberg matrix
-! that is stored as a product of givens rotations. When a deflation occurs the
-! corresponding rotation is set to the identity matrix.
+! This routine diagonalizes a unitary upper hessenberg matrix that is stored as
+! a product of N Givens rotations, without computing square roots.
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! | u1       -v1 |
+! | v1  conj(u1) | | u2       -v2 | 
+!                  | v2  conj(u2) | | u3       -v3 | | 1   0 |
+!                                   | v3  conj(u3) | | 0  u4 |                                   
+!                                                                     
+! The square root free algorithm only requires the storage of the vi^2,
+! so the arrays U and VV contain the following:
+!
+!  U(i) = ui
+! VV(i) = vi^2
+!
+! The input must satisfy the following:
+!
+!  |U(i)|^2 + VV(i) = 1
+!             VV(N) = 0
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
 !  N               INTEGER
 !                    dimension of matrix
 !
-!  U               complex(8) array of dimension (N)
-!                    array of generators for givens rotations
+!  U               COMPLEX(8) array of dimension N
+!                    array of complex generators for Givens rotations
 !
-!  VV              REAL(8) array of dimension (N)
-!                    array of generators for complex diagonal matrix
+!  VV              REAL(8) array of dimension N
+!                    array of real generators (squared) for Givens rotations
 !
 ! OUTPUT VARIABLES:
 !
 !  ZERO            INTEGER
-!                     on output contains index of newest deflation
+!                    largest index such that VV(i) < tol
 !
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_urffact_deflationcheck(N,U,VV,ZERO)
 
   implicit none
