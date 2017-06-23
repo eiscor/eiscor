@@ -20,8 +20,8 @@ program test_z_urffact_qr
   real(8), parameter :: twopi = 2d0*EISCOR_DBL_PI
   integer :: ii, INFO, jj, kk, M, id
   complex(8) :: U(N), E(N), swap
-  real(8) :: VV(N), A(N)
-  integer :: ITS(N-1)
+  real(8) :: VV(N)
+  integer :: ITS(N-1), A(N)
   real(8) :: tol, small
   
   ! timing variables
@@ -57,12 +57,12 @@ program test_z_urffact_qr
     
     ! compute argument
     do ii = 1,M
-      call z_scalar_argument(dble(U(ii)),aimag(U(ii)),A(ii),INFO)
+      A(ii) = nint(dble(M)*(aimag(log(U(ii)))/twopi))
     end do
   
     ! sort by argument
     do ii = 1,M
-      small = 10d0
+      small = 2*M+1
       id = ii
       do jj = ii,M
         if ( A(jj) < small ) then
@@ -81,13 +81,8 @@ program test_z_urffact_qr
     tol = dble(M)*EISCOR_DBL_EPS
    
     ! true eigenvalues
-    if ( abs(U(1)-cmplx(1d0,0d0,kind=8)) < tol ) then
-      id = 1
-    else
-      id = 0
-    end if
     do ii = 1,M
-      small = twopi*dble(ii-id)/dble(M)
+      small = twopi*dble(A(ii))/dble(M)
       E(ii) = cmplx(cos(small),sin(small),kind=8)
     end do
   

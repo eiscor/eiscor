@@ -70,12 +70,15 @@ subroutine z_rfr3_turnover(W,CC,SS,U,VV,RHO)
   xx = SS
   uold = U
 
+  ! z and zz
+  z = U + W
+  zz = dble(z)**2 + aimag(z)**2
+
   ! new U
-  U = (CC*W - SS*U)
+  U = (CC*z - U)
 
   ! new W, CC and SS
-  z = uold + W
-  CC = CC*(dble(z)**2 + aimag(z)**2)
+  CC = CC*zz
   if ( CC.EQ.0d0 ) then
     nn = VV
     SS = 1d0
@@ -84,7 +87,7 @@ subroutine z_rfr3_turnover(W,CC,SS,U,VV,RHO)
     nn = VV + CC
     CC = CC/nn
     SS = VV/nn
-    W = -RHO*(SS*U + uold)/CC
+    W = -RHO*(z*(VV/zz) + uold)
   end if
 
   ! new U
