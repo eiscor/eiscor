@@ -47,7 +47,7 @@ program test_z_urffact_qr
     VV = 1d0
     VV(M) = 0d0
 
-    ! call dohfqr
+    ! call root free qr
     call z_urffact_qr(M,U,VV,ITS,INFO)
 
     ! check INFO
