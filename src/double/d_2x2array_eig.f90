@@ -132,7 +132,7 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
     temp = (A(1,1)-A(2,2))**2 + 4d0*A(1,2)*A(2,1)
     
     ! imaginary roots
-    if (temp.LE.0d0) then
+    if (temp.LT.0d0) then
       
       ! move A to standard form (A(1,1) = A(2,2))
    
