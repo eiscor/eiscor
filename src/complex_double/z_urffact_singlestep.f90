@@ -42,8 +42,8 @@
 !  NU              COMPLEX(8)
 !                    unimodular phase 
 !
-!  ITCNT           INTEGER array of dimension N-1
-!                   Contains the number of iterations since last deflation
+!  ITCNT           INTEGER
+!                    Contains the number of iterations since last deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
