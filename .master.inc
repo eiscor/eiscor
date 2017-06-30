@@ -7,8 +7,7 @@ VERSION := $(MAJOR).$(MINOR).$(PATCH)
 UNAME := $(shell uname)
 
 # change library extension based on OS
-UNAME := $(shell uname)
-ifeq ($(findstring Windows_NT,$(UNAME)),Windows_NT)
+ifeq ($(findstring Windows_NT,$(OS)),Windows_NT)
 	SLIB := dll
 else ifeq ($(UNAME),Darwin)
 	SLIB := dylib
