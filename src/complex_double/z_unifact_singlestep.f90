@@ -72,6 +72,12 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     ! else if N > 2
     else
       qt = Q((3*N-8):(3*N-3))
+      nrm = sqrt(qt(1)**2+qt(2)**2)
+      if (nrm.EQ.0) then
+        qt(1) = 1d0; qt(2:3) = 0d0
+      else
+        qt(3) = 0d0; qt(1:2) = qt(1:2)/nrm
+      end if
     end if
 
     ! get 2x2 block
@@ -127,7 +133,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
   call z_unifact_mergebulge(.TRUE.,Q(1:3),D(1:4),binv)
   
   ! bulge through diag
-  call z_rot3_swapdiag(.FALSE.,D(1:4),bulge)
+  call z_rot3_swapdiag(D(1:4),bulge)
 
   ! update eigenvectors
   if (VEC) then

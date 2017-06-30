@@ -25,7 +25,6 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   real(8), intent(inout) :: Q1(2), Q2(2), Q3(2)
 
   ! compute variables
-  real(8), parameter :: tol = EISCOR_DBL_EPS
   real(8) :: nrm
   real(8) :: a, b 
   real(8) :: c1, s1
@@ -43,26 +42,26 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   c3 = Q3(1)
   s3 = Q3(2)
   
-  ! initialize c4 and s4
+  ! compute first rotation
   a = s1*c3 + c1*c2*s3
   b = s2*s3
-  
-  ! compute first rotation
   call d_rot2_vec2gen(a,b,c4,s4,nrm)
 
-  ! initialize c5 and s5
+  ! compute second rotation
   a = c1*c3 - s1*c2*s3
   b = nrm
+  call d_rot2_unitvec2gen(a,b,c5,s5)
 
-  ! compute second rotation
-  call d_rot2_vec2gen(a,b,c5,s5,nrm)
-
-  ! second column
-  a = -(-c1*s3-s1*c2*c3)*s5 + ((-s1*s3+c1*c2*c3)*c4 + s2*c3*s4)*c5
-  b = -(-s1*s3+c1*c2*c3)*s4 + s2*c3*c4
-  
-  ! compute first rotation
-  call d_rot2_vec2gen(a,b,c6,s6,nrm)
+  ! compute third rotation
+  ! s5 == 0 
+  a = c1*s2*s4 + c2*c4
+  if (s5.eq.0) then
+    b = c5*c1*c4*s2
+  ! all other cases
+  else
+    b = s1*s2/s5
+  end if  
+  call d_rot2_unitvec2gen(a,b,c6,s6)
 
   ! set output
   Q1(1) = c5

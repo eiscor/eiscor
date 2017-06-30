@@ -239,7 +239,7 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
         ind2 = ind1+3
         
         ! through diag 
-        call z_rot3_swapdiag(.FALSE.,QD(ind1:ind2),bulge)
+        call z_rot3_swapdiag(QD(ind1:ind2),bulge)
         
         ! set indices
         ind1 = 3*(ii-1) + 1
@@ -264,7 +264,7 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
      ind2 = ind1+3
      
      ! through diag
-     call z_rot3_swapdiag(.FALSE.,QD(ind1:ind2),bulge)
+     call z_rot3_swapdiag(QD(ind1:ind2),bulge)
      
      ! fusion at bottom
      call z_unifact_mergebulge(.FALSE.,Q((3*N-5):(3*N-3)),QD((2*N-3):(2*N)),bulge)

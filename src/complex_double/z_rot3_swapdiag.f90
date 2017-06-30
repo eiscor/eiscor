@@ -45,13 +45,14 @@ subroutine z_rot3_swapdiag(D,G)
   d2r = D(3)
   d2i = D(4)  
   
+  ! from right to left and left to right
   ! pass through diagonal
   nrm = (d1r*d2r + d1i*d2i)*c1r - (-d1r*d2i + d1i*d2r)*c1i
   c1i = (d1r*d2r + d1i*d2i)*c1i + (-d1r*d2i + d1i*d2r)*c1r
   c1r = nrm
-
+  
   ! renormalize
-  call z_rot3_vec3gen(c1r,c1i,s1,G(1),G(2),G(3),nrm) 
+  call z_rot3_unitvec3gen(c1r,c1i,s1,G(1),G(2),G(3)) 
     
   ! set D
   D(1) = d2r 

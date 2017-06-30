@@ -15,7 +15,7 @@ program test_z_upr1utri_rot3swap
   implicit none
 
   ! parameter
-  real(8), parameter :: tol = 2d0*EISCOR_DBL_EPS ! accuracy (tolerance)
+  real(8), parameter :: tol = 4d0*EISCOR_DBL_EPS ! accuracy (tolerance)
 
   ! compute variables
   real(8) :: nrm, D(4), C(6), B(6), G(3)
@@ -71,7 +71,7 @@ program test_z_upr1utri_rot3swap
   ! check results
   A = abs(matmul(Told,Aold)-matmul(A,T))
   if (maxval(dble(A)) > tol) then
-    call u_test_failed(__LINE__)
+     call u_test_failed(__LINE__)
   end if
 
   ! stop timer

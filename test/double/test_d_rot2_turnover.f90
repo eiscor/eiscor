@@ -19,7 +19,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! If DEBUG mode is activated a histogram of the accuracy of the turnover is 
+! If VERBOSE mode is activated a histogram of the accuracy of the turnover is 
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
 ! 
@@ -112,7 +112,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,1)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -173,7 +173,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,2)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -234,7 +234,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,3)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -271,7 +271,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do 
   histo2(1:7,4)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -332,7 +332,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,5)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -393,7 +393,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,6)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -430,7 +430,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,7)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -563,7 +563,7 @@ program test_d_rot2_turnover
      call d_rot2_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   end do
   histo2(1:7,8)=histo(1:7)
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT.pass_cur) then
         write(*,*) ""
         write(*,*) "Arbitrary random rotation"
@@ -584,7 +584,7 @@ program test_d_rot2_turnover
      end if
   end if
 
-  if (DEBUG) then
+  if (VERBOSE) then
      ! print histogram
      write(*,*) ""
      write(*,*) "<1e-17",histo2(1,:)
@@ -597,11 +597,11 @@ program test_d_rot2_turnover
   end if
 
   ! reference histogram, turnover passes test if histogram is better than this one
-  histot(1,:) = (/           0,        4500,       35000,      120000,           0,       99500,      120000,       57000/)!
-  histot(2,:) = (/           0,        5000,        5000,           0,           0,           0,           0,        3000/)!
-  histot(3,:) = (/       38500,       70000,       70000,           0,       59000,       20000,           0,       35000/)!
-  histot(4,:) = (/       80000,       40000,        9900,           0,       70000,         500,           0,       24600/)!
-  histot(5,:) = (/        1500,         500,         100,           0,        1000,           0,           0,         400/)!
+  histot(1,:) = (/           0,        4500,       49000,      120000,           0,       90000,      120000,       57000/)!
+  histot(2,:) = (/           0,        5000,        6000,           0,           0,           0,           0,        3000/)!
+  histot(3,:) = (/       60000,       70000,       60000,           0,       70000,       35000,           0,       45000/)!
+  histot(4,:) = (/       70000,       40000,        6000,           0,       60000,         500,           0,       20000/)!
+  histot(5,:) = (/        1500,         500,         100,           0,        2000,           0,           0,         400/)!
   histot(6,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
   histot(7,:) = (/           0,           0,           0,           0,           0,           0,           0,           0/)!
 
@@ -611,7 +611,7 @@ program test_d_rot2_turnover
      ht = histot(7,jj)
      do ii=7,1,-1
         if (h2>ht*1.002) then
-           if (DEBUG) then
+           if (VERBOSE) then
               pass_all = .FALSE.
            else             
               call u_test_failed(__LINE__)           
@@ -624,7 +624,7 @@ program test_d_rot2_turnover
      end do
   end do
  
-  if (DEBUG) then
+  if (VERBOSE) then
      if (.NOT. pass_all) then
         write(*,*) "At least one turnover test FAILED."
      end if
