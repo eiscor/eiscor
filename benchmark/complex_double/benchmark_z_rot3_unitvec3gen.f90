@@ -1,18 +1,18 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! benchmark_z_rot3_vec3gen
+! benchmark_z_rot3_unitvec3gen
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program benchmarks the subroutine z_rot3_vec3gen. 
+! This program benchmarks the subroutine z_rot3_unitvec3gen. 
 ! The following benchmarks are run:
 !
-! 1) Compute one billion core transformations from uniformly generated 
+! 1) Compute 1 billion core transformations from normalized uniformly generated 
 !    user input. The average compute time and the worst error are printed.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-program benchmark_z_rot3_vec3gen
+program benchmark_z_rot3_unitvec3gen
 
   implicit none
 
@@ -70,10 +70,11 @@ program benchmark_z_rot3_vec3gen
       call random_number(AI)
       call random_number(B)
       
-      ! compute worst ERROR
-      ERROR = max(ERROR,abs(AR-NRM*CR))
-      ERROR = max(ERROR,abs(AI-NRM*CI))
-      ERROR = max(ERROR,abs(B-NRM*S))
+      ! compute core transformation
+      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      AR = CR
+      AI = CI
+      B = S + EISCOR_DBL_EPS
       
     end do  
 
@@ -83,7 +84,7 @@ program benchmark_z_rot3_vec3gen
     ! set base time
     base_time = dble(c_stop-c_start)/dble(c_rate)
     
-  ! total time for random number generate and error calculation
+    ! total time for random number generate and error calculation
     ! reset ERROR
     ERROR = 0d0
     
@@ -101,22 +102,21 @@ program benchmark_z_rot3_vec3gen
       
       ! compute core transformation
       call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      AR = CR
+      AI = CI
+      S = S + EISCOR_DBL_EPS
       
-      ! compute worst ERROR
-      ERROR = max(ERROR,abs(AR-NRM*CR))
-      ERROR = max(ERROR,abs(AI-NRM*CI))
-      ERROR = max(ERROR,abs(B-NRM*S))
-      
-      ! 9 more times to build up the average
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
-      call z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
+      ! compute core transformation
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
+      call z_rot3_unitvec3gen(AR,AI,B,CR,CI,S)
       
     end do  
 
@@ -132,4 +132,4 @@ program benchmark_z_rot3_vec3gen
     ! print results
     call u_benchmark_print(total_time,ERROR)
 
-end program benchmark_z_rot3_vec3gen
+end program benchmark_z_rot3_unitvec3gen
