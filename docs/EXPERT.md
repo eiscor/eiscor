@@ -40,8 +40,7 @@ routines:
 The eigensolver for symmetric tridiagonal matrices uses a Cayley transformation
 and a similarity transformation to transform the matrix into unitary Hessenberg
 form. Hence interaction is only possible at the highest level:
-- [__d_symtrid_qr__](https://github.com/eiscor/eiscor/blob/master/
-src/double/d_symtrid_qr.f90)
+- [__d_symtrid_qr__](https://github.com/eiscor/eiscor/blob/master/src/double/d_symtrid_qr.f90)
 
 This routine accepts a symmetric tridiagonal matrix as input and computes a
 complex Schur factorization.
