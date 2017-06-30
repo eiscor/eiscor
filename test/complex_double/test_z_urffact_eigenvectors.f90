@@ -15,14 +15,14 @@ program test_z_urffact_eigenvectors
   implicit none
   
   ! compute variables
-  integer, parameter :: MPOW = 01
-  integer, parameter :: N = 2**MPOW+1 
+  integer, parameter :: MPOW = 11
+  integer, parameter :: N = 2**MPOW
   real(8), parameter :: twopi = 2d0*EISCOR_DBL_PI
   integer :: ii, INFO, jj, kk, M, id
   complex(8) :: U(N), E(N), swap
   real(8) :: VV(N)
-  complex(8) :: Uold(N), Z(N,N), WORK(N), H(N,N)
-  real(8) :: VVold(N)
+  complex(8) :: Uold(N), Z(N,N), CWORK(N,2), H(N,N)
+  real(8) :: VVold(N), WORK(N,2)
   integer :: ITS(N-1), A(N)
   real(8) :: tol, small
   real(8) :: ur, ui, vvt
@@ -45,97 +45,106 @@ program test_z_urffact_eigenvectors
   do kk=1,MPOW
   
     ! set current degree
-    M = 2**kk+1
+    M = 2**kk
   
     ! initialize U and VV
     U = cmplx(0d0,0d0,kind=8)
     U(M) = cmplx(sign(1d0,(-1d0)**(M-1)),0d0,kind=8)
     VV = 1d0
-    do ii = 1,M-1
-      call random_number(ur)
-      call random_number(ui)
-      call random_number(vvt)
-      call z_rot3_vec3gen(ur,ui,vvt,ur,ui,vvt,small)
-      U(ii) = cmplx(ur,ui,kind=8)
-      VV(ii) = vvt**2
-    end do
-    U(M) = cmplx(1d0,0d0,kind=8)
     VV(M) = 0d0
+!    do ii = 1,M-1
+!      call random_number(ur)
+!      call random_number(ui)
+!      call random_number(vvt)
+!      call z_rot3_vec3gen(ur,ui,vvt,ur,ui,vvt,small)
+!      U(ii) = cmplx(ur,ui,kind=8)
+!      VV(ii) = vvt**2
+!    end do
+!    U(M) = cmplx(1d0,0d0,kind=8)
+!    VV(M) = 0d0
 
     ! store originals
     Uold = U
     VVold = VV
 
     ! compute dense matrix
-    call z_urffact_todense(M,U,VV,M,H) 
+    call z_urffact_todense(M,U,VV,M,H(1:M,1:M)) 
 
-    ! call lapack
-    Hl = H
-    call zhseqr('S','I',M,1,M,Hl,M,Wl,Zl,M,WORKl,M,INFO)
-
-    ! adjust phase of eigenvectors
-    do ii = 1,M
-      swap = Zl(1,ii)/abs(Zl(1,ii))
-      Zl(:,ii) = Zl(:,ii)*conjg(swap)
-    end do
+!    ! call lapack
+!    Hl = H
+!    call zhseqr('S','I',M,1,M,Hl,M,Wl,Zl,M,WORKl,M,INFO)
+!
+!    ! adjust phase of eigenvectors
+!    do ii = 1,M
+!      swap = Zl(1,ii)/abs(Zl(1,ii))
+!      Zl(:,ii) = Zl(:,ii)*conjg(swap)
+!    end do
 
     ! call root free qr
     call z_urffact_qr(M,U,VV,ITS,INFO)
 
-    ! check INFO
-    if (INFO.NE.0) then
-      call u_test_failed(__LINE__)
-    end if
-    
-    ! compute argument
-    do ii = 1,M
-      A(ii) = nint(dble(M)*(aimag(log(U(ii)))/twopi))
-    end do
-  
-    ! sort by argument
-    do ii = 1,M
-      small = 2*M+1
-      id = ii
-      do jj = ii,M
-        if ( A(jj) < small ) then
-          id = jj
-          small = A(id)
-        end if
-      end do
-      A(id) = A(ii)
-      A(ii) = small
-      swap = U(id)
-      U(id) = U(ii)
-      U(ii) = swap
-    end do
+    ! copy eigenvalues to E
+    E(1:M) = U(1:M)
+
+!    ! check INFO
+!    if (INFO.NE.0) then
+!      call u_test_failed(__LINE__)
+!    end if
+!    
+!    ! compute argument
+!    do ii = 1,M
+!      A(ii) = nint(dble(M)*(aimag(log(U(ii)))/twopi))
+!    end do
+!  
+!    ! sort by argument
+!    do ii = 1,M
+!      small = 2*M+1
+!      id = ii
+!      do jj = ii,M
+!        if ( A(jj) < small ) then
+!          id = jj
+!          small = A(id)
+!        end if
+!      end do
+!      A(id) = A(ii)
+!      A(ii) = small
+!      swap = U(id)
+!      U(id) = U(ii)
+!      U(ii) = swap
+!    end do
       
     ! compute eigenvectors
-    call z_urffact_eigenvectors(M,Uold,VVold,U,M,Z,WORK)
+    do ii = 1,M
+      U = Uold
+      VV = VVold
+      call z_urffact_eigenvectors(M,U,VV,1,E(ii),Z(1:M,ii),CWORK,WORK)
+    end do
 
     ! print
     print*,""
+!    do ii = 1,M
+!      print*,H(ii,:)
+!    end do
+!  
+!    print*,""
+!    do ii = 1,M
+!      print*,U(ii),Z(ii,:)
+!    end do
+!  
+!    print*,""
+!    do ii = 1,M
+!      print*,Wl(ii),Zl(ii,:)
+!    end do
+!  
+    H(1:M,1:M) = matmul(H(1:M,1:M),Z(1:M,1:M))
     do ii = 1,M
-      print*,H(ii,:)
+      H(1:M,ii) = H(1:M,ii) - E(ii)*Z(1:M,ii)
     end do
-  
-    print*,""
-    do ii = 1,M
-      print*,U(ii),Z(ii,:)
-    end do
-  
-    print*,""
-    do ii = 1,M
-      print*,Wl(ii),Zl(ii,:)
-    end do
-  
-    H = matmul(H,Z)
-    do ii = 1,M
-      H(:,ii) = H(:,ii) - U(ii)*Z(:,ii)
-    end do
-    print*,""
-    do ii = 1,M
-      print*,H(ii,:)
-    end do
+    print*,M,maxval(abs(H(1:M,1:M)))
+!    print*,""    
+!    do ii = 1,M
+!      print*,H(ii,1:M)
+!    end do
 
 !    Z = matmul(conjg(transpose(Z)),Z)
 !    print*,""
