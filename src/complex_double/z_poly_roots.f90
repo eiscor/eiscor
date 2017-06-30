@@ -23,6 +23,12 @@
 !  ROOTS           COMPLEX(8) array of dimension (N)
 !                    computed roots
 !
+!  RESIDUALS       COMPLEX(8) array of dimension (N)
+!                    residuals of the computed roots
+!
+!  INFO            INTEGER 
+!                    INFO = 1 implies companion QZ algorithm failed
+!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
 
@@ -97,6 +103,10 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   ! call z_upr1fpen_qz
   call z_upr1fpen_qz(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
 
+  if (INFO.NE.0) then
+    INFO = 1
+  end if
+  
   ! extract roots
   call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,V)
   call z_upr1utri_decompress(.TRUE.,N,D2,C2,B2,W)
