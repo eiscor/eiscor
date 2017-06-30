@@ -57,9 +57,9 @@ subroutine z_upr1fact_startchase(VEC,N,P,Q,D,C,B,M,V,ITCNT,G)
   complex(8), intent(inout) :: V(M,N)
   
   ! compute variables
-  integer :: ii, ir1, ir2, id1, id2
-  logical :: final_flag, tp(2)
-  real(8) :: nrm, Ginv(3)
+  integer :: ir1, ir2, id1, id2
+  logical :: tp(2)
+  real(8) :: Ginv(3)
   real(8) :: tq(6), td(6), tc(9), tb(9)
   complex(8) :: shift, A(2,2)
   

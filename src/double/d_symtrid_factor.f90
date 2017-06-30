@@ -173,8 +173,8 @@ subroutine d_symtrid_factor(VEC,ID,SCA,N,D,E,Q,QD,SCALE,M,Z,INFO)
   ! compute scale
   SCALE = max(abs(a),abs(b))
 
-  ! return if scale == 0
-  if (SCALE.EQ.0) then 
+  ! return if scale == 0d0
+  if (SCALE.EQ.0d0) then 
      INFO = -56
      ! print error in debug mode
      if (DEBUG) then

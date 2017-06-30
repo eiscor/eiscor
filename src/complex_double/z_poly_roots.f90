@@ -42,7 +42,7 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   integer, allocatable :: ITS(:)
   real(8), allocatable :: Q(:),D1(:),C1(:),B1(:)
   real(8), allocatable :: D2(:),C2(:),B2(:)
-  complex(8), allocatable :: V(:),W(:),T(:,:)
+  complex(8), allocatable :: V(:),W(:)
   interface
     function l_upr1fact_hess(m,flags)
       logical :: l_upr1fact_hess

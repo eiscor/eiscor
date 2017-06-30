@@ -86,7 +86,7 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
   
   ! compute variables
   logical :: flg
-  integer :: ii, jj, kk
+  integer :: ii, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   
   ! initialize info

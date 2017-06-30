@@ -45,7 +45,7 @@ subroutine d_rot2_vec2gen(A,B,C,S,NRM)
   real(8), intent(inout) :: C,S,NRM
 
   ! construct rotation
-  if ((A.EQ.0).AND.(B.EQ.0)) then
+  if ((A.EQ.0d0).AND.(B.EQ.0d0)) then
      C = 1d0
      S = 0d0
      NRM = 0d0

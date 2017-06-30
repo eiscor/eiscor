@@ -55,7 +55,7 @@ subroutine d_rot2_turnover(Q1,Q2,Q3)
   ! compute third rotation
   ! s5 == 0 
   a = c1*s2*s4 + c2*c4
-  if (s5.eq.0) then
+  if (s5.EQ.0d0) then
     b = c5*c1*c4*s2
   ! all other cases
   else

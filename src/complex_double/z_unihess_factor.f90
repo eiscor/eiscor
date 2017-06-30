@@ -44,7 +44,7 @@ subroutine z_unihess_factor(N,H,Q,D,INFO)
   
   ! compute variables
   logical :: flg
-  integer :: ii, ind
+  integer :: ii
   real(8) :: nrm, tol 
   real(8) :: cr, ci, s 
   

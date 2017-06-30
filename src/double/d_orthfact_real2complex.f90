@@ -130,7 +130,7 @@ subroutine d_orthfact_real2complex(VEC,N,Q,D,M,Z,E,V,INFO)
   do while (ind.LT.N)
 
     ! single eigenvalue
-    if (Q(2*ind).EQ.0) then
+    if (Q(2*ind).EQ.0d0) then
 
       ! store eigenvalue
       E(ind) = cmplx(D(ind),0d0,kind=8)
@@ -150,7 +150,7 @@ subroutine d_orthfact_real2complex(VEC,N,Q,D,M,Z,E,V,INFO)
 
       ! check to see that next rotation is identity
       if (ind.LT.(N-1)) then
-         if (Q(2*ind+2).NE.0) then
+         if (Q(2*ind+2).NE.0d0) then
             INFO = -3
             ! print error message in debug mode
             if (DEBUG) then
@@ -169,7 +169,7 @@ subroutine d_orthfact_real2complex(VEC,N,Q,D,M,Z,E,V,INFO)
   end do
 
   ! update last eigenvalue if not conjugate pair
-  if (Q(2*(N-1)).EQ.0) then
+  if (Q(2*(N-1)).EQ.0d0) then
 
     ! store eigenvalue
     E(N) = cmplx(D(N),0d0,kind=8)

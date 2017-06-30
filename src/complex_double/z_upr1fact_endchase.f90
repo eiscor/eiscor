@@ -57,8 +57,7 @@ subroutine z_upr1fact_endchase(VEC,N,P,Q,D,C,B,M,V,G,FLAG)
   ! compute variables
 !  integer :: 
   real(8) :: G1(3), G2(3), G3(3)
-  complex(8) :: A(2,2) 
-complex(8) :: A2(2,2) 
+  complex(8) :: A(2,2)
   
   ! if N == 2 we do a single fusion
   if ( N.EQ.2 ) then

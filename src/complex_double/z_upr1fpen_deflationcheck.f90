@@ -59,9 +59,9 @@ subroutine z_upr1fpen_deflationcheck(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ZERO)
   integer, intent(inout) :: ZERO
 
   ! compute variables
-  integer :: ii, jj, up, down
+  integer :: ii
   real(8), parameter :: tol = EISCOR_DBL_EPS
-  real(8) :: qr, qi, dr, di, cr, ci, s, nrm
+  real(8) :: qr, qi, nrm
   
   ! check for deflation
   do ii=1,(N-1)

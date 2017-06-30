@@ -49,8 +49,6 @@ subroutine z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
   ! compute variables
   logical :: flg
   integer :: ii
-  real(8),parameter :: tol = 10d0*EISCOR_DBL_EPS 
-  real(8) :: nrm
   
   ! initialize INFO
   INFO = 0
@@ -100,7 +98,7 @@ subroutine z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
 
   ! check C for diagonal rotations
   do ii=1,N
-    if (C(3*ii).EQ.0) then
+    if (C(3*ii).EQ.0d0) then
       INFO = -4
       ! print error message in debug mode
       if (DEBUG) then
@@ -124,7 +122,7 @@ subroutine z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
 
   ! check B for diagonal rotations
   do ii=1,N
-    if (B(3*ii).EQ.0) then
+    if (B(3*ii).EQ.0d0) then
       INFO = -5
       ! print error message in debug mode
       if (DEBUG) then

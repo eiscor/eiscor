@@ -26,7 +26,7 @@ subroutine u_fixedseed_initialize(INFO)
   integer, intent(inout) :: INFO
 
   ! compute variables                                                                                           
-  integer :: ii, n, clock
+  integer :: ii, n
   integer, allocatable :: seed(:)
 
   ! initialize INFO                                                                                             

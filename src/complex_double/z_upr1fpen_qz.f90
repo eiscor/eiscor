@@ -59,7 +59,7 @@
 !                    INFO = 0 implies successful computation
 !                    INFO = -1 implies N, Q, D1, C1, B1, D2, C2, or B2 is invalid
 !                    INFO = -14 implies V is invalid
-!                    INFO = -14 implies W is invalid
+!                    INFO = -15 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
@@ -84,12 +84,12 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
   
   ! compute variables
   logical :: flg
-  integer :: ii, jj, kk
+  integer :: ii, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   
   ! initialize info
   INFO = 0
-
+  
   ! initialize random seed
   !call u_randomseed_initialize(INFO)
   if (INFO.NE.0) then
@@ -101,45 +101,69 @@ subroutine z_upr1fpen_qz(VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITS,INFO)
     INFO = 1
     return
   end if
- 
-!  ! check factorization
-!  call z_upr1fpen_factorcheck(N,Q,D,C,B,INFO)
-!  if (INFO.NE.0) then
-!    ! print error message in debug mode
-!    if (DEBUG) then
-!      call u_infocode_check(__FILE__,__LINE__, & 
-!           "N, Q, D, C or B is invalid",INFO,INFO)
-!    end if
-!    INFO = -1
-!    return
-!  end if
-!  
-!  ! check V
-!  if (VEC.AND..NOT.ID) then
-!    call z_2Darray_check(N,N,V,flg)
-!    if (.NOT.flg) then
-!      INFO = -14
-!      ! print error message in debug mode
-!      if (DEBUG) then
-!        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,INFO)
-!      end if
-!      return
-!    end if
-!  end if   
   
+  ! check factorization
+  call z_upr1fact_factorcheck(N,Q,D1,C1,B1,INFO)
+  if (INFO.NE.0) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__, & 
+           "N, Q, D1, C1 or B1 is invalid",INFO,INFO)
+    end if
+    INFO = -1
+    return
+  end if
+
+  call z_upr1fact_factorcheck(N,Q,D2,C2,B2,INFO)
+  if (INFO.NE.0) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__, & 
+           "N, Q, D2, C2 or B2 is invalid",INFO,INFO)
+    end if
+    INFO = -1
+    return
+  end if
+
+  ! check V
+  if (VEC.AND..NOT.ID) then
+    call z_2Darray_check(M,N,V,flg)
+    if (.NOT.flg) then
+      INFO = -14
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,INFO)
+      end if
+      return
+    end if
+  end if
+
+  ! check W
+  if (VEC.AND..NOT.ID) then
+    call z_2Darray_check(M,N,W,flg)
+    if (.NOT.flg) then
+      INFO = -15
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,INFO)
+      end if
+      return
+    end if
+  end if
+
   ! initialize storage
   ITS = 0
   
   if (VEC.AND.ID) then
     V = cmplx(0d0,0d0,kind=8)
-    do ii=1,n
+    do ii=1,min(m,n)
       V(ii,ii) = cmplx(1d0,0d0,kind=8)
     end do
   end if   
   
   if (VEC.AND.ID) then
     W = cmplx(0d0,0d0,kind=8)
-    do ii=1,n
+    do ii=1,min(m,n)
       W(ii,ii) = cmplx(1d0,0d0,kind=8)
     end do
   end if   

@@ -58,9 +58,9 @@ subroutine z_upr1fpen_startchase(VEC,N,P,Q,D1,C1,B1,D2,C2,B2,M,V,W,ITCNT,G)
   complex(8), intent(inout) :: V(M,2), W(M,2)
   
   ! compute variables
-  integer :: ii, ir1, ir2, id1, id2
-  logical :: final_flag, tp(2)
-  real(8) :: nrm, Ginv(3)
+  integer ::  ir1, ir2, id1, id2
+  logical :: tp(2)
+  real(8) :: Ginv(3)
   real(8) :: tq(6), td1(6), tc1(9), tb1(9)
   real(8) :: td2(6), tc2(9), tb2(9)
   complex(8) :: shift, A(2,2)

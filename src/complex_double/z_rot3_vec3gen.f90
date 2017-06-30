@@ -56,7 +56,7 @@ subroutine z_rot3_vec3gen(AR,AI,B,CR,CI,S,NRM)
   nb = abs(B)
 
   ! AR = AI = B = 0
-  if(nar.EQ.0 .AND. nai.EQ.0 .AND. nb.EQ.0)then
+  if(nar.EQ.0d0 .AND. nai.EQ.0d0 .AND. nb.EQ.0d0)then
   
     CR = 1d0
     CI = 0d0
