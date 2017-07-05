@@ -48,6 +48,8 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   integer, allocatable :: ITS(:)
   real(8), allocatable :: Q(:),D1(:),C1(:),B1(:)
   real(8), allocatable :: D2(:),C2(:),B2(:)
+  real(8) :: normc
+  complex(8) :: sclc
   complex(8), allocatable :: V(:),W(:)
   interface
     function l_upr1fact_hess(m,flags)
@@ -88,32 +90,73 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   ! fill P
   P = .FALSE.
 
-  ! fill V and W
-  scl = maxval(abs(COEFFS))
-  V(N) = ((-1d0)**(N))*COEFFS(N+1)/scl
-  do ii=1,(N-1)
-    V(ii) = -COEFFS(N+1-ii)/scl
-  end do
-  W = cmplx(0d0,0d0,kind=8)
-  W(N) = COEFFS(1)/scl
-
-  ! factor companion matrix
-  call z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2)
-
-  ! call z_upr1fpen_qz
-  call z_upr1fpen_qz(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
-
-  if (INFO.NE.0) then
-    INFO = 1
-  end if
-  
-  ! extract roots
-  call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,V)
-  call z_upr1utri_decompress(.TRUE.,N,D2,C2,B2,W)
+  ! compute the norm of the monic polynomial
+  normc = 0d0
   do ii=1,N
-    ROOTS(ii) = V(ii)/W(ii)
+    normc = normc + abs(COEFFS(ii+1)/COEFFS(1))**2
   end do
+  normc = sqrt(normc)
+
+  ! our latest analysis shows that using QR (on the equivalent monic polynomial)
+  ! is as accurate as using QZ with abs(COEFFS(1)) < 1, but faster
+  ! for very large normc the QZ is still advantegous, hence
+  ! we choose conservatievly 1e4
+  if (normc.LT.1e8) then
+    ! use QR
     
+    ! fill V 
+    sclc = COEFFS(1)
+    V(N) = ((-1d0)**(N))*COEFFS(N+1)/sclc
+    do ii=1,(N-1)
+      V(ii) = -COEFFS(N+1-ii)/sclc
+    end do
+    
+    ! factor companion matrix
+    call z_compmat_compress(N,P,V,Q,D1,C1,B1)
+    
+    ! call z_upr1fpen_qz
+    call z_upr1fact_qr(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,N,V,ITS,INFO)
+    
+    if (INFO.NE.0) then
+      INFO = 1
+    end if
+
+    ! extract roots
+    call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,ROOTS)
+    
+  else
+    ! use QZ
+
+    ! fill V and W
+    scl = maxval(abs(COEFFS))
+    V(N) = ((-1d0)**(N))*COEFFS(N+1)/scl
+    do ii=1,(N-1)
+      V(ii) = -COEFFS(N+1-ii)/scl
+    end do
+    W = cmplx(0d0,0d0,kind=8)
+    W(N) = COEFFS(1)/scl
+    
+    ! factor companion matrix
+    call z_comppen_compress(N,P,V,W,Q,D1,C1,B1,D2,C2,B2)
+    
+    ! call z_upr1fpen_qz
+    call z_upr1fpen_qz(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,N,V,W,ITS,INFO)
+    
+    if (INFO.NE.0) then
+      INFO = 1
+    end if
+
+    ! extract roots
+    call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,V)
+    call z_upr1utri_decompress(.TRUE.,N,D2,C2,B2,W)
+    do ii=1,N
+      ROOTS(ii) = V(ii)/W(ii)
+    end do
+
+    print*, ROOTS
+    
+  end if
+        
   ! compute residuals
   call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
     

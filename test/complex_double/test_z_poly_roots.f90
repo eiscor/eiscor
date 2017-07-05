@@ -76,7 +76,7 @@ program test_z_poly_roots
   if (INFO.NE.0) then
     call u_test_failed(__LINE__)
   end if
- 
+
   ! check residuals
   do ii=1,N
     if (RESIDUALS(ii) >= tol) then
