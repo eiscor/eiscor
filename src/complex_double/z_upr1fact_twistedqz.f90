@@ -56,21 +56,22 @@
 !
 ! OUTPUT VARIABLES:
 !
-!  V              COMPLEX(8) array of dimension (N,N)
+!  V              COMPLEX(8) array of dimension (M,N)
 !                   right schur vectors
 !
-!  W              COMPLEX(8) array of dimension (N,N)
+!  W              COMPLEX(8) array of dimension (M,N)
 !                   left schur vectors
 !
 !  ITS            INTEGER array of dimension (N-1)
 !                   Contains the number of iterations per deflation
 !
 !  INFO           INTEGER
-!                   INFO = 1 implies no convergence 
+!                   INFO = 2 implies no convergence 
+!                   INFO = 1 random seed initialization failed
 !                   INFO = 0 implies successful computation
 !                   INFO = -1 implies N, Q, D1, C1, B1, D2, C2 or B2 is invalid
-!                   INFO = -9 implies V is invalid
-!                   INFO = -10 implies W is invalid
+!                   INFO = -14 implies V is invalid
+!                   INFO = -15 implies W is invalid
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
@@ -94,12 +95,62 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   end interface
   
   ! compute variables
-  integer :: ii, jj, kk
-  integer :: STR, STP, ZERO, ITMAX, ITCNT
+  logical :: flg
+  integer :: ii, jj
+  integer :: STR, STP, ZERO, ITMAX, ITCNT!, ITCNT2, qq
   
   ! initialize info
   INFO = 0
+
+  ! initialize random seed
+  ! call u_randomseed_initialize(INFO)
+  if (INFO.NE.0) then
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"Failed to initialize random seed",INFO,INFO)
+    end if
+    INFO = 1
+    return
+  end if
+ 
+  ! check factorization
+  call z_upr1fact_factorcheck(QZ,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+  if (INFO.NE.0) then    
+    ! print error message in debug mode
+    if (DEBUG) then
+      call u_infocode_check(__FILE__,__LINE__,"N, Q, D1, C1, B1, D2, C2 or B2 is invalid",INFO,INFO)
+    end if
+    print*, INFO
+    INFO = -1
+    return
+  end if
   
+  ! check V
+  if (VEC.AND..NOT.ID) then
+    call z_2Darray_check(N,N,V,flg)
+    if (.NOT.flg) then
+      INFO = -14
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"V is invalid",INFO,INFO)
+      end if
+      return
+    end if
+  end if   
+  
+  ! check W
+  if (QZ.AND.VEC.AND..NOT.ID) then
+    call z_2Darray_check(N,N,W,flg)
+    if (.NOT.flg) then
+      INFO = -15
+      ! print error message in debug mode
+      if (DEBUG) then
+        call u_infocode_check(__FILE__,__LINE__,"W is invalid",INFO,INFO)
+      end if
+      return
+    end if
+  end if
+ 
   ! initialize storage
   ITS = 0
   
@@ -122,69 +173,169 @@ subroutine z_upr1fact_twistedqz(QZ,VEC,ID,FUN,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,IN
   STP = N-1
   ZERO = 0
   ITMAX = 20*N
-  ITCNT = 0
+  ITCNT = -1
+!!$  ITCNT2 = 0
   
   ! iteration loop
-  do kk=1,ITMAX
+  do jj=1,ITMAX
 
     ! check for completion
     if(STP <= 0)then    
       exit
     end if
-    
+
+!print*,""
+!print*,"Inside twisted QZ"
+!print*,"STR:",STR
+!print*,"STP:",STP
+!print*,"Q"
+!do ii=1,(N-1)
+!print*,Q(3*ii-2),Q(3*ii-1),Q(3*ii)
+!end do
+!print*,""
+!print*,"D1"
+!do ii=1,(N+1)
+!print*,D1(2*ii-1),D1(2*ii)
+!end do
+!print*,""
+!print*,"C1"
+!do ii=1,(N)
+!print*,C1(3*ii-2),C1(3*ii-1),C1(3*ii)
+!end do
+!print*,""
+!print*,"B1"
+!do ii=1,(N)
+!print*,B1(3*ii-2),B1(3*ii-1),B1(3*ii)
+!end do
+!print*,""
+!print*,"D2"
+!do ii=1,(N+1)
+!print*,D2(2*ii-1),D2(2*ii)
+!end do
+!print*,""
+!print*,"C2"
+!do ii=1,(N)
+!print*,C2(3*ii-2),C2(3*ii-1),C2(3*ii)
+!end do
+!print*,""
+!print*,"B2"
+!do ii=1,(N)
+!print*,B2(3*ii-2),B2(3*ii-1),B2(3*ii)
+!end do
+!print*,""
+!pause
+
     ! check for deflation
-    call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)) &
-    ,D1((2*STR-1):(2*STP+2)),ZERO)
+    call z_upr1fact_deflationcheck(STP-STR+2,P(STR:(STP-1)) &
+    ,Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)),ZERO)
+    
+    if (ZERO.GT.0) then
+       !print*, "deflation", ZERO, ZERO+STR, STR, STP, ITCNT
+      ITS(STR+ZERO-1) = ITS(STR+ZERO-1) + ITCNT
+      ITCNT = 0
+!!$      qq = 0
+!!$      do ii=1,N-1
+!!$         qq = qq + ITS(ii)
+!!$         print*, ii, ITS(ii)
+!!$      end do
+!!$      print*, qq, ITCNT, ITCNT2, jj
+!!$      print*, ""
+    end if
     
     ! if 1x1 block remove and check again 
     if(STP == (STR+ZERO-1))then
     
       ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
       STP = STP - 1
       ZERO = 0
       STR = 1
+
+      !print*, "new index", ZERO, STR, STP
+
     
     ! if 2x2 block remove and check again
-    else if(STP == (STR+ZERO))then
-    
-      ! call 2x2 deflation
-      call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)),D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
-      ,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)),C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)),N &
-      ,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
-    
-      ! update indices
-      ITS(STR+STP-1) = ITCNT
-      ITCNT = 0
-      STP = STP - 2
-      ZERO = 0
-      STR = 1
+!!$    else if(STP == (STR+ZERO))then
+!!$
+!!$       print*, "2x2", STR,STP
+!!$    
+!!$      ! check STR
+!!$      if (STR <= ZERO) then
+!!$        STR = ZERO+1
+!!$      end if
+!!$
+!!$      ! call 2x2 deflation
+!!$      call z_upr1fact_2x2deflation(QZ,VEC,Q((3*STP-2):(3*STP)) &
+!!$      ,D1((2*STP-1):(2*STP+2)),C1((3*STP-2):(3*STP+3)) &
+!!$      ,B1((3*STP-2):(3*STP+3)),D2((2*STP-1):(2*STP+2)) &
+!!$      ,C2((3*STP-2):(3*STP+3)),B2((3*STP-2):(3*STP+3)) &
+!!$      ,N,V(:,STP:(STP+1)),W(:,STP:(STP+1)))
+!!$    
+!!$      ! update indices
+!!$      if (ITCNT.EQ.-1) then 
+!!$        ITCNT = 1 
+!!$      else
+!!$         ITCNT = ITCNT + 1
+!!$      end if
+!!$      !ITCNT2 = ITCNT2 + 1
+!!$
+!!$      ! update indices
+!!$      !      ITS(STR+STP-1) = ITCNT
+!!$      !      ITCNT = 0
+!!$      !      STP = STP - 2
+!!$      !      ZERO = 0
+!!$      !      STR = 1
     
     ! if greater than 2x2 chase a bulge
     else
 
       ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      if (ZERO.GT.0) then
+        STR = STR+ZERO        
+        ZERO = 0
+        !print*, "new index", ZERO, STR, STP
       end if
 
       ! perform singleshift iteration
-      call z_upr1fact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)),Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &
-      ,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)),D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)) &
+      call z_upr1fact_singlestep(QZ,VEC,FUN,STP-STR+2,P(STR:(STP-1)) &
+      ,Q((3*STR-2):(3*STP)),D1((2*STR-1):(2*STP+2)) &
+      ,C1((3*STR-2):(3*STP+3)),B1((3*STR-2):(3*STP+3)) &
+      ,D2((2*STR-1):(2*STP+2)),C2((3*STR-2):(3*STP+3)) &
       ,B2((3*STR-2):(3*STP+3)),N,V(:,STR:(STP+1)),W(:,STR:(STP+1)),ITCNT)
      
       ! update indices
-      ITCNT = ITCNT + 1
- 
+      if (ITCNT.EQ.-1) then 
+        ITCNT = 1 
+      else
+        ITCNT = ITCNT + 1
+      end if
+!!$      ITCNT2 = ITCNT2 + 1
+
     end if
     
     ! if ITMAX hit
-    if (kk == ITMAX) then
+    if (jj == ITMAX) then
       INFO = 1
-      ITS(STR+STP-1) = ITCNT
+      ITS(min(STR+STP-1,N-1)) = ITS(min(STR+STP-1,N-1)) + ITCNT
+      ITCNT = 0
+      print*, "hit ITMAX"
+!!$      qq = 0
+!!$      do ii=1,N-1
+!!$         qq = qq + ITS(ii)
+!!$         print*, ii, ITS(ii)
+!!$      end do
+!!$      print*, qq, ITCNT, ITCNT2, jj
+!!$      print*, ""
     end if
-    
+
   end do
+  
+  ! print*, ITCNT
+  
+!!$  qq = 0
+!!$  do ii=1,N-1
+!!$     qq = qq + ITS(ii)
+!!$     print*, ii, ITS(ii)
+!!$  end do
+!!$  print*, qq, ITCNT, ITCNT2, jj
 
 end subroutine z_upr1fact_twistedqz

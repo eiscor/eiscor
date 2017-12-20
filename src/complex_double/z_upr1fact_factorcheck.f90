@@ -61,7 +61,6 @@ subroutine z_upr1fact_factorcheck(FLAG,N,Q,D1,C1,B1,D2,C2,B2,INFO)
   logical :: flg
   integer :: ii
   real(8),parameter :: tol = 10d0*EISCOR_DBL_EPS 
-  real(8) :: nrm
   
   ! initialize INFO
   INFO = 0

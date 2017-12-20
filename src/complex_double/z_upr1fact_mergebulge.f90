@@ -50,12 +50,12 @@ subroutine z_upr1fact_mergebulge(TOP,N,P,Q,D,G)
   ! input variables
   logical, intent(in) :: TOP
   integer, intent(in) :: N
-  logical, intent(in) :: P(N-2)
+  logical, intent(in) :: P(max(N-2,1))
   real(8), intent(inout) :: Q(3*(N-1)),D(2*N)
   real(8), intent(in) :: G(3)
   
   ! compute variables
-  integer :: ii, jj, ind, up, down
+  integer :: jj, ind, up, down
   real(8) :: c1r, c1i, s1
   real(8) :: c2r, c2i, s2
   real(8) :: c3r, c3i, s3r, s3i

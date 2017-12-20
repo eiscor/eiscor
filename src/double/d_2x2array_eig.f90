@@ -38,7 +38,6 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
   real(8), intent(inout) :: A(2,2), B(2,2), Q(2,2), Z(2,2)
   
   ! compute variables
-  integer :: ii, id
   real(8) :: trace, disc, detm, temp
   real(8) :: c, s, nrm, T(2,2)
  
