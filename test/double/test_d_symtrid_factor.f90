@@ -17,7 +17,7 @@ program test_d_symtrid_factor
   ! parameters
   integer, parameter :: N = 4
   logical, parameter :: sca = .FALSE.
-  real(8), parameter :: tol = 10d0*EISCOR_DBL_EPS
+  real(8), parameter :: tol = 2d0*EISCOR_DBL_EPS ! accuracy (tolerance)
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! compute variables
   integer :: M
@@ -25,6 +25,7 @@ program test_d_symtrid_factor
   real(8) :: Q(3*N-3), Dq(2*N), D(N), E(N-1), scale
   complex(8) :: Z(N,N)
   logical :: flag
+    
   
   ! timing variables
   integer:: c_start, c_stop, c_rate

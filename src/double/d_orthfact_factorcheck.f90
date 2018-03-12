@@ -43,7 +43,6 @@ subroutine d_orthfact_factorcheck(N,Q,D,INFO)
   ! compute variables
   logical :: flg
   integer :: ii
-  real(8), parameter :: tol = 1d1*EISCOR_DBL_EPS
   
   ! initialize INFO
   INFO = 0

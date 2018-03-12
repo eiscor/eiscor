@@ -73,7 +73,7 @@ subroutine z_unifact_singlestep(VEC,N,Q,D,M,Z,ITCNT)
     else
       qt = Q((3*N-8):(3*N-3))
       nrm = sqrt(qt(1)**2+qt(2)**2)
-      if (nrm.EQ.0) then
+      if (nrm.EQ.0d0) then
         qt(1) = 1d0; qt(2:3) = 0d0
       else
         qt(3) = 0d0; qt(1:2) = qt(1:2)/nrm

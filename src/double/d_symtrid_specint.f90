@@ -92,7 +92,7 @@ subroutine d_symtrid_specint(NEWT,N,D,E,A,B,INFO)
   end if
 
   ! return if A and B are 0
-  if ((A.EQ.0).AND.(B.EQ.0)) then
+  if ((A.EQ.0d0).AND.(B.EQ.0d0)) then
     return
   end if
 

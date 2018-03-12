@@ -124,7 +124,7 @@ subroutine d_orthhess_real2complex(VEC,N,H,M,Z,E,V,INFO)
   do while (ind.LT.N)
 
     ! single eigenvalue
-    if (H(ind+1,ind).EQ.0) then
+    if (H(ind+1,ind).EQ.0d0) then
 
       ! store eigenvalue
       E(ind) = cmplx(H(ind,ind),0d0,kind=8)
@@ -143,7 +143,7 @@ subroutine d_orthhess_real2complex(VEC,N,H,M,Z,E,V,INFO)
       end if
 
       ! check to see that next rotation is identity
-      if ((ind.LT.(N-1)).AND.(H(ind+1,ind+2).NE.0)) then
+      if ((ind.LT.(N-1)).AND.(H(ind+1,ind+2).NE.0d0)) then
         INFO = -3
         ! print error message in debug mode
         if (DEBUG) then
@@ -161,7 +161,7 @@ subroutine d_orthhess_real2complex(VEC,N,H,M,Z,E,V,INFO)
   end do
 
   ! update last eigenvalue if not conjugate pair
-  if (H(N-1,N).EQ.0) then
+  if (H(N-1,N).EQ.0d0) then
 
     ! store eigenvalue
     E(N) = cmplx(H(N,N),0d0,kind=8)

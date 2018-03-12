@@ -60,7 +60,7 @@ subroutine z_rot3_turnover(G1,G2,G3)
   call z_rot3_vec3gen(ar,ai,b,c4r,c4i,s4,nrm)
  
   ! nrm == 0
-  if (nrm.EQ.0) then 
+  if (nrm.EQ.0d0) then 
     ! compute second rotation
     ar = c1r*c3r - c1i*c3i - s1*c2r*s3
     ai = c1r*c3i + c1i*c3r - s1*c2i*s3

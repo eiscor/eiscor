@@ -16,12 +16,12 @@ program example_d_orthhess_knowneigs
   
   ! compute variables
   integer, parameter :: N = 16
-  integer :: ii, INFO, cpair
+  integer :: ii, INFO
   real(8) :: Q(2*(N-1)), D(N), Z
   complex(8) :: E(N), V
   integer :: ITS(N-1), ind, jj
   double precision :: rm,rp,pi = 3.141592653589793239d0
-  double precision :: temp(2,2), he, diff
+  double precision :: he, diff
   double precision :: nrm,b1(2),b2(2),b3(2),tb(2),tol
 
   ! real and imag part of eigenvalues

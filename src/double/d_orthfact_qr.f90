@@ -66,7 +66,7 @@ subroutine d_orthfact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   
   ! compute variables
   logical :: flg
-  integer :: ii, jj, kk, ind
+  integer :: ii, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   real(8) :: block(2,2) 
 
