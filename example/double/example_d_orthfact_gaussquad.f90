@@ -40,7 +40,7 @@ program example_d_orthfact_gaussquad
     print*,"d_orthfact_qr failed."
     print*,"INFO:",INFO
   end if
-  
+
   ! call d_orthfact_real2complex
   call d_orthfact_real2complex(.TRUE.,N,Q,D,1,Z,E,V,INFO)
   

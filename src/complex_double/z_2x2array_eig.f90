@@ -46,7 +46,8 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
   
     ! make B upper-triangular
     ! create eliminator
-    call z_rot3_vec4gen(dble(B(1,1)),aimag(B(1,1)),dble(B(2,1)),aimag(B(2,1)),cr,ci,s,nrm)
+    call z_rot3_vec4gen(dble(B(1,1)),aimag(B(1,1)),dble(B(2,1)) &
+    ,aimag(B(2,1)),cr,ci,s,nrm)
       
     ! store in Q
     Q(1,1) = cmplx(cr,ci,kind=8)
@@ -71,7 +72,8 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
     if (abs(B(1,1)).EQ.0d0) then
   
       ! create eliminator
-      call z_rot3_vec4gen(dble(A(1,1)),aimag(A(1,1)),dble(A(2,1)),aimag(A(2,1)),cr,ci,s,nrm)
+      call z_rot3_vec4gen(dble(A(1,1)),aimag(A(1,1)),dble(A(2,1)) &
+      ,aimag(A(2,1)),cr,ci,s,nrm)
       
       ! store in temp
       temp(1,1) = cmplx(cr,ci,kind=8)
@@ -96,7 +98,8 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
     else if (abs(B(2,2)).EQ.0d0) then
   
       ! create eliminator
-      call z_rot3_vec4gen(dble(A(2,2)),aimag(A(2,2)),dble(A(2,1)),aimag(A(2,1)),cr,ci,s,nrm)
+      call z_rot3_vec4gen(dble(A(2,2)),aimag(A(2,2)),dble(A(2,1)) &
+      ,aimag(A(2,1)),cr,ci,s,nrm)
       
       ! store in temp
       temp(1,1) = cmplx(cr,-ci,kind=8)
@@ -139,8 +142,8 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
       temp = A - lambda*B
 
       ! create eliminator
-      call z_rot3_vec4gen(dble(temp(1,1)),-aimag(temp(1,1)),dble(temp(1,2)),-aimag(temp(1,2)) & 
-        ,cr,ci,s,nrm)
+      call z_rot3_vec4gen(dble(temp(1,1)),-aimag(temp(1,1)) &
+      ,dble(temp(1,2)),-aimag(temp(1,2)),cr,ci,s,nrm)
       
       ! store in temp
       temp(1,1) = cmplx(-s,0d0,kind=8)
@@ -159,7 +162,8 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
   
       ! return to upper-triangular form  
       ! create eliminator
-      call z_rot3_vec4gen(dble(A(1,1)),aimag(A(1,1)),dble(A(2,1)),aimag(A(2,1)),cr,ci,s,nrm)
+      call z_rot3_vec4gen(dble(A(1,1)),aimag(A(1,1)),dble(A(2,1)) &
+      ,aimag(A(2,1)),cr,ci,s,nrm)
       
       ! store in temp
       temp(1,1) = cmplx(cr,ci,kind=8)
@@ -197,7 +201,8 @@ subroutine z_2x2array_eig(FLAG,A,B,Q,Z)
 
     ! compute Q
     lambda = lambda-A(1,1)
-    call z_rot3_vec4gen(dble(A(1,2)),aimag(A(1,2)),dble(lambda),aimag(lambda),cr,ci,s,nrm)
+    call z_rot3_vec4gen(dble(A(1,2)),aimag(A(1,2)),dble(lambda) &
+    ,aimag(lambda),cr,ci,s,nrm)
     Q(1,1) = cmplx(cr,ci,kind=8)
     Q(2,1) = cmplx(s,0d0,kind=8)
     Q(2,2) = conjg(Q(1,1))

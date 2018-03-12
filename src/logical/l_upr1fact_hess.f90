@@ -1,7 +1,7 @@
 #include "eiscor.h"
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! l_upr1fact_upperhess
+! l_upr1fact_hess
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
@@ -20,18 +20,18 @@
 !                    array of position flags for Q
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function l_upr1fact_upperhess(N,P)
+function l_upr1fact_hess(N,P)
 
   implicit none
   
   ! return type
-  logical :: l_upr1fact_upperhess
+  logical :: l_upr1fact_hess
   
   ! input variables
   integer, intent(in) :: N
   logical, intent(in) :: P(N-2)
   
   ! set output
-  l_upr1fact_upperhess = .FALSE.
+  l_upr1fact_hess = .FALSE.
 
-end function l_upr1fact_upperhess
+end function l_upr1fact_hess

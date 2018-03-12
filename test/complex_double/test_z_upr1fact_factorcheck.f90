@@ -8,19 +8,18 @@
 ! This program tests the subroutine z_upr1fact_factorcheck. 
 ! The following tests are run:
 !
-! 2) check valid factorization
-! 3) check N <= 2
-! 4) check Q is NAN
-! 5) check Q is INF
-! 6) check Q is not orthogonal
-! 7) check D is NAN
-! 8) check D is INF
-! 9) check D is not orthogonal
-! 10) check R is NAN
-! 11) check R is INF
-! 12) check R is not orthogonal
-! 13) check R for zero diagonal
-! 13) check R for infinite diagonal
+! 1) check valid factorization
+! 2) check N <= 2
+! 3) check Q is NAN
+! 4) check Q is INF
+! 5) check Q is not orthogonal
+! 6) check D is NAN
+! 7) check D is INF
+! 8) check D is not orthogonal
+! 9) check R is NAN
+! 10) check R is INF
+! 11) check R is not orthogonal
+! 12) check R for zero diagonal
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_upr1fact_factorcheck
@@ -30,10 +29,8 @@ program test_z_upr1fact_factorcheck
   ! compute variables
   integer, parameter :: N = 3
   integer :: ii, INFO
-  logical :: flag
   real(8) :: nan, inf
-  real(8) :: Q(3*(N-1)), D1(2*(N+1)), C1(3*N), B1(3*N)
-  real(8) :: D2(2*(N+1)), C2(3*N), B2(3*N)
+  real(8) :: Q(3*(N-1)), D(2*N), C(3*N), B(3*N)
   
   ! timing variables
   integer:: c_start, c_stop, c_rate
@@ -53,54 +50,38 @@ program test_z_upr1fact_factorcheck
   nan = 0d0
   nan = 1d0/nan
   
-  ! set flag
-  flag = .TRUE.
-  
   ! set valid Q
   Q = 0d0
   do ii=1,(N-1)
     Q(3*ii) = 1d0
   end do     
   
-  ! set valid D1 and D2
-  D1 = 0d0
-  do ii=1,(N+1)
-    D1(2*ii-1) = 1d0
-  end do
-  D2 = D1
-
-  ! set valid C1, B1, C2, B2
-  C1 = 0d0
+  ! set valid D
+  D = 0d0
   do ii=1,N
-    C1(3*ii) = 1d0
+    D(2*ii-1) = 1d0
   end do
-  B1 = C1; C2 = C1; B2 = C1
+
+  ! set valid C, B
+  C = 0d0
+  do ii=1,N
+    C(3*ii) = 1d0
+  end do
+  B = C; 
   
-  ! check 2)
+  ! check 1)
     ! set INFO
     INFO = 0
   
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
     if (INFO.NE.0) then
       call u_test_failed(__LINE__)
     end if
-  
-  ! check 3)
-    ! set INFO
-    INFO = 0
     
-    ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,1,Q,D1,C1,B1,D2,C2,B2,INFO)
-    
-    ! check INFO
-    if (INFO.NE.-2) then
-      call u_test_failed(__LINE__)
-    end if    
-    
-  ! check 4)
+  ! check 2)
     ! set INFO
     INFO = 0
     
@@ -108,10 +89,46 @@ program test_z_upr1fact_factorcheck
     Q(1) = nan
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
-    if (INFO.NE.-3) then
+    if (INFO.NE.-2) then
+      call u_test_failed(__LINE__)
+    end if 
+    
+    ! reset Q
+    Q(1) = 0d0
+    
+  ! check 3)
+    ! set INFO
+    INFO = 0
+    
+    ! insert inf
+    Q(1) = inf
+    
+    ! call z_upr1fact_factorcheck
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
+    
+    ! check INFO
+    if (INFO.NE.-2) then
+      call u_test_failed(__LINE__)
+    end if 
+    
+    ! reset Q
+    Q(1) = 0d0
+    
+  ! check 4)
+    ! set INFO
+    INFO = 0
+    
+    ! insert 1
+    Q(1) = 1d0
+    
+    ! call z_upr1fact_factorcheck
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
+    
+    ! check INFO
+    if (INFO.NE.-2) then
       call u_test_failed(__LINE__)
     end if 
     
@@ -122,185 +139,149 @@ program test_z_upr1fact_factorcheck
     ! set INFO
     INFO = 0
     
-    ! insert inf
-    Q(1) = inf
+    ! insert nan
+    D(1) = nan
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
     if (INFO.NE.-3) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset Q
-    Q(1) = 0d0
+    ! reset D
+    D(1) = 1d0
     
   ! check 6)
     ! set INFO
     INFO = 0
     
-    ! insert 1
-    Q(1) = 1d0
+    ! insert inf
+    D(1) = inf
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
     if (INFO.NE.-3) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset Q
-    Q(1) = 0d0
+    ! reset D
+    D(1) = 1d0
     
   ! check 7)
     ! set INFO
     INFO = 0
     
-    ! insert nan
-    D2(1) = nan
+    ! insert 1
+    D(2) = 1d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
-    if (INFO.NE.-7) then
+    if (INFO.NE.-3) then
       call u_test_failed(__LINE__)
     end if 
     
     ! reset D
-    D2(1) = 1d0
+    D(2) = 0d0
     
   ! check 8)
     ! set INFO
     INFO = 0
     
-    ! insert inf
-    D2(1) = inf
+    ! insert nan
+    C(1) = nan
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
-    if (INFO.NE.-7) then
+    if (INFO.NE.-4) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset D
-    D2(1) = 1d0
+    ! reset R
+    C(1) = 1d0
     
   ! check 9)
     ! set INFO
     INFO = 0
     
-    ! insert 1
-    D2(2) = 1d0
+    ! insert inf
+    C(1) = inf
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
-    if (INFO.NE.-7) then
+    if (INFO.NE.-4) then
       call u_test_failed(__LINE__)
     end if 
     
-    ! reset D
-    D2(2) = 0d0
+    ! reset R
+    C(1) = 1d0
     
   ! check 10)
     ! set INFO
     INFO = 0
     
-    ! insert nan
-    C2(1) = nan
+    ! insert 1
+    C(1) = 1d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
-    if (INFO.NE.-8) then
+    if (INFO.NE.-4) then
       call u_test_failed(__LINE__)
     end if 
     
     ! reset R
-    C2(1) = 1d0
+    C(1) = 0d0
     
   ! check 11)
     ! set INFO
     INFO = 0
     
-    ! insert inf
-    C2(1) = inf
+    ! insert 1
+    B(1) = 1d0
+    B(3) = 0d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
-    if (INFO.NE.-8) then
+    if (INFO.NE.-5) then
       call u_test_failed(__LINE__)
     end if 
     
     ! reset R
-    C2(1) = 1d0
-    
+    B(1) = 0d0
+    B(3) = 1d0
+  
   ! check 12)
     ! set INFO
     INFO = 0
     
     ! insert 1
-    C2(1) = 1d0
+    C(1) = 1d0
+    C(3) = 0d0
     
     ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
+    call z_upr1fact_factorcheck(N,Q,D,C,B,INFO)
     
     ! check INFO
-    if (INFO.NE.-8) then
+    if (INFO.NE.-4) then
       call u_test_failed(__LINE__)
     end if 
     
     ! reset R
-    C2(1) = 0d0
-    
-  ! check 13)
-    ! set INFO
-    INFO = 0
-    
-    ! insert 1
-    B2(1) = 1d0
-    B2(3) = 0d0
-    
-    ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
-    
-    ! check INFO
-    if (INFO.NE.-9) then
-      call u_test_failed(__LINE__)
-    end if 
-    
-    ! reset R
-    B2(1) = 0d0
-    B2(3) = 1d0
-  
-  ! check 14)
-    ! set INFO
-    INFO = 0
-    
-    ! insert 1
-    C2(1) = 1d0
-    C2(3) = 0d0
-    
-    ! call z_upr1fact_factorcheck
-    call z_upr1fact_factorcheck(flag,N,Q,D1,C1,B1,D2,C2,B2,INFO)
-    
-    ! check INFO
-    if (INFO.NE.-8) then
-      call u_test_failed(__LINE__)
-    end if 
-    
-    ! reset R
-    C2(1) = 0d0
-    C2(3) = 1d0
+    C(1) = 0d0
+    C(3) = 1d0
   
   ! stop timer
   call system_clock(count=c_stop)

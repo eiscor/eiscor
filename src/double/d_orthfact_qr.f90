@@ -66,7 +66,7 @@ subroutine d_orthfact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
   
   ! compute variables
   logical :: flg
-  integer :: ii, jj, kk, ind
+  integer :: ii, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   real(8) :: block(2,2) 
 
@@ -162,8 +162,8 @@ subroutine d_orthfact_qr(VEC,ID,N,Q,D,M,Z,ITS,INFO)
     else
 
       ! check STR
-      if (STR <= ZERO) then
-        STR = ZERO+1
+      if (ZERO.GT.0) then
+        STR = STR+ZERO
       end if
 
       ! perform singleshift iteration

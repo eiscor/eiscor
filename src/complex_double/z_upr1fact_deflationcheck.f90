@@ -5,14 +5,17 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine checks for deflations in a unitary upper hessenberg 
-! matrix that is stored as a product of givens rotations and a complex 
-! diagonal matrix. When a deflation occurs the corresponding rotation
-! is set to the identity matrix.
+! This routine checks for deflations in a factored unitary plus rank
+! one (upr1fact) matrix. When a deflation occurs the corresponding 
+! rotation in the unitary part is set to the identity matrix.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
+!
+!  VEC             LOGICAL
+!                    .TRUE.: update eigenvectors
+!                    .FALSE.: ignore V matrix
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -22,33 +25,43 @@
 !
 !  Q               REAL(8) array of dimension (3*(N-1))
 !                    array of generators for givens rotations
-!                    generators must be orthogonal to working precision
 !
 !  D               REAL(8) array of dimension (2*N)
 !                    array of generators for complex diagonal matrix
-!                    generators must be orthogonal to working precision
+!
+!  C               REAL(8) array of dimension (3*N)
+!                    array of generators for first sequence of rotations
+!
+!  B               REAL(8) array of dimension (3*N)
+!                    array of generators for second sequence of rotations
+!
+!  M               INTEGER
+!                    leading dimension of V
+!
+!  V               COMPLEX(8) array of dimension (M,N)
+!                    array of eigenvectors
 !
 ! OUTPUT VARIABLES:
 !
 !  ZERO            INTEGER
-!                     index of the last known deflation
 !                     on output contains index of newest deflation
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
+subroutine z_upr1fact_deflationcheck(VEC,N,P,Q,D,C,B,M,V,ZERO)
 
   implicit none
   
   ! input variables
-  integer, intent(in) :: N
-  logical, intent(in) :: P(N-2)
-  real(8), intent(inout) :: Q(3*(N-1)), D(2*N)
+  integer, intent(in) :: N, M
+  logical, intent(in) :: VEC, P(N-2)
+  real(8), intent(inout) :: Q(3*(N-1)), D(2*N), C(3*N), B(3*N)
+  complex(8), intent(inout) :: V(M,N)
   integer, intent(inout) :: ZERO
 
   ! compute variables
-  integer :: ii, jj, up, down
+  integer :: ii, down
   real(8), parameter :: tol = EISCOR_DBL_EPS
-  real(8) :: qr, qi, dr, di, cr, ci, s, nrm
+  real(8) :: qr, qi, nrm
   
   ! check for deflation
   do ii=1,(N-1)
@@ -69,82 +82,65 @@ subroutine z_upr1fact_deflationcheck(N,P,Q,D,ZERO)
       Q(3*ZERO-1) = 0d0
       Q(3*ZERO) = 0d0
       
-      ! initialize up
-      up = ZERO
-        
-      ! deflate upward
-      do jj = 1,(ZERO-1)
-        
-        ! exit loop if P == .FALSE.
-        if (.NOT.P(up-1)) then
-          exit    
+      ! upper left entry of Q(ZERO)
+      ! deflation at top
+      if ( ZERO.EQ.1 ) then
+
+        ! scale row of upper triangular part
+        call z_upr1utri_unimodscale(.TRUE.,D(2*ZERO-1:2*ZERO), &
+             C(3*ZERO-2:3*ZERO),B(3*ZERO-2:3*ZERO),cmplx(qr,qi,kind=8))
+
+      ! deflation in the middle
+      ! P(ZERO-1) == 0
+      elseif ( .NOT.P(ZERO-1) ) then
+
+        ! scale row of upper triangular part
+        call z_upr1utri_unimodscale(.TRUE.,D(2*ZERO-1:2*ZERO), &
+             C(3*ZERO-2:3*ZERO),B(3*ZERO-2:3*ZERO),cmplx(qr,qi,kind=8))
+
+      ! P(ZERO-1) == 1
+      else
+
+        ! scale column of upper triangular part
+        call z_upr1utri_unimodscale(.FALSE.,D(2*ZERO-1:2*ZERO), &
+             C(3*ZERO-2:3*ZERO),B(3*ZERO-2:3*ZERO),cmplx(qr,qi,kind=8))
+
+        ! update eigenvectors
+        if (VEC) then
+          V(:,ZERO) = V(:,ZERO)*cmplx(qr,qi,kind=8)
         end if
-   
-        ! set upward index
-        up = ZERO-jj
-        
-        ! update Q
-        cr = Q(3*up-2)
-        ci = Q(3*up-1)
-        s = Q(3*up)
-                
-        nrm = qr*cr + qi*ci
-        ci = qr*ci - qi*cr
-        cr = nrm
-        
-        call z_rot3_vec3gen(cr,ci,s,Q(3*up-2),Q(3*up-1),Q(3*up),nrm)
-        
-      end do
-       
-      ! update upward diagonal
-      dr = D(2*up-1)
-      di = D(2*up)
-            
-      nrm = qr*dr - qi*di
-      di = qr*di + qi*dr
-      dr = nrm
 
-      call d_rot2_vec2gen(dr,di,D(2*up-1),D(2*up),nrm)
+      end if
+      
+      ! lower entry of Q(ZERO)
+      ! deflation at bottom
+      if ( ZERO.EQ.(N-1) ) then
 
-      ! initialize downward index
-      down = ZERO
-        
-      ! deflate downward
-      do jj = 1,(N-1-ZERO)
-        
-        ! exit if P == .TRUE.
-        if (P(down)) then
-          exit
+        ! scale row of upper triangular part
+        call z_upr1utri_unimodscale(.TRUE.,D(2*ZERO+1:2*ZERO+2), &
+             C(3*ZERO+1:3*ZERO+3),B(3*ZERO+1:3*ZERO+3),cmplx(qr,-qi,kind=8))
+
+      ! deflation in the middle
+      ! P(ZERO) == 0
+      elseif ( .NOT.P(ZERO) ) then
+
+        ! scale column of upper triangular part
+        call z_upr1utri_unimodscale(.FALSE.,D(2*ZERO+1:2*ZERO+2), &
+             C(3*ZERO+1:3*ZERO+3),B(3*ZERO+1:3*ZERO+3),cmplx(qr,-qi,kind=8))
+
+        ! update eigenvectors
+        if (VEC) then
+          V(:,ZERO+1) = V(:,ZERO+1)*cmplx(qr,-qi,kind=8)
         end if
-                
-        ! set downward index
-        down = ZERO+jj
-        
-        ! update Q
-        cr = Q(3*down-2)
-        ci = Q(3*down-1)
-        s = Q(3*down)
-                
-        nrm = qr*cr + qi*ci
-        ci = qr*ci - qi*cr
-        cr = nrm
 
-        call z_rot3_vec3gen(cr,ci,s,Q(3*down-2),Q(3*down-1),Q(3*down),nrm)
-        
-      end do
-      
-      ! update downward index
-      down = down + 1
-      
-      ! update downward diagonal
-      dr = D(2*down-1)
-      di = D(2*down)
-            
-      nrm = qr*dr + qi*di
-      di = qr*di - qi*dr
-      dr = nrm
-      
-      call d_rot2_vec2gen(dr,di,D(2*down-1),D(2*down),nrm)
+      ! P(ZERO) == 1
+      else
+
+        ! scale row of upper triangular part
+        call z_upr1utri_unimodscale(.TRUE.,D(2*ZERO+1:2*ZERO+2), &
+             C(3*ZERO+1:3*ZERO+3),B(3*ZERO+1:3*ZERO+3),cmplx(qr,-qi,kind=8))
+
+      end if
 
       ! exit loop 
       exit

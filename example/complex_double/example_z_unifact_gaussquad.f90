@@ -16,7 +16,7 @@ program example_z_unifact_gaussquad
   ! compute variables
   integer, parameter :: N = 16
   integer :: ii, INFO
-  real(8) :: WORK(5*N), Q(3*(N-1)), D(2*N)
+  real(8) :: Q(3*(N-1)), D(2*N)
   complex(8) :: Z(1,N)
   integer :: ITS(N-1)
   

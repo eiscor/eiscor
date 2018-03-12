@@ -5,35 +5,31 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This routine computes the argument of a complex number A + BI.
+! This routine computes the argument of a complex number A.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
-!  A,B            REAL(8)
-!                    real and imaginary part of complex number
+!  A              COMPLEX(8)
+!                    complex number
 !
 ! OUTPUT VARIABLES:
 !
 !  ARG            REAL(8)
-!                    arg of A + Bi in the interval [0,2pi)
-!
-!  INFO           INTEGER
-!                    INFO = 0 implies successful computation
-!                    INFO = -1 implies A is invalid
-!                    INFO = -2 implies B is invalid
+!                    arg of A in the interval [-pi,pi)
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_scalar_argument(A,B,ARG,INFO)
+subroutine z_scalar_argument(A,ARG)
 
   ! input variables
-  real(8), intent(in) :: A, B
+  complex(8), intent(in) :: A
   real(8), intent(inout) :: ARG
-  integer, intent(inout) :: INFO
   
   ! compute variables
   real(8), parameter :: PI = 3.14159265358979323846264338327950d0
+  real(8) :: Ar, Ai
+  integer :: INFO
   
   ! initialize INFO
   INFO = 0  
@@ -42,62 +38,52 @@ subroutine z_scalar_argument(A,B,ARG,INFO)
   if (DEBUG) then
   
     ! check A
-    call d_scalar_nancheck(A,INFO)
+    call z_scalar_check(A,INFO)
     if (INFO.NE.0) then
       call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
       return
     end if
-    call d_scalar_infcheck(A,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"A is invalid",INFO,-1)
-      return
-    end if   
 
-    ! check B
-    call d_scalar_nancheck(B,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
-      return
-    end if
-    call d_scalar_infcheck(B,INFO)
-    if (INFO.NE.0) then
-      call u_infocode_check(__FILE__,__LINE__,"B is invalid",INFO,-2)
-      return
-    end if
+ end if
 
-  end if
-    
-  ! compute arg 1
-  if ((abs(A).EQ.0d0).AND.(abs(B).EQ.0d0)) then
-    ARG = 0d0
+ ! set Ar and Ai
+ Ar = dble(A)
+ Ai = aimag(A)
+ 
+ ! compute arg 1
+ if ((abs(Ar).EQ.0d0).AND.(abs(Ai).EQ.0d0)) then
+   ARG = 0d0
    
-  ! abs(A) > abs(B)
-  else if (abs(A) > abs(B)) then
-  
-    ! compute ARG between [-pi/2,pi/2]
-    ARG = atan(abs(B/A))
-  
-  ! abs(A) < abs(B)
-  else
-  
-    ! compute ARG between [-pi/2,pi/2]
-    ARG = atan(abs(A/B))
-    ARG = PI/2d0 - ARG
+   ! abs(Ar) > abs(Ai)
+ else if (abs(Ar) > abs(Ai)) then
+   
+   ! compute ARG between [-pi/2,pi/2]
+   ARG = atan(abs(Ai/Ar))
+   
+   ! abs(Ar) < abs(Ai)
+ else
+   
+   ! compute ARG between [-pi/2,pi/2]
+   ARG = atan(abs(Ar/Ai))
+   ARG = PI/2d0 - ARG
+   
+ end if
+ 
+ ! correct for [0,2pi)
+ ! second quadrant
+ if ((Ai >= 0).AND.(Ar < 0)) then
+   ARG = PI-ARG
+   
+   ! third quadrant
+ else if ((Ai < 0).AND.(Ar < 0)) then
+   ARG = PI+ARG
+   
+   ! fourth quadrant
+ else if ((Ai < 0).AND.(Ar > 0)) then
+   ARG = 2d0*PI-ARG
+ end if
+ 
+ ! shift by pi
+ ARG = ARG - PI
     
-  end if
-  
-  ! correct for [0,2pi)
-  ! second quadrant
-  if ((B >= 0).AND.(A < 0)) then
-    ARG = PI-ARG
-     
-  ! third quadrant
-  else if ((B < 0).AND.(A < 0)) then
-    ARG = PI+ARG
-      
-  ! fourth quadrant
-  else if ((B < 0).AND.(A > 0)) then
-    ARG = 2d0*PI-ARG
-  end if
-      
 end subroutine z_scalar_argument
