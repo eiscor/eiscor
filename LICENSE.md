@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2014,
+Copyright (c) 2014-2018,
 Jared L. Aurentz,
 Thomas Mach,
 Raf Vandebril,
