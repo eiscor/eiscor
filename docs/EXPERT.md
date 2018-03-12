@@ -26,7 +26,6 @@ interaction involves inputting the unitary upper-Hessenberg matrix in
 factored form:
 - [__d_orthfact_qr__](https://github.com/eiscor/eiscor/blob/master/src/double/d_orthfact_qr.f90)
 - [__z_unifact_qr__](https://github.com/eiscor/eiscor/blob/master/src/complex_double/z_unifact_qr.f90)
-- [__z_urffact_qr__](https://github.com/eiscor/eiscor/blob/master/src/complex_double/z_urffact_qr.f90)
 
 These routines need less memory but require the user to have a good 
 understanding of the underlying factorizations. For real matrices the
@@ -35,12 +34,3 @@ one should convert to the complex Schur factorization using the following
 routines:
 - [__d_orthhess_real2complex__](https://github.com/eiscor/eiscor/blob/master/src/double/d_orthhess_real2complex.f90)
 - [__d_orthfact_real2complex__](https://github.com/eiscor/eiscor/blob/master/src/double/d_orthfact_real2complex.f90)
-
-## Real tridiagonal eigensolver ##
-The eigensolver for symmetric tridiagonal matrices uses a Cayley transformation
-and a similarity transformation to transform the matrix into unitary Hessenberg
-form. Hence interaction is only possible at the highest level:
-- [__d_symtrid_qr__](https://github.com/eiscor/eiscor/blob/master/src/double/d_symtrid_qr.f90)
-
-This routine accepts a symmetric tridiagonal matrix as input and computes a
-complex Schur factorization.
