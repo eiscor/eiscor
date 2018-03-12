@@ -4,9 +4,9 @@ and efficiently solving matrix eigenvalue problems using essentially 2x2
 unitary matrices.
 
 ## Authors ##
-- [Jared L. Aurentz](https://www.maths.ox.ac.uk/people/jared.aurentz), 
+- [Jared L. Aurentz](https://www.icmat.es/jared.aurentz), 
 University of Oxford, United Kingdom
-- [Thomas Mach](http://people.cs.kuleuven.be/~thomas.mach/index.php), 
+- [Thomas Mach](https://sst.nu.edu.kz/thomas-mach/), 
 KU Leuven, Belgium
 - [Raf Vandebril](http://people.cs.kuleuven.be/~raf.vandebril/), 
 KU Leuven, Belgium
@@ -19,6 +19,7 @@ To get started with __eiscor__ please checkout the [guide]
 
 ## Related articles ##
 This software is based on the following articles:
+
  1. Jared L. Aurentz, Thomas Mach, Raf Vandebril, and David S. Watkins. 
 [_Fast and stable unitary QR algorithm._]
 (http://etna.mcs.kent.edu/volumes/2011-2020/vol44/abstract.php?vol=44&pages=327-341) 
