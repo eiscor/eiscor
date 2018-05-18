@@ -26,11 +26,12 @@
 !                    computed roots
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
+subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,SCA)
 
   implicit none
   
   ! input variables
+  logical, intent(in) :: SCA
   integer, intent(in) :: N
   real(8), intent(in) :: COEFFS(N)
   complex(8), intent(inout) :: ROOTS(N)
@@ -42,7 +43,7 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
   integer, allocatable :: ITS(:)
   real(8), allocatable :: Q(:),D1(:),C1(:),B1(:),D(:),E(:),Z(:,:)
   real(8), allocatable :: DWORK(:), D2(:),C2(:),B2(:)
-  real(8) :: a,b,scale
+  real(8) :: a,b,scale, norm
   complex(8), allocatable :: U(:)
   complex(8) :: V,W
 
@@ -98,7 +99,8 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
   end do
   
   ! factorize \Phi(T + Ue^H) and reduce it to Hessenberg form
-  call d_spr1_factor(.FALSE.,.FALSE.,.FALSE.,N,D,E,U,Q,D1,C1,B1,scale,1,Z,DWORK,INFO)
+  !call d_spr1_factor(.FALSE.,.FALSE.,.TRUE.,N,D,E,U,Q,D1,C1,B1,scale,1,Z,DWORK,INFO)
+  call d_spr1_factor(.FALSE.,.FALSE.,SCA,N,D,E,U,Q,D1,C1,B1,scale,1,Z,DWORK,INFO)
   !call d_spr1_factor2(.FALSE.,.FALSE.,.FALSE.,N,D,E,U,Q,D1,C1,B1,scale,1,Z,INFO)
 
   ! check info
@@ -158,16 +160,18 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
 
   ! extract roots
   call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,ROOTS)
+
+ 
   ! back transformation
   do ii=1,N
-     call d_rot2_vec2gen(dble(ROOTS(ii)),aimag(ROOTS(ii)),a,b,scale)
+     call d_rot2_vec2gen(dble(ROOTS(ii)),aimag(ROOTS(ii)),a,b,norm)
 !!$     if (N.LE.16) then
 !!$        print*, ii,"ROOTS(ii)", ROOTS(ii),"1/ROOTS(ii)", 1d0/ROOTS(ii),"nrm",scale           
 !!$     end if
      if (abs(1d0-scale)<EISCOR_DBL_EPS) then
-        ROOTS(ii) = aimag(ROOTS(ii))/(1d0+dble(ROOTS(ii)))
+        ROOTS(ii) = aimag(ROOTS(ii))/(1d0+dble(ROOTS(ii)))*scale
      else
-        ROOTS(ii) = cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-ROOTS(ii))/(cmplx(1d0,0d0,kind=8)+ROOTS(ii))
+        ROOTS(ii) = cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-ROOTS(ii))/(cmplx(1d0,0d0,kind=8)+ROOTS(ii))*scale
      end if
 
   end do

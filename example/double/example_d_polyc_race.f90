@@ -19,17 +19,17 @@ program example_d_polyc_race
   implicit none
   
   ! compute variables
-  integer, parameter :: type = 3
+  integer, parameter :: ttype = 4
   integer, parameter :: ires = 3
   integer, parameter :: NEWTONSTEPS = 0
   integer, parameter :: N1 = 4
-  integer, parameter :: isolv_max = 2
+  integer, parameter :: isolv_max = 3
   !integer, parameter :: N2 = 128
   !integer, parameter :: N2 = 1024
   !integer, parameter :: N2 = 4096
   integer, parameter :: N2 = 16384
   !integer, parameter :: N2 = 4
-  integer :: N, N3, ii, jj, ij, isolv , info
+  integer :: N, N3, ii, jj, ij, isolv , info, type
   integer, allocatable :: ITS(:)
   real(8), allocatable :: COEFFS(:), RESIDUALS(:), RES(:,:), RRECUR(:,:)
   real(8), allocatable :: RROOTS(:), IROOTS(:), PCOEFFS(:)
@@ -41,52 +41,67 @@ program example_d_polyc_race
   integer:: c_start, c_stop, c_rate
   integer:: c_str2, c_stp2
 
-  ! output
-  open (unit=21, file='tim_eiscor.txt', status='unknown', position="append")
-  open (unit=31, file='err_eiscor.txt', status='unknown', position="append")
-  open (unit=22, file='tim_avw.txt', status='unknown', position="append")
-  open (unit=32, file='err_avw.txt', status='unknown', position="append")
-
-
-  ! allocate memory
-  allocate(COEFFS(N2),RESIDUALS(N2),ROOTS(N2),RROOTS(N2),IROOTS(N2))
-  allocate(CCOEFFS(N2),ITS(N2),PCOEFFS(N2+1))
-  !,C(N+3))
-
   ! start timer
   call system_clock(count_rate=c_rate)
   call system_clock(count=c_start)
-
+  
   ! print banner
   print*,""
   print*,"example_d_polyc_race:"
   print*,""
 
-  COEFFS = 0d0
+  
+  do type = 1,ttype
+
+    ! output
+    open (unit=21, file='tim_eiscor.txt', status='unknown', position="append")
+    open (unit=31, file='err_eiscor.txt', status='unknown', position="append")
+    open (unit=22, file='tim_avw.txt', status='unknown', position="append")
+    open (unit=32, file='err_avw.txt', status='unknown', position="append")
+    open (unit=23, file='tim_eiscor_scale.txt', status='unknown', position="append")
+    open (unit=33, file='err_eiscor_scale.txt', status='unknown', position="append")
+  
+    
+    ! allocate memory
+    allocate(COEFFS(N2),RESIDUALS(N2),ROOTS(N2),RROOTS(N2),IROOTS(N2))
+    allocate(CCOEFFS(N2),ITS(N2),PCOEFFS(N2+1))
+    !,C(N+3))
+    
+
+    COEFFS = 0d0
+
   
   select case (type)
   case (1) 
      do isolv=1,isolv_max
         write (20+isolv,*) "% type 1: random coefficients"
         write (30+isolv,*) "% type 1: random coefficients"
+        write (*,*) "% type 1: random coefficients"
+        write (*,*) "% type 1: random coefficients"
      end do
 
   case (2) 
      do isolv=1,isolv_max
         write (20+isolv,*) "% type 2: T_n(x) - 1d0  = 0d0"
         write (30+isolv,*) "% type 2: T_n(x) - 1d0  = 0d0"
+        write (*,*) "% type 2: T_n(x) - 1d0  = 0d0"
+        write (*,*) "% type 2: T_n(x) - 1d0  = 0d0"
      end do
      
   case (3) 
      do isolv=1,isolv_max
         write (20+isolv,*) "% type 3: T_n(x) - 1d-1 = 0d0"
         write (30+isolv,*) "% type 3: T_n(x) - 1d-1 = 0d0"
+        write (*,*) "% type 3: T_n(x) - 1d-1 = 0d0"
+        write (*,*) "% type 3: T_n(x) - 1d-1 = 0d0"
      end do
      
   case (4) 
      do isolv=1,isolv_max
         write (20+isolv,*) "% type 4: \sum  i T_i(x) = 0d0"
         write (30+isolv,*) "% type 4: \sum  i T_i(x) = 0d0"
+        write (*,*) "% type 4: \sum  i T_i(x) = 0d0"
+        write (*,*) "% type 4: \sum  i T_i(x) = 0d0"
      end do
 
   end select
@@ -100,6 +115,11 @@ program example_d_polyc_race
      case (2)
         write (20+isolv,*) "\addplot coordinates{ % avw"
         write (30+isolv,*) "\addplot coordinates{ % avw"
+
+     case (3)
+        write (20+isolv,*) "\addplot coordinates{ % eiscor scale"
+        write (30+isolv,*) "\addplot coordinates{ % eiscor scale"
+
      end select
   end do
 
@@ -156,6 +176,12 @@ program example_d_polyc_race
      
      N3 = N2/N
 
+     !N3 = N3/16
+     !if (N3.LT.1) then
+     !  N3 = 1
+     !end if
+     !N3 = 1
+     
      do isolv=1,isolv_max
         RES = -1d0
         ! start timer
@@ -164,12 +190,17 @@ program example_d_polyc_race
         select case (isolv)
         case (1)
            do ij=1,N3
-              call d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS)
+              call d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,.TRUE.)
            end do
            
         case (2)
            do ij=1,N3
               call DAVW2(1,N,3,PCOEFFS,RRECUR,RROOTS,IROOTS,ITS,INFO)
+           end do
+
+        case (3)
+           do ij=1,N3
+              call d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,.FALSE.)
            end do
 
         end select
@@ -195,9 +226,9 @@ program example_d_polyc_race
         
         !print*, "max residual", a, "sum of residuals", b
         
-        print*, "(",N,",",dble(c_stp2-c_str2)/dble(c_rate)/N3,")%"
+        print*, "(",N,",",dble(c_stp2-c_str2)/dble(c_rate)/N3,")%", isolv
         write (20+isolv,*) "(",N,",",dble(c_stp2-c_str2)/dble(c_rate)/N3,")%"
-        print*, "(",N,",",a,")%"
+        print*, "(",N,",",a,")%", isolv
         write (30+isolv,*) "(",N,",",a,")%"
 
      end do
@@ -210,9 +241,6 @@ program example_d_polyc_race
   deallocate(COEFFS,RESIDUALS,ROOTS,RROOTS,IROOTS)
   deallocate(CCOEFFS,ITS,PCOEFFS)
 
-  ! stop timer
-  call system_clock(count=c_stop)
-  print*, "Example took ", dble(c_stop-c_start)/dble(c_rate), "s"
 
   do isolv=1,isolv_max
      write (20+isolv,*) "};"
@@ -223,5 +251,11 @@ program example_d_polyc_race
      write (30+isolv,*) ""
      close(30+isolv)
   end do
+
+end do
+
+  ! stop timer
+  call system_clock(count=c_stop)
+  print*, "Example took ", dble(c_stop-c_start)/dble(c_rate), "s"
 
 end program example_d_polyc_race

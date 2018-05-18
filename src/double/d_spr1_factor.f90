@@ -103,8 +103,12 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
   integer :: ii, jj, ind1, ind2
   logical :: flg
   real(8) :: cr, ci, s, nrm, bulge(3), hb(3)
+  complex(8) :: V(N), V2(N)
   complex(8) :: eu, d1, t1(2,2), mu
 
+  complex(8) :: ev1, ev2
+  real(8) :: norm1, norminf, h1, hinf
+  
 !!$  complex(8) :: WORK(5*N), H(N,N),HQ(N,N), t(2,2)
 !!$  real(8) :: RWORK(2*N)
 
@@ -177,8 +181,108 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
      end do
   end if
 
-!!$  ! scaling
-!!$  if (SCA) then
+  scale = 1d0
+  
+  ! scaling
+  if (SCA) then
+    
+    !! || . ||_1 and || . ||_inf
+
+    h1 = abs(D(1)) + abs(E(1)) + abs(U(1))
+    hinf = abs(D(1)) + abs(E(1))
+    
+    norm1 = h1
+    norminf = hinf
+    
+    do jj=2,N-1
+      
+      h1 = abs(E(jj-1)) + abs(D(jj)) + abs(E(jj)) + abs(U(jj))
+      hinf = abs(E(jj-1)) + abs(D(jj)) + abs(E(jj))
+
+      if (h1.GT.norm1) then
+        norm1 = h1
+      end if
+      if (hinf.GT.norminf) then
+        norminf = hinf
+      end if
+      
+    end do
+      
+    h1 = abs(E(N-1)) + abs(D(N)) + abs(U(N))
+    hinf = abs(E(N-1)) + abs(D(N))
+    do jj=1,N
+      hinf = hinf + abs(U(jj))
+    end do
+    
+    if (h1.GT.norm1) then
+      norm1 = h1
+    end if
+    if (hinf.GT.norminf) then
+      norminf = hinf
+    end if
+    
+    scale = sqrt(norm1*norminf)
+    
+
+!!$    !! 16 iterations of the power method
+!!$    
+!!$    !ev1 = cmplx(0d0,0d0,kind=8)
+!!$    !do jj=1,N
+!!$    !  ev1 = ev1 + conjg(U(jj))*U(jj)
+!!$    !end do
+!!$    !print*, ev1
+!!$    !V = U/ev1
+!!$    !print*, V
+!!$    V = cmplx(1d0,0d0,kind=8)
+!!$    
+!!$    do ii=1,16
+!!$      V2(1) = D(1)*V(1) + E(1)*V(2) + U(1)*V(N)
+!!$      do jj=2,N-1
+!!$        V2(jj) = E(jj-1)*V(jj-1) + D(jj)*V(jj) + E(jj)*V(jj+1) + U(jj)*V(N) 
+!!$      end do
+!!$      V2(N) = E(N-1)*V(N-1) + D(N)*V(N) + U(N)*V(N) 
+!!$
+!!$      !print*, scale
+!!$
+!!$      if (ii.LT.16) then
+!!$        ev1 = cmplx(0d0,0d0,kind=8)
+!!$        do jj=1,N
+!!$          ev1 = ev1 + conjg(V2(jj))*V2(jj)
+!!$        end do
+!!$        
+!!$        print*, ev1
+!!$      
+!!$        do jj=1,N
+!!$          V(jj) = V2(jj)/ev1
+!!$        end do
+!!$      end if
+!!$      !print*, "V  ", V
+!!$      !print*, "V2 ", V2
+!!$    end do
+!!$
+!!$    !print*, V
+!!$    !print*, V2    
+!!$    
+!!$    ev1 = cmplx(0d0,0d0,kind=8)
+!!$    do jj=1,N
+!!$      ev1 = ev1 + conjg(V(jj))*V2(jj)
+!!$    end do
+!!$
+!!$    !print*, ev1
+!!$    
+!!$    ev2 = cmplx(0d0,0d0,kind=8)
+!!$    do jj=1,N
+!!$      ev2 = ev2 + conjg(V(jj))*V(jj)
+!!$    end do
+!!$
+!!$    !print*, ev2
+!!$
+!!$    scale = abs(ev1/ev2)
+!!$    !print*, "eigenvalue", scale
+    
+    scale = 2d0*scale
+    
+    
 !!$     ! .TRUE. : use Newton correction
 !!$     call d_symtrid_specint(.TRUE.,N,D,E,a,b,INFO)
 !!$
@@ -193,15 +297,19 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
 !!$     
 !!$     SCALE = max(abs(a),abs(b))
 !!$     
-!!$     do ii=1,N
-!!$        D(ii) = D(ii)/SCALE
-!!$     end do
-!!$     do ii=1,N-1
-!!$        E(ii) = E(ii)/SCALE
-!!$     end do
-!!$
-!!$  end if
 
+    do ii=1,N
+      D(ii) = D(ii)/SCALE
+    end do
+    do ii=1,N-1
+      E(ii) = E(ii)/SCALE
+    end do
+    do ii=1,N
+      U(ii) = U(ii)/SCALE
+    end do
+    
+  end if
+  
   
 !!$  if (DEBUGOUT) then
 !!$     print*, "U"

@@ -544,11 +544,11 @@ subroutine d_spr1_factor2(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
   end do
 
   !print*, "LD(N)", LD(2*N-1), LD(2*N)
-  t1(1,1) = cmplx( LD(2*N-1), LD(2*N), kind=8) * cmplx(cr,s,kind=8);
   if (VEC) then
      t1(1,1) = cmplx(-cr,s,kind=8)
      Z(:,N) = Z(:,N)*t1(1,1)
   end if
+  t1(1,1) = cmplx( LD(2*N-1), LD(2*N), kind=8) * cmplx(cr,s,kind=8);
   call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),LD(2*N-1),LD(2*N),nrm)
   !print*, "LD(N)", LD(2*N-1), LD(2*N)
 
@@ -584,42 +584,42 @@ subroutine d_spr1_factor2(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,INFO)
   if (DEBUGOUT) then
 
 
-  ! check H, form H
-  ! compute matrix H
-  H = 0d0
-  call z_upr1fact_extracttri(.FALSE.,N,QD,QC,QB,H)
-  ! plot H
-  do ii=1,N
-     print*, ii, H(ii,:)
-  end do
-
-  do ii=N-1,1,-1
-     t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
-     t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
-     t(1,2) = -t(2,1)
-     t(2,2) = conjg(t(1,1))
-     H(ii:(ii+1),:) = matmul(t,H(ii:(ii+1),:))
-  end do
-  print*, "reconstructed H"
-  ! plot H
-  do ii=1,N
-     print*, ii, H(ii,:)
-  end do
-
-  print*, "Second ZGEEV"
-  call zgeev('N','N', N, H, N, HQ, Z, 1, Z, 1, WORK, 5*N, RWORK, INFO)
-  
-  ! EIGENVALUES ARE PERTURBED HERE
-  
-  do ii=1,N
-     print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
-          &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
-  end do
-
-
-
-
-end if
+     ! check H, form H
+     ! compute matrix H
+     H = 0d0
+     call z_upr1fact_extracttri(.FALSE.,N,QD,QC,QB,H)
+     ! plot H
+     do ii=1,N
+        print*, ii, H(ii,:)
+     end do
+     
+     do ii=N-1,1,-1
+        t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
+        t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
+        t(1,2) = -t(2,1)
+        t(2,2) = conjg(t(1,1))
+        H(ii:(ii+1),:) = matmul(t,H(ii:(ii+1),:))
+     end do
+     print*, "reconstructed H"
+     ! plot H
+     do ii=1,N
+        print*, ii, H(ii,:)
+     end do
+     
+     print*, "Second ZGEEV"
+     call zgeev('N','N', N, H, N, HQ, Z, 1, Z, 1, WORK, 5*N, RWORK, INFO)
+     
+     ! EIGENVALUES ARE PERTURBED HERE
+     
+     do ii=1,N
+        print*, ii, HQ(ii,1), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-HQ(ii,1))/&
+             &(cmplx(1d0,0d0,kind=8)+HQ(ii,1))
+     end do
+     
+     
+     
+     
+  end if
   
 
 
