@@ -22,7 +22,7 @@ program test_d_symtrid_qr
   
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! parameters
-  integer, parameter :: N = 4096
+  integer, parameter :: N = 1024
   logical, parameter :: sca = .FALSE.
   ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! compute variables
@@ -186,16 +186,18 @@ program test_d_symtrid_qr
      call u_test_failed(__LINE__)
   end if
 
-  call z_upr1fact_twistedqz(.FALSE.,.TRUE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,Z,W,ITS,INFO)
+  !call z_upr1fact_twistedqz(.FALSE.,.TRUE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,Z,W,ITS,INFO)
+  call z_upr1fact_qr(.TRUE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,N,Z,ITS,INFO)
 
   ! check INFO
   if (INFO.NE.0) then
-     call u_test_failed(__LINE__)
+    print*, info
+    print*, its
+    call u_test_failed(__LINE__)
   end if
-
-
+  
   ! extract roots
-  call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,ROOTS)
+  call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,ROOTS)
   ! back transformation
   do ii=1,N
      ROOTS(ii) = cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-ROOTS(ii))/(cmplx(1d0,0d0,kind=8)+ROOTS(ii))
@@ -220,7 +222,7 @@ program test_d_symtrid_qr
         t2 = t2 + RES(ii,3)
      end do
      
-        print*, "case", kk, "norm", t2
+     !   print*, "case", kk, "norm", t2
      if ((t2>1d-14*N*N).OR.(t2.NE.t2)) then
         ! backward error test failed
         print*, "case", kk, "norm", t2

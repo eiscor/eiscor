@@ -20,7 +20,7 @@
 ! INPUT VARIABLES:
 !
 !  VEC             LOGICAL
-!                    .TRUE.: compute schurvectors
+!                    .TRUE.: compute schurvectorsma
 !                    .FALSE.: no schurvectors
 !
 !  ID              LOGICAL
@@ -182,6 +182,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
   end if
 
   scale = 1d0
+  !print*, "MITTE 2 d_spr1_factor"
   
   ! scaling
   if (SCA) then
@@ -223,6 +224,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
     
     scale = sqrt(norm1*norminf)
     
+  !print*, "MITTE 3 d_spr1_factor"
 
 !!$    !! 16 iterations of the power method
 !!$    
@@ -309,6 +311,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
     end do
     
   end if
+!  print*, "MITTE 4 d_spr1_factor"
   
   
 !!$  if (DEBUGOUT) then
@@ -345,6 +348,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
         eu = cmplx(cr*E(ii+1),ci*E(ii+1),kind=8)
      end if
   end do
+!  print*, "MITTE 5 d_spr1_factor"
 
   ! form diagonal R conjg(R)^-1 (which is a diagonal matrix) 
   do ii=1,N+1
@@ -360,6 +364,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
   U(N) = cmplx(cr,-s,kind=8)*U(N)
   mu = conjg(U(N))
   d1 = conjg(cmplx(cr,-s,kind=8)*d1)
+  !print*, "MITTE 6 d_spr1_factor"
 
 !!$  if (DEBUGOUT) then
 !!$     print*, "qU"
@@ -372,6 +377,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
   do ii=1,N
      U(ii) = cmplx(0d0,2d0*aimag(U(ii)),kind=8)/(d1+mu)
   end do
+!  print*, "MITTE 7 d_spr1_factor"
   
 !!$  if (DEBUGOUT) then
 !!$     ! check H, form H
@@ -441,17 +447,22 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
   ! chasing upward
   ! initialize LD
   do ii=1,N
-     LD(2*ii-1)= 1d0
-     LD(2*ii) = 0d0
+    !print*, ii, N
+    LD(2*ii-1)= 1d0
+    LD(2*ii) = 0d0
   end do
-  
+   
+  !print*, "MITTE 7.1 d_spr1_factor"
+    
   ! fuse Q^T into Q
   do jj=1,N-1
-     !print*, "MITTE 4a d_spr1_factor",jj
-     bulge(1) = Q(3*jj-2)
-     bulge(2) = Q(3*jj-1)
-     bulge(3) = -Q(3*jj)  ! the bulge is Q^T
-     
+
+    !print*, "MITTE 7.2 d_spr1_factor", jj
+    bulge(1) = Q(3*jj-2)
+    bulge(2) = Q(3*jj-1)
+    bulge(3) = -Q(3*jj)  ! the bulge is Q^T
+    !print*, "MITTE 7.2.1 d_spr1_factor", jj
+
      ! update eigenvectors
      if (VEC) then
         t1(1,1) = cmplx(bulge(1),-bulge(2),kind=8)
@@ -460,14 +471,18 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
         t1(2,2) = conjg(t1(1,1))
         Z(1:N,(jj):(jj+1)) = matmul(Z(1:N,(jj):(jj+1)),t1)
      end if
-     
+
+     !print*, "MITTE 7.2.2 d_spr1_factor", jj
+
      ! set indices
      ind1 = 2*jj - 1
      ind2 = ind1 + 3
+  ! print*, "MITTE 7.2.3 d_spr1_factor", jj
      
      ! through diag 
-     call z_rot3_swapdiag(.TRUE.,LD(ind1:ind2),bulge)
+     call z_rot3_swapdiag(LD(ind1:ind2),bulge)
      
+    !print*, "MITTE 7.3 d_spr1_factor", jj
      ! main chasing loop
      do ii=jj,2,-1
         
@@ -487,7 +502,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
         ind2 = ind1+3
         
         ! through diag 
-        call z_rot3_swapdiag(.TRUE.,QD(ind1:ind2),bulge)
+        call z_rot3_swapdiag(QD(ind1:ind2),bulge)
 
         ! update U
         t1(1,1) = cmplx(bulge(1),bulge(2),kind=8)*U(ii-1) - &
@@ -495,6 +510,8 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
         U(ii) = cmplx(bulge(1),-bulge(2),kind=8)*U(ii) + &
              &cmplx(bulge(3),0d0,kind=8)*U(ii-1)
         U(ii-1) = t1(1,1)
+
+            !print*, "MITTE 7.4 d_spr1_factor", ii,jj
 
         ! update eigenvectors
         if (VEC) then
@@ -506,7 +523,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
         end if
         
         ! through diag 
-        call z_rot3_swapdiag(.TRUE.,LD(ind1:ind2),bulge)
+        call z_rot3_swapdiag(LD(ind1:ind2),bulge)
         
      end do
      
@@ -522,6 +539,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
      call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),LD(3),LD(4),nrm)
      
   end do
+  !print*, "MITTE 8 d_spr1_factor"
 
   ! move (cr,-s) from the right to the Q on the left
   ! update eigenvectors
@@ -537,13 +555,14 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
   do ii=1,N-1
      ind1 = 2*ii-1
      ind2 = 3*ii-2
-     call z_rot3_swapdiag(.FALSE.,LD(ind1:(ind1+3)),Q(ind2:(ind2+2)))
+     call z_rot3_swapdiag(LD(ind1:(ind1+3)),Q(ind2:(ind2+2)))
   end do
   do ii=1,N
      t1(1,1) = cmplx(QD(2*ii-1),QD(2*ii),kind=8)*cmplx(LD(2*ii-1),LD(2*ii),kind=8)
      call d_rot2_vec2gen(dble(t1(1,1)),aimag(t1(1,1)),QD(2*ii-1),QD(2*ii),nrm)     
   end do
 
+  !print*, "MITTE 9 d_spr1_factor"
 
 !!$  if (DEBUGOUT) then
 !!$

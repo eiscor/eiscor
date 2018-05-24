@@ -145,8 +145,10 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,SCA)
 !!$  print*, B1
 
   ! compute the roots with upr1fact Hessenberg QR
-  call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+  !call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
+  call z_upr1fact_qr(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,1,V,ITS,INFO)
 
+  
   ! check INFO
   ! if INFO == 1 some eigenvalues might have been found
   if ((INFO.NE.0).AND.(INFO.NE.1)) then
@@ -160,8 +162,7 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,SCA)
 
   ! extract roots
   call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,ROOTS)
-
- 
+  
   ! back transformation
   do ii=1,N
      call d_rot2_vec2gen(dble(ROOTS(ii)),aimag(ROOTS(ii)),a,b,norm)

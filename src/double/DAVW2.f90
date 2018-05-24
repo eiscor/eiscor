@@ -270,7 +270,7 @@ subroutine DLR(N,POLY,RROOTS,IROOTS,ITERATIONS,FLAG)
       G(2) = dsqrt(G(2))
       trace = 2d0*G(1)/G(2)
       detm = 1d0
-      write(*,*) "Exceptional shift in DLR!"
+      !write(*,*) "Exceptional shift in DLR!"
     else
       trace = Blocks(2,2,stop_index-1)*Blocks(1,1,stop_index) + Blocks(2,2,stop_index)
       detm = Blocks(1,1,stop_index)*Blocks(2,2,stop_index) - Blocks(1,2,stop_index)*Blocks(2,1,stop_index)
@@ -536,7 +536,7 @@ subroutine DBLR(N,K,POLY,COEFFS,RROOTS,IROOTS,ITERATIONS,FLAG,INIT,CHASE)
       G(2) = dsqrt(G(2))
       trace = 2d0*G(1)/G(2)
       detm = 1d0
-      write(*,*) "Exceptional shift in DBLR!"
+      !write(*,*) "Exceptional shift in DBLR!"
     else
       trace = W(1,1) + W(2,2)
       detm = W(1,1)*W(2,2) - W(1,2)*W(2,1)

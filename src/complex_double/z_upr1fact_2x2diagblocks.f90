@@ -59,7 +59,7 @@ subroutine z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P,Q,D1,C1,B1,D2,C2,B2,A,B)
   complex(8), intent(inout) :: A(2,2), B(2,2)
   
   ! compute variables
-  complex(8) :: temp, H(2,2)
+  complex(8) :: H(2,2)
   
   ! compute A
   A = cmplx(0d0,0d0,kind=8)
@@ -86,16 +86,10 @@ subroutine z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P,Q,D1,C1,B1,D2,C2,B2,A,B)
     H(2,2) = cmplx(Q(1),-Q(2),kind=8)
     
     ! include adjacent rotation
-    temp = cmplx(Q(4),Q(5),kind=8)
-!    if (abs(temp).EQ.0) then
-!      temp = cmplx(1d0,0d0,kind=8)
-!    else
-!      temp = temp/abs(temp)
-!    end if
     if (P) then  
-      H(2,:) = temp*H(2,:)
+      H(2,:) = cmplx(Q(4),Q(5),kind=8)*H(2,:)
     else
-      H(:,2) = temp*H(:,2)
+      H(:,2) = cmplx(Q(4),Q(5),kind=8)*H(:,2)
     end if
     
     ! set output
@@ -110,16 +104,10 @@ subroutine z_upr1fact_2x2diagblocks(TOP,HESS,QZ,P,Q,D1,C1,B1,D2,C2,B2,A,B)
     H(2,2) = cmplx(Q(4),-Q(5),kind=8)
     
     ! include adjacent rotation
-    temp = cmplx(Q(1),Q(2),kind=8)
-!    if (abs(temp).EQ.0) then
-!      temp = cmplx(1d0,0d0,kind=8)
-!    else
-!      temp = temp/abs(temp)
-!    end if
     if (P) then  
-      H(:,1) = temp*H(:,1)
+      H(:,1) = cmplx(Q(1),Q(2),kind=8)*H(:,1)
     else
-      H(1,:) = temp*H(1,:)
+      H(1,:) = cmplx(Q(1),Q(2),kind=8)*H(1,:)
     end if
     
     ! set output

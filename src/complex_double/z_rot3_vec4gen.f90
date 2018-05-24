@@ -85,13 +85,13 @@ subroutine z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   call d_rot2_vec2gen(AR,AI,pAr,pAi,CR)  
   
   ! check if AR is the only INF 
-  if ((abs(S)<=inf).AND.(abs(CR)>inf).AND.(pAr.EQ.0)) then
+  if ((abs(S)<=inf).AND.(abs(CR)>inf).AND.(pAr.EQ.0d0)) then
   
     ! construct CR, CI, S
     call z_rot3_vec3gen(AR,AI,S,CR,CI,S,NRM)  
       
   ! check if AI is the only INF 
-  else if ((abs(S)<=inf).AND.(abs(CR)>inf).AND.(pAi.EQ.0)) then
+  else if ((abs(S)<=inf).AND.(abs(CR)>inf).AND.(pAi.EQ.0d0)) then
   
     ! construct CR, CI, S
     call z_rot3_vec3gen(AR,AI,S,CR,CI,S,NRM) 

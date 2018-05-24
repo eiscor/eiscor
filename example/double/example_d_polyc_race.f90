@@ -25,9 +25,9 @@ program example_d_polyc_race
   integer, parameter :: N1 = 4
   integer, parameter :: isolv_max = 3
   !integer, parameter :: N2 = 128
-  !integer, parameter :: N2 = 1024
+  integer, parameter :: N2 = 1024
   !integer, parameter :: N2 = 4096
-  integer, parameter :: N2 = 16384
+  !integer, parameter :: N2 = 16384
   !integer, parameter :: N2 = 4
   integer :: N, N3, ii, jj, ij, isolv , info, type
   integer, allocatable :: ITS(:)

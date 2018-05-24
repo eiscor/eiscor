@@ -132,17 +132,17 @@ subroutine d_2x2array_eig(FLAG,A,B,Q,Z)
     temp = (A(1,1)-A(2,2))**2 + 4d0*A(1,2)*A(2,1)
     
     ! imaginary roots
-    if (temp < 0) then
+    if (temp.LT.0d0) then
       
       ! move A to standard form (A(1,1) = A(2,2))
    
       ! compute Q
       temp = (A(2,2)-A(1,1))
-      if (temp.NE.0) then
+      if (temp.NE.0d0) then
         
         temp = (A(1,2)+A(2,1))/temp
 
-        if (abs(temp) > 1d0) then
+        if (abs(temp).GE.1d0) then
           temp = temp*(1d0+sqrt(1d0+1d0/temp/temp))
           call d_rot2_vec2gen(temp,1d0,Q(1,1),Q(2,1),temp)
         else 
