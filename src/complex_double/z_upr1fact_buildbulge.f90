@@ -80,9 +80,13 @@ subroutine z_upr1fact_buildbulge(P,Q,D,C,B,SHFT,G)
     vec1(2) = cmplx(0d0,0d0,kind=8)
   
   end if
+
+  !print*, vec1, R(1,1)
   
   ! insert shift
   vec1 = vec1 - SHFT*vec2
+
+  !print*, vec1
   
   ! compute eliminator
   call z_rot3_vec4gen(dble(vec1(1)),aimag(vec1(1)),dble(vec1(2)),&

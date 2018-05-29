@@ -223,8 +223,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
     end if
     
     scale = sqrt(norm1*norminf)
-    
-  !print*, "MITTE 3 d_spr1_factor"
+
 
 !!$    !! 16 iterations of the power method
 !!$    
@@ -284,6 +283,7 @@ subroutine d_spr1_factor(VEC,ID,SCA,N,D,E,U,Q,QD,QC,QB,SCALE,M,Z,LD,INFO)
     
     scale = 2d0*scale
     
+ !   print*, "d_spr1_factor --- scaling factor", scale
     
 !!$     ! .TRUE. : use Newton correction
 !!$     call d_symtrid_specint(.TRUE.,N,D,E,a,b,INFO)

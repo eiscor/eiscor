@@ -20,14 +20,15 @@ program example_d_polyc_race
   
   ! compute variables
   integer, parameter :: ttype = 4
+  integer, parameter :: ttypelow = 1
   integer, parameter :: ires = 3
   integer, parameter :: NEWTONSTEPS = 0
   integer, parameter :: N1 = 4
   integer, parameter :: isolv_max = 3
   !integer, parameter :: N2 = 128
-  integer, parameter :: N2 = 1024
+  !integer, parameter :: N2 = 1024
   !integer, parameter :: N2 = 4096
-  !integer, parameter :: N2 = 16384
+  integer, parameter :: N2 = 16384
   !integer, parameter :: N2 = 4
   integer :: N, N3, ii, jj, ij, isolv , info, type
   integer, allocatable :: ITS(:)
@@ -51,8 +52,12 @@ program example_d_polyc_race
   print*,""
 
   
-  do type = 1,ttype
+  do type = ttypelow,ttype
 
+    if (type.EQ.2) then
+      cycle
+    end if
+    
     ! output
     open (unit=21, file='tim_eiscor.txt', status='unknown', position="append")
     open (unit=31, file='err_eiscor.txt', status='unknown', position="append")
@@ -144,7 +149,7 @@ program example_d_polyc_race
         ! type 3: T_n(x) - 1d-1 = 0d0
      case (3) 
         COEFFS = 0d0        
-        COEFFS(N) = 1d-1
+        COEFFS(N) = 2d-1!1d-1
 
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ! type 4: \sum  i T_i(x) = 0d0
@@ -176,10 +181,10 @@ program example_d_polyc_race
      
      N3 = N2/N
 
-     !N3 = N3/16
-     !if (N3.LT.1) then
-     !  N3 = 1
-     !end if
+     N3 = N3/16
+     if (N3.LT.1) then
+       N3 = 1
+     end if
      !N3 = 1
      
      do isolv=1,isolv_max
@@ -190,7 +195,7 @@ program example_d_polyc_race
         select case (isolv)
         case (1)
            do ij=1,N3
-              call d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,.TRUE.)
+              call d_polyc_roots(N,COEFFS,ROOTS,.FALSE.)
            end do
            
         case (2)
@@ -200,7 +205,7 @@ program example_d_polyc_race
 
         case (3)
            do ij=1,N3
-              call d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,.FALSE.)
+              call d_polyc_roots(N,COEFFS,ROOTS,.TRUE.)
            end do
 
         end select
@@ -212,7 +217,13 @@ program example_d_polyc_race
               ROOTS(ii) = cmplx(RROOTS(ii),IROOTS(ii),kind=8)
            end do
         end if
-
+        
+        !if (N.LE.1024) then
+        !  do ii=1,N
+        !    print*, ROOTS(ii)
+        !  end do
+        !end if
+        
         call z_polyc_residuals(N,3,NEWTONSTEPS,CCOEFFS,RECUR,ROOTS,ALLROOTS,RES)
         
         a = 0d0

@@ -26,7 +26,7 @@
 !                    computed roots
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,SCA)
+subroutine d_polyc_roots(N,COEFFS,ROOTS,SCA)
 
   implicit none
   
@@ -35,7 +35,7 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,SCA)
   integer, intent(in) :: N
   real(8), intent(in) :: COEFFS(N)
   complex(8), intent(inout) :: ROOTS(N)
-  real(8), intent(inout) :: RESIDUALS(N)
+!  real(8), intent(inout) :: RESIDUALS(N)
   
   ! compute variables
   integer :: ii, INFO
@@ -114,39 +114,9 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,SCA)
      return
   end if
   
-!!$  ! compute matrix H
-!!$  H = 0d0
-!!$  call z_upr1fact_extracttri(.FALSE.,N,D1,C1,B1,H)
-!!$  ! plot H
-!!$  do ii=1,N
-!!$     print*, ii, H(ii,:)
-!!$  end do
-!!$
-!!$  do ii=N-1,1,-1
-!!$     t(1,1) = cmplx(Q(3*ii-2),Q(3*ii-1),kind=8)
-!!$     t(2,1) = cmplx(Q(3*ii),0d0,kind=8)
-!!$     t(1,2) = -t(2,1)
-!!$     t(2,2) = conjg(t(1,1))
-!!$     H(ii:(ii+1),:) = matmul(t,H(ii:(ii+1),:))
-!!$  end do
-!!$  print*, "reconstructed H"
-!!$  ! plot H
-!!$  do ii=1,N
-!!$     print*, ii, H(ii,:)
-!!$  end do
-!!$
-!!$  call zgeev('N','N', N, H, N, ROOTS, Z, 1, Z, 1, WORK, 5*N, RWORK, INFO)
-!!$  
-!!$  do ii=1,N
-!!$     print*, ii, ROOTS(ii), cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-ROOTS(ii))/&
-!!$          &(cmplx(1d0,0d0,kind=8)+ROOTS(ii))
-!!$  end do
-!!$  print*, "START z_upr1fact_twistedqz"
-!!$  print*, B1
-
   ! compute the roots with upr1fact Hessenberg QR
   !call z_upr1fact_twistedqz(.FALSE.,.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,D2,C2,B2,V,W,ITS,INFO)
-  call z_upr1fact_qr(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,1,V,ITS,INFO)
+  call z_upr1fact_qr(.FALSE.,.FALSE.,l_upr1fact_hess,N,P,Q,D1,C1,B1,N,V,ITS,INFO)
 
   
   ! check INFO
@@ -155,25 +125,26 @@ subroutine d_polyc_roots(N,COEFFS,ROOTS,RESIDUALS,SCA)
     print*,""
     print*,"INFO:",INFO
     print*,""
+    INFO = 2
     deallocate(P,ITS,Q,D1,C1,B1,D,E,U,Z)!,H)
     deallocate(DWORK,D2,C2,B2)    
     return  
   end if
 
   ! extract roots
-  call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,ROOTS)
+  call z_upr1utri_decompress(.TRUE.,N,D1,C1,B1,ROOTS)
+  !call z_upr1fact_extracttri(.TRUE.,N,D1,C1,B1,ROOTS)
   
   ! back transformation
   do ii=1,N
-     call d_rot2_vec2gen(dble(ROOTS(ii)),aimag(ROOTS(ii)),a,b,norm)
 !!$     if (N.LE.16) then
 !!$        print*, ii,"ROOTS(ii)", ROOTS(ii),"1/ROOTS(ii)", 1d0/ROOTS(ii),"nrm",scale           
 !!$     end if
-     if (abs(1d0-scale)<EISCOR_DBL_EPS) then
-        ROOTS(ii) = aimag(ROOTS(ii))/(1d0+dble(ROOTS(ii)))*scale
-     else
+!     if (abs(1d0-scale)<EISCOR_DBL_EPS) then
+!        ROOTS(ii) = aimag(ROOTS(ii))/(1d0+dble(ROOTS(ii)))*scale
+!     else
         ROOTS(ii) = cmplx(0d0,1d0,kind=8)*(cmplx(1d0,0d0,kind=8)-ROOTS(ii))/(cmplx(1d0,0d0,kind=8)+ROOTS(ii))*scale
-     end if
+ !    end if
 
   end do
     

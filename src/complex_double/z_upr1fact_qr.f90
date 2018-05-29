@@ -154,15 +154,15 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
       exit
     end if
 
-!print*,""
-!print*,"Inside QR"
-!print*,"Q"
-!do ii=1,N-1
-!print*,Q(3*ii-2:3*ii)
-!end do
-!print*,""
-!write(*,*) "Press enter to continue"
-!read(*,*)
+!!$print*,""
+!!$print*,"Inside QR"
+!!$print*,"Q"
+!!$do ii=1,N-1
+!!$print*,Q(3*ii-2:3*ii)
+!!$end do
+!!$print*,""
+!!$!write(*,*) "Press enter to continue"
+!!$!read(*,*)
 
     ! check for deflation
     call z_upr1fact_deflationcheck(VEC,STP-STR+2,P(STR:(STP-1)), &
@@ -173,7 +173,7 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
     if(STP == (STR+ZERO-1))then
     
       ! update indices
-      ITS(STR+ZERO-1) = ITCNT
+      ITS(STR+ZERO-1) = ITS(STR+ZERO-1)+ITCNT
       ITCNT = 0
       STP = STP - 1
       ZERO = 0
@@ -186,9 +186,11 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
       if (ZERO.GT.0) then
          STR = STR + ZERO
          ZERO = 0
-         ITS(STR+ZERO-1) = ITCNT
+         ITS(STR+ZERO-1) = ITS(STR+ZERO-1)+ITCNT
          ITCNT = 0
-      end if
+       end if
+       !print*, "STR", STR, "STP", STP, "ZERO", ZERO, "ITCNT", ITCNT
+       
 
       ! perform singleshift iteration
       call z_upr1fact_singlestep(VEC,FUN,STP-STR+2,P(STR:(STP-1)) &
@@ -207,10 +209,13 @@ subroutine z_upr1fact_qr(VEC,ID,FUN,N,P,Q,D,C,B,M,V,ITS,INFO)
     
     ! if ITMAX hit
     if (kk == ITMAX) then
+      print*, "hit ITMAX"
+      print*, its
       INFO = 1
       ITS(STR+STP-1) = ITCNT
+      stop
     end if
-    
+
   end do
 
 end subroutine z_upr1fact_qr
