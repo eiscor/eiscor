@@ -53,6 +53,7 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   real(8) :: normc
   complex(8) :: sclc
   complex(8), allocatable :: V(:),W(:)
+  integer :: k
   interface
     function l_upr1fact_hess(m,flags)
       logical :: l_upr1fact_hess
@@ -160,7 +161,8 @@ subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
   end if
         
   ! compute residuals
-  call z_poly_residuals(N,COEFFS,ROOTS,0,RESIDUALS)
+  k = 0
+  call z_poly_residuals(N,COEFFS,ROOTS,k,RESIDUALS)
     
   ! free memory
   deallocate(P,ITS,Q,D1,C1,B1,D2,C2,B2,V,W)
