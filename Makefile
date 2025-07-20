@@ -3,11 +3,11 @@ include make.inc .master.inc
 SRCS := $(wildcard ./src/*/*.f90)
 OBJS := $(SRCS:.f90=.o)
 
-all: lib$(LIBNAME).$(SLIB).$(VERSION)
+all: $(SHARED_LIB)
 
-install: lib$(LIBNAME).$(SLIB).$(VERSION)
-	@mkdir -p $(INSTALLDIR)/$(LIBNAME)/lib
-	@cp ./lib$(LIBNAME).$(SLIB).$(VERSION) $(INSTALLDIR)/$(LIBNAME)/lib
+install: $(SHARED_LIB)
+	@mkdir -p $(LIBDIR)
+	$(INSTALL_LIB)
 
 example%:
 	@$(MAKE) $@ -C ./example
@@ -18,20 +18,34 @@ test%:
 benchmark%:
 	@$(MAKE) $@ -C ./benchmark
 
-lib$(LIBNAME).$(SLIB).$(VERSION): srcs
-	$(FC) $(FFLAGS) -shared -o lib$(LIBNAME).$(SLIB).$(VERSION) $(OBJS) 
+ifeq ($(IS_WINDOWS),1)
+
+$(SHARED_LIB): srcs
+	$(FC) $(FFLAGS) -shared -o $(SHARED_LIB) $(OBJS)
+
+else ifeq ($(UNAME_S),Linux)
+
+$(SHARED_LIB): srcs
+	$(FC) $(FFLAGS) -shared -o $(SHARED_LIB) $(OBJS)
+
+else ifeq ($(UNAME_S),Darwin)
+
+$(SHARED_LIB): srcs
+	$(FC) $(FFLAGS) -shared -o $(SHARED_LIB) $(OBJS)
+
+endif
 
 srcs:
 	@$(MAKE) $@ -C ./src
 
 uninstall: clean
-	@rm -rf $(INSTALLDIR)/$(LIBNAME)
+	@rm -rf $(INSTALL_LIB)
 
 clean:
 	@$(MAKE) clean -C ./src
 	@$(MAKE) clean -C ./example
 	@$(MAKE) clean -C ./test
 	@$(MAKE) clean -C ./benchmark
-	@rm -f lib$(LIBNAME).$(SLIB).$(VERSION)
+	@rm -f $(SHARED_LIB)
 
 
