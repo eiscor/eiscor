@@ -18,22 +18,8 @@ test%:
 benchmark%:
 	@$(MAKE) $@ -C ./benchmark
 
-ifeq ($(IS_WINDOWS),1)
-
 $(SHARED_LIB): srcs
 	$(FC) $(FFLAGS) -shared -o $(SHARED_LIB) $(OBJS)
-
-else ifeq ($(UNAME_S),Linux)
-
-$(SHARED_LIB): srcs
-	$(FC) $(FFLAGS) -shared -o $(SHARED_LIB) $(OBJS)
-
-else ifeq ($(UNAME_S),Darwin)
-
-$(SHARED_LIB): srcs
-	$(FC) $(FFLAGS) -shared -o $(SHARED_LIB) $(OBJS)
-
-endif
 
 srcs:
 	@$(MAKE) $@ -C ./src

@@ -1,5 +1,5 @@
 #include "eiscor.h"
-subroutine u_test_failed(LINENUM) 
+subroutine u_test_failed(LINENUM)
 
   implicit none
 
@@ -8,6 +8,6 @@ subroutine u_test_failed(LINENUM)
 
   ! print failure
   write(STDERR,'(a,I4)') 'FAILED on line: ',LINENUM
-  stop
-  
+  stop 1
+
 end subroutine u_test_failed

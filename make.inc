@@ -39,12 +39,14 @@ else
         SHARED_LIB = lib$(LIBNAME).so
         INSTALL_LIB = install -m 755 $(SHARED_LIB) $(LIBDIR)/$(SHARED_LIB_REAL); \
             ln -sf $(LIBDIR)/$(SHARED_LIB_REAL) $(LIBDIR)/$(SHARED_LIB); \
-            ln -sf $(LIBDIR)/$(SHARED_LIB_REAL) $(LIBDIR)/lib$(LIB_NAME).so.$(MAJOR) $(SHARED_LIB_REAL)
+            ln -sf $(LIBDIR)/$(SHARED_LIB_REAL) $(LIBDIR)/lib$(LIB_NAME).so.$(MAJOR); \
+        patchelf --set-rpath $(LIBDIR) $(LIBDIR)/$(SHARED_LIB_REAL)
     else ifeq ($(UNAME_S),Darwin)
         SHARED_LIB_REAL = lib$(LIBNAME).$(VERSION).dylib
         SHARED_LIB = lib$(LIBNAME).dylib
         INSTALL_LIB = install -m 755 $(SHARED_LIB) $(LIBDIR)/$(SHARED_LIB_REAL); \
-            ln -sf $(LIBDIR)/$(SHARED_LIB_REAL) $(LIBDIR)/$(SHARED_LIB)
+            ln -sf $(LIBDIR)/$(SHARED_LIB_REAL) $(LIBDIR)/$(SHARED_LIB); \
+            install_name_tool -id $(LIBDIR)/$(SHARED_LIB_REAL) $(LIBDIR)/$(SHARED_LIB_REAL)
     endif
 endif
 
