@@ -46,3 +46,11 @@ jobs:
       - name: Run tests
         run: make PREFIX=${INSTALL_DIR} -j tests
         shell: bash
+
+      - name: Run examples
+        run: make PREFIX=${INSTALL_DIR} -j examples
+        shell: bash
+
+      - name: Run benchmarks
+        run: make PREFIX=${INSTALL_DIR} -j benchmarks
+        shell: bash
