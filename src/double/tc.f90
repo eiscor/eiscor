@@ -1,0 +1,80 @@
+!
+! Code from V. I. Lebedev: On formulae for roots of cubic equation
+! Sov. J. Numer. Anal. Math. Modelling, Vol.6, No.4, pp. 315-324 (1991)
+! (https://www.degruyterbrill.com/document/doi/10.1515/rnam.1991.6.4.315/html)
+!
+! the code is only used for a runtime comparison
+!
+! The code is a specialized code for real coefficients of degree 3 polynomials.
+! 
+!
+SUBROUTINE TC(A,B,C,D,X1,X2,X3,L)
+  double precision :: A,B,C,D,T,S,T1,T2,T3,T4,P,X1,X2,X3
+  
+  T=1.732050807568877d0
+  S=.33333333333333333d0
+  T2=B*B
+  T3=3.D0*A
+  T4=T3*C
+  P=T2-T4
+  X3=DABS(P)
+  X3=DSQRT(X3)
+  X1=B*(T4-P-P)-3.D0*T3*T3*D
+  X2=DABS(X1)
+  X2=X2**S
+  T2=1.D0/T3
+  T3=B*T2
+  IF(X3.GT.1.D-32*X2) GO TO 1
+  IF ( X1 .LT. 0.D0 ) X2=-X2
+  X1=X2*T2
+  X2=-.5D0*X1
+  X3=-T*X2
+  IF ( DABS( X3 ) .GT. 1.D-32 ) GO TO 15
+  X3=X2
+  GO TO 2
+1 T1=.5D0*X1/(P*X3)
+  X2=DABS(T1)
+  T2=X3*T2
+  T=T*T2
+  T4=X2*X2
+  IF ( P .LT. 0.D0 ) GO TO 7
+  X3=DABS(1.D0-T4)
+  X3=DSQRT(X3)
+  IF ( T4 .GT. 1.D0 ) GO TO 5
+  T4=DATAN2(X3,T1)*S
+  X3=DCOS(T4)
+  T4=DSQRT(1.D0-X3 *X3)*T
+  X3=X3*T2
+  X1=X3+X3
+  X2=T4-X3
+  X3=-(T4+X3)
+  IF ( X2 .GT. X3 ) GO TO 2
+  T2=X2
+  X2=X3
+  X3=T2
+2 L=0
+  IF ( X1  .GT. X2 ) GO TO 3
+  T2=X1
+  X1=X2
+  X2=T2
+  IF ( T2 .GT. X3 ) GO TO 3
+  X2=X3
+  X3=T2
+3 X3=X3-T3
+  GO TO 20
+5 P=(X2+X3)**S
+  T4=1.D0/P
+  IF(T1) 11,13,13
+  7 P=X2+DSQRT(T4+1.d0)
+  p=p**S
+  T4=-1.D0/P
+  IF ( T1 .LT. 0.d0 ) GO TO 13
+11 T2=-T2
+13 X1=(P+T4)*T2
+  X2=-.5d0*X1
+  X3= .5d0*T*(P-T4)
+15 L=2
+20 X1=X1-T3
+  X2=X2-T3
+
+END SUBROUTINE TC
