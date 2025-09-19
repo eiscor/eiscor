@@ -1,0 +1,17 @@
+name = "eiscor"
+copyright  = "Copyright (c) 2014-2018, Jared L. Aurentz, Thomas Mach, Raf Vandebril, David S. Watkins"
+license = "MIT"
+description = "eigensolvers based on unitary core transformations"
+homepage = "https://github.com/eiscor/eiscor"
+keywords = ["eigensolver"]
+
+[build]
+auto-executables = false
+auto-examples = false
+auto-tests = true
+
+[library]
+source-dir = "src"
+
+[install]
+library = true
