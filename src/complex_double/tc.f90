@@ -1,8 +1,3 @@
-!
-! Code from the paper VI Lebedev: On formulae for roots of cubic equation
-! Sov. J. Numer. Anal. Math. Modelling, Vol.6, No.4, pp. 315-324 (1991)
-!
-!
 SUBROUTINE TC(A,B,C,D,X1,X2,X3,L)
   double precision :: A,B,C,D,T,S,T1,T2,T3,T4,P,X1,X2,X3
   
