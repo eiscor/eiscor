@@ -4,9 +4,6 @@
 #
 ############################################################
 
-# directory where the library will be installed
-INSTALLDIR := $(HOME)
-
 # fortran compiler and flags
 FC := ifort 
 FFLAGS := -O3 -std90 -heap-arrays

@@ -15,7 +15,7 @@ program test_z_scalar_random_normal
   ! compute variables
   real(8) :: A, B
   integer :: info
-  
+
   ! timing variables
   integer:: c_start, c_stop, c_rate
 
@@ -30,7 +30,10 @@ program test_z_scalar_random_normal
 
   ! check info
   if (info.NE.0) then
-     call u_test_failed(__LINE__)
+    if (info.EQ.33) then
+      call u_test_skipped()
+    end if
+    call u_test_failed(__LINE__)
   end if
 
   call z_scalar_random_normal(A,B)
@@ -48,5 +51,5 @@ program test_z_scalar_random_normal
 
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
-  
+
 end program test_z_scalar_random_normal

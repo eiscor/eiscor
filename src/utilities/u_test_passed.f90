@@ -1,5 +1,5 @@
 #include "eiscor.h"
-subroutine u_test_passed(TIME) 
+subroutine u_test_passed(TIME)
 
   implicit none
 
@@ -8,5 +8,5 @@ subroutine u_test_passed(TIME)
 
   ! print failure
   write(STDERR,'(a,F10.5,a)') 'PASSED in ',TIME,' secs'
-  
+
 end subroutine u_test_passed

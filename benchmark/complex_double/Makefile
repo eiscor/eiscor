@@ -10,7 +10,7 @@ benchmarks:
 
 benchmarks_z: benchmarks
 
-benchmarks_z_%: 
+benchmarks_z_%:
 	$(eval ZBMRKSRCS := $(patsubst benchmarks_%,benchmark_%,$@))
 	$(eval ZBMRKSRCS := $(wildcard $(ZBMRKSRCS)*.f90))
 	$(eval ZBMRKS := $(ZBMRKSRCS:.f90=))
@@ -20,7 +20,7 @@ run: $(ZBMRKS)
 	@$(foreach benchmark,$(ZBMRKS),./$(benchmark) &&) echo 'End of complex_double benchmarks!'
 
 %:: %.f90
-	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).$(SLIB).$(VERSION) $(LIBS)
+	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(LIBDIR)/$(SHARED_LIB) $(LIBS)
 
 clean:
-	@rm -f $(ZBMRKS)	
+	@rm -f $(ZBMRKS)

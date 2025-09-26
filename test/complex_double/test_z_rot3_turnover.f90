@@ -5,7 +5,7 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine z_rot3_turnover (turnover). The following 
+! This program tests the subroutine z_rot3_turnover (turnover). The following
 ! tests are run:
 !
 ! 1) three random rotations
@@ -19,17 +19,17 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! If VERBOSE mode is activated a histogram of the accuracy of the turnover is 
+! If VERBOSE mode is activated a histogram of the accuracy of the turnover is
 ! printed. The program compares the histogram to a reference histogram. If the
 ! histogram is equal or better than the reference, then the test is passed.
-! 
+!
 ! A deviation of 0.2% is still acceptable.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_rot3_turnover
-  
+
   implicit none
-  
+
   ! parameter
   integer, parameter :: nt = 120000 ! number of testcases
   integer :: accum = 100 ! number of successive turnovers
@@ -55,21 +55,21 @@ program test_z_rot3_turnover
   tol = 2d0*accum*EISCOR_DBL_EPS ! accuracy of turnover
 
   ! fix seed
-  
-  ! get size of see        
+
+  ! get size of see
   call random_seed(size = n)
   ! allocate memory for seed
-  allocate(seed(n))  
+  allocate(seed(n))
   ! check allocation
   if (allocated(seed).EQV..FALSE.) then
     call u_test_failed(__LINE__)
-  end if   
-  ! store seeds    
+  end if
+  ! store seeds
   seed = 0
   seed(1) = 377679
   if (n>=12) then
-     seed(2) = 154653 
-     seed(3) = 331669 
+     seed(2) = 154653
+     seed(3) = 331669
      seed(4) = 194341
      seed(5) = 1451740
      seed(6) = 3974222
@@ -81,15 +81,20 @@ program test_z_rot3_turnover
      seed(12) = 4989015
   end if
   ! set the generator
-  call random_seed(put = seed) 
-  ! free memory        
+  call random_seed(put = seed)
+  ! free memory
   deallocate(seed)
-  
+
   ! start timer
   call system_clock(count_rate=c_rate)
-  call system_clock(count=c_start) 
+  call system_clock(count=c_start)
   ! print banner
   call u_test_banner(__FILE__)
+
+  ! check PRNG
+  if (n.NE.33) then
+    call u_test_skipped()
+  end if
 
   ! set accum to a even number
   if (mod(accum,2)==1) then
@@ -321,7 +326,7 @@ end if
      rm = 2d0*pi*rm
      call z_rot3_vec3gen(cos(rp)*cos(rm),sin(rp)*cos(rm),sin(rm)*1e-18,Q3(1),Q3(2),Q3(3),nrm)
      call z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
-  end do 
+  end do
   histo2(1:7,4)=histo(1:7)
   if (VERBOSE) then
      if (.NOT.pass_cur) then
@@ -907,7 +912,7 @@ end if
            if (VERBOSE) then
               pass_all = .FALSE.
            else
-              call u_test_failed(__LINE__)           
+              call u_test_failed(__LINE__)
            end if
         end if
         if (ii>1) then
@@ -916,7 +921,7 @@ end if
         end if
      end do
   end do
- 
+
   if (VERBOSE) then
      if (.NOT. pass_all) then
         write(*,*) "At least one turnover test FAILED."
@@ -925,7 +930,7 @@ end if
 
   ! stop timer
   call system_clock(count=c_stop)
-  
+
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
 
@@ -937,10 +942,10 @@ end program test_z_rot3_turnover
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! z_rot3_accum_to_err computes the 3x3  matrix Hs 
-! defined by Q1, Q2, Q3. After a turnover the new 
+! z_rot3_accum_to_err computes the 3x3  matrix Hs
+! defined by Q1, Q2, Q3. After a turnover the new
 ! rotations define H.
-! accum-1 more turnovers are performed using the 
+! accum-1 more turnovers are performed using the
 ! output of the last turnover. The result is  H'.
 ! The error is
 !   nrm = ||H'-Hs|| + ||H-Hs||.
@@ -953,7 +958,7 @@ end program test_z_rot3_turnover
 !
 !  Q1, Q2, Q3      REAL(8) arrays of dimension (3)
 !                    generators for givens rotations
-! 
+!
 !  accum           INTEGER
 !                    number of turnovers
 !
@@ -985,7 +990,7 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   real(8) :: B(3)
   complex(8) :: H(3,3), Hs(3,3), A1(3,3), A2(3,3), A3(3,3)
   real(8) :: Q1s(3), Q2s(3), Q3s(3)
-  real(8) :: nrm  
+  real(8) :: nrm
 
   ! store Q1, Q2, Q3
   Q1s = Q1
@@ -1047,18 +1052,18 @@ subroutine z_rot3_accum_to_err(Q1,Q2,Q3,accum,tol,histo,pass_cur)
   nrm = sqrt(H(1,1)*conjg(H(1,1)) + H(1,2)*conjg(H(1,2)) + H(1,3)*conjg(H(1,3)) +&
        &H(2,1)*conjg(H(2,1)) + H(2,2)*conjg(H(2,2)) + H(2,3)*conjg(H(2,3)) +&
        H(3,1)*conjg(H(3,1)) + H(3,2)*conjg(H(3,2)) + H(3,3)*conjg(H(3,3)))
-  
+
   ! accum-1 turnovers
   do jj=2,accum
 
      call z_rot3_turnover(Q1,Q2,Q3)
-     
+
      B = Q1
      Q1 = Q3
      Q3 = Q2
      Q2 = B
   end do
-  
+
   ! compute H'
   A1=cmplx(0d0,0d0,kind=8)
   A2=cmplx(0d0,0d0,kind=8)

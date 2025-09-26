@@ -20,7 +20,7 @@ run: $(ZTESTS)
 	@$(foreach test,$(ZTESTS),./$(test) &&) echo 'End of complex_double tests!'
 
 %:: %.f90
-	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).$(SLIB).$(VERSION) $(LIBS)
+	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(LIBDIR)/$(SHARED_LIB) $(LIBS)
 
 clean:
-	@rm -f $(ZTESTS)	
+	@rm -f $(ZTESTS)

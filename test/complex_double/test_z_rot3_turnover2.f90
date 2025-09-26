@@ -5,20 +5,20 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine z_rot3_turnover2 (turnover). The following 
+! This program tests the subroutine z_rot3_turnover2 (turnover). The following
 ! tests are run:
 !
 ! 1) a random test
-! 2) a particular test which failed earlier 
+! 2) a particular test which failed earlier
 !  2A) with double input (d0)
 !  2B) with sinlge input (e0)
 !  2C) with the input from 2B in double precision
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_rot3_turnover2
-  
+
   implicit none
-  
+
   ! parameter
   integer, parameter :: nt = 120000 ! number of testcases
   integer :: accum = 100 ! number of successive turnovers
@@ -49,21 +49,21 @@ program test_z_rot3_turnover2
   tol = 2d0*accum*EISCOR_DBL_EPS ! accuracy of turnover
 
   ! fix seed
-  
-  ! get size of see        
+
+  ! get size of see
   call random_seed(size = n)
   ! allocate memory for seed
-  allocate(seed(n))  
+  allocate(seed(n))
   ! check allocation
   if (allocated(seed).EQV..FALSE.) then
     call u_test_failed(__LINE__)
-  end if   
-  ! store seeds    
+  end if
+  ! store seeds
   seed = 0
   seed(1) = 377679
   if (n>=12) then
-     seed(2) = 154653 
-     seed(3) = 331669 
+     seed(2) = 154653
+     seed(3) = 331669
      seed(4) = 194341
      seed(5) = 1451740
      seed(6) = 3974222
@@ -75,15 +75,20 @@ program test_z_rot3_turnover2
      seed(12) = 4989015
   end if
   ! set the generator
-  call random_seed(put = seed) 
-  ! free memory        
+  call random_seed(put = seed)
+  ! free memory
   deallocate(seed)
-  
+
   ! start timer
   call system_clock(count_rate=c_rate)
-  call system_clock(count=c_start) 
+  call system_clock(count=c_start)
   ! print banner
   call u_test_banner(__FILE__)
+
+  ! check PRNG
+  if (n.NE.33) then
+    call u_test_skipped()
+  end if
 
   ! fixed 1 (test case random chosen
   !print*, "===== 1  ====="
@@ -164,8 +169,8 @@ program test_z_rot3_turnover2
        &Hd(2,1)*conjg(Hd(2,1)) + Hd(2,2)*conjg(Hd(2,2)) + Hd(2,3)*conjg(Hd(2,3)) +&
        Hd(3,1)*conjg(Hd(3,1)) + Hd(3,2)*conjg(Hd(3,2)) + Hd(3,3)*conjg(Hd(3,3)))
 
-  
-  if (nrm>1e-15) then 
+
+  if (nrm>1e-15) then
      print*, ""
      print*, "||Hd||_F",nrm
      print*, "Hs"
@@ -180,7 +185,7 @@ program test_z_rot3_turnover2
      print*, Hd(1,:)
      print*, Hd(2,:)
      print*, Hd(3,:)
-     call u_test_failed(__LINE__)           
+     call u_test_failed(__LINE__)
   end if
 
 
@@ -188,14 +193,14 @@ program test_z_rot3_turnover2
   !print*, ""
   !print*, "===== 2A ====="
   Q1(1)=0.27782287709264308d0
-  Q1(2)=0.92445277493108780d0    
-  Q1(3)=-0.26115419944197238d0     
+  Q1(2)=0.92445277493108780d0
+  Q1(3)=-0.26115419944197238d0
   Q2(1)=0.35035947196078610d0
-  Q2(2)=0.70026206456609341d0       
-  Q2(3)=0.62199781457573600d0     
-  Q3(1)=0.86471669054433509d0       
-  Q3(2)=0.13828034916775414d0       
-  Q3(3)=0.48284944871884922d0     
+  Q2(2)=0.70026206456609341d0
+  Q2(3)=0.62199781457573600d0
+  Q3(1)=0.86471669054433509d0
+  Q3(2)=0.13828034916775414d0
+  Q3(3)=0.48284944871884922d0
 
 
   ! store Q1, Q2, Q3
@@ -259,7 +264,7 @@ program test_z_rot3_turnover2
        &Hd(2,1)*conjg(Hd(2,1)) + Hd(2,2)*conjg(Hd(2,2)) + Hd(2,3)*conjg(Hd(2,3)) +&
        Hd(3,1)*conjg(Hd(3,1)) + Hd(3,2)*conjg(Hd(3,2)) + Hd(3,3)*conjg(Hd(3,3)))
 
-  
+
   if (nrm>1e-15) then
      print*, ""
      print*, "||Hd||_F",nrm
@@ -275,22 +280,22 @@ program test_z_rot3_turnover2
      print*, Hd(1,:)
      print*, Hd(2,:)
      print*, Hd(3,:)
-     call u_test_failed(__LINE__)           
+     call u_test_failed(__LINE__)
   end if
 
 
-  ! fixed 2B (single input, the problematic case) 
+  ! fixed 2B (single input, the problematic case)
   !print*, ""
   !print*, "===== 2B ====="
   Q1(1)=0.27782287709264308e0
-  Q1(2)=0.92445277493108780e0    
-  Q1(3)=-0.26115419944197238e0     
+  Q1(2)=0.92445277493108780e0
+  Q1(3)=-0.26115419944197238e0
   Q2(1)=0.35035947196078610e0
-  Q2(2)=0.70026206456609341e0       
-  Q2(3)=0.62199781457573600e0     
-  Q3(1)=0.86471669054433509e0       
-  Q3(2)=0.13828034916775414e0       
-  Q3(3)=0.48284944871884922e0     
+  Q2(2)=0.70026206456609341e0
+  Q2(3)=0.62199781457573600e0
+  Q3(1)=0.86471669054433509e0
+  Q3(2)=0.13828034916775414e0
+  Q3(3)=0.48284944871884922e0
 
   ! the input are not rotations (not normalized)
   call z_rot3_vec3gen(Q1(1),Q1(2),Q1(3),Q1(1),Q1(2),Q1(3),nrm)
@@ -359,7 +364,7 @@ program test_z_rot3_turnover2
        &Hd(2,1)*conjg(Hd(2,1)) + Hd(2,2)*conjg(Hd(2,2)) + Hd(2,3)*conjg(Hd(2,3)) +&
        Hd(3,1)*conjg(Hd(3,1)) + Hd(3,2)*conjg(Hd(3,2)) + Hd(3,3)*conjg(Hd(3,3)))
 
-  
+
   if (nrm>1e-15) then
      print*, ""
      print*, "||Hd||_F",nrm
@@ -375,7 +380,7 @@ program test_z_rot3_turnover2
      print*, Hd(1,:)
      print*, Hd(2,:)
      print*, Hd(3,:)
-     !call u_test_failed(__LINE__)           
+     !call u_test_failed(__LINE__)
   end if
 
 
@@ -383,14 +388,14 @@ program test_z_rot3_turnover2
   !print*, ""
   !print*, "===== 2C ====="
   Q1(1) = 0.27782288193702698d0
-  Q1(2) = 0.92445278167724609d0      
-  Q1(3) = -0.26115420460700989d0    
-  Q2(1) = 0.35035946965217590d0     
-  Q2(2) = 0.70026206970214844d0     
-  Q2(3) = 0.62199783325195312d0   
+  Q1(2) = 0.92445278167724609d0
+  Q1(3) = -0.26115420460700989d0
+  Q2(1) = 0.35035946965217590d0
+  Q2(2) = 0.70026206970214844d0
+  Q2(3) = 0.62199783325195312d0
   Q3(1) = 0.86471670866012573d0
   Q3(2) = 0.13828034698963165d0
-  Q3(3) = 0.48284944891929626d0 
+  Q3(3) = 0.48284944891929626d0
 
   call z_rot3_vec3gen(Q1(1),Q1(2),Q1(3),Q1(1),Q1(2),Q1(3),nrm)
   call z_rot3_vec3gen(Q2(1),Q2(2),Q2(3),Q2(1),Q2(2),Q2(3),nrm)
@@ -458,7 +463,7 @@ program test_z_rot3_turnover2
        &Hd(2,1)*conjg(Hd(2,1)) + Hd(2,2)*conjg(Hd(2,2)) + Hd(2,3)*conjg(Hd(2,3)) +&
        Hd(3,1)*conjg(Hd(3,1)) + Hd(3,2)*conjg(Hd(3,2)) + Hd(3,3)*conjg(Hd(3,3)))
 
-  
+
   if (nrm>1e-15) then
      print*, ""
      print*, "||Hd||_F",nrm
@@ -474,12 +479,12 @@ program test_z_rot3_turnover2
      print*, Hd(1,:)
      print*, Hd(2,:)
      print*, Hd(3,:)
-     call u_test_failed(__LINE__)           
+     call u_test_failed(__LINE__)
   end if
 
   ! stop timer
   call system_clock(count=c_stop)
-  
+
   ! print success
   call u_test_passed(dble(c_stop-c_start)/dble(c_rate))
 

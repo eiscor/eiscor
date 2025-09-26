@@ -10,7 +10,7 @@ benchmarks:
 
 benchmarks_d: benchmarks
 
-benchmarks_d_%: 
+benchmarks_d_%:
 	$(eval DBMRKSRCS := $(patsubst benchmarks_%,benchmark_%,$@))
 	$(eval DBMRKSRCS := $(wildcard $(DBMRKSRCS)*.f90))
 	$(eval DBMRKS := $(DBMRKSRCS:.f90=))
@@ -20,7 +20,7 @@ run: $(DBMRKS)
 	@$(foreach benchmark,$(DBMRKS),./$(benchmark) &&) echo 'End of double benchmarks!'
 
 %:: %.f90
-	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(INSTALLDIR)/eiscor/lib/lib$(LIBNAME).$(SLIB).$(VERSION)  $(LIBS)
+	$(FC) $(FFLAGS) -cpp $< -o $@ -I ../../include $(LIBDIR)/$(SHARED_LIB) $(LIBS)
 
 clean:
-	@rm -f $(DBMRKS)	
+	@rm -f $(DBMRKS)
