@@ -29,7 +29,9 @@
 !                    residuals of the computed roots
 !
 !  INFO            INTEGER 
-!                    INFO = 1 implies companion QZ algorithm failed
+!                    INFO = 1 implies that the companion QZ algorithm failed to
+!                             converge (or a subfunction was called with faulty
+!                             input)
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_poly_roots(N,COEFFS,ROOTS,RESIDUALS,INFO)
