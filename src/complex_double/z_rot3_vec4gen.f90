@@ -76,7 +76,7 @@ subroutine z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
   ! compute variables
   real(8), parameter :: inf = EISCOR_DBL_INF
-  real(8) :: pAr, pAi, pBr, pBi
+  real(8) :: pAr, pAi, pBr, pBi, pS
   
   ! compute phase of BR, BI
   call d_rot2_vec2gen(BR,BI,pBr,pBi,S)
@@ -101,9 +101,11 @@ subroutine z_rot3_vec4gen(AR,AI,BR,BI,CR,CI,S,NRM)
   
     ! adjust phase of AR, AI and BR, BI so that BR = sqrt(|BR|^2 + |BI|^2) and BI = 0 
     call d_rot2_vec2gen(pAr*pBr + pAi*pBi,-pAr*pBi + pAi*pBr,pAr,pAi,CI)  
-   
+
+    pS = S
+    
     ! construct CR, CI, S
-    call z_rot3_vec3gen(CR*pAr,CR*pAi,S,CR,CI,S,NRM)
+    call z_rot3_vec3gen(CR*pAr,CR*pAi,pS,CR,CI,S,NRM)
     
   end if
 
