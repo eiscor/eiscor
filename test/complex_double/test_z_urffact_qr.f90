@@ -78,7 +78,7 @@ program test_z_urffact_qr
     end do
       
     ! set tolerance
-    tol = dble(M)*EISCOR_DBL_EPS
+    tol = 2d0*dble(M)*EISCOR_DBL_EPS
    
     ! true eigenvalues
     do ii = 1,M

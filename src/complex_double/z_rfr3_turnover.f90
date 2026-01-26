@@ -63,44 +63,43 @@ subroutine z_rfr3_turnover(W,CC,SS,U,VV,RHO)
   complex(8), intent(in) :: RHO
   
   ! compute variables
-  real(8) :: nn, zz, xx
-  complex(8) :: z, uold
-
-  ! store old SS and U
-  xx = SS
-  uold = U
+  complex(8) :: z, Uh, Wh
+  real(8) :: nn, zz, xx, CCh, SSh, VVh
 
   ! z and zz
   z = U + W
   zz = dble(z)**2 + aimag(z)**2
 
-  ! new U
-  U = (CC*z - U)
+  ! new nn
+  nn = CC*zz + VV
 
-  ! new W, CC and SS
-  CC = CC*zz
-  if ( CC.EQ.0d0 ) then
-    nn = VV
-    SS = 1d0
-    W = cmplx(1d0,0d0,kind=8)
+  ! nn /= 0
+  if ( nn /= 0d0 ) then
+    CCh = CC*zz
+    SSh = VV/nn
+    Uh  = conjg(RHO)*(SS*U - CC*W)
+    VVh = nn*SS
+    ! zz /= 0
+    if ( zz /= 0d0 ) then
+      Wh = -RHO*conjg(W)*z**2/zz
+    else
+      Wh = cmplx(1d0,0d0,kind=8)
+    end if
   else
-    nn = VV + CC
-    CC = CC/nn
-    SS = VV/nn
-    W = -RHO*(z*(VV/zz) + uold)
+    CCh = 1d0
+    SSh = 0d0
+    Uh  = conjg(RHO)*U
+    VVh = 0d0
+    Wh  = -RHO*U
   end if
 
-  ! new U
-  U = -conjg(RHO)*U
-
-  ! new VV
-  VV = xx*nn
-
   ! ensure normality
-  xx = dble(U)**2 + aimag(U)**2 + VV
-  U = 5d-1*U*(3d0 - xx)
-  VV = VV*(2d0-xx)
-  xx = dble(W)**2 + aimag(W)**2
-  W = 5d-1*W*(3d0 - xx)
+  xx = dble(Uh)**2 + aimag(Uh)**2 + VVh - 1d0
+  U  = Uh*(1d0 - xx/2d0)
+  VV = VVh/(1d0+xx)
+  CC = CCh
+  SS = SSh
+  xx = dble(W)**2 + aimag(W)**2 - 1d0
+  W  = Wh*(1d0 - xx/2d0)
 
 end subroutine z_rfr3_turnover
