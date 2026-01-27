@@ -64,23 +64,24 @@ subroutine z_rfr3_turnover(W,CC,SS,U,VV,RHO)
   
   ! compute variables
   complex(8) :: z, Uh, Wh
-  real(8) :: nn, zz, xx, CCh, SSh, VVh
+  real(8) :: nn, zinf, zz, xx, CCh, SSh, VVh
 
   ! z and zz
   z = U + W
+  zinf = max(abs(dble(z)),abs(aimag(z)))
   zz = dble(z)**2 + aimag(z)**2
 
   ! new nn
   nn = CC*zz + VV
 
-  ! nn /= 0
-  if ( nn /= 0d0 ) then
-    CCh = CC*zz
+  ! nn > 0
+  if ( nn > 0d0 ) then
+    CCh = CC*zz/nn
     SSh = VV/nn
     Uh  = conjg(RHO)*(SS*U - CC*W)
     VVh = nn*SS
-    ! zz /= 0
-    if ( zz /= 0d0 ) then
+    ! zz > 0
+    if ( zz > 0d0 ) then
       Wh = -RHO*conjg(W)*z**2/zz
     else
       Wh = cmplx(1d0,0d0,kind=8)

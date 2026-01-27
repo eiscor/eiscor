@@ -80,9 +80,9 @@ subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
   t1 = block
   call z_2x2array_eig(.FALSE.,t1,t1,t2,t2)
     
-  ! choose wikinson shift
+  ! choose Wilkinson shift
   ! complex abs does not matter here
-  if(abs(block(2,2)-t1(1,1)) < abs(block(2,2)-t1(2,2)))then
+  if (abs(block(2,2)-t1(1,1)) < abs(block(2,2)-t1(2,2))) then
     rho = t1(1,1)
   else
     rho = t1(2,2)
@@ -94,7 +94,7 @@ subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
   if (xx == 0) then
     call random_number(xx)
     rho = cmplx(cos(xx),sin(xx),kind=8)
-  ! wilkinson shift
+  ! Wilkinson shift
   else
     rho = rho/xx
   end if

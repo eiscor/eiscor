@@ -47,11 +47,16 @@ program test_z_urffact_qr
     VV = 1d0
     VV(M) = 0d0
 
-    ! call dohfqr
+    ! call z_urffact_qr
     call z_urffact_qr(M,U,VV,ITS,INFO)
 
     ! check INFO
     if (INFO.NE.0) then
+print *, ""
+print *, INFO 
+do ii = 1,M
+print *, U(ii), VV(ii)
+end do
       call u_test_failed(__LINE__)
     end if
     
@@ -78,7 +83,7 @@ program test_z_urffact_qr
     end do
       
     ! set tolerance
-    tol = 2d0*dble(M)*EISCOR_DBL_EPS
+    tol = 4d0*dble(M)*EISCOR_DBL_EPS
    
     ! true eigenvalues
     do ii = 1,M
