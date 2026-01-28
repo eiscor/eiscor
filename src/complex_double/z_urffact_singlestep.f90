@@ -64,8 +64,13 @@ subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
 
   ! get 2x2 block
-  block(1,1) =  U(N-1)
-  block(2,2) =  conjg(U(N-1))
+  if (N.EQ.2) then 
+    block(1,1) =  NU*U(N-1)
+    block(2,2) =  conjg(NU*U(N-1))
+  else
+    block(1,1) =  U(N-1)
+    block(2,2) =  conjg(U(N-1))
+  end if
   block(1,2) = -sqrt(VV(N-1))
   block(2,1) =  sqrt(VV(N-1))
   block(:,2) =  block(:,2)*U(N)
@@ -77,7 +82,10 @@ subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
   end if
     
   ! compute eigenvalues and eigenvectors
-  t1 = block
+  t1(1,1) = block(1,1)
+  t1(1,2) = block(1,2)
+  t1(2,1) = block(2,1)
+  t1(2,2) = block(2,2)
   call z_2x2array_eig(.FALSE.,t1,t1,t2,t2)
     
   ! choose Wilkinson shift

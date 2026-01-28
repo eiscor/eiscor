@@ -52,14 +52,9 @@ program test_z_urffact_qr
 
     ! check INFO
     if (INFO.NE.0) then
-print *, ""
-print *, INFO 
-do ii = 1,M
-print *, U(ii), VV(ii)
-end do
       call u_test_failed(__LINE__)
     end if
-    
+
     ! compute argument
     do ii = 1,M
       A(ii) = nint(dble(M)*(aimag(log(U(ii)))/twopi))
@@ -83,7 +78,7 @@ end do
     end do
       
     ! set tolerance
-    tol = 4d0*dble(M)*EISCOR_DBL_EPS
+    tol = dble(M)*EISCOR_DBL_EPS
    
     ! true eigenvalues
     do ii = 1,M

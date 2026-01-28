@@ -72,7 +72,7 @@ subroutine z_urffact_deflationcheck(N,U,VV,ZERO)
 
       ! set rotation to diagonal
       VV(ZERO) = 0d0
-        
+
       ! renormalize U
       xx = dble(U(ZERO))**2 + aimag(U(ZERO))**2
       U(ZERO) = 5d-1*U(ZERO)*(3d0-xx)
