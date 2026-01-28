@@ -18,9 +18,9 @@
 ! | cg        -s | | -conj(rho)     0 | | v  conj(u) | | c       -s |
 ! |  s  conj(cg) | |          0  -rho |                | s  conj(c) |
 !
-! The input G, C, S, U, V and RHO must satisfy the following:
+! The input W, C, S, U, V and RHO must satisfy the following:
 !
-!         |G| = 1
+!         |W| = 1
 ! |C|^2 + S^2 = 1
 ! |U|^2 + V^2 = 1
 !       |RHO| = 1
@@ -29,7 +29,7 @@
 !
 ! INPUT VARIABLES:
 !
-!  G               COMPLEX(8) 
+!  W               COMPLEX(8) 
 !                    unimodular complex number
 !
 !  C               COMPLEX(8) 
@@ -48,75 +48,55 @@
 !                    unimodular shift
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_rot3_symturnover(G,C,SIG,S,U,V,RHO)
+subroutine z_rot3_symturnover(W,C,S,U,V,RHO)
 
   implicit none
   
   ! input variables
   real(8), intent(inout) :: C, S, V
-  complex(8), intent(inout) :: G, SIG, U
+  complex(8), intent(inout) :: W, U
   complex(8), intent(in) :: RHO
   
   ! compute variables
-  real(8) :: n, xx, pp
-  complex(8) :: p, w, uold
-real(8) :: modz
-complex(8) :: z
+  complex(8) :: z, Wh, Uh
+  real(8) :: zz, zabs, n, xx, Ch, Sh, Vh
 
-  ! W
-  w = G*SIG*SIG
+  ! z and zz
+  z = U + W
+  zz = dble(z)**2 + aimag(z)**2
 
-  ! store old V 
-  xx = V
-uold = U
+  ! new n
+  n = sqrt(C**2*zz + V**2)
+  zabs = sqrt(zz)
 
-  ! p, pp and n
-  z = w + U
-  modz = abs(z)
-  n = sqrt(C**2*modz**2 + V**2)
-
-  ! new U and V
-  U = -conjg(RHO)*(C**2*z - U)
-  V = S*n
-
-  ! new C and S
-  if ( C*modz.EQ.0d0 ) then
-    C = 1d0
-    S = 0d0
-    SIG = cmplx(1d0,0d0,kind=8)
-!  else if (xx.EQ.0d0) then
-!    C = 1d0
-!    S = 0d0
-!    SIG = -RHO*sqrt(conjg(G)*uold)
+  ! n > 0
+  if ( n > 0d0 ) then
+    Ch = C*zabs/n
+    Sh = V/n
+    Uh  = conjg(RHO)*(S**2*U - C**2*W)
+    Vh = n*S
+    ! zz > 0
+    if ( zz > 0d0 ) then
+!      Wh = -RHO*conjg(W)*z**2/zz
+      Wh = -RHO*(U + z*(V/zabs)**2)
+    else
+      Wh = cmplx(1d0,0d0,kind=8)
+    end if
   else
-    C = C*modz/n
-    S = xx/n
-w = conjg(G)*(uold + xx**2/modz**2*z)
-if (dble(w) > 0) then
-w = 1d0+w
-SIG = -RHO*w/abs(w)
-else
-w = cmplx(0d0,1d0,kind=8)*(w-1d0)
-SIG = -RHO*w/abs(w)
-end if
+    Ch = 1d0
+    Sh = 0d0
+    Uh  = conjg(RHO)*U
+    Vh = 0d0
+    Wh  = -RHO*U
   end if
 
-  ! new G
-  G = -conjg(RHO)*G
-
-  ! ensure normality of U and V
-  xx = dble(U)**2 + aimag(U)**2 + V**2
-  U = 5d-1*U*(3d0 - xx)
-  V = 5d-1*V*(3d0 - xx)
-
-  xx = dble(G)**2 + aimag(G)**2
-  G = 5d-1*G*(3d0 - xx)
-
-  xx = dble(SIG)**2 + aimag(SIG)**2
-  SIG = 5d-1*SIG*(3d0 - xx)
-
-  xx = C**2 + S**2
-  C = 5d-1*C*(3d0 - xx)
-  S = 5d-1*S*(3d0 - xx)
+  ! ensure normality
+  xx = dble(Uh)**2 + aimag(Uh)**2 + Vh**2 - 1d0
+  U  = Uh*(1d0 - xx/2d0)
+  V  = Vh*(1d0 - xx/2d0)
+  C  = Ch
+  S  = Sh
+  xx = dble(Wh)**2 + aimag(Wh)**2 - 1d0
+  W  = Wh*(1d0 - xx/2d0)
 
 end subroutine z_rot3_symturnover

@@ -60,22 +60,22 @@ program test_z_usymfact_qr
       A(ii) = nint(dble(M)*(aimag(log(U(ii)))/twopi))
     end do
   
-!!    ! sort by argument
-!!    do ii = 1,M
-!!      small = 2*M+1
-!!      id = ii
-!!      do jj = ii,M
-!!        if ( A(jj) < small ) then
-!!          id = jj
-!!          small = A(id)
-!!        end if
-!!      end do
-!!      A(id) = A(ii)
-!!      A(ii) = small
-!!      swap = U(id)
-!!      U(id) = U(ii)
-!!      U(ii) = swap
-!!    end do
+    ! sort by argument
+    do ii = 1,M
+      small = 2*M+1
+      id = ii
+      do jj = ii,M
+        if ( A(jj) < small ) then
+          id = jj
+          small = A(id)
+        end if
+      end do
+      A(id) = A(ii)
+      A(ii) = small
+      swap = U(id)
+      U(id) = U(ii)
+      U(ii) = swap
+    end do
       
     ! set tolerance
     tol = dble(M)*EISCOR_DBL_EPS
@@ -88,9 +88,7 @@ program test_z_usymfact_qr
   
     ! compute maximum forward error
     small = 0d0
-print*,""
     do ii = 1,M
-print '(ES13.6,",",ES13.6," ",ES13.6,",",ES13.6," ",ES13.6)',dble(U(ii)),aimag(U(ii)),dble(E(ii)),aimag(E(ii)),abs(U(ii)-E(ii))
       if (abs(U(ii)-E(ii)) > small) then
         small = abs(U(ii)-E(ii))
       end if
@@ -98,7 +96,6 @@ print '(ES13.6,",",ES13.6," ",ES13.6,",",ES13.6," ",ES13.6)',dble(U(ii)),aimag(U
 
     ! check maximum error
     if (small >= tol) then
-print '(I5," ",ES13.4," ",ES13.4)',M,small,tol
       call u_test_failed(__LINE__)
     end if  
  

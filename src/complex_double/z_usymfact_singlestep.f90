@@ -60,12 +60,17 @@ subroutine z_usymfact_singlestep(N,U,V,NU,ITCNT)
   ! compute variables
   integer :: ii
   real(8) :: vt, c, s, xx
-  complex(8) :: ut, sig, g, rho
+  complex(8) :: ut, w, rho
   complex(8) :: block(2,2), t1(2,2), t2(2,2)
 
   ! get 2x2 block
-  block(1,1) =  U(N-1)
-  block(2,2) =  conjg(U(N-1))
+  if (N.EQ.2) then
+    block(1,1) =  NU*U(N-1)
+    block(2,2) =  conjg(NU*U(N-1))
+  else 
+    block(1,1) =  U(N-1)
+    block(2,2) =  conjg(U(N-1))
+  end if
   block(1,2) = -V(N-1)
   block(2,1) =  V(N-1)
   block(:,2) =  block(:,2)*U(N)
@@ -80,7 +85,7 @@ subroutine z_usymfact_singlestep(N,U,V,NU,ITCNT)
   t1 = block
   call z_2x2array_eig(.FALSE.,t1,t1,t2,t2)
     
-  ! choose wikinson shift
+  ! choose Wilkinson shift
   ! complex abs does not matter here
   if(abs(block(2,2)-t1(1,1)) < abs(block(2,2)-t1(2,2)))then
     rho = t1(1,1)
@@ -94,14 +99,13 @@ subroutine z_usymfact_singlestep(N,U,V,NU,ITCNT)
   if (xx == 0) then
     call random_number(xx)
     rho = cmplx(cos(xx),sin(xx),kind=8)
-  ! wilkinson shift
+  ! Wilkinson shift
   else
     rho = rho/xx
   end if
 
   ! initialize
-  g = -rho
-  sig = cmplx(1d0,0d0,kind=8)
+  w = -rho
   c = 1d0
   s = 0d0
 
@@ -113,7 +117,7 @@ subroutine z_usymfact_singlestep(N,U,V,NU,ITCNT)
     vt = V(ii+1)
 
     ! turnover
-    call z_rot3_symturnover(g,c,sig,s,ut,vt,rho)
+    call z_rot3_symturnover(w,c,s,ut,vt,rho)
 
     ! store ut and vt
     if ( ii > 0 ) then
