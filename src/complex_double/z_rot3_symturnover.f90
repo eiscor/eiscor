@@ -78,7 +78,7 @@ subroutine z_rot3_symturnover(W,C,S,U,V,RHO)
     ! zz > 0
     if ( zz > 0d0 ) then
 !      Wh = -RHO*conjg(W)*z**2/zz
-      Wh = -RHO*(U + z*(V/zabs)**2)
+      Wh = -RHO*(U + z*(V**2/zz))
     else
       Wh = cmplx(1d0,0d0,kind=8)
     end if
