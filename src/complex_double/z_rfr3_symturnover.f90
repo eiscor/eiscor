@@ -30,17 +30,20 @@
 !
 !     Z = ( VV + 2*i*aimag(T) )/( 1 - conjg(T) ).
 !
-! The input OMEGA, CC, SS, U, VV and RHO must satisfy the following to
-! machine precision:
+! NORMALIZE controls the final renormalization:
 !
-!        |OMEGA| = 1
-!        CC + SS = 1
-!     |U|^2 + VV = 1
-!           |RHO| = 1
+!     NORMALIZE = 0: no renormalization
+!     NORMALIZE = 1: renormalize U and VV only
+!     NORMALIZE = 2: renormalize U, VV, and OMEGA
 !
-! On output the same variables contain the post-turnover root-free data.
+! Any other value defaults to NORMALIZE = 2.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! INPUT VARIABLES:
+!
+!  NORMALIZE       INTEGER
+!                    controls final renormalization
 !
 ! INPUT/OUTPUT VARIABLES:
 !
@@ -60,18 +63,32 @@
 !                    unimodular shift
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_rfr3_symturnover(OMEGA,CC,SS,U,VV,RHO)
+subroutine z_rfr3_symturnover(NORMALIZE,OMEGA,CC,SS,U,VV,RHO)
 
   implicit none
 
   ! input/output variables
+  integer, intent(in) :: NORMALIZE
   real(8), intent(inout) :: CC, SS, VV
   complex(8), intent(inout) :: OMEGA, U
   complex(8), intent(in) :: RHO
 
   ! compute variables
+  integer :: norm_level
   complex(8) :: z, t, Uh, OMEGAh
   real(8) :: zz, m, xx, CCh, SSh, VVh
+
+  ! interpret normalization flag
+  select case (NORMALIZE)
+  case (0)
+    norm_level = 0
+  case (1)
+    norm_level = 1
+  case (2)
+    norm_level = 2
+  case default
+    norm_level = 2
+  end select
 
   ! compute t and scaled z
   t = conjg(OMEGA)*U
@@ -110,23 +127,37 @@ subroutine z_rfr3_symturnover(OMEGA,CC,SS,U,VV,RHO)
 
   end if
 
-  ! ensure normality of the middle core transformation
-  !
-  ! If |Uh|^2 + VVh = N, then use
-  !
-  !     Uh <- Uh*(3-N)/2,
-  !     VVh <- VVh*(2-N).
-  xx = dble(Uh)**2 + aimag(Uh)**2 + VVh
-  U  = Uh*(5d-1*(3d0-xx))
-  VV = VVh*(2d0-xx)
-
   ! store squared left/right core variables
   CC = CCh
   SS = SSh
 
-  ! ensure unimodularity of omega
-  xx = dble(OMEGAh)**2 + aimag(OMEGAh)**2
-  OMEGA = OMEGAh*(5d-1*(3d0-xx))
-!  OMEGA = OMEGAh
+  ! store middle core variables
+  U  = Uh
+  VV = VVh
+
+  ! store phase variable
+  OMEGA = OMEGAh
+
+  ! optionally renormalize U and VV
+  !
+  ! If |U|^2 + VV = N, use
+  !
+  !     U  <- U*(3-N)/2,
+  !     VV <- VV*(2-N).
+  if (norm_level >= 1) then
+    xx = dble(U)**2 + aimag(U)**2 + VV
+    U  = U*(5d-1*(3d0-xx))
+    VV = VV*(2d0-xx)
+  end if
+
+  ! optionally renormalize OMEGA
+  !
+  ! If |OMEGA|^2 = N, use
+  !
+  !     OMEGA <- OMEGA*(3-N)/2.
+  if (norm_level >= 2) then
+    xx = dble(OMEGA)**2 + aimag(OMEGA)**2
+    OMEGA = OMEGA*(5d-1*(3d0-xx))
+  end if
 
 end subroutine z_rfr3_symturnover

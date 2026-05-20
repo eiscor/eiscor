@@ -9,57 +9,21 @@
 ! unitary upper Hessenberg matrix stored in square-root-free symmetric factored
 ! form.
 !
-! The matrix is represented by
+! NORMALIZE controls the final renormalization inside z_rfr3_symturnover:
 !
-!   | nu  0 | | u1       -v1 |
-!   |  0  1 | | v1  conj(u1) | | u2       -v2 |
-!                              | v2  conj(u2) | | u3       -v3 | | 1   0 |
-!                                               | v3  conj(u3) | | 0  u4 |
+!     NORMALIZE = 0: no renormalization
+!     NORMALIZE = 1: renormalize U and VV only
+!     NORMALIZE = 2: renormalize U, VV, and OMEGA
 !
-! but the square-root-free algorithm stores only vi^2.  Thus the arrays U and
-! VV contain
-!
-!     U(i)  = ui,
-!     VV(i) = vi^2.
-!
-! The input must satisfy
-!
-!     |U(i)|^2 + VV(i) = 1,   i = 1,...,N-1,
-!                  VV(N) = 0,
-!                  |U(N)| = 1,
-!                    |NU| = 1.
-!
-! The turnover variables are
-!
-!     omega = gamma*sigma^2,
-!     cc    = c^2,
-!     ss    = s^2.
+! Any other value defaults to NORMALIZE = 2 inside z_rfr3_symturnover.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! INPUT VARIABLES:
-!
-!  N               INTEGER
-!                    dimension of matrix, must be >= 2
-!
-!  U               COMPLEX(8) array of dimension N
-!                    array of complex generators for core transformations
-!
-!  VV              REAL(8) array of dimension N
-!                    array of squared real generators vi^2
-!
-!  NU              COMPLEX(8)
-!                    unimodular leading phase
-!
-!  ITCNT           INTEGER
-!                    contains the number of iterations since last deflation
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
+subroutine z_urffact_singlestep(NORMALIZE,N,U,VV,NU,ITCNT)
 
   implicit none
 
   ! input/output variables
+  integer, intent(in) :: NORMALIZE
   integer, intent(in) :: N
   integer, intent(inout) :: ITCNT
   complex(8), intent(inout) :: U(N)
@@ -114,16 +78,6 @@ subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
   end if
 
   ! initialize root-free symmetric turnover parameters
-  !
-  ! In the standard symmetric turnover, the initial phase product is
-  !
-  !     gamma*sigma^2 = -rho.
-  !
-  ! Therefore, in the square-root-free representation,
-  !
-  !     omega = -rho,
-  !     cc    = 1,
-  !     ss    = 0.
   omega = -rho
   cc = 1d0
   ss = 0d0
@@ -136,7 +90,7 @@ subroutine z_urffact_singlestep(N,U,VV,NU,ITCNT)
     vvt = VV(ii+1)
 
     ! root-free symmetric turnover
-    call z_rfr3_symturnover(omega,cc,ss,ut,vvt,rho)
+    call z_rfr3_symturnover(NORMALIZE,omega,cc,ss,ut,vvt,rho)
 
     ! store ut and vvt
     if (ii > 0) then

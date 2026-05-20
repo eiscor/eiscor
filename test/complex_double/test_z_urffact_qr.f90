@@ -5,9 +5,29 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
-! This program tests the subroutine z_urffact_qr. The following tests are run:
+! This program tests the subroutine z_urffact_qr.
 !
-! 1) Compute roots of unity and check forward error for various powers of 2
+! Tested interface:
+!
+!     call z_urffact_qr(NORMALIZE,N,U,VV,ITS,INFO)
+!
+! with
+!
+!     NORMALIZE = 2,
+!
+! i.e., renormalize both
+!
+!     |U|^2 + VV = 1
+!
+! and
+!
+!     |OMEGA| = 1
+!
+! inside the root-free symmetric turnover.
+!
+! The following tests are run:
+!
+! 1) Compute roots of unity and check forward error for various powers of 2.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_urffact_qr
@@ -15,9 +35,12 @@ program test_z_urffact_qr
   implicit none
   
   ! compute variables
+  integer, parameter :: NORMALIZE = 2
   integer, parameter :: MPOW = 10
   integer, parameter :: N = 2**MPOW
+
   real(8), parameter :: twopi = 2d0*EISCOR_DBL_PI
+
   integer :: ii, INFO, jj, kk, M, id
   complex(8) :: U(N), E(N), swap
   real(8) :: VV(N)
@@ -25,7 +48,7 @@ program test_z_urffact_qr
   real(8) :: tol, small
   
   ! timing variables
-  integer:: c_start, c_stop, c_rate
+  integer :: c_start, c_stop, c_rate
   
   ! start timer
   call system_clock(count_rate=c_rate)
@@ -36,7 +59,7 @@ program test_z_urffact_qr
   
   ! Check 1)
   ! loop through powers of 2
-  do kk=1,MPOW
+  do kk = 1,MPOW
   
     ! set current degree
     M = 2**kk
@@ -44,11 +67,12 @@ program test_z_urffact_qr
     ! initialize U and VV
     U = cmplx(0d0,0d0,kind=8)
     U(M) = cmplx(sign(1d0,(-1d0)**(M-1)),0d0,kind=8)
+
     VV = 1d0
     VV(M) = 0d0
 
     ! call z_urffact_qr
-    call z_urffact_qr(M,U,VV,ITS,INFO)
+    call z_urffact_qr(NORMALIZE,M,U(1:M),VV(1:M),ITS(1:M-1),INFO)
 
     ! check INFO
     if (INFO.NE.0) then
@@ -62,19 +86,24 @@ program test_z_urffact_qr
   
     ! sort by argument
     do ii = 1,M
-      small = 2*M+1
+
+      small = 2d0*dble(M) + 1d0
       id = ii
+
       do jj = ii,M
-        if ( A(jj) < small ) then
+        if (dble(A(jj)) < small) then
           id = jj
-          small = A(id)
+          small = dble(A(id))
         end if
       end do
+
       A(id) = A(ii)
-      A(ii) = small
+      A(ii) = int(small)
+
       swap = U(id)
       U(id) = U(ii)
       U(ii) = swap
+
     end do
       
     ! set tolerance
