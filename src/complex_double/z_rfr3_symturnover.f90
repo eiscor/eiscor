@@ -32,18 +32,18 @@
 !
 ! NORMALIZE controls the final renormalization:
 !
-!     NORMALIZE = 0: no renormalization
-!     NORMALIZE = 1: renormalize U and VV only
-!     NORMALIZE = 2: renormalize U, VV, and OMEGA
+!     NORMALIZE(1) = .TRUE.  : renormalize U and VV
+!     NORMALIZE(2) = .TRUE.  : renormalize OMEGA
 !
-! Any other value defaults to NORMALIZE = 2.
+! The two flags are independent.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
-!  NORMALIZE       INTEGER
-!                    controls final renormalization
+!  NORMALIZE       LOGICAL array of dimension 2
+!                    NORMALIZE(1): renormalize U and VV
+!                    NORMALIZE(2): renormalize OMEGA
 !
 ! INPUT/OUTPUT VARIABLES:
 !
@@ -68,35 +68,24 @@ subroutine z_rfr3_symturnover(NORMALIZE,OMEGA,CC,SS,U,VV,RHO)
   implicit none
 
   ! input/output variables
-  integer, intent(in) :: NORMALIZE
+  logical, intent(in) :: NORMALIZE(2)
   real(8), intent(inout) :: CC, SS, VV
   complex(8), intent(inout) :: OMEGA, U
   complex(8), intent(in) :: RHO
 
   ! compute variables
-  integer :: norm_level
   complex(8) :: z, t, Uh, OMEGAh
   real(8) :: zz, m, xx, CCh, SSh, VVh
 
-  ! interpret normalization flag
-  select case (NORMALIZE)
-  case (0)
-    norm_level = 0
-  case (1)
-    norm_level = 1
-  case (2)
-    norm_level = 2
-  case default
-    norm_level = 2
-  end select
-
   ! compute t and scaled z
   t = conjg(OMEGA)*U
+
   if ( dble(t) >= 0d0 ) then
     z = 1d0 + t
   else
     z = cmplx(VV,2d0*aimag(t),kind=8)/(1d0 - conjg(t))
   end if
+
   zz = dble(z)**2 + aimag(z)**2
 
   ! compute m = n^2
@@ -144,7 +133,7 @@ subroutine z_rfr3_symturnover(NORMALIZE,OMEGA,CC,SS,U,VV,RHO)
   !
   !     U  <- U*(3-N)/2,
   !     VV <- VV*(2-N).
-  if (norm_level >= 1) then
+  if (NORMALIZE(1)) then
     xx = dble(U)**2 + aimag(U)**2 + VV
     U  = U*(5d-1*(3d0-xx))
     VV = VV*(2d0-xx)
@@ -155,7 +144,7 @@ subroutine z_rfr3_symturnover(NORMALIZE,OMEGA,CC,SS,U,VV,RHO)
   ! If |OMEGA|^2 = N, use
   !
   !     OMEGA <- OMEGA*(3-N)/2.
-  if (norm_level >= 2) then
+  if (NORMALIZE(2)) then
     xx = dble(OMEGA)**2 + aimag(OMEGA)**2
     OMEGA = OMEGA*(5d-1*(3d0-xx))
   end if

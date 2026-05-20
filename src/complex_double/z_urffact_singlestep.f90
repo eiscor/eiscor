@@ -11,11 +11,10 @@
 !
 ! NORMALIZE controls the final renormalization inside z_rfr3_symturnover:
 !
-!     NORMALIZE = 0: no renormalization
-!     NORMALIZE = 1: renormalize U and VV only
-!     NORMALIZE = 2: renormalize U, VV, and OMEGA
+!     NORMALIZE(1) = .TRUE.  : renormalize U and VV
+!     NORMALIZE(2) = .TRUE.  : renormalize OMEGA
 !
-! Any other value defaults to NORMALIZE = 2 inside z_rfr3_symturnover.
+! The two flags are independent.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 subroutine z_urffact_singlestep(NORMALIZE,N,U,VV,NU,ITCNT)
@@ -23,7 +22,7 @@ subroutine z_urffact_singlestep(NORMALIZE,N,U,VV,NU,ITCNT)
   implicit none
 
   ! input/output variables
-  integer, intent(in) :: NORMALIZE
+  logical, intent(in) :: NORMALIZE(2)
   integer, intent(in) :: N
   integer, intent(inout) :: ITCNT
   complex(8), intent(inout) :: U(N)

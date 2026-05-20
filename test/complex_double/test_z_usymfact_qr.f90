@@ -7,7 +7,7 @@
 !
 ! This program tests the subroutine z_usymfact_qr with the eigenvector interface
 !
-!     call z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
+!     call z_usymfact_qr(NORMALIZE,VEC,ID,N,U,V,M,Z,ITS,INFO)
 !
 ! The following tests are run:
 !
@@ -38,6 +38,7 @@ program test_z_usymfact_qr
   integer, parameter :: NMAX = 2**MPOW
   real(8), parameter :: twopi = 2d0*EISCOR_DBL_PI
 
+  logical, parameter :: NORMALIZE(3) = (/ .TRUE., .TRUE., .TRUE. /)
   logical :: VEC, ID
   integer :: ii, INFO, jj, kk, M, idx
   integer :: ITS(NMAX-1), Aidx(NMAX)
@@ -87,7 +88,7 @@ program test_z_usymfact_qr
     call form_usymfact_matrix(M,U(1:M),V(1:M),H(1:M,1:M))
 
     ! call QR
-    call z_usymfact_qr(VEC,ID,M,U(1:M),V(1:M),M,Z(1:M,1:M),ITS(1:M-1),INFO)
+    call z_usymfact_qr(NORMALIZE,VEC,ID,M,U(1:M),V(1:M),M,Z(1:M,1:M),ITS(1:M-1),INFO)
 
     ! check INFO
     if (INFO.NE.0) then
@@ -184,7 +185,7 @@ program test_z_usymfact_qr
   call form_usymfact_matrix(M,U(1:M),V(1:M),H(1:M,1:M))
 
   ! call QR
-  call z_usymfact_qr(VEC,ID,M,U(1:M),V(1:M),M,Z(1:M,1:M),ITS(1:M-1),INFO)
+  call z_usymfact_qr(NORMALIZE,VEC,ID,M,U(1:M),V(1:M),M,Z(1:M,1:M),ITS(1:M-1),INFO)
 
   ! check INFO
   if (INFO.NE.0) then

@@ -10,7 +10,7 @@
 !
 ! Tested subroutine interface:
 !
-!     call z_usymfact_singlestep(VEC,N,U,V,NU,M,Z,ITCNT)
+!     call z_usymfact_singlestep(NORMALIZE,VEC,N,U,V,NU,M,Z,ITCNT)
 !
 ! Check 1:
 !
@@ -62,7 +62,8 @@ program test_z_usymfact_singlestep
   complex(8) :: ZR(MR,NR)
   complex(8) :: AR0(NR,NR), AR1(NR,NR)
 
-  ! eigenvector/similarity flag
+  ! normalization and eigenvector/similarity flags
+  logical, parameter :: NORMALIZE(3) = (/ .TRUE., .TRUE., .TRUE. /)
   logical :: VEC
 
   ! timing variables
@@ -123,7 +124,7 @@ program test_z_usymfact_singlestep
   call check_unitary_matrix(N,A0,tol,__LINE__)
 
   ! perform one QR step and accumulate the similarity transformation in Z
-  call z_usymfact_singlestep(VEC,N,U,V,NU,M,Z,ITCNT)
+  call z_usymfact_singlestep(NORMALIZE,VEC,N,U,V,NU,M,Z,ITCNT)
 
   ! explicitly form the output matrix
   call form_usymfact_matrix(N,U,V,NU,A1)
@@ -188,7 +189,7 @@ program test_z_usymfact_singlestep
   call check_unitary_matrix(NR,AR0,tol,__LINE__)
 
   ! perform one QR step and accumulate the similarity transformation in ZR
-  call z_usymfact_singlestep(VEC,NR,UR,VR,NUR,MR,ZR,ITCNTR)
+  call z_usymfact_singlestep(NORMALIZE,VEC,NR,UR,VR,NUR,MR,ZR,ITCNTR)
 
   ! explicitly form the output matrix
   call form_usymfact_matrix(NR,UR,VR,NUR,AR1)

@@ -10,7 +10,7 @@
 !
 ! Tested subroutine interface:
 !
-!     call z_rfr3_symturnover(OMEGA,CC,SS,U,VV,RHO)
+!     call z_rfr3_symturnover(NORMALIZE,OMEGA,CC,SS,U,VV,RHO)
 !
 ! where
 !
@@ -41,6 +41,7 @@ program test_z_rfr3_symturnover
   implicit none
 
   ! compute variables
+  logical, parameter :: NORMALIZE(2) = (/ .TRUE., .TRUE. /)
   real(8), parameter :: eps = (EISCOR_DBL_EPS)
   real(8), parameter :: tol = 1000d0*(EISCOR_DBL_EPS)
 
@@ -91,7 +92,7 @@ program test_z_rfr3_symturnover
   u_out     = cmplx(1.000000000000000d+00, 0.000000000000000d+00, kind=8)
   vv_out    =       0.000000000000000d+00
 
-  call check_case(omega,cc,ss,u,vv,rho, &
+  call check_case(NORMALIZE,omega,cc,ss,u,vv,rho, &
        omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
 
 
@@ -124,7 +125,7 @@ program test_z_rfr3_symturnover
   u_out     = cmplx(9.999999999999999d-01, 0.000000000000000d+00, kind=8)
   vv_out    =       2.220446049250313d-16
 
-  call check_case(omega,cc,ss,u,vv,rho, &
+  call check_case(NORMALIZE,omega,cc,ss,u,vv,rho, &
        omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
 
 
@@ -158,7 +159,7 @@ program test_z_rfr3_symturnover
   u_out     = cmplx(9.999999999999999d-01, -2.220446049250313d-16, kind=8)
   vv_out    =       2.220446049250313d-16
 
-  call check_case(omega,cc,ss,u,vv,rho, &
+  call check_case(NORMALIZE,omega,cc,ss,u,vv,rho, &
        omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
 
 
@@ -193,7 +194,7 @@ program test_z_rfr3_symturnover
   u_out     = cmplx(1.831199678440115d-02, 4.999754712008334d-02, kind=8)
   vv_out    =       9.971649160557431d-01
 
-  call check_case(omega,cc,ss,u,vv,rho, &
+  call check_case(NORMALIZE,omega,cc,ss,u,vv,rho, &
        omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
 
 
@@ -215,12 +216,13 @@ contains
   ! expected output constants.
   !
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  subroutine check_case(OMEGA0,CC0,SS0,U0,VV0,RHO, &
+  subroutine check_case(NORMALIZE,OMEGA0,CC0,SS0,U0,VV0,RHO, &
        OMEGAe,CCe,SSe,Ue,VVe,tol,line)
 
     implicit none
 
     ! input variables
+    logical, intent(in) :: NORMALIZE(2)
     complex(8), intent(in) :: OMEGA0, U0, RHO
     real(8), intent(in) :: CC0, SS0, VV0
 
@@ -247,7 +249,7 @@ contains
     VV = VV0
 
     ! perform turnover
-    call z_rfr3_symturnover(OMEGA,CC,SS,U,VV,RHO)
+    call z_rfr3_symturnover(NORMALIZE,OMEGA,CC,SS,U,VV,RHO)
 
     ! compare outputs
     nrm = abs(OMEGA-OMEGAe) + abs(CC-CCe) + abs(SS-SSe) &

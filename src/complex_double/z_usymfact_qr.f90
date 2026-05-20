@@ -8,78 +8,21 @@
 ! This routine diagonalizes a unitary upper Hessenberg matrix stored in
 ! symmetric factored form as a product of N Givens rotations.
 !
-! The matrix is represented by
+! NORMALIZE is passed to z_rot3_symturnover through z_usymfact_singlestep:
 !
-!   | nu  0 | | u1       -v1 |
-!   |  0  1 | | v1  conj(u1) | | u2       -v2 |
-!                              | v2  conj(u2) | | u3       -v3 | | 1   0 |
-!                                               | v3  conj(u3) | | 0  u4 |
+!     NORMALIZE(1) = .TRUE.  : renormalize U and V
+!     NORMALIZE(2) = .TRUE.  : renormalize SIGMA
+!     NORMALIZE(3) = .TRUE.  : renormalize GAMMA
 !
-! The arrays U and V contain
-!
-!     U(i) = ui,
-!     V(i) = vi.
-!
-! The input must satisfy
-!
-!     |U(i)|^2 + V(i)^2 = 1,   i = 1,...,N,
-!                  V(N) = 0.
-!
-! On successful output, U contains the eigenvalues.
-!
-! If VEC = .TRUE., the Schur/eigenvector matrix Z is updated by the same
-! unitary similarity transformations used in the QR iteration.
+! The three flags are independent.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! INPUT VARIABLES:
-!
-!  VEC             LOGICAL
-!                    .TRUE.: compute/update Schur vectors
-!                    .FALSE.: no Schur vectors
-!
-!  ID              LOGICAL
-!                    .TRUE.: initialize Z to identity
-!                    .FALSE.: assume Z is already initialized
-!
-!  N               INTEGER
-!                    dimension of matrix
-!
-!  U               COMPLEX(8) array of dimension N
-!                    array of complex generators for Givens rotations
-!                    on output contains eigenvalues
-!
-!  V               REAL(8) array of dimension N
-!                    array of real generators for Givens rotations
-!
-!  M               INTEGER
-!                    leading dimension / number of rows of Z
-!
-!  Z               COMPLEX(8) array of dimension (M,N)
-!                    if VEC = .TRUE., updated by the accumulated similarities
-!                    if VEC = .FALSE., unused
-!                    if VEC = .TRUE. and ID = .TRUE., initialized to identity
-!                    if VEC = .TRUE. and ID = .FALSE., assumed initialized
-!
-! OUTPUT VARIABLES:
-!
-!  ITS             INTEGER array of dimension N-1
-!                    contains the number of iterations per deflation
-!
-!  INFO            INTEGER
-!                    INFO =  1 implies no convergence
-!                    INFO =  0 implies successful computation
-!                    INFO = -1 implies N is invalid
-!                    INFO = -2 implies U or V is invalid
-!                    INFO = -3 implies M is invalid
-!                    INFO = -4 implies Z is invalid
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
+subroutine z_usymfact_qr(NORMALIZE,VEC,ID,N,U,V,M,Z,ITS,INFO)
 
   implicit none
 
   ! input/output variables
+  logical, intent(in) :: NORMALIZE(3)
   logical, intent(in) :: VEC, ID
   integer, intent(in) :: N, M
   complex(8), intent(inout) :: U(N)
@@ -101,7 +44,6 @@ subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
   if (N < 2) then
     INFO = -1
 
-    ! print error message in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"N must be >= 2.",INFO,INFO)
     end if
@@ -114,7 +56,6 @@ subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
     if (abs(abs(U(ii))**2 + V(ii)**2 - 1d0) > 10d0*EISCOR_DBL_EPS) then
       INFO = -2
 
-      ! print error message in debug mode
       if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"U or V is invalid.",INFO,INFO)
       end if
@@ -127,7 +68,6 @@ subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
   if (VEC .AND. (M < 1)) then
     INFO = -3
 
-    ! print error message in debug mode
     if (DEBUG) then
       call u_infocode_check(__FILE__,__LINE__,"M must be at least 1.",INFO,INFO)
     end if
@@ -142,7 +82,6 @@ subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
     if (.NOT.flg) then
       INFO = -4
 
-      ! print error message in debug mode
       if (DEBUG) then
         call u_infocode_check(__FILE__,__LINE__,"Z is invalid.",INFO,INFO)
       end if
@@ -204,7 +143,6 @@ subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
     ! if 1x1 block, remove and check again
     if (STP == (STR+ZERO-1)) then
 
-      ! update indices
       STP = STP - 1
       ZERO = 0
       STR = 1
@@ -212,7 +150,6 @@ subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
     ! if greater than 1x1, chase a bulge
     else
 
-      ! check ZERO
       if (ZERO.GT.0) then
         STR = STR + ZERO
       end if
@@ -226,6 +163,7 @@ subroutine z_usymfact_qr(VEC,ID,N,U,V,M,Z,ITS,INFO)
 
       ! perform single-shift iteration
       call z_usymfact_singlestep( &
+           NORMALIZE, &
            VEC, &
            STP-STR+2, &
            U(STR:STP+1), &

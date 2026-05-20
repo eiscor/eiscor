@@ -8,63 +8,21 @@
 ! This routine computes one iteration of Francis' single-shift algorithm on a
 ! unitary upper Hessenberg matrix stored as a product of Givens rotations.
 !
-! The matrix is represented by
+! NORMALIZE controls the final renormalization inside z_rot3_symturnover:
 !
-!   | nu  0 | | u1       -v1 |
-!   |  0  1 | | v1  conj(u1) | | u2       -v2 |
-!                              | v2  conj(u2) | | u3       -v3 | | 1   0 |
-!                                               | v3  conj(u3) | | 0  u4 |
+!     NORMALIZE(1) = .TRUE.  : renormalize U and V
+!     NORMALIZE(2) = .TRUE.  : renormalize SIGMA
+!     NORMALIZE(3) = .TRUE.  : renormalize GAMMA
 !
-! The arrays U and V contain
-!
-!     U(i) = ui,
-!     V(i) = vi.
-!
-! The input must satisfy
-!
-!     |U(i)|^2 + V(i)^2 = 1,   i = 1,...,N-1,
-!                  V(N) = 0,
-!                  |NU| = 1.
-!
-! If VEC = .TRUE., the eigenvector/similarity matrix Z is updated by the
-! same similarity transformations used in the QR step.
+! The three flags are independent.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! INPUT VARIABLES:
-!
-!  VEC             LOGICAL
-!                    .TRUE.: update eigenvectors/similarity matrix
-!                    .FALSE.: do not update Z
-!
-!  N               INTEGER
-!                    dimension of matrix, must be >= 2
-!
-!  U               COMPLEX(8) array of dimension N
-!                    complex generators of the core transformations
-!
-!  V               REAL(8) array of dimension N
-!                    real generators of the core transformations
-!
-!  NU              COMPLEX(8)
-!                    leading unimodular phase
-!
-!  M               INTEGER
-!                    leading dimension / number of rows of Z
-!
-!  Z               COMPLEX(8) array of dimension (M,N)
-!                    if VEC = .TRUE., updated by right multiplication
-!                    if VEC = .FALSE., unused
-!
-!  ITCNT           INTEGER
-!                    iteration counter since last deflation
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_usymfact_singlestep(VEC,N,U,V,NU,M,Z,ITCNT)
+subroutine z_usymfact_singlestep(NORMALIZE,VEC,N,U,V,NU,M,Z,ITCNT)
 
   implicit none
 
   ! input/output variables
+  logical, intent(in) :: NORMALIZE(3)
   logical, intent(in) :: VEC
   integer, intent(in) :: N, M
   integer, intent(inout) :: ITCNT
@@ -143,7 +101,7 @@ subroutine z_usymfact_singlestep(VEC,N,U,V,NU,M,Z,ITCNT)
     vt = V(ii+1)
 
     ! symmetric turnover
-    call z_rot3_symturnover(gamma,sigma,c,s,ut,vt,rho)
+    call z_rot3_symturnover(NORMALIZE,gamma,sigma,c,s,ut,vt,rho)
 
     ! update eigenvectors / similarity accumulator
     !
@@ -154,31 +112,25 @@ subroutine z_usymfact_singlestep(VEC,N,U,V,NU,M,Z,ITCNT)
     !       [ s              c*conjg(sigma)]
     !
     ! acting on columns ii+1 and ii+2.
-    !
-    ! The final pass ii = N-1 updates the trailing diagonal core and does not
-    ! correspond to a 2-column update inside the N x N eigenvector matrix.
     if (VEC .AND. ii < N-1) then
-    
+
       do jj = 1,M
-    
+
         z1 = Z(jj,ii+1)
         z2 = Z(jj,ii+2)
-    
+
         Z(jj,ii+1) = z1*(c*sigma) + z2*s
         Z(jj,ii+2) = -z1*s + z2*(c*conjg(sigma))
-    
+
       end do
-    
+
     else if (VEC) then
-    
+
       ! Final diagonal similarity factor Q_N.
-      !
-      ! At ii = N-1, the turnover returns the final one-dimensional
-      ! core transformation.  It acts on the last column of Z by sigma.
       do jj = 1,M
         Z(jj,N) = Z(jj,N)*sigma
       end do
-    
+
     end if
 
     ! store ut and vt

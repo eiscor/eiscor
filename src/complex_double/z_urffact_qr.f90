@@ -31,18 +31,18 @@
 !
 ! NORMALIZE is passed to z_rfr3_symturnover through z_urffact_singlestep:
 !
-!     NORMALIZE = 0: no renormalization
-!     NORMALIZE = 1: renormalize U and VV only
-!     NORMALIZE = 2: renormalize U, VV, and OMEGA
+!     NORMALIZE(1) = .TRUE.  : renormalize U and VV
+!     NORMALIZE(2) = .TRUE.  : renormalize OMEGA
 !
-! Any other value defaults to NORMALIZE = 2 inside z_rfr3_symturnover.
+! The two flags are independent.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! INPUT VARIABLES:
 !
-!  NORMALIZE       INTEGER
-!                    controls turnover renormalization
+!  NORMALIZE       LOGICAL array of dimension 2
+!                    NORMALIZE(1): renormalize U and VV
+!                    NORMALIZE(2): renormalize OMEGA
 !
 !  N               INTEGER
 !                    dimension of matrix
@@ -71,7 +71,7 @@ subroutine z_urffact_qr(NORMALIZE,N,U,VV,ITS,INFO)
   implicit none
 
   ! input/output variables
-  integer, intent(in) :: NORMALIZE
+  logical, intent(in) :: NORMALIZE(2)
   integer, intent(in) :: N
   complex(8), intent(inout) :: U(N)
   real(8), intent(inout) :: VV(N)

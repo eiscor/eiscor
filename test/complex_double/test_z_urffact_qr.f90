@@ -13,7 +13,8 @@
 !
 ! with
 !
-!     NORMALIZE = 2,
+!     NORMALIZE(1) = .TRUE.,
+!     NORMALIZE(2) = .TRUE.,
 !
 ! i.e., renormalize both
 !
@@ -25,17 +26,13 @@
 !
 ! inside the root-free symmetric turnover.
 !
-! The following tests are run:
-!
-! 1) Compute roots of unity and check forward error for various powers of 2.
-!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_urffact_qr
 
   implicit none
   
   ! compute variables
-  integer, parameter :: NORMALIZE = 2
+  logical, parameter :: NORMALIZE(2) = (/ .TRUE., .TRUE. /)
   integer, parameter :: MPOW = 10
   integer, parameter :: N = 2**MPOW
 
