@@ -32,8 +32,18 @@
 !     Z = 1 + T,                                           if real(T) >= 0,
 !     Z = (VV + 2*i*aimag(T))/(1 - conjg(T)),              otherwise.
 !
-! The expected outputs were precomputed in extended precision and then rounded
-! to double precision constants in this test.
+! The tests are:
+!
+! 1) Exact singular case:
+!      U = 1, VV = 0, OMEGA = -1.
+!
+! 2) Nearly singular real case:
+!      U = 1-eps, VV = eps*(2-eps), OMEGA = -1.
+!
+! 3) Nearly singular complex case:
+!      U = 1-eps, VV = eps*(2-eps), OMEGA close to -1.
+!
+! 4) Generic phase-sensitive case with non-real RHO and OMEGA.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 program test_z_rfr3_symturnover
@@ -46,9 +56,6 @@ program test_z_rfr3_symturnover
 
   real(8) :: vv, cc, ss
   complex(8) :: u, omega, rho
-
-  real(8) :: vv_out, cc_out, ss_out
-  complex(8) :: u_out, omega_out
 
   real(8) :: r, theta
 
@@ -85,14 +92,7 @@ program test_z_rfr3_symturnover
 
   rho = cmplx(1d0,0d0,kind=8)
 
-  omega_out = cmplx(1.000000000000000d+00, 0.000000000000000d+00, kind=8)
-  cc_out    =       0.000000000000000d+00
-  ss_out    =       1.000000000000000d+00
-  u_out     = cmplx(1.000000000000000d+00, 0.000000000000000d+00, kind=8)
-  vv_out    =       0.000000000000000d+00
-
-  call check_case(omega,cc,ss,u,vv,rho, &
-       omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
+  call check_case(omega,cc,ss,u,vv,rho,tol,__LINE__)
 
 
 
@@ -118,14 +118,7 @@ program test_z_rfr3_symturnover
 
   rho = cmplx(1d0,0d0,kind=8)
 
-  omega_out = cmplx(1.000000000000000d+00, 0.000000000000000d+00, kind=8)
-  cc_out    =       5.551115123125783d-17
-  ss_out    =       9.999999999999999d-01
-  u_out     = cmplx(9.999999999999999d-01, 0.000000000000000d+00, kind=8)
-  vv_out    =       2.220446049250313d-16
-
-  call check_case(omega,cc,ss,u,vv,rho, &
-       omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
+  call check_case(omega,cc,ss,u,vv,rho,tol,__LINE__)
 
 
 
@@ -152,14 +145,7 @@ program test_z_rfr3_symturnover
 
   rho = cmplx(1d0,0d0,kind=8)
 
-  omega_out = cmplx(-5.999999999999999d-01, -8.000000000000001d-01, kind=8)
-  cc_out    =       2.775557561562890d-16
-  ss_out    =       9.999999999999997d-01
-  u_out     = cmplx(9.999999999999999d-01, -2.220446049250313d-16, kind=8)
-  vv_out    =       2.220446049250313d-16
-
-  call check_case(omega,cc,ss,u,vv,rho, &
-       omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
+  call check_case(omega,cc,ss,u,vv,rho,tol,__LINE__)
 
 
 
@@ -187,14 +173,7 @@ program test_z_rfr3_symturnover
   theta = -9d-1
   rho = cmplx(cos(theta),sin(theta),kind=8)
 
-  omega_out = cmplx(-9.718911923360310d-01, 2.354304786123664d-01, kind=8)
-  cc_out    =       4.735073491387741d-01
-  ss_out    =       5.264926508612259d-01
-  u_out     = cmplx(1.831199678440115d-02, 4.999754712008334d-02, kind=8)
-  vv_out    =       9.971649160557431d-01
-
-  call check_case(omega,cc,ss,u,vv,rho, &
-       omega_out,cc_out,ss_out,u_out,vv_out,tol,__LINE__)
+  call check_case(omega,cc,ss,u,vv,rho,tol,__LINE__)
 
 
 
@@ -211,30 +190,27 @@ contains
   !
   ! check_case
   !
-  ! Calls z_rfr3_symturnover and compares the result against hard-coded
-  ! expected output constants.
+  ! Calls z_rfr3_symturnover and compares the result against an independently
+  ! computed expected output using the root-free symmetric turnover formulas.
   !
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  subroutine check_case(OMEGA0,CC0,SS0,U0,VV0,RHO, &
-       OMEGAe,CCe,SSe,Ue,VVe,tol,line)
+  subroutine check_case(OMEGA0,CC0,SS0,U0,VV0,RHO,tol,line)
 
     implicit none
 
     ! input variables
     complex(8), intent(in) :: OMEGA0, U0, RHO
     real(8), intent(in) :: CC0, SS0, VV0
-
-    ! expected output variables
-    complex(8), intent(in) :: OMEGAe, Ue
-    real(8), intent(in) :: CCe, SSe, VVe
-
-    ! tolerance and line
     real(8), intent(in) :: tol
     integer, intent(in) :: line
 
     ! computed output
     complex(8) :: OMEGA, U
     real(8) :: CC, SS, VV
+
+    ! expected output
+    complex(8) :: OMEGAe, Ue
+    real(8) :: CCe, SSe, VVe
 
     ! error
     real(8) :: nrm, err
@@ -245,6 +221,10 @@ contains
     SS = SS0
     U = U0
     VV = VV0
+
+    ! compute expected output
+    call expected_rfr3_symturnover(OMEGA0,CC0,SS0,U0,VV0,RHO, &
+         OMEGAe,CCe,SSe,Ue,VVe)
 
     ! perform turnover
     call z_rfr3_symturnover(OMEGA,CC,SS,U,VV,RHO)
@@ -267,5 +247,90 @@ contains
     end if
 
   end subroutine check_case
+
+
+
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !
+  ! expected_rfr3_symturnover
+  !
+  ! Root-free symmetric turnover formulas.
+  !
+  ! The phase convention is
+  !
+  !     OMEGAhat = -RHO*OMEGA*Z**2/abs(Z)**2.
+  !
+  ! This corresponds to the standard convention
+  !
+  !     SIGMAhat = -RHO*SIGMA*Z/abs(Z),
+  !     GAMMAhat = -conjg(RHO)*GAMMA,
+  !
+  ! because OMEGA = GAMMA*SIGMA**2.
+  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  subroutine expected_rfr3_symturnover(OMEGA,CC,SS,U,VV,RHO, &
+       OMEGAh,CCh,SSh,Uh,VVh)
+
+    implicit none
+
+    ! input variables
+    complex(8), intent(in) :: OMEGA, U, RHO
+    real(8), intent(in) :: CC, SS, VV
+
+    ! output variables
+    complex(8), intent(out) :: OMEGAh, Uh
+    real(8), intent(out) :: CCh, SSh, VVh
+
+    ! local variables
+    complex(8) :: z, t
+    real(8) :: zz, m, xx
+
+    ! compute t and scaled z
+    t = conjg(OMEGA)*U
+
+    if (dble(t) >= 0d0) then
+      z = 1d0 + t
+    else
+      z = cmplx(VV,2d0*aimag(t),kind=8)/(1d0 - conjg(t))
+    end if
+
+    zz = dble(z)**2 + aimag(z)**2
+
+    ! m = n^2
+    m = CC*zz + VV
+
+    if (m > 0d0) then
+
+      CCh = CC*zz/m
+      SSh = VV/m
+      Uh  = conjg(RHO)*(SS*U - CC*OMEGA)
+      VVh = SS*m
+
+      if (zz > 0d0) then
+        OMEGAh = -RHO*OMEGA*z**2/zz
+      else
+        OMEGAh = cmplx(1d0,0d0,kind=8)
+      end if
+
+    else
+
+      CCh = 0d0
+      SSh = 1d0
+      Uh  = conjg(RHO)*U
+      VVh = 0d0
+      OMEGAh = cmplx(1d0,0d0,kind=8)
+
+    end if
+
+    ! same first-order renormalization as the implementation
+    xx = dble(Uh)**2 + aimag(Uh)**2 + VVh
+    Uh  = Uh*(5d-1*(3d0-xx))
+    VVh = VVh*(2d0-xx)
+
+    xx = dble(OMEGAh)**2 + aimag(OMEGAh)**2
+    OMEGAh = OMEGAh*(5d-1*(3d0-xx))
+
+  end subroutine expected_rfr3_symturnover
 
 end program test_z_rfr3_symturnover

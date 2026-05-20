@@ -12,12 +12,17 @@
 !
 !     call z_usymfact_singlestep(VEC,N,U,V,NU,M,Z,ITCNT)
 !
-! Test case:
+! Check 1:
 !
 !     N  = 256,
 !     ui = 0, vi = 1,  i = 1,...,N-1,
 !     uN = 1, vN = 0,
 !     nu = 1.
+!
+! Check 2:
+!
+!     N = 32,
+!     random normalized unitary factors.
 !
 ! With VEC = .TRUE., M = N, and Z initialized to the identity, the routine
 ! accumulates the unitary similarity transformation used in the QR step.
@@ -35,21 +40,30 @@ program test_z_usymfact_singlestep
   ! parameters
   integer, parameter :: N = 256
   integer, parameter :: M = N
-  real(8), parameter :: eps = (EISCOR_DBL_EPS)
-  real(8), parameter :: tol = 10000d0*(EISCOR_DBL_EPS)
+  integer, parameter :: NR = 32
+  integer, parameter :: MR = NR
 
-  ! factor variables
+  real(8), parameter :: eps = (EISCOR_DBL_EPS)
+  real(8), parameter :: tol = 100d0*(EISCOR_DBL_EPS)
+
+  ! deterministic N = 256 test variables
   complex(8) :: U(N), U0(N)
   real(8) :: V(N), V0(N)
   complex(8) :: NU
   integer :: ITCNT
-
-  ! eigenvector/similarity accumulator
-  logical :: VEC
   complex(8) :: Z(M,N)
-
-  ! dense matrices
   complex(8) :: A0(N,N), A1(N,N)
+
+  ! random N = 32 test variables
+  complex(8) :: UR(NR), UR0(NR)
+  real(8) :: VR(NR), VR0(NR)
+  complex(8) :: NUR
+  integer :: ITCNTR
+  complex(8) :: ZR(MR,NR)
+  complex(8) :: AR0(NR,NR), AR1(NR,NR)
+
+  ! eigenvector/similarity flag
+  logical :: VEC
 
   ! timing variables
   integer :: c_start, c_stop, c_rate
@@ -132,6 +146,71 @@ program test_z_usymfact_singlestep
 
 
 
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ! check 2)
+  !
+  ! Random normalized unitary factors, N = 32.
+  !
+  !     |u_i|^2 + v_i^2 = 1,  i = 1,...,NR-1,
+  !     |u_NR| = 1,
+  !     v_NR = 0,
+  !     |nu| = 1.
+  !
+  ! We initialize ZR = I and check
+  !
+  !     AR1 = ZR^* AR0 ZR.
+  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  ! deterministic random seed
+  call set_random_seed()
+
+  ! initialize random normalized factors
+  call init_random_usymfact(NR,UR,VR,NUR)
+
+  ITCNTR = 0
+
+  ! save input factors
+  UR0 = UR
+  VR0 = VR
+
+  ! explicitly form the input matrix
+  call form_usymfact_matrix(NR,UR0,VR0,NUR,AR0)
+
+  ! initialize eigenvector/similarity accumulator
+  VEC = .TRUE.
+  call set_identity(MR,NR,ZR)
+
+  ! check input normalization
+  call check_factor_normalization(NR,UR,VR,NUR,tol,__LINE__)
+
+  ! check input unitarity
+  call check_unitary_matrix(NR,AR0,tol,__LINE__)
+
+  ! perform one QR step and accumulate the similarity transformation in ZR
+  call z_usymfact_singlestep(VEC,NR,UR,VR,NUR,MR,ZR,ITCNTR)
+
+  ! explicitly form the output matrix
+  call form_usymfact_matrix(NR,UR,VR,NUR,AR1)
+
+  ! check output normalization
+  call check_factor_normalization(NR,UR,VR,NUR,tol,__LINE__)
+
+  ! check output unitarity
+  call check_unitary_matrix(NR,AR1,tol,__LINE__)
+
+  ! check that ZR is unitary
+  call check_unitary_matrix(NR,ZR,tol,__LINE__)
+
+  ! check the explicit similarity relation
+  !
+  !     AR1 = ZR^* AR0 ZR.
+  !
+  call check_similarity_matrix(NR,AR0,AR1,ZR,tol,__LINE__)
+
+
+
+
   ! stop timer
   call system_clock(count=c_stop)
 
@@ -173,6 +252,97 @@ contains
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !
+  ! set_random_seed
+  !
+  ! Sets a deterministic random seed so that the randomized test is reproducible.
+  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  subroutine set_random_seed()
+
+    implicit none
+
+    integer :: nseed, ii
+    integer, allocatable :: seed(:)
+
+    call random_seed(size=nseed)
+    allocate(seed(nseed))
+
+    do ii = 1,nseed
+      seed(ii) = 7919 + 104729*ii
+    end do
+
+    call random_seed(put=seed)
+
+    deallocate(seed)
+
+  end subroutine set_random_seed
+
+
+
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !
+  ! init_random_usymfact
+  !
+  ! Randomly initializes a normalized unitary upper-Hessenberg factorization:
+  !
+  !     |U(i)|^2 + V(i)^2 = 1,  i = 1,...,N-1,
+  !     |U(N)| = 1,
+  !     V(N) = 0,
+  !     |NU| = 1.
+  !
+  ! The variables V(i) are nonnegative.
+  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  subroutine init_random_usymfact(N,U,V,NU)
+
+    implicit none
+
+    integer, intent(in) :: N
+    complex(8), intent(out) :: U(N)
+    real(8), intent(out) :: V(N)
+    complex(8), intent(out) :: NU
+
+    real(8) :: r1, r2, theta, phi
+    real(8) :: pi
+    integer :: ii
+
+    pi = 4d0*atan(1d0)
+
+    ! leading phase NU
+    call random_number(r1)
+    phi = 2d0*pi*r1
+    NU = cmplx(cos(phi),sin(phi),kind=8)
+
+    ! proper core transformations
+    do ii = 1,N-1
+
+      call random_number(r1)
+      call random_number(r2)
+
+      ! theta in [0,pi/2], so V(ii) >= 0
+      theta = 5d-1*pi*r1
+      phi   = 2d0*pi*r2
+
+      U(ii) = cos(theta)*cmplx(cos(phi),sin(phi),kind=8)
+      V(ii) = sin(theta)
+
+    end do
+
+    ! trailing diagonal phase
+    call random_number(r1)
+    phi = 2d0*pi*r1
+
+    U(N) = cmplx(cos(phi),sin(phi),kind=8)
+    V(N) = 0d0
+
+  end subroutine init_random_usymfact
+
+
+
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !
   ! form_usymfact_matrix
   !
   ! Forms the dense matrix represented by the symmetric unitary factorization
@@ -204,7 +374,7 @@ contains
 
     complex(8) :: zero, one
     complex(8) :: a1, a2
-    integer :: ii, jj, kk
+    integer :: ii, kk
 
     zero = cmplx(0d0,0d0,kind=8)
     one  = cmplx(1d0,0d0,kind=8)
