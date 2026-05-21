@@ -182,8 +182,7 @@ subroutine z_urffact_qr(NORMALIZE,N,U,VV,ITS,INFO)
            STP-STR+2, &
            U(STR:STP+1), &
            VV(STR:STP+1), &
-           nu, &
-           ITCNT)
+           nu)
 
       ! update iteration counter
       ITCNT = ITCNT + 1

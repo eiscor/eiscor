@@ -17,14 +17,13 @@
 ! The two flags are independent.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_urffact_singlestep(NORMALIZE,N,U,VV,NU,ITCNT)
+subroutine z_urffact_singlestep(NORMALIZE,N,U,VV,NU)
 
   implicit none
 
   ! input/output variables
   logical, intent(in) :: NORMALIZE(2)
   integer, intent(in) :: N
-  integer, intent(inout) :: ITCNT
   complex(8), intent(inout) :: U(N)
   real(8), intent(inout) :: VV(N)
   complex(8), intent(in) :: NU

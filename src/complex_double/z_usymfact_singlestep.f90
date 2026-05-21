@@ -17,7 +17,7 @@
 ! The three flags are independent.
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-subroutine z_usymfact_singlestep(NORMALIZE,VEC,N,U,V,NU,M,Z,ITCNT)
+subroutine z_usymfact_singlestep(NORMALIZE,VEC,N,U,V,NU,M,Z)
 
   implicit none
 
@@ -25,7 +25,6 @@ subroutine z_usymfact_singlestep(NORMALIZE,VEC,N,U,V,NU,M,Z,ITCNT)
   logical, intent(in) :: NORMALIZE(3)
   logical, intent(in) :: VEC
   integer, intent(in) :: N, M
-  integer, intent(inout) :: ITCNT
   complex(8), intent(inout) :: U(N)
   real(8), intent(inout) :: V(N)
   complex(8), intent(in) :: NU
@@ -140,8 +139,5 @@ subroutine z_usymfact_singlestep(NORMALIZE,VEC,N,U,V,NU,M,Z,ITCNT)
     end if
 
   end do
-
-  ! increment iteration counter
-  ITCNT = ITCNT + 1
 
 end subroutine z_usymfact_singlestep

@@ -32,7 +32,7 @@ subroutine z_usymfact_qr(NORMALIZE,VEC,ID,N,U,V,M,Z,ITS,INFO)
 
   ! compute variables
   logical :: flg
-  integer :: ii, kk
+  integer :: ii, jj, kk
   integer :: STR, STP, ZERO, ITMAX, ITCNT
   real(8) :: xx
   complex(8) :: nu
@@ -124,10 +124,34 @@ subroutine z_usymfact_qr(NORMALIZE,VEC,ID,N,U,V,M,Z,ITS,INFO)
 
         ! first-order renormalization
         xx = dble(U(N+1-ii))**2 + aimag(U(N+1-ii))**2
-        U(N+1-ii) = 5d-1*U(N+1-ii)*(3d0-xx)
+        xx = 5d-1*(3d0-xx)
+        U(N+1-ii) = U(N+1-ii)*xx
 
       end do
 
+      ! renormalize columns of Z after all eigenvalues have been computed
+      if (VEC) then
+
+        do jj = 1,N
+
+          xx = 0d0
+
+          do ii = 1,M
+            xx = xx + dble(Z(ii,jj))**2 + aimag(Z(ii,jj))**2
+          end do
+
+          ! first-order renormalization factor for 1/sqrt(xx)
+          xx = 5d-1*(3d0-xx)
+
+          do ii = 1,M
+            Z(ii,jj) = Z(ii,jj)*xx
+          end do
+
+        end do
+
+      end if
+
+      ! exit qr algorithm
       exit
 
     end if
@@ -170,8 +194,7 @@ subroutine z_usymfact_qr(NORMALIZE,VEC,ID,N,U,V,M,Z,ITS,INFO)
            V(STR:STP+1), &
            nu, &
            M, &
-           Z(:,STR:STP+1), &
-           ITCNT)
+           Z(:,STR:STP+1))
 
       ! update iteration counter
       ITCNT = ITCNT + 1
